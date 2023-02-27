@@ -3,18 +3,9 @@ import stl
 from stl import mesh
 from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
-
-def plotSTL(mesh):
-    fig = plt.figure() 
-    axes = mplot3d.Axes3D(fig)
-    axes.add_collection3d(mplot3d.art3d.Poly3DCollection(mesh.vectors))
-    eps = 1e-16
-    axes.set_xlim3d(left=np.amin(mesh.vectors[:,:,0])-eps, right=np.amax(mesh.vectors[:,:,0])+eps)
-    axes.set_ylim3d(np.amin(mesh.vectors[:,:,1])-eps, np.amax(mesh.vectors[:,:,1])+eps)
-    axes.set_zlim3d(np.amin(mesh.vectors[:,:,2])-eps,np.amax(mesh.vectors[:,:,2])+eps)
-    axes.view_init(0,90) 
-    plt.yticks([])
-    plt.show()
+import sys
+sys.path.append('util')
+from plotsUtil import *
 
 
 d=0.25
@@ -58,4 +49,6 @@ for i, f in enumerate(faces):
 # Write the mesh to file "cube.stl"
 cube.save('spg.stl',mode=stl.Mode.ASCII)
 
-plotSTL(cube)
+axes=plotSTL(cube)
+axprettyLabels(axes,'x','','z',14)
+plt.show()
