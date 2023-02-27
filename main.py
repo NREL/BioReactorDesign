@@ -13,6 +13,7 @@ def plotSTL(mesh):
     axes.set_ylim3d(np.amin(mesh.vectors[:,:,1])-eps, np.amax(mesh.vectors[:,:,1])+eps)
     axes.set_zlim3d(np.amin(mesh.vectors[:,:,2])-eps,np.amax(mesh.vectors[:,:,2])+eps)
     axes.view_init(0,90) 
+    plt.yticks([])
     plt.show()
 
 
