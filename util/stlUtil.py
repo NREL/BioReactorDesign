@@ -29,7 +29,7 @@ def makePolygon(rad, nvert):
     return meshInpt
 
 def makeRectangle(w,h):
-    # Define the 8 vertices of the cube
+    # Define vertices
     vertices = np.array(
         [
             [-w / 2, 0.0, h/2],
@@ -38,13 +38,8 @@ def makeRectangle(w,h):
             [-w / 2, 0.0, -h/2] 
         ]
     )
-    # Define the 12 triangles composing the cube
-    faces = np.array(
-        [
-            [0, 1, 2],
-            [2, 3, 0],
-        ]
-    )
+
+    faces = triangulate(vertices)
 
     meshInpt = {}
     meshInpt["vertices"] = vertices
