@@ -1,8 +1,8 @@
+import sys
+
 import numpy as np
 import stl
-from stl import mesh
 from scipy.spatial import Delaunay
-import sys
 
 
 def triangulate(vertices):
@@ -67,7 +67,7 @@ def translate(stlObj, vector=np.array([0, 0, 0])):
 
 def traceMesh(meshInpt):
     # Create the mesh
-    stlObj = mesh.Mesh(np.zeros(meshInpt["faces"].shape[0], dtype=mesh.Mesh.dtype))
+    stlObj = stl.mesh.Mesh(np.zeros(meshInpt["faces"].shape[0], dtype=stl.mesh.Mesh.dtype))
     for i, f in enumerate(meshInpt["faces"]):
         for j in range(3):
             stlObj.vectors[i][j] = meshInpt["vertices"][f[j], :]
@@ -120,7 +120,7 @@ def makeSpider(centerRad, nArms, widthArms, lengthArms):
 
     arms_data = [entry.data for entry in arms]
 
-    combined = mesh.Mesh(np.concatenate([center.data] + arms_data))
+    combined = stl.mesh.Mesh(np.concatenate([center.data] + arms_data))
 
     return combined
 

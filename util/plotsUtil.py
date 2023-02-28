@@ -3,8 +3,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import cm
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 from mpl_toolkits import mplot3d
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
 def plotSTL(mesh):
