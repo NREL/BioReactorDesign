@@ -5,13 +5,34 @@ import stl
 from scipy.spatial import Delaunay
 
 
+def tri_area(point1, point2, point3):
+    return 0.5 * (
+        point1[0] * (point2[1] - point3[1])
+        + point2[0] * (point3[1] - point1[1])
+        + point3[0] * (point1[1] - point2[1])
+    )
+
+
+def patch_area(tri):
+    vertices = tri.vertices
+    points = tri.points
+    area = 0
+    for i_triangle in range(vertices.shape[0]):
+        area += tri_area(
+            points[vertices[i_triangle, 0], :],
+            points[vertices[i_triangle, 1], :],
+            points[vertices[i_triangle, 2], :],
+        )
+    return area
+
+
 def triangulate(vertices):
     points = np.zeros((vertices.shape[0], 2))
     points[:, 0] = vertices[:, 0]
     points[:, 1] = vertices[:, 2]
     tri = Delaunay(points)
-
-    return np.array(tri.vertices)
+    area = patch_area(tri)
+    return np.array(tri.vertices), area
 
 
 def makePolygon(rad, nvert):
@@ -26,13 +47,13 @@ def makePolygon(rad, nvert):
             ]
         )
     vertices = np.array(vertices)
-    faces = triangulate(vertices)
+    faces, area = triangulate(vertices)
 
     meshInpt = {}
     meshInpt["vertices"] = vertices
     meshInpt["faces"] = faces
 
-    return meshInpt
+    return meshInpt, area
 
 
 def makeRectangle(w, h):
@@ -46,13 +67,13 @@ def makeRectangle(w, h):
         ]
     )
 
-    faces = triangulate(vertices)
+    faces, area = triangulate(vertices)
 
     meshInpt = {}
     meshInpt["vertices"] = vertices
     meshInpt["faces"] = faces
 
-    return meshInpt
+    return meshInpt, area
 
 
 def rotate(stlObj, theta=0):
@@ -67,7 +88,9 @@ def translate(stlObj, vector=np.array([0, 0, 0])):
 
 def traceMesh(meshInpt):
     # Create the mesh
-    stlObj = stl.mesh.Mesh(np.zeros(meshInpt["faces"].shape[0], dtype=stl.mesh.Mesh.dtype))
+    stlObj = stl.mesh.Mesh(
+        np.zeros(meshInpt["faces"].shape[0], dtype=stl.mesh.Mesh.dtype)
+    )
     for i, f in enumerate(meshInpt["faces"]):
         for j in range(3):
             stlObj.vectors[i][j] = meshInpt["vertices"][f[j], :]
@@ -76,6 +99,7 @@ def traceMesh(meshInpt):
 
 
 def makeSpider(centerRad, nArms, widthArms, lengthArms):
+    globalArea = 0
     if nArms < 2:
         print("ERROR: nArms must be >= 2")
         print(f"Got nArms = {nArms}")
@@ -84,7 +108,8 @@ def makeSpider(centerRad, nArms, widthArms, lengthArms):
         nVertPol = 4
     if nArms > 2:
         nVertPol = nArms
-    centerMesh = makePolygon(rad=centerRad, nvert=nVertPol)
+    centerMesh, centerArea = makePolygon(rad=centerRad, nvert=nVertPol)
+    globalArea += centerArea
     vertices = centerMesh["vertices"]
     maxWidth = np.linalg.norm((vertices[1, :] - vertices[0, :]))
     if widthArms > maxWidth:
@@ -109,7 +134,9 @@ def makeSpider(centerRad, nArms, widthArms, lengthArms):
             else:
                 indp = 3
                 indm = 2
-        arm = traceMesh(makeRectangle(w=widthArms, h=lengthArms))
+        armMesh, armArea = makeRectangle(w=widthArms, h=lengthArms)
+        globalArea += armArea
+        arm = traceMesh(armMesh)
         side = vertices[indp, :] - vertices[indm, :]
         angle = np.arccos(np.dot(side, [1, 0, 0]) / np.linalg.norm(side))
         if side[2] <= 0:
@@ -124,7 +151,7 @@ def makeSpider(centerRad, nArms, widthArms, lengthArms):
 
     combined = stl.mesh.Mesh(np.concatenate([center.data] + arms_data))
 
-    return combined
+    return combined, globalArea
 
 
 def saveSTL(stlObj, filename="spg.stl"):
