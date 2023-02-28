@@ -13,7 +13,7 @@ from stlUtil import *
 if __name__ == "__main__":
     # Spider
     combined = makeSpider(centerRad=0.25, nArms=12, widthArms=0.1, lengthArms=0.5)
-    saveSTL(combined)
+    saveSTL(combined, filename="spg.stl")
 
     # plot
     axes = plotSTL(combined)

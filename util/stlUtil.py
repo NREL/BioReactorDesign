@@ -125,6 +125,6 @@ def makeSpider(centerRad, nArms, widthArms, lengthArms):
     return combined
 
 
-def saveSTL(stlObj):
-    # Write the mesh to file "cube.stl"
-    stlObj.save("spg.stl", mode=stl.Mode.ASCII)
+def saveSTL(stlObj, filename="spg.stl"):
+    # Write the mesh to file
+    stlObj.save(filename, mode=stl.Mode.ASCII)
