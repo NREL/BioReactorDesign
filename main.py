@@ -11,12 +11,35 @@ from stlUtil import *
 
 
 if __name__=="__main__":
-   
-    polygon_meshInpt = makePolygon(rad=0.25,nvert=20) 
-    polygon = traceMesh(polygon_meshInpt)
-    axes=plotSTL(polygon)
-    axprettyLabels(axes,'x','','z',14)
-    plt.show()
+ 
+
+
+    # Rotated rectangle
+    #rect_meshInpt1 = makeRectangle(0.25/10,0.25/10, shiftw=1, shifth=1)
+    #rect1 = traceMesh(rect_meshInpt1)
+    #rect1 = rotate(rect1, np.pi/3)
+    #axes=plotSTL(rect1)
+    #axprettyLabels(axes,'x','','z',14)
+    #plt.show()
+
+
+
+
+
+ 
+    # POLYGON 
+    #polygon_meshInpt = makePolygon(rad=0.25,nvert=8) 
+    #polygon = traceMesh(polygon_meshInpt)
+    #axes=plotSTL(polygon)
+    #axprettyLabels(axes,'x','','z',14)
+    #plt.show()
+
+
+
+
+
+
+
  
     # CROSS
     #cross_meshInpt = makeCross()

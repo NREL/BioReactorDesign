@@ -100,6 +100,10 @@ def makeRectangle(w,h, shiftw=0, shifth=0):
 
     return meshInpt
 
+def rotate(stlObj, theta=0):
+    stlObj.rotate([0, 1, 0], theta)
+    return stlObj
+
 
 def traceMesh(meshInpt):
     # Create the mesh
