@@ -77,7 +77,9 @@ def traceMesh(meshInpt):
 
 def makeSpider(centerRad, nArms, widthArms, lengthArms):
     if nArms < 2:
-        print("nArms must be greater or equal to 2")
+        print("ERROR: nArms must be >= 2")
+        print(f"Got nArms = {nArms}")
+        sys.exit()
     if nArms == 2:
         nVertPol = 4
     if nArms > 2:
