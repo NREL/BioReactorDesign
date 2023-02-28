@@ -17,7 +17,7 @@ def makePolygon(rad, nvert):
     theta = 2*np.pi/nvert
     vertices = []
     for i in range(nvert):
-        vertices.append([rad*np.cos(theta*i), 0, rad*np.sin(theta*i)])
+        vertices.append([rad*np.cos(theta*i+theta/2), 0, rad*np.sin(theta*i+theta/2)])
     vertices = np.array(vertices)
     faces = triangulate(vertices)   
  
