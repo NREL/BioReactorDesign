@@ -3,6 +3,26 @@ import stl
 from stl import mesh
 
 
+def makePolygon(rad, nvert):
+    theta = 2*np.pi/nvert
+    vertices = []
+    for i in range(nvert):
+        vertices.append([rad*np.cos(theta*i), 0, rad*np.sin(theta*i)])
+    vertices = np.array(vertices)
+    from scipy.spatial import Delaunay
+    points = np.zeros((vertices.shape[0],2))
+    points[:,0] = vertices[:,0]
+    points[:,1] = vertices[:,2]
+    tri = Delaunay(points)
+
+    faces = np.array(tri.vertices)
+
+    meshInpt = {}
+    meshInpt["vertices"] = vertices
+    meshInpt["faces"] = faces
+
+    return meshInpt
+
 def makeCross():
     d = 0.25
     r = d / 2
