@@ -85,11 +85,11 @@ def axprettyLabels(ax, xlabel, ylabel, zlabel, fontsize, title=None):
         ax.spines[axis].set_linewidth(2)
         ax.spines[axis].set_color("black")
     plt.grid(color="k", linestyle="-", linewidth=0.5)
-    try:
-        plt.tight_layout()
-    except:
-        print("Could not call tight_layout")
-        pass
+    #try:
+    #    plt.tight_layout()
+    #except:
+    #    print("Could not call tight_layout")
+    #    pass
 
 
 def plotLegend():
