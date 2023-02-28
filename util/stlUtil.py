@@ -1,7 +1,17 @@
 import numpy as np
 import stl
 from stl import mesh
+from scipy.spatial import Delaunay
 
+def triangulate(vertices):
+    points = np.zeros((vertices.shape[0],2))
+    points[:,0] = vertices[:,0]
+    points[:,1] = vertices[:,2]
+    tri = Delaunay(points)
+
+    return np.array(tri.vertices)
+
+    
 
 def makePolygon(rad, nvert):
     theta = 2*np.pi/nvert
@@ -9,14 +19,8 @@ def makePolygon(rad, nvert):
     for i in range(nvert):
         vertices.append([rad*np.cos(theta*i), 0, rad*np.sin(theta*i)])
     vertices = np.array(vertices)
-    from scipy.spatial import Delaunay
-    points = np.zeros((vertices.shape[0],2))
-    points[:,0] = vertices[:,0]
-    points[:,1] = vertices[:,2]
-    tri = Delaunay(points)
-
-    faces = np.array(tri.vertices)
-
+    faces = triangulate(vertices)   
+ 
     meshInpt = {}
     meshInpt["vertices"] = vertices
     meshInpt["faces"] = faces
