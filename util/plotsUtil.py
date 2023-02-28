@@ -22,7 +22,7 @@ def plotSTL(mesh):
     amp = np.array([max_x-min_x, max_y - min_y, max_z - min_z])
     eps = np.amax(amp)
 
-    axes.set_xlim3d(min_x-eps, max_x+eps)
+    axes.set_xlim3d(left=min_x-eps, right=max_x+eps)
     axes.set_ylim3d(min_y-eps, max_y+eps)
     axes.set_zlim3d(min_z-eps, max_z+eps)
 
