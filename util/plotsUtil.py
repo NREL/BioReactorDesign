@@ -12,36 +12,35 @@ def plotSTL(mesh):
     axes = mplot3d.Axes3D(fig)
     axes.add_collection3d(mplot3d.art3d.Poly3DCollection(mesh.vectors))
 
-    min_x = np.amin(mesh.points[:,0])
-    max_x = np.amax(mesh.points[:,0])
-    min_y = np.amin(mesh.points[:,1])
-    max_y = np.amax(mesh.points[:,1])
-    min_z = np.amin(mesh.points[:,2])
-    max_z = np.amax(mesh.points[:,2])
+    min_x = np.amin(mesh.points[:, 0])
+    max_x = np.amax(mesh.points[:, 0])
+    min_y = np.amin(mesh.points[:, 1])
+    max_y = np.amax(mesh.points[:, 1])
+    min_z = np.amin(mesh.points[:, 2])
+    max_z = np.amax(mesh.points[:, 2])
 
-    amp = np.array([max_x-min_x, max_y - min_y, max_z - min_z])
+    amp = np.array([max_x - min_x, max_y - min_y, max_z - min_z])
     eps = np.amax(amp)
 
-    axes.set_xlim3d(left=min_x-eps, right=max_x+eps)
-    axes.set_ylim3d(min_y-eps, max_y+eps)
-    axes.set_zlim3d(min_z-eps, max_z+eps)
+    axes.set_xlim3d(left=min_x - eps, right=max_x + eps)
+    axes.set_ylim3d(min_y - eps, max_y + eps)
+    axes.set_zlim3d(min_z - eps, max_z + eps)
 
-    plt.locator_params(axis='x', nbins=4)
-    plt.locator_params(axis='y', nbins=4)
-    plt.locator_params(axis='z', nbins=4)
-  
-    #2D view 
-    if abs(amp[0])<1e-12:
-        axes.view_init(0,90)
-    elif abs(amp[1])<1e-12:
-        axes.view_init(0,90)
+    plt.locator_params(axis="x", nbins=4)
+    plt.locator_params(axis="y", nbins=4)
+    plt.locator_params(axis="z", nbins=4)
+
+    # 2D view
+    if abs(amp[0]) < 1e-12:
+        axes.view_init(0, 90)
+    elif abs(amp[1]) < 1e-12:
+        axes.view_init(0, 90)
         plt.yticks([])
-    elif abs(amp[2])<1e-12:
-        axes.view_init(0,90)
-    
+    elif abs(amp[2]) < 1e-12:
+        axes.view_init(0, 90)
 
-      
     return axes
+
 
 def axprettyLabels(ax, xlabel, ylabel, zlabel, fontsize, title=None):
     ax.set_xlabel(
@@ -85,9 +84,9 @@ def axprettyLabels(ax, xlabel, ylabel, zlabel, fontsize, title=None):
         ax.spines[axis].set_linewidth(2)
         ax.spines[axis].set_color("black")
     plt.grid(color="k", linestyle="-", linewidth=0.5)
-    #try:
+    # try:
     #    plt.tight_layout()
-    #except:
+    # except:
     #    print("Could not call tight_layout")
     #    pass
 
@@ -104,5 +103,3 @@ def plotLegend():
     )
     leg.get_frame().set_linewidth(2.0)
     leg.get_frame().set_edgecolor("k")
-
-
