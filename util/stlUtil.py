@@ -28,53 +28,7 @@ def makePolygon(rad, nvert):
 
     return meshInpt
 
-def makeCross():
-    d = 0.25
-    r = d / 2
-    w = r / 3
-    rs = r / 2
-    # Define the 8 vertices of the cube
-    vertices = np.array(
-        [
-            [-w / 2, 0.0, rs],
-            [w / 2, 0.0, rs],
-            [w / 2, 0.0, w / 2],
-            [rs, 0.0, w / 2],
-            [rs, 0.0, -w / 2],
-            [w / 2, 0.0, -w / 2],
-            [w / 2, 0.0, -rs],
-            [-w / 2, 0.0, -rs],
-            [-w / 2, 0.0, -w / 2],
-            [-rs, 0.0, -w / 2],
-            [-rs, 0.0, w / 2],
-            [-w / 2, 0.0, w / 2],
-        ]
-    )
-
-    # Define the 12 triangles composing the cube
-    faces = np.array(
-        [
-            [0, 1, 2],
-            [0, 2, 11],
-            [2, 3, 4],
-            [2, 4, 5],
-            [5, 6, 7],
-            [5, 7, 8],
-            [8, 9, 10],
-            [8, 10, 11],
-            [8, 11, 5],
-            [11, 2, 5],
-        ]
-    )
-
-    meshInpt = {}
-    meshInpt["vertices"] = vertices
-    meshInpt["faces"] = faces
-
-    return meshInpt
-
-
-def makeRectangle(w,h, shiftw=0, shifth=0):
+def makeRectangle(w,h):
     # Define the 8 vertices of the cube
     vertices = np.array(
         [
@@ -84,9 +38,6 @@ def makeRectangle(w,h, shiftw=0, shifth=0):
             [-w / 2, 0.0, -h/2] 
         ]
     )
-    vertices[:,0] += shiftw 
-    vertices[:,2] += shifth
-
     # Define the 12 triangles composing the cube
     faces = np.array(
         [
