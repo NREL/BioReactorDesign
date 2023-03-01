@@ -1,4 +1,4 @@
-# Generate stl of spider sparger
+# Generate STL of spider sparger
 
 ## Execute without plotting
 
