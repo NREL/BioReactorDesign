@@ -8,6 +8,13 @@
 
 `python main.py -v -cr 0.25 -na 12 -aw 0.1 -al 0.5`
 
+Generates
+
+<p float="left">
+  <img src="image/simpleOutput.png" width="250"/>
+</p>
+
+
 ## Manual
 
 ```
