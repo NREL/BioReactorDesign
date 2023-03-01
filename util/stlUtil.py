@@ -99,6 +99,12 @@ def traceMesh(meshInpt):
 
 
 def makeSpider(centerRad, nArms, widthArms, lengthArms):
+    print("Making spider")
+    print(f"\tcenterRadius={centerRad}")
+    print(f"\tnArms={nArms}")
+    print(f"\twidthArms={widthArms}")
+    print(f"\tlengthArms={lengthArms}")
+
     globalArea = 0
     if nArms < 2:
         print("ERROR: nArms must be >= 2")
@@ -156,4 +162,5 @@ def makeSpider(centerRad, nArms, widthArms, lengthArms):
 
 def saveSTL(stlObj, filename="spg.stl"):
     # Write the mesh to file
+    print(f"Generating {filename}")
     stlObj.save(filename, mode=stl.Mode.ASCII)
