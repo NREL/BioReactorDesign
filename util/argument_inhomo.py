@@ -63,6 +63,24 @@ def initArgs():
         help="Column center z",
         default=0.0,
     )
+    parser.add_argument(
+        "-ds",
+        "--diam_sparger",
+        type=float,
+        metavar="",
+        required=False,
+        help="Sparger diameter",
+        default=0.15,
+    )
+    parser.add_argument(
+        "-ugs",
+        "--superf_vel",
+        type=float,
+        metavar="",
+        required=False,
+        help="Superficial velocity",
+        default=0.01,
+    )
 
     args = parser.parse_args()
 

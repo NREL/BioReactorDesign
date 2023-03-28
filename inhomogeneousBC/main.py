@@ -143,9 +143,9 @@ if __name__=="__main__":
     phasePropFile = "constant/phaseProperties"
     nf, diam, bin_size, fname, value = binInfo(phasePropFile) 
   
-    meanTar, stdTar = poreDiamCorr(dp=schedule["pore_in"],ds=0.15,Ugs=0.01)
+    meanTar, stdTar = poreDiamCorr(dp=schedule["pore_in"],ds=args.diam_sparger,Ugs=args.superf_vel)
     f_in = get_f_vals(meanTar, stdTar, np.array(diam), verb=args.verbose)
-    meanTar, stdTar = poreDiamCorr(dp=schedule["pore_out"],ds=0.15,Ugs=0.01)
+    meanTar, stdTar = poreDiamCorr(dp=schedule["pore_out"],ds=args.diam_sparger,Ugs=args.superf_vel)
     f_out = get_f_vals(meanTar, stdTar, np.array(diam), verb=args.verbose)
 
     schedule["f_in"] = f_in
