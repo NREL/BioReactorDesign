@@ -1,5 +1,6 @@
 import argparse
 
+
 def initArgs():
     # CLI
     parser = argparse.ArgumentParser(description="Generate Spider Sparger STL")
@@ -39,12 +40,7 @@ def initArgs():
         help="Length of spider arms",
         default=0.5,
     )
-    parser.add_argument(
-        "-v", 
-        "--verbose",
-        action="store_true",
-        help="plot on screen"
-    )
+    parser.add_argument("-v", "--verbose", action="store_true", help="plot on screen")
 
     args = parser.parse_args()
 

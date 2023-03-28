@@ -148,26 +148,11 @@ if __name__ == "__main__":
     phasePropFile = "constant/phaseProperties"
     nf, diam, bin_size, fname, value = binInfo(phasePropFile)
 
-    meanTar, stdTar = poreDiamCorr(
-        dp=schedule["pore_in"], ds=args.diam_sparger, Ugs=args.superf_vel
-    )
-    f_in = get_f_vals(meanTar, stdTar, np.array(diam), verb=args.verbose)
-    meanTar, stdTar = poreDiamCorr(
-        dp=schedule["pore_out"], ds=args.diam_sparger, Ugs=args.superf_vel
-    )
-    f_out = get_f_vals(meanTar, stdTar, np.array(diam), verb=args.verbose)
+    import matplotlib.pyplot as plt
 
-    schedule["f_in"] = f_in
-    schedule["f_out"] = f_out
-
-    try:
-        shutil.rmtree("IC_inhomo")
-    except FileNotFoundError:
-        pass
-    shutil.copytree("IC", "IC_inhomo")
-
-    for val, name in zip(value, fname):
-        fieldname = f"{name}.gas"
-        filename = os.path.join("IC_inhomo", "0", f"{name}.gas")
-        ind = fname.index(name)
-        writeFfield(filename, fieldname, args.xcent, args.zcent, schedule, val, ind)
+    fig = plt.figure()
+    for i in range(20):
+        meanTar, stdTar = poreDiamCorr(dp=schedule["pore_out"], ds=0.15, Ugs=0.01)
+        f_in = get_f_vals(meanTar, stdTar, np.array(diam), verb=args.verbose)
+        plt.plot(diam, f_in)
+    plt.show()

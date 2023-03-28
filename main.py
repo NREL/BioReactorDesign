@@ -14,7 +14,7 @@ if __name__ == "__main__":
         centerRad=args.centerRadius,
         nArms=args.nArms,
         widthArms=args.armsWidth,
-        lengthArms=args.armsLength
+        lengthArms=args.armsLength,
     )
     print(f"\tglobalArea = {globalArea}")
 

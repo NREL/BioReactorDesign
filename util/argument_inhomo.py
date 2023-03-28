@@ -1,14 +1,10 @@
 import argparse
 
+
 def initArgs():
     # CLI
     parser = argparse.ArgumentParser(description="Generate inhomogeneous boundary")
-    parser.add_argument(
-        "-v", 
-        "--verbose",
-        action="store_true",
-        help="plot on screen"
-    )
+    parser.add_argument("-v", "--verbose", action="store_true", help="plot on screen")
     parser.add_argument(
         "-rc",
         "--r_const",
