@@ -65,7 +65,7 @@ def get_f_vals(meanTar, stdTar, diam, verb=True):
         tol = abs(meanOut-meanTar)/meanTar + 0.1*abs(stdOut-stdTar)/stdTar
         irep += 1
         if irep>100:
-           sys.exit('ERROR: optimization fail')
+           sys.exit('ERROR: optimization fail, typically occurs because the population balance domain is too tight')
     
     if verb:
         print("meanTar = ", meanTar)
