@@ -1,0 +1,113 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5                                     |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    p
+    {
+        //solver          GAMG;
+        //tolerance       0;
+        //relTol          0.01;
+        //smoother        GaussSeidel;
+        //cacheAgglomeration no; 
+        solver           PCG;
+        preconditioner   DIC;
+        tolerance        1e-5;
+        relTol           0.01;
+    }
+
+    pFinal
+    {
+        $p;
+        tolerance       1e-05;
+        relTol          0.01;
+    }
+
+    p_init
+    {
+        solver          GAMG;
+        tolerance       0;
+        relTol          0.01;
+        smoother        GaussSeidel;
+        cacheAgglomeration no; 
+        //solver           PCG;
+        //preconditioner   DIC;
+        //tolerance        1e-6;
+        //relTol           0.1;
+    }
+
+    p_initFinal
+    {
+        $p;
+        tolerance       1e-07;
+        relTol          0;
+    }
+
+    "pcorr.*"
+    {
+        $p
+        tolerance       0.02;
+        relTol          0;
+    }
+
+    "(U|T|TMid|AsH3|HCl|N2|GaCl|H2|Yi|YiMid)"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-08;
+        relTol          0.001;
+        minIteration    1;
+        maxIter    15;
+    }
+
+    "(U|T|TMid|AsH3|HCl|N2|GaCl|H2|Yi|YiMid)Final"
+    {
+        $U;
+        relTol          0.001;
+        minIteration    1;
+        maxIter    25;
+    }
+
+    cellMotionUx
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-08;
+        relTol          0;
+    }
+}
+
+PIMPLE
+{
+    correctPhi          yes;
+    nOuterCorrectors    3;
+    nCorrectors         1;
+    nNonOrthogonalCorrectors 1;
+    pRefCell 0;
+    pRefValue 13332.2368421;
+}
+
+/*relaxationFactors
+{
+    equations
+    {
+        "U.*"           1;
+    }
+}*/
+
+
+// ************************************************************************* //
