@@ -1,10 +1,13 @@
 verticalDir : Z
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# ~~~~ How fine should the grid be: vary between 0.12 and 0.2
+# ~~~~ Mesh size
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Refinement : 0.12
+NS : 10
+NVert_topBlock : 40
+verticalCoarseningRatio : 0.5
+radialCoarseningRatio : 0.5
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # ~~~~ Concentric components, for blockMesh

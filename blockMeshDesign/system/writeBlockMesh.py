@@ -47,6 +47,42 @@ def mergeSort(list,reverse):
             listtmp.append(val)
     return listtmp
 
+
+def verticalOutletCoarsening(ratio, NVert, gradVert=None, smooth=False):
+    if ratio > 1:
+        sys.exit("ERROR: vertical coarsening ratio should be < 1")
+    
+    NVert[0] = int(NVert[0]*ratio)
+
+    if smooth:
+        if gradVert is None:
+            sys.exit("Error: cannot smooth vertical transition without grading list")
+        
+        Length = L[0]-L[1]
+        deltaE = (L[1]-L[2])/NVert[1]
+        gradVert[0]=1/(bissection(Length/deltaE, fun, NVert[0]))
+            
+    return NVert, gradVert  
+
+def radialFlowCoarseing(ratio, NR, gradR=None, smooth=False):
+    if ratio > 1:
+        sys.exit("ERROR: radial coarsening ratio should be < 1")
+
+    NR[2] = int(NR[2]*ratio)
+
+    if smooth:
+        if gradR is None:
+            sys.exit("ERROR: cannot smooth radial transition without grading list")
+        
+        Length = R[2]-R[1]
+        deltaE = (R[1]-R[0])/NR[1]
+        gradR[2]=1/(bissection(Length/deltaE, fun, NR[2]))
+            
+    return NR, gradR  
+
+
+
+
 # ~~~ Initialize input
 input_file = sys.argv[1]
 
@@ -160,7 +196,8 @@ for rval in R:
     C2.append(rval*np.sin(np.pi/4))
     mC2.append(-rval*np.sin(np.pi/4))
 
-Refinement = float(inpt[ 'Refinement'  ])
+NS_in = int(inpt[ 'NS'  ])
+NVert_topBlock = int(inpt[ 'NVert_topBlock'  ])
 NS = [] 
 NR = [] 
 NVert = []
@@ -170,140 +207,41 @@ gradR = []
 gradVert = []
 
 
-NS.append(max(int(round(16*Refinement/0.3)),12))
-#for i in range(len(R)-1):
-#    NS.append(int(np.floor(NS[0]*abs(R[i+1]-R[i])/abs(R[0]-R[0]/2))))
+# Radial meshing
+NS.append(NS_in)
 NR.append(int(NS[0]/2))
+# Uniform meshing
 for i in range(len(R)-1):
     NR.append(max(int(round(NR[0]*abs(R[i+1]-R[i])/abs(R[0]-R[0]/2))),1))
-##At least three points through dump Wall
-#wallR = 8
-#NR[wallR]=int(round(3*Refinement/0.3))
-## Adjust resolutions of other elements
-## outlet is coarser
-#outletR = 9
-#NR[outletR] = min(max(int(np.floor(NR[outletR-1]*abs(R[outletR]-R[outletR-1])/(1.5*abs(R[outletR-1]-R[outletR-2])))),1),25)
-#
-## These near wall element are not coarser
-##NR[ 11] = max(int(int(round(NR[wallR]*abs(R[11 ]-R[10 ])/abs(R[wallR]-R[wallR-1])))),1)
-##NR[ 10] = max(int(int(round(NR[wallR]*abs(R[10 ]-R[9 ])/abs(R[wallR]-R[wallR-1])))),8)
-##NR[ 9] = max(int(int(round(NR[wallR]*abs(R[9 ]-R[8 ])/abs(R[wallR]-R[wallR-1])))),16)
-#NR[ 8] = max(int(int(round(NR[wallR]*abs(R[8 ]-R[7 ])/abs(R[wallR]-R[wallR-1])))),8)
-#NR[ 7] = max(int(int(round(NR[wallR]*abs(R[7 ]-R[6 ])/abs(R[wallR]-R[wallR-1])))),16)
-#NR[ 6] = max(int(int(round(NR[wallR]*abs(R[6 ]-R[5 ])/abs(R[wallR]-R[wallR-1])))),8)
-#NR[ 5] = max(int(int(round(NR[wallR]*abs(R[5 ]-R[4 ])/abs(R[wallR]-R[wallR-1])))),16)
-#
-## Gradual coarsening
-#NR[ 4] = max(int(round(0.9*NR[wallR]*abs(R[4 ]-R[3 ])/abs(R[wallR]-R[wallR-1]))),4)
-#NR[ 3] = max(int(round(0.35*NR[wallR]*abs(R[3 ]-R[2 ])/abs(R[wallR]-R[wallR-1]))),2)
-#NR[ 2] = min(int(round(NR[2]*1.3)),max(int(round(NR[3]*abs(R[2 ]-R[1 ])/abs(R[3]-R[2]))),2))
 # Now figure out grading of each block
 for ir in range(len(R)):
     gradR_l.append(1.0)
     gradR_r.append(1.0)
     gradR.append(1.0)
 
-##Outlet
-#Length = (R[wallR+1]-R[wallR])
-#deltaE = (R[wallR]-R[wallR-1])/NR[wallR]
-##gradR_l[12]=1/bissection(Length/deltaE, fun, int(NR[12]))
-#if int(NR[wallR+1])>1:
-#   gradR[wallR+1]=1/bissection(Length/deltaE, fun, int(NR[wallR+1]))
-##Block4
-#Length = (R[4]-R[3])
-#deltaE = (R[5]-R[4])/NR[5]
-#if int(NR[4])>1:
-#   gradR[4]=bissection(Length/deltaE, fun, int(NR[4]))
-##Block3
-#Length = (R[3]-R[2])
-#deltaE = ((R[5]-R[4])/NR[5])*(1/gradR[4])
-#gradR[3]=bissection(Length/deltaE, fun, int(NR[3]))
-#
-#
-##Block2
-#Length = (R[2]-R[1])*0.25
-#deltaE = (R[1]-R[0])/NR[1]
-##gradR_l[2]=1/bissection(Length/deltaE, fun, int(0.25*NR[2]))
-#Length = (R[2]-R[1])*0.25
-#deltaE = ((R[5]-R[4])/NR[5])*(1/gradR[4])*(1/gradR[3])
-##gradR_r[2]=bissection(Length/deltaE, fun, int(0.25*NR[2]))
-
-
-
-
-
-
-NVert.append(int(round(100*Refinement)))
+# Vertical meshing
+NVert.append(NVert_topBlock)
 for i in range(len(L)-2):
     NVert.append(max(int(round(NVert[0]*abs(L[i+2]-L[i+1])/abs(L[1]-L[0]))),1))
-#NVert[4]=max(1,NVert[4])
-#if len(NVert)>5:
-#    NVert[5]=max(int(round(NVert[4]*(L[5]-L[6])/(L[4]-L[5]))),1)
-#if len(NVert)>6:
-#    NVert[6]=max(int(round(NVert[4]*(L[6]-L[7])/(L[4]-L[5]))),1)
-#if len(NVert)>7:
-#    NVert[7]=max(int(round(NVert[4]*(L[7]-L[8])/(L[4]-L[5]))),1)
-#if len(NVert)>8:
-#    NVert[8]=max(int(round(NVert[4]*(L[8]-L[9])/(L[4]-L[5]))),1)
-#if len(NVert)>9:
-#    NVert[9]=max(int(round(NVert[4]*(L[9]-L[10])/(L[4]-L[5]))),1)
-#if len(NVert)>10:
-#    NVert[10]=max(int(round(NVert[4]*(L[10]-L[11])/(L[4]-L[5]))),1)
-#
 for il in range(len(L)-1):
     gradVert.append(1.0)
 
-## Refine near platter mesh and stretch
-#NVert[3]=int(NVert[3]*2.25)
-#Length = L[3]-L[4]
-#deltaE = (L[2]-L[3])/NVert[2]
-#if NVert[3]>1:
-#   gradVert[3]=(bissection(Length/deltaE, fun, NVert[3]))
-#
-#
-## Uniform mesh after that
-#previousGridSize = (L[4]-L[5])/NVert[4]
-#newGridSize = (L[2]-L[3])*(1/gradVert[3])/NVert[2]
-#NVert[4] = int(NVert[4]*previousGridSize/newGridSize)
-#
-#
-#
-#NVert[6] = int(NVert[6]*2.7)
-#NVert[7] = int(NVert[7]*4)
-#NVert[8] = int(NVert[8]/(0.95))
-#
-#
-#Length = L[8]-L[9]
-#deltaE = (L[7]-L[8])/NVert[7]
-#if NVert[8]>1:
-#   gradVert[8]=(bissection(Length/deltaE, fun, NVert[8]))
-#
-#Length = L[6]-L[7]
-#deltaE = (L[7]-L[8])/NVert[7]
-#if NVert[6]>1:
-#   gradVert[6]=1/(bissection(Length/deltaE, fun, NVert[6]))
-#
-## Find NVert[5] such that grid size matches on both ends
-#Length = L[5]-L[6]
-#deltaE = gradVert[6]*deltaE
-#mismatchOpt = 1000
-#nz5Attempt = int(NVert[4]*(L[5]-L[6])/(L[4]-L[5]))+1
-#nz5Opt = int(NVert[4]*(L[5]-L[6])/(L[4]-L[5]))+1
-#targetSize = (L[4]-L[5])/NVert[4]
-#while nz5Attempt>1:
-#    grad=1/(bissection(Length/deltaE, fun, nz5Attempt))
-#    mismatch = abs(deltaE*grad-targetSize)
-#    if mismatch<mismatchOpt:
-#        nz5Opt = nz5Attempt
-#        mismatchOpt = mismatch
-#    if mismatch>mismatchOpt:
-#        break
-#    nz5Attempt -= 1
-#
-#NVert[5] = nz5Opt
-#if NVert[5]>1:
-#   gradVert[5]=1/(bissection(Length/deltaE, fun, NVert[5]))
+# Mesh stretching
+try:
+    verticalCoarseningRatio = float(inpt[ 'verticalCoarseningRatio'  ])
+    verticalCoarsening = True
+except KeyError:
+    verticalCoarsening = False
+try:
+    radialCoarseningRatio = float(inpt[ 'radialCoarseningRatio'  ])
+    radialCoarsening = True
+except KeyError:
+    radialCoarsening = False
 
+if verticalCoarsening:   
+    NVert, gradVert = verticalOutletCoarsening(ratio=verticalCoarseningRatio, NVert=NVert, gradVert=gradVert, smooth=True)
+if radialCoarsening:   
+    NR, gradR = radialFlowCoarseing(ratio=radialCoarseningRatio, NR=NR, gradR=gradR, smooth=True)
 
 # ~~~~ Write species Dict
 fw=open(outfile, 'w+')
@@ -506,14 +444,6 @@ for ir in range(len(R)):
         iwall3 = amIwall(WallL,WallR,ir,il-1)
         iwall4 = amIwall(WallL,WallR,ir+1,il-1)
         sumwall = iwall1+iwall2+iwall3+iwall4
-        #if ind==68:
-        #   print(il)
-        #   print(ir)
-        #   print(iwall1)
-        #   print(iwall2)
-        #   print(iwall3)
-        #   print(iwall4)
-        #   #stop
         comment=0
         if sumwall==4 or (il==0 and sumwall==2) or (il==len(L)-1 and sumwall==2) or (ir==len(R)-1 and sumwall==2) or (ir==len(R)-1 and il==0 and sumwall==1):
             comment=1
