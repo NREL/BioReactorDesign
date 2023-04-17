@@ -107,6 +107,8 @@ LSupportTop     =  float(inpt[ 'LSupportTop'  ])
 LBottom     =  float(inpt[ 'LBottom'  ])
     
 verticalDir        =  inpt[ 'verticalDir'  ]
+if verticalDir.lower() == 'y':
+    sys.exit('ERROR: Y vertical direction not allowed for now')
 
 outfile = 'blockMeshDict'
 
