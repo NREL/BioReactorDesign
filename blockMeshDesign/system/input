@@ -18,7 +18,7 @@ RSupport :      10
 RSparger :      20
 RColumn :       50
 
-# ~~~~ Longitudinal dimensions in mm. DO NOT CHANGE Ltop
+# ~~~~ Longitudinal dimensions in mm
 LColumnTop :    200
 LSpargerTop :   50
 LSupportTop :   30
