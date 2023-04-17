@@ -572,22 +572,41 @@ fw.write('vertices\n')
 fw.write('(\n')
 # Write the squares first
 counter = 0
-for i in range(len(L)):
-    fw.write('     ($mCW1  $mCW1  $L'+str(i+1)+')' + '  //'+str(counter)+'\n') 
-    fw.write('     ( $CW1  $mCW1  $L'+str(i+1)+')\n') 
-    fw.write('     ( $CW1   $CW1  $L'+str(i+1)+')\n') 
-    fw.write('     ($mCW1   $CW1  $L'+str(i+1)+')\n') 
-    fw.write('\n')
-    counter=counter+4
-# Write the circles then
-for ir in range(len(R)):
-    for il in range(len(L)):
-        fw.write('    ($mC1'+str(ir+1)+'   $mC2'+str(ir+1)+'   $L'+str(il+1)+')' + '  //'+str(counter)+'\n')
-        fw.write('    ( $C1'+str(ir+1)+'   $mC2'+str(ir+1)+'   $L'+str(il+1)+')\n')
-        fw.write('    ( $C1'+str(ir+1)+'    $C2'+str(ir+1)+'   $L'+str(il+1)+')\n')
-        fw.write('    ($mC1'+str(ir+1)+'    $C2'+str(ir+1)+'   $L'+str(il+1)+')\n')
+if verticalDir.lower()=='z':
+    for i in range(len(L)):
+        fw.write(f'     ($mCW1  $mCW1  $L{i+1})// {counter}\n') 
+        fw.write(f'     ( $CW1  $mCW1  $L{i+1})\n') 
+        fw.write(f'     ( $CW1   $CW1  $L{i+1})\n') 
+        fw.write(f'     ($mCW1   $CW1  $L{i+1})\n') 
         fw.write('\n')
         counter=counter+4
+elif verticalDir.lower()=='y':
+    for i in range(len(L)):
+        fw.write(f'    ($mCW1  $L{i+1} $mCW1)// {counter}\n') 
+        fw.write('     ( $CW1  $L{i+1} $mCW1)\n') 
+        fw.write('     ( $CW1  $L{i+1} $CW1)\n') 
+        fw.write('     ($mCW1  $L{i+1} $CW1)\n') 
+        fw.write('\n')
+        counter=counter+4
+# Write the circles then
+if verticalDir.lower()=='z':
+    for ir in range(len(R)):
+        for il in range(len(L)):
+            fw.write(f'    ($mC1{ir+1}   $mC2{ir+1}   $L{il+1})// {counter}\n')
+            fw.write(f'    ( $C1{ir+1}   $mC2{ir+1}   $L{il+1})\n')
+            fw.write(f'    ( $C1{ir+1}   $C2{ir+1}    $L{il+1})\n')
+            fw.write(f'    ($mC1{ir+1}   $C2{ir+1}    $L{il+1})\n')
+            fw.write('\n')
+            counter=counter+4
+elif verticalDir.lower()=='y':
+    for ir in range(len(R)):
+        for il in range(len(L)):
+            fw.write(f'    ($mC1{ir+1}   $L{il+1}     $mC2{ir+1}// {counter}\n')
+            fw.write(f'    ( $C1{ir+1}   $L{il+1}     $mC2{ir+1})\n')
+            fw.write(f'    ( $C1{ir+1}   $L{il+1}     $C2{ir+1})\n')
+            fw.write(f'    ($mC1{ir+1}   $L{il+1}     $C2{ir+1})\n')
+            fw.write('\n')
+            counter=counter+4
 fw.write(');\n')
 fw.write('\n')
 
@@ -596,7 +615,7 @@ fw.write('blocks\n')
 fw.write('(\n')
 # Write the squares first
 for i in range(N2):
-    gradingZ = gradVert[i]       
+    gradingVert = gradVert[i]       
     # Am I a wall
     iwall = amIwall(WallL,WallR,-1,i)
     if iwall==1:
@@ -604,21 +623,20 @@ for i in range(N2):
     
     i1 = int((i+1)*4)
     i2 = int(i*4)
-    fw.write('     hex ('+ str(i1)+' '+str(i1+1) + ' ' + str(i1+2) + ' ' + str(i1+3))
-    fw.write(' '         + str(i2)+' '+str(i2+1) + ' ' + str(i2+2) + ' ' + str(i2+3)+')')
-    fw.write(' ($NS1 $NS1 $NVert'+str(i+1)+')' + ' simpleGrading (1 1 '+ str(gradingZ)+')\n')
+    fw.write(f'     hex ({i1} {i1+1} {i1+2} {i1+3} {i2} {i2+1} {i2+2} {i2+3})')
+    fw.write(f' ($NS1 $NS1 $NVert{i+1}) simpleGrading (1 1 {gradingVert})\n')
 fw.write('\n')
 # Write the squares then
 for ir in range(N1):
     for il in range(N2):
 
-        #gradingZ = 1
+        #gradingVert = 1
         #gradingR = 1
         #if il==N2-1:
-        #    gradingZ = outletGrading
+        #    gradingVert = outletGrading
         gradingR_l = gradR_l[ir]       
         gradingR_r = gradR_r[ir]       
-        gradingZ = gradVert[il]       
+        gradingVert = gradVert[il]       
         gradingR = gradR[ir]
         # Am I a wall
         iwall = amIwall(WallL,WallR,ir,il)
@@ -633,26 +651,20 @@ for ir in range(N1):
         #outlet
         if iwall==1:
             fw.write('//')
-        fw.write('     hex ('+str(i1)+ ' ' + str(i2) + ' ' + str(i2+1) + ' ' + str(i1+1) + ' ')
-        fw.write(            str(i3) + ' ' + str(i4) + ' ' + str(i4+1) + ' ' + str(i3+1) +') ')
-        fw.write(' ($NR'+str(ir+1)+' $NS1'+' $NVert' + str(il+1) + ') simpleGrading ('+str(gradingR)+' 1 '+str(gradingZ)+')\n')
+        fw.write(f'     hex ({i1} {i2} {i2+1} {i1+1} {i3} {i4} {i4+1} {i3+1})')
+        fw.write(f' ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n')
         if iwall==1:
             fw.write('//')
-        fw.write('     hex ('+str(i1+1)+ ' ' + str(i2+1) + ' ' + str(i2+2) + ' ' + str(i1+2) + ' ')
-        fw.write(            str(i3+1) + ' ' + str(i4+1) + ' ' + str(i4+2) + ' ' + str(i3+2) +') ')
-        fw.write(' ($NR'+str(ir+1)+' $NS1'+' $NVert' + str(il+1) + ') simpleGrading ('+str(gradingR)+' 1 '+str(gradingZ)+')\n')
-
+        fw.write(f'     hex ({i1+1} {i2+1} {i2+2} {i1+2} {i3+1} {i4+1} {i4+2} {i3+2})')
+        fw.write(f' ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n')
         if iwall==1:
             fw.write('//')
-        fw.write('     hex ('+str(i1+2)+ ' ' + str(i2+2) + ' ' + str(i2+3) + ' ' + str(i1+3) + ' ')
-        fw.write(            str(i3+2) + ' ' + str(i4+2) + ' ' + str(i4+3) + ' ' + str(i3+3) +') ')
-        fw.write(' ($NR'+str(ir+1)+' $NS1'+' $NVert' + str(il+1) + ') simpleGrading ('+str(gradingR)+' 1 '+str(gradingZ)+')\n')
-
+        fw.write(f'     hex ({i1+2} {i2+2} {i2+3} {i1+3} {i3+2} {i4+2} {i4+3} {i3+3})')
+        fw.write(f' ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n')
         if iwall==1:
             fw.write('//')
-        fw.write('     hex ('+str(i1+3)+ ' ' + str(i2+3) + ' ' + str(i2) + ' ' + str(i1) + ' ')
-        fw.write(            str(i3+3) + ' ' + str(i4+3) + ' ' + str(i4) + ' ' + str(i3) +') ')
-        fw.write(' ($NR'+str(ir+1)+' $NS1'+' $NVert' + str(il+1) + ') simpleGrading ('+str(gradingR)+' 1 '+str(gradingZ)+')\n')
+        fw.write(f'     hex ({i1+3} {i2+3} {i2} {i1} {i3+3} {i4+3} {i4} {i3})')
+        fw.write(f' ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n')
         fw.write('\n')
 fw.write(');\n')
 fw.write('\n')
@@ -686,16 +698,16 @@ for ir in range(len(R)):
 
         if comment==1:
             fw.write('//')
-        fw.write('    arc '+ str(ind) + ' ' + str(ind+1) +   ' (0' + '    $mR' +str(ir+1)+ '   $L'+str(il+1)+')\n')
+        fw.write(f'    arc {ind} {ind+1} (0    $mR{ir+1} $L{il+1})\n')
         if comment==1:
             fw.write('//')
-        fw.write('    arc '+ str(ind+1) + ' ' + str(ind+2) + ' ($R'+str(ir+1)+ '  0      $L'+str(il+1)+')\n')
+        fw.write(f'    arc {ind+1} {ind+2} ($R{ir+1} 0 $L{il+1})\n')
         if comment==1:
             fw.write('//')
-        fw.write('    arc '+ str(ind+2) + ' ' + str(ind+3) + ' (0' + '    $R' +str(ir+1)+ '    $L'+str(il+1)+')\n')
+        fw.write(f'    arc {ind+2} {ind+3} (0 $R{ir+1} $L{il+1})\n')
         if comment==1:
             fw.write('//')
-        fw.write('    arc '+ str(ind+3) + ' ' + str(ind) +   ' ($mR'+str(ir+1)+ ' 0      $L'+str(il+1)+')\n')
+        fw.write(f'    arc {ind+3} {ind} ($mR{ir+1} 0 $L{il+1})\n')
         ind = ind+4
         fw.write('\n')
 fw.write(');\n')
@@ -720,10 +732,10 @@ for i in range(len(BoundaryNames)):
             lInd = BoundaryLmin[i][ibound]
             i1=rminInd*(4*(N2+1)) + 4*lInd #bottom
             i2=i1-4 #top
-            fw.write('            '+'( ' + str(i1)   + ' ' + str(i1+1) + ' ' + str(i2+1) + ' ' +str(i2)   + ')\n')
-            fw.write('            '+'( ' + str(i1+1) + ' ' + str(i1+2) + ' ' + str(i2+2) + ' ' +str(i2+1) + ')\n')
-            fw.write('            '+'( ' + str(i1+2) + ' ' + str(i1+3) + ' ' + str(i2+3) + ' ' +str(i2+2) + ')\n')
-            fw.write('            '+'( ' + str(i1+3) + ' ' + str(i1)   + ' ' + str(i2)   + ' ' +str(i2+3) + ')\n')
+            fw.write(f'            ( {i1} {i1+1} {i2+1} {i2})\n')
+            fw.write(f'            ( {i1+1} {i1+2} {i2+2} {i2+1})\n')
+            fw.write(f'            ( {i1+2} {i1+3} {i2+3} {i2+2})\n')
+            fw.write(f'            ( {i1+3} {i1} {i2} {i2+3})\n')
             fw.write('\n')
 
         elif boundType=='top':
@@ -733,13 +745,13 @@ for i in range(len(BoundaryNames)):
             if rInd>0:
                 i1 = 4*(N2+1)*(rInd-1) + 4*lminInd# right
                 i2 = i1+4*(N2+1) # left
-                fw.write('            '+'( ' + str(i1)   + ' ' + str(i2)   + ' ' + str(i2+1) + ' ' +str(i1+1) + ')\n')
-                fw.write('            '+'( ' + str(i1+1) + ' ' + str(i2+1) + ' ' + str(i1+2) + ' ' +str(i2+2) + ')\n')
-                fw.write('            '+'( ' + str(i1+2) + ' ' + str(i2+2) + ' ' + str(i2+3) + ' ' +str(i1+3) + ')\n')
-                fw.write('            '+'( ' + str(i1+3) + ' ' + str(i2+3) + ' ' + str(i2)   + ' ' +str(i1)    + ')\n')
+                fw.write(f'            ( {i1} {i2} {i2+1} {i1+1})\n')
+                fw.write(f'            ( {i1+1} {i2+1} {i1+2} {i2+2})\n')
+                fw.write(f'            ( {i1+2} {i2+2} {i2+3} {i1+3})\n')
+                fw.write(f'            ( {i1+3} {i2+3} {i2} {i1})\n')
             else:
                 i1 = lminInd*4
-                fw.write('            '+'( ' + str(i1)   + ' ' + str(i1+1)   + ' ' + str(i1+2) + ' ' +str(i1+3) + ')\n')
+                fw.write(f'            ( {i1} {i1+1} {i1+2} {i1+3})\n')
             fw.write('\n')
 
         elif boundType=='bottom':
@@ -749,13 +761,13 @@ for i in range(len(BoundaryNames)):
             i1 = 4*(N2+1)*(rInd-1) + 4*lminInd# right
             i2 = i1+4*(N2+1) # left
             if rInd>0:
-                fw.write('            '+'( ' + str(i1)   + ' ' + str(i2)   + ' ' + str(i2+1) + ' ' +str(i1+1) + ')\n')
-                fw.write('            '+'( ' + str(i1+1) + ' ' + str(i2+1) + ' ' + str(i1+2) + ' ' +str(i2+2) + ')\n')
-                fw.write('            '+'( ' + str(i1+2) + ' ' + str(i2+2) + ' ' + str(i2+3) + ' ' +str(i1+3) + ')\n')
-                fw.write('            '+'( ' + str(i1+3) + ' ' + str(i2+3) + ' ' + str(i2)   + ' ' +str(i1)    + ')\n')
+                fw.write(f'            ( {i1} {i2} {i2+1} {i1+1})\n')
+                fw.write(f'            ( {i1+1} {i2+1} {i1+2} {i2+2})\n')
+                fw.write(f'            ( {i1+2} {i2+2} {i2+3} {i1+3})\n')
+                fw.write(f'            ( {i1+3} {i2+3} {i2} {i1})\n')
             else:
                 i1 = lminInd*4
-                fw.write('            '+'( ' + str(i1)   + ' ' + str(i1+1)   + ' ' + str(i1+2) + ' ' +str(i1+3) + ')\n')
+                fw.write(f'            ( {i1} {i1+1} {i1+2} {i1+3})\n')
             fw.write('\n')
             
 
