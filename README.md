@@ -80,9 +80,9 @@ optional arguments:
 
 Generates `blockMeshDict` in `system`
 
-`cd system`
-`python writeBlockMesh.py input`
-`cd ..`
+`cd system`<br>
+`python writeBlockMesh.py input`<br>
+`cd ..`<br>
 
 
 Will generate this
@@ -94,6 +94,7 @@ Will generate this
 ### Generate OpenFOAM mesh
 
 `blockMesh`
+<br>
 `transformPoints "scale=(0.001 0.001 0.001)"`
 
 
@@ -109,7 +110,7 @@ Always work with a schematic. Here is the schematic for this case
   <img src="image/schematic.png" width="250"/>
 </p>
 
-The purple blocks are walls (not meshed) and the white blocks are fluid blocks (meshed). The symmetry axis is indicated as dashed lines
+The purple blocks are walls (not meshed) and the white blocks are fluid blocks (meshed). The symmetry axis is indicated as a dashed line
 
 In the code, the purple blocks are defined as
 
