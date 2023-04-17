@@ -72,4 +72,99 @@ optional arguments:
 
 
 
+## Generate 3D sparger
+
+`cd blockMeshDesign`
+
+### Execute
+
+Generates `blockMeshDict` in `system`
+
+`cd system`<br>
+`python writeBlockMesh.py input`<br>
+`cd ..`<br>
+
+
+Will generate this
+
+<p float="left">
+  <img src="image/3dsparger.png" width="250"/>
+</p>
+
+### Generate OpenFOAM mesh
+
+`blockMesh`
+<br>
+`transformPoints "scale=(0.001 0.001 0.001)"`
+
+
+### How to change the dimensions
+
+All dimensions are controlled by the input file `system/input`
+
+### How to change the arrangement of concentric cylinders
+
+Always work with a schematic. Here is the schematic for this case
+
+<p float="left">
+  <img src="image/schematic.png" width="250"/>
+</p>
+
+The purple blocks are walls (not meshed) and the white blocks are fluid blocks (meshed). The symmetry axis is indicated as a dashed line
+
+In the code, the purple blocks are defined as
+
+```
+WallR=[]
+WallL=[]
+#Support
+WallR.append(0)
+WallL.append(3)
+WallR.append(1)
+WallL.append(3)
+# Sparger
+WallR.append(0)
+WallL.append(2)
+WallR.append(1)
+WallL.append(2)
+WallR.append(2)
+WallL.append(2)
+```
+
+### How to change boundaries
+
+Boundaries are defined with three types, `top`, `bottom` and `lateral`
+
+In the case of sparger walls shown below with the red lines
+<p float="left">
+  <img src="image/schematicSpargerWalls.png" width="250"/>
+</p>
+
+the boundary is implemented as 
+```
+BoundaryNames.append('SpargerWalls')
+BoundaryType.append(['bottom', 'top', 'top', 'top'])
+BoundaryRmin.append([2, 0, 1, 2])
+BoundaryRmax.append([2, 0, 1, 2])
+BoundaryLmin.append([2, 1, 1, 1])
+BoundaryLmax.append([3, 2, 2, 2])
+```
+
+In the case of sparger inlet shown below with the red line
+<p float="left">
+  <img src="image/schematicSpargerInlet.png" width="250"/>
+</p>
+
+the boundary is implemented as
+```
+BoundaryNames.append('SpargerInflow')
+BoundaryType.append(['lateral'])
+BoundaryRmin.append([2])
+BoundaryRmax.append([3])
+BoundaryLmin.append([2])
+BoundaryLmax.append([2])
+```
+
+
+
 
