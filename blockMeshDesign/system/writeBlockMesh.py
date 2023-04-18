@@ -111,10 +111,6 @@ LSpargerTop = float(inpt["LSpargerTop"])
 LSupportTop = float(inpt["LSupportTop"])
 LBottom = float(inpt["LBottom"])
 
-verticalDir = inpt["verticalDir"]
-if verticalDir.lower() == "y":
-    sys.exit("ERROR: Y vertical direction not allowed for now")
-
 outfile = "blockMeshDict"
 
 
@@ -320,41 +316,22 @@ fw.write("vertices\n")
 fw.write("(\n")
 # Write the squares first
 counter = 0
-if verticalDir.lower() == "z":
-    for i in range(len(L)):
-        fw.write(f"     ($mCW1  $mCW1  $L{i+1})// {counter}\n")
-        fw.write(f"     ( $CW1  $mCW1  $L{i+1})\n")
-        fw.write(f"     ( $CW1   $CW1  $L{i+1})\n")
-        fw.write(f"     ($mCW1   $CW1  $L{i+1})\n")
-        fw.write("\n")
-        counter = counter + 4
-elif verticalDir.lower() == "y":
-    for i in range(len(L)):
-        fw.write(f"    ($mCW1  $L{i+1} $mCW1)// {counter}\n")
-        fw.write(f"     ( $CW1  $L{i+1} $mCW1)\n")
-        fw.write(f"     ( $CW1  $L{i+1} $CW1)\n")
-        fw.write(f"     ($mCW1  $L{i+1} $CW1)\n")
-        fw.write("\n")
-        counter = counter + 4
+for i in range(len(L)):
+    fw.write(f"     ($mCW1  $mCW1  $L{i+1})// {counter}\n")
+    fw.write(f"     ( $CW1  $mCW1  $L{i+1})\n")
+    fw.write(f"     ( $CW1   $CW1  $L{i+1})\n")
+    fw.write(f"     ($mCW1   $CW1  $L{i+1})\n")
+    fw.write("\n")
+    counter = counter + 4
 # Write the circles then
-if verticalDir.lower() == "z":
-    for ir in range(len(R)):
-        for il in range(len(L)):
-            fw.write(f"    ($mC1{ir+1}   $mC2{ir+1}   $L{il+1})// {counter}\n")
-            fw.write(f"    ( $C1{ir+1}   $mC2{ir+1}   $L{il+1})\n")
-            fw.write(f"    ( $C1{ir+1}   $C2{ir+1}    $L{il+1})\n")
-            fw.write(f"    ($mC1{ir+1}   $C2{ir+1}    $L{il+1})\n")
-            fw.write("\n")
-            counter = counter + 4
-elif verticalDir.lower() == "y":
-    for ir in range(len(R)):
-        for il in range(len(L)):
-            fw.write(f"    ($mC1{ir+1}   $L{il+1}     $mC2{ir+1})// {counter}\n")
-            fw.write(f"    ( $C1{ir+1}   $L{il+1}     $mC2{ir+1})\n")
-            fw.write(f"    ( $C1{ir+1}   $L{il+1}     $C2{ir+1})\n")
-            fw.write(f"    ($mC1{ir+1}   $L{il+1}     $C2{ir+1})\n")
-            fw.write("\n")
-            counter = counter + 4
+for ir in range(len(R)):
+    for il in range(len(L)):
+        fw.write(f"    ($mC1{ir+1}   $mC2{ir+1}   $L{il+1})// {counter}\n")
+        fw.write(f"    ( $C1{ir+1}   $mC2{ir+1}   $L{il+1})\n")
+        fw.write(f"    ( $C1{ir+1}   $C2{ir+1}    $L{il+1})\n")
+        fw.write(f"    ($mC1{ir+1}   $C2{ir+1}    $L{il+1})\n")
+        fw.write("\n")
+        counter = counter + 4
 fw.write(");\n")
 fw.write("\n")
 
@@ -371,12 +348,8 @@ for i in range(N2):
 
     i1 = int((i + 1) * 4)
     i2 = int(i * 4)
-    if verticalDir.lower() == "z":
-        fw.write(f"     hex ({i1} {i1+1} {i1+2} {i1+3} {i2} {i2+1} {i2+2} {i2+3})")
-        fw.write(f" ($NS1 $NS1 $NVert{i+1}) simpleGrading (1 1 {gradingVert})\n")
-    elif verticalDir.lower() == "y":
-        fw.write(f"     hex ({i2} {i2+1} {i2+2} {i2+3} {i1} {i1+1} {i1+2} {i1+3} )")
-        fw.write(f" ($NS1 $NVert{i+1} $NS1) simpleGrading (1 {gradingVert} 1)\n")
+    fw.write(f"     hex ({i1} {i1+1} {i1+2} {i1+3} {i2} {i2+1} {i2+2} {i2+3})")
+    fw.write(f" ($NS1 $NS1 $NVert{i+1}) simpleGrading (1 1 {gradingVert})\n")
 fw.write("\n")
 # Write the squares then
 for ir in range(N1):
@@ -402,64 +375,32 @@ for ir in range(N1):
         # outlet
         if iwall == 1:
             fw.write("//")
-        if verticalDir.lower() == "z":
-            fw.write(f"     hex ({i1} {i2} {i2+1} {i1+1} {i3} {i4} {i4+1} {i3+1})")
-            fw.write(
-                f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
-            )
-        elif verticalDir.lower() == "y":
-            fw.write(f"     hex ({i3} {i4} {i4+1} {i3+1} {i1} {i2} {i2+1} {i1+1})")
-            # fw.write(f' ($NR{ir+1} $NVert{il+1} $NS1) simpleGrading ({gradingR} {gradingVert} 1)\n')
-            fw.write(
-                f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
-            )
+        fw.write(f"     hex ({i1} {i2} {i2+1} {i1+1} {i3} {i4} {i4+1} {i3+1})")
+        fw.write(
+            f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
+        )
         if iwall == 1:
             fw.write("//")
-        if verticalDir.lower() == "z":
-            fw.write(
-                f"     hex ({i1+1} {i2+1} {i2+2} {i1+2} {i3+1} {i4+1} {i4+2} {i3+2})"
-            )
-            fw.write(
-                f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
-            )
-        elif verticalDir.lower() == "y":
-            fw.write(
-                f"     hex ({i3+1} {i4+1} {i4+2} {i3+2} {i1+1} {i2+1} {i2+2} {i1+2} )"
-            )
-            fw.write(
-                f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
-            )
-            # fw.write(f' ($NR{ir+1} $NVert{il+1} $NS1) simpleGrading ({gradingR} {gradingVert} 1)\n')
+        fw.write(
+            f"     hex ({i1+1} {i2+1} {i2+2} {i1+2} {i3+1} {i4+1} {i4+2} {i3+2})"
+        )
+        fw.write(
+            f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
+        )
         if iwall == 1:
             fw.write("//")
-        if verticalDir.lower() == "z":
-            fw.write(
-                f"     hex ({i1+2} {i2+2} {i2+3} {i1+3} {i3+2} {i4+2} {i4+3} {i3+3})"
-            )
-            fw.write(
-                f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
-            )
-        elif verticalDir.lower() == "y":
-            fw.write(
-                f"     hex ({i3+2} {i4+2} {i4+3} {i3+3} {i1+2} {i2+2} {i2+3} {i1+3})"
-            )
-            fw.write(
-                f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
-            )
-            # fw.write(f' ($NR{ir+1} $NVert{il+1} $NS1) simpleGrading ({gradingR} {gradingVert} 1)\n')
+        fw.write(
+            f"     hex ({i1+2} {i2+2} {i2+3} {i1+3} {i3+2} {i4+2} {i4+3} {i3+3})"
+        )
+        fw.write(
+            f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
+        )
         if iwall == 1:
             fw.write("//")
-        if verticalDir.lower() == "z":
-            fw.write(f"     hex ({i1+3} {i2+3} {i2} {i1} {i3+3} {i4+3} {i4} {i3})")
-            fw.write(
-                f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
-            )
-        elif verticalDir.lower() == "y":
-            fw.write(f"     hex ({i3+3} {i4+3} {i4} {i3} {i1+3} {i2+3} {i2} {i1})")
-            fw.write(
-                f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
-            )
-            # fw.write(f' ($NR{ir+1} $NVert{il+1} $NS1) simpleGrading ({gradingR} {gradingVert} 1)\n')
+        fw.write(f"     hex ({i1+3} {i2+3} {i2} {i1} {i3+3} {i4+3} {i4} {i3})")
+        fw.write(
+            f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
+        )
         fw.write("\n")
 fw.write(");\n")
 fw.write("\n")
@@ -488,28 +429,16 @@ for ir in range(len(R)):
 
         if comment == 1:
             fw.write("//")
-        if verticalDir.lower() == "z":
-            fw.write(f"    arc {ind} {ind+1} (0    $mR{ir+1} $L{il+1})\n")
-        elif verticalDir.lower() == "y":
-            fw.write(f"    arc {ind} {ind+1} (0    $L{il+1} $mR{ir+1})\n")
+        fw.write(f"    arc {ind} {ind+1} (0    $mR{ir+1} $L{il+1})\n")
         if comment == 1:
             fw.write("//")
-        if verticalDir.lower() == "z":
-            fw.write(f"    arc {ind+1} {ind+2} ($R{ir+1} 0 $L{il+1})\n")
-        elif verticalDir.lower() == "y":
-            fw.write(f"    arc {ind+1} {ind+2} ($R{ir+1} $L{il+1} 0)\n")
+        fw.write(f"    arc {ind+1} {ind+2} ($R{ir+1} 0 $L{il+1})\n")
         if comment == 1:
             fw.write("//")
-        if verticalDir.lower() == "z":
-            fw.write(f"    arc {ind+2} {ind+3} (0 $R{ir+1} $L{il+1})\n")
-        elif verticalDir.lower() == "y":
-            fw.write(f"    arc {ind+2} {ind+3} (0 $L{il+1} $R{ir+1})\n")
+        fw.write(f"    arc {ind+2} {ind+3} (0 $R{ir+1} $L{il+1})\n")
         if comment == 1:
             fw.write("//")
-        if verticalDir.lower() == "z":
-            fw.write(f"    arc {ind+3} {ind} ($mR{ir+1} 0 $L{il+1})\n")
-        elif verticalDir.lower() == "y":
-            fw.write(f"    arc {ind+3} {ind} ($mR{ir+1} $L{il+1} 0)\n")
+        fw.write(f"    arc {ind+3} {ind} ($mR{ir+1} 0 $L{il+1})\n")
         ind = ind + 4
         fw.write("\n")
 fw.write(");\n")
