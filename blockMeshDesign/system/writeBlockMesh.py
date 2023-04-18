@@ -381,17 +381,13 @@ for ir in range(N1):
         )
         if iwall == 1:
             fw.write("//")
-        fw.write(
-            f"     hex ({i1+1} {i2+1} {i2+2} {i1+2} {i3+1} {i4+1} {i4+2} {i3+2})"
-        )
+        fw.write(f"     hex ({i1+1} {i2+1} {i2+2} {i1+2} {i3+1} {i4+1} {i4+2} {i3+2})")
         fw.write(
             f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
         )
         if iwall == 1:
             fw.write("//")
-        fw.write(
-            f"     hex ({i1+2} {i2+2} {i2+3} {i1+3} {i3+2} {i4+2} {i4+3} {i3+3})"
-        )
+        fw.write(f"     hex ({i1+2} {i2+2} {i2+3} {i1+3} {i3+2} {i4+2} {i4+3} {i3+3})")
         fw.write(
             f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
         )
