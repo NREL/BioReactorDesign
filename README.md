@@ -96,7 +96,8 @@ Will generate this
 `blockMesh`
 <br>
 `transformPoints "scale=(0.001 0.001 0.001)"`
-
+<br>
+`transformPoints "rotate=((0 0 1) (0 1 0))"`
 
 ### How to change the dimensions
 
