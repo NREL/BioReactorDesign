@@ -75,15 +75,15 @@ def radialFlowCoarseing(ratio, NR, gradR=None, smooth=False):
     if ratio > 1:
         sys.exit("ERROR: radial coarsening ratio should be < 1")
 
-    NR[1] = int(NR[1] * ratio)
+    NR[2] = int(NR[2] * ratio)
 
     if smooth:
         if gradR is None:
             sys.exit("ERROR: cannot smooth radial transition without grading list")
 
-        Length = R[1] - R[0]
-        deltaE = ((R[1] - R[0])/2) / NR[0]
-        gradR[1] = (bissection(Length / deltaE, fun, NR[1]))
+        Length = R[2] - R[1]
+        deltaE = ((R[1] - R[0])) / NR[1]
+        gradR[2] = 1/(bissection(Length / deltaE, fun, NR[2]))
 
     return NR, gradR
 
@@ -102,7 +102,8 @@ for line in data:
 f.close()
 
 # ~~~~ Define dimensions based on input
-RSparger = float(inpt["RSparger"])
+RInnerSparger = float(inpt["RInnerSparger"])
+ROuterSparger = float(inpt["ROuterSparger"])
 RColumn = float(inpt["RColumn"])
 
 LColumnTop = float(inpt["LColumnTop"])
@@ -114,7 +115,7 @@ outfile = "blockMeshDict"
 
 
 # Dimensions
-R = [RSparger, RColumn]
+R = [RInnerSparger, ROuterSparger, RColumn]
 L = [LColumnTop, LSpargerTop, LSpargerBottom, LBottom]
 
 # Merge and sort R and L
@@ -125,9 +126,7 @@ L = mergeSort(L, True)
 WallR = []
 WallL = []
 # Sparger
-WallR.append(0)
-WallL.append(2)
-WallR.append(1)
+WallR.append(2)
 WallL.append(2)
 
 # Define boundaries
@@ -137,30 +136,30 @@ BoundaryRmin = []
 BoundaryRmax = []
 BoundaryLmin = []
 BoundaryLmax = []
-BoundaryNames.append("SpargerWalls")
-BoundaryType.append(["bottom", "bottom", "lateral"])
-BoundaryRmin.append([0,1,1])
-BoundaryRmax.append([0,1,2])
-BoundaryLmin.append([2,2,2])
-BoundaryLmax.append([3,3,2])
-BoundaryNames.append("SpargerInlet")
-BoundaryType.append(["top", "top"])
-BoundaryRmin.append([0, 1])
-BoundaryRmax.append([0, 1])
-BoundaryLmin.append([1, 1])
-BoundaryLmax.append([2, 2])
-BoundaryNames.append("Outlet")
-BoundaryType.append(["top", "top", "top"])
-BoundaryRmin.append([0, 1, 2])
-BoundaryRmax.append([0, 1, 2])
-BoundaryLmin.append([0, 0, 0])
-BoundaryLmax.append([1, 1, 1])
-BoundaryNames.append("BCRWalls")
-BoundaryType.append(["bottom", "bottom", "bottom", "lateral", "lateral", "lateral"])
-BoundaryRmin.append([0, 1, 2, 2, 2, 2])
-BoundaryRmax.append([0, 1, 2, 3, 3, 3])
-BoundaryLmin.append([3, 3, 3, 3, 2, 1])
-BoundaryLmax.append([4, 4, 4, 3, 2, 1])
+BoundaryNames.append("inlet")
+BoundaryType.append(["top"])
+BoundaryRmin.append([2])
+BoundaryRmax.append([2])
+BoundaryLmin.append([1])
+BoundaryLmax.append([2])
+BoundaryNames.append("wall_sparger")
+BoundaryType.append(["lateral", "bottom", "lateral"])
+BoundaryRmin.append([2, 2, 1])
+BoundaryRmax.append([3, 2, 2])
+BoundaryLmin.append([2, 2, 2])
+BoundaryLmax.append([2, 3, 2])
+BoundaryNames.append("outlet")
+BoundaryType.append(["top", "top", "top", "top"])
+BoundaryRmin.append([0, 1, 2, 3])
+BoundaryRmax.append([0, 1, 2, 3])
+BoundaryLmin.append([0, 0, 0, 0])
+BoundaryLmax.append([1, 1, 1, 1])
+BoundaryNames.append("wall_bcr")
+BoundaryType.append(["lateral", "lateral", "lateral", "bottom", "bottom", "bottom", "bottom"])
+BoundaryRmin.append([3, 3, 3, 0, 1, 2, 3])
+BoundaryRmax.append([4, 4, 4, 0, 1, 2, 3])
+BoundaryLmin.append([1, 2, 3, 3, 3, 3, 3])
+BoundaryLmax.append([1, 2, 3, 4, 4, 4, 4])
 
 N1 = len(R)
 N2 = len(L) - 1
