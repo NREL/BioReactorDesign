@@ -1,0 +1,23 @@
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~ Mesh size
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+NS : 12
+NVert_topBlock : 100
+verticalCoarseningRatio : 0.5
+radialCoarseningRatio : 0.5
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~ Concentric components, for blockMesh
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~~ Radial dimensions in mm
+RSparger :      20
+RColumn :       100
+
+# ~~~~ Longitudinal dimensions in mm
+LColumnTop :    200
+LSpargerTop :   50
+LSpargerBottom : 30
+LBottom :   0
+
