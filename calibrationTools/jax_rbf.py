@@ -6,7 +6,6 @@ import jax
 import jax.numpy as jnp
 
 def rbf_interpolation_jax(x_data, y, x_interp, length_scale=1.0, amplitude=1.0):
-    """Perform 2D point interpolation using squared exponential kernel."""
     def rbf_kernel(x1, x2, length_scale):
         x1 = jnp.reshape(x1,(-1,1,jnp.shape(x1)[1]))
         x2 = jnp.reshape(x2,(1,-1,jnp.shape(x2)[1]))
