@@ -119,6 +119,7 @@ ROuterSparger = float(inpt["ROuterSparger"])
 RColumn = float(inpt["RColumn"])
 
 LColumnTop = float(inpt["LColumnTop"])
+LHeadSpace = float(inpt["LHeadSpace"])
 LSpargerTop = float(inpt["LSpargerTop"])
 LSpargerBottom = float(inpt["LSpargerBottom"])
 LBottom = float(inpt["LBottom"])
@@ -128,7 +129,7 @@ outfile = "blockMeshDict"
 
 # Dimensions
 R = [RInnerSparger, ROuterSparger, RColumn]
-L = [LColumnTop, LSpargerTop, LSpargerBottom, LBottom]
+L = [LColumnTop, LHeadSpace, LSpargerTop, LSpargerBottom, LBottom]
 
 # Merge and sort R and L
 R = mergeSort(R, False)
@@ -139,7 +140,7 @@ WallR = []
 WallL = []
 # Sparger
 WallR.append(2)
-WallL.append(2)
+WallL.append(3)
 
 # Define boundaries
 BoundaryNames = []
@@ -152,8 +153,8 @@ BoundaryNames.append("inlet")
 BoundaryType.append(["top"])
 BoundaryRmin.append([2])
 BoundaryRmax.append([2])
-BoundaryLmin.append([1])
-BoundaryLmax.append([2])
+BoundaryLmin.append([2])
+BoundaryLmax.append([3])
 BoundaryNames.append("outlet")
 BoundaryType.append(["top", "top", "top", "top"])
 BoundaryRmin.append([0, 1, 2, 3])
@@ -166,6 +167,7 @@ BoundaryType.append(
         "lateral",
         "lateral",
         "lateral",
+        "lateral",
         "bottom",
         "bottom",
         "bottom",
@@ -175,10 +177,10 @@ BoundaryType.append(
         "lateral",
     ]
 )
-BoundaryRmin.append([3, 3, 3, 0, 1, 2, 3, 2, 2, 1])
-BoundaryRmax.append([4, 4, 4, 0, 1, 2, 3, 3, 2, 2])
-BoundaryLmin.append([1, 2, 3, 3, 3, 3, 3, 2, 2, 2])
-BoundaryLmax.append([1, 2, 3, 4, 4, 4, 4, 2, 3, 2])
+BoundaryRmin.append([3, 3, 3, 3, 0, 1, 2, 3, 2, 2, 1])
+BoundaryRmax.append([4, 4, 4, 4, 0, 1, 2, 3, 3, 2, 2])
+BoundaryLmin.append([1, 2, 3, 4, 4, 4, 4, 4, 3, 3, 3])
+BoundaryLmax.append([1, 2, 3, 4, 5, 5, 5, 5, 3, 4, 3])
 
 N1 = len(R)
 N2 = len(L) - 1
@@ -220,7 +222,7 @@ for ir in range(len(R)):
     gradR.append(1.0)
 
 # Vertical meshing
-iSparger = 1
+iSparger = 2
 NVert = [0] * (len(L) - 1)
 NVert[iSparger] = NVertSparger
 for i in range(len(L) - 1):
