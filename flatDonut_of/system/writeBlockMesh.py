@@ -1,6 +1,7 @@
-import numpy as np
 import os
 import sys
+
+import numpy as np
 
 
 def fun(G, N1):
@@ -68,6 +69,12 @@ def verticalOutletCoarsening(ratio, NVert, gradVert=None, smooth=False):
         deltaE = (L[1] - L[2]) / NVert[1]
         gradVert[0] = 1 / (bissection(Length / deltaE, fun, NVert[0]))
 
+        if (gradVert[0] > 2 or gradVert[0] < 0.5) and abs(ratio - 1) <= 1e-12:
+            print(
+                "WARNING: vertical smoothing had to be used because your mesh is very coarse"
+            )
+            print("\tIncrease NVert_topBlock in input file to avoid this warning")
+
     return NVert, gradVert
 
 
@@ -83,7 +90,12 @@ def radialFlowCoarseing(ratio, NR, gradR=None, smooth=False):
 
         Length = R[2] - R[1]
         deltaE = ((R[1] - R[0])) / NR[1]
-        gradR[2] = 1/(bissection(Length / deltaE, fun, NR[2]))
+        gradR[2] = 1 / (bissection(Length / deltaE, fun, NR[2]))
+        if (gradR[2] > 2 or gradR[2] < 0.5) and abs(ratio - 1) <= 1e-12:
+            print(
+                "WARNING: radial smoothing had to be used because your mesh is very coarse"
+            )
+            print("\tIncrease NS in input file to avoid this warning")
 
     return NR, gradR
 
@@ -142,24 +154,31 @@ BoundaryRmin.append([2])
 BoundaryRmax.append([2])
 BoundaryLmin.append([1])
 BoundaryLmax.append([2])
-BoundaryNames.append("wall_sparger")
-BoundaryType.append(["lateral", "bottom", "lateral"])
-BoundaryRmin.append([2, 2, 1])
-BoundaryRmax.append([3, 2, 2])
-BoundaryLmin.append([2, 2, 2])
-BoundaryLmax.append([2, 3, 2])
 BoundaryNames.append("outlet")
 BoundaryType.append(["top", "top", "top", "top"])
 BoundaryRmin.append([0, 1, 2, 3])
 BoundaryRmax.append([0, 1, 2, 3])
 BoundaryLmin.append([0, 0, 0, 0])
 BoundaryLmax.append([1, 1, 1, 1])
-BoundaryNames.append("wall_bcr")
-BoundaryType.append(["lateral", "lateral", "lateral", "bottom", "bottom", "bottom", "bottom"])
-BoundaryRmin.append([3, 3, 3, 0, 1, 2, 3])
-BoundaryRmax.append([4, 4, 4, 0, 1, 2, 3])
-BoundaryLmin.append([1, 2, 3, 3, 3, 3, 3])
-BoundaryLmax.append([1, 2, 3, 4, 4, 4, 4])
+BoundaryNames.append("walls")
+BoundaryType.append(
+    [
+        "lateral",
+        "lateral",
+        "lateral",
+        "bottom",
+        "bottom",
+        "bottom",
+        "bottom",
+        "lateral",
+        "bottom",
+        "lateral",
+    ]
+)
+BoundaryRmin.append([3, 3, 3, 0, 1, 2, 3, 2, 2, 1])
+BoundaryRmax.append([4, 4, 4, 0, 1, 2, 3, 3, 2, 2])
+BoundaryLmin.append([1, 2, 3, 3, 3, 3, 3, 2, 2, 2])
+BoundaryLmax.append([1, 2, 3, 4, 4, 4, 4, 2, 3, 2])
 
 N1 = len(R)
 N2 = len(L) - 1

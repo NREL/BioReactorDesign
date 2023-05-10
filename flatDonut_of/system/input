@@ -2,8 +2,8 @@
 # ~~~~ Mesh size
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-NS : 12
-NVert_topBlock : 150
+NS : 6
+NVert_topBlock : 100
 verticalCoarseningRatio : 0.5
 radialCoarseningRatio : 1
 
@@ -13,8 +13,8 @@ radialCoarseningRatio : 1
 
 # ~~~~ Radial dimensions in mm
 RInnerSparger : 70
-ROuterSparger : 110
-RColumn :       175
+ROuterSparger : 177
+RColumn :       250
 
 # ~~~~ Longitudinal dimensions in mm
 LColumnTop :    2000
