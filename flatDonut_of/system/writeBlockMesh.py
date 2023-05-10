@@ -15,8 +15,8 @@ def fun(G, N1):
 
 
 def bissection(val, fun, N1):
-    Gmin = 0.01
-    Gmax = 100
+    Gmin = 0.001
+    Gmax = 1000
     resultmin = fun(Gmin, N1) - val
     resultmax = fun(Gmax, N1) - val
     if resultmin * resultmax > 0:
@@ -73,7 +73,7 @@ def verticalOutletCoarsening(ratio, NVert, gradVert=None, smooth=False):
             print(
                 "WARNING: vertical smoothing had to be used because your mesh is very coarse"
             )
-            print("\tIncrease NVert_topBlock in input file to avoid this warning")
+            print("\tIncrease NVertSparger in input file to avoid this warning")
 
     return NVert, gradVert
 
@@ -197,7 +197,7 @@ for rval in R:
     mC2.append(-rval * np.sin(np.pi / 4))
 
 NS_in = int(inpt["NS"])
-NVert_topBlock = int(inpt["NVert_topBlock"])
+NVertSparger = int(inpt["NVertSparger"])
 NS = []
 NR = []
 NVert = []
@@ -220,11 +220,21 @@ for ir in range(len(R)):
     gradR.append(1.0)
 
 # Vertical meshing
-NVert.append(NVert_topBlock)
-for i in range(len(L) - 2):
-    NVert.append(
-        max(int(round(NVert[0] * abs(L[i + 2] - L[i + 1]) / abs(L[1] - L[0]))), 1)
-    )
+iSparger = 1
+NVert = [0] * (len(L) - 1)
+NVert[iSparger] = NVertSparger
+for i in range(len(L) - 1):
+    if not i == iSparger:
+        NVert[i] = max(
+            int(
+                round(
+                    NVert[iSparger]
+                    * abs(L[i + 1] - L[i])
+                    / abs(L[iSparger + 1] - L[iSparger])
+                )
+            ),
+            1,
+        )
 for il in range(len(L) - 1):
     gradVert.append(1.0)
 
