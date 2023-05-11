@@ -158,7 +158,7 @@ In the case of sparger inlet shown below with the red line
   <img src="image/schematicSpargerInlet.png" width="250"/>
 </p>
 
-the boundary is implemented as
+the boundary is defined in the `geometry.json` as
 ```
 "Boundary": {
                 "inlet": [
