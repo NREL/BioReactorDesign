@@ -3,10 +3,10 @@ import sys
 import numpy as np
 
 
-def make_walls_from_geom(geom):
+def make_walls_from_topo(topo):
     WallR = []
     WallL = []
-    elements = geom["Walls"]
+    elements = topo["Walls"]
     for element in elements:
         for block in elements[element]:
             WallR.append(block["R"])
@@ -14,7 +14,7 @@ def make_walls_from_geom(geom):
     return {"WallR": WallR, "WallL": WallL}
 
 
-def make_bound_from_geom(geom):
+def make_bound_from_topo(topo):
     BoundaryNames = []
     BoundaryType = []
     BoundaryRmin = []
@@ -22,14 +22,14 @@ def make_bound_from_geom(geom):
     BoundaryLmin = []
     BoundaryLmax = []
 
-    for boundary in geom["Boundary"]:
+    for boundary in topo["Boundary"]:
         BoundaryNames.append(boundary)
         tmp_bound_type = []
         tmp_rmin = []
         tmp_rmax = []
         tmp_lmin = []
         tmp_lmax = []
-        for bound_element in geom["Boundary"][boundary]:
+        for bound_element in topo["Boundary"][boundary]:
             tmp_bound_type.append(bound_element["type"])
             tmp_rmin.append(bound_element["Rmin"])
             tmp_rmax.append(bound_element["Rmax"])
@@ -67,7 +67,9 @@ def bissection(val, stretch_fun, N1):
     resultmin = stretch_fun(Gmin, N1) - val
     resultmax = stretch_fun(Gmax, N1) - val
     if resultmin * resultmax > 0:
-        print("Error,the initial bounds of grading do not encompass the solution")
+        print(
+            "Error,the initial bounds of grading do not encompass the solution"
+        )
         # stop
 
     for i in range(100):
@@ -102,7 +104,9 @@ def mergeSort(list, reverse):
     return listtmp
 
 
-def verticalOutletCoarsening(ratio, NVert, L=None, gradVert=None, smooth=False):
+def verticalOutletCoarsening(
+    ratio, NVert, L=None, gradVert=None, smooth=False
+):
     if ratio > 1:
         sys.exit("ERROR: vertical coarsening ratio should be < 1")
 
@@ -110,7 +114,9 @@ def verticalOutletCoarsening(ratio, NVert, L=None, gradVert=None, smooth=False):
 
     if smooth:
         if gradVert is None or L is None:
-            sys.exit("Error: cannot smooth vertical transition without grading list")
+            sys.exit(
+                "Error: cannot smooth vertical transition without grading list"
+            )
 
         Length = L[0] - L[1]
         deltaE = (L[1] - L[2]) / NVert[1]
@@ -120,7 +126,9 @@ def verticalOutletCoarsening(ratio, NVert, L=None, gradVert=None, smooth=False):
             print(
                 "WARNING: vertical smoothing had to be used because your mesh is very coarse"
             )
-            print("\tIncrease NVertSparger in input file to avoid this warning")
+            print(
+                "\tIncrease NVertSparger in input file to avoid this warning"
+            )
 
     return NVert, gradVert
 
@@ -133,7 +141,9 @@ def radialFlowCoarseing(ratio, NR, R=None, gradR=None, smooth=False):
 
     if smooth:
         if gradR is None or R is None:
-            sys.exit("ERROR: cannot smooth radial transition without grading list")
+            sys.exit(
+                "ERROR: cannot smooth radial transition without grading list"
+            )
 
         Length = R[2] - R[1]
         deltaE = ((R[1] - R[0])) / NR[1]

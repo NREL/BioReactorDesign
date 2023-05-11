@@ -1,11 +1,12 @@
-import shutil
-import numpy as np
 import os
+import shutil
 import sys
 
-sys.path.append("../util")
-from fromMomtoPdf import *
+import numpy as np
+
+sys.path.append("util")
 import argument_inhomo
+from fromMomtoPdf import *
 
 
 def writeFfield(filename, fieldname, xcent, zcent, schedule, defaultVal, ind):
@@ -45,7 +46,9 @@ def writeFfield(filename, fieldname, xcent, zcent, schedule, defaultVal, ind):
         fw.write("        code\n")
         fw.write("        #{\n")
         fw.write("            const fvPatch& boundaryPatch = patch();" + "\n")
-        fw.write("            const vectorField& Cf = boundaryPatch.Cf();" + "\n")
+        fw.write(
+            "            const vectorField& Cf = boundaryPatch.Cf();" + "\n"
+        )
         fw.write("            forAll(Cf, faceI)\n")
         fw.write("            {\n")
         fw.write(
@@ -54,7 +57,9 @@ def writeFfield(filename, fieldname, xcent, zcent, schedule, defaultVal, ind):
         fw.write(
             f"                scalar zpos = boundaryPatch.Cf()[faceI][2]-{zcent};\n"
         )
-        fw.write("                scalar rad = std::sqrt(xpos*xpos + zpos*zpos);\n")
+        fw.write(
+            "                scalar rad = std::sqrt(xpos*xpos + zpos*zpos);\n"
+        )
         fw.write(f'                if( rad < {schedule["r_const"]} )\n')
         fw.write("                {\n")
         fw.write(
@@ -170,4 +175,6 @@ if __name__ == "__main__":
         fieldname = f"{name}.gas"
         filename = os.path.join("IC_inhomo", "0", f"{name}.gas")
         ind = fname.index(name)
-        writeFfield(filename, fieldname, args.xcent, args.zcent, schedule, val, ind)
+        writeFfield(
+            filename, fieldname, args.xcent, args.zcent, schedule, val, ind
+        )

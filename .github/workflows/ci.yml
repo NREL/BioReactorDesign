@@ -1,0 +1,42 @@
+name: SpargerDesign-CI
+
+on:
+   push:
+     branches: [main]
+   pull_request:
+     branches: [main]
+
+jobs:
+  SpargerDesign:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10']
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{matrix.python-version}}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest
+          python -m pip install -r requirements.txt
+      - name: Formatting and sorting import
+        run: |
+          source .github/linters/formatting.sh
+          format blockCyclindricalMeshing true
+          format inhomogeneousBC true
+          format spiderSparger true
+      - name: Run pytest
+        run: |
+          cd blockCyclindricalMeshing/tests
+          python -m pytest -v
+          cd ../..
+          cd spiderSparger/tests
+          python -m pytest -v
+          cd ../..
