@@ -58,7 +58,7 @@ for rval in R:
     C2.append(rval * np.sin(np.pi / 4))
     mC2.append(-rval * np.sin(np.pi / 4))
 
-NS_in = int(inpt["Meshing"]["NS"])
+NRSmallest = int(inpt["Meshing"]["NRSmallest"])
 NVertSmallest = int(inpt["Meshing"]["NVertSmallest"])
 NS = []
 NR = []
@@ -70,11 +70,20 @@ gradVert = []
 
 
 # Radial meshing
-NS.append(NS_in)
-NR.append(int(NS[0] / 2))
-# Uniform meshing
+rad_len_block = np.zeros(len(R))
+rad_len_block[0] = R[0] / 2
 for i in range(len(R) - 1):
-    NR.append(max(int(round(NR[0] * abs(R[i + 1] - R[i]) / abs(R[0] - R[0] / 2))), 1))
+    rad_len_block[i+1] = abs(R[i + 1] - R[i]) 
+iSmallest = np.argmin(rad_len_block)
+smallestRBlockSize = rad_len_block[iSmallest]
+
+NR = [0 for i in range(len(R))]
+NR[iSmallest]=NRSmallest
+for i in range(len(R)):
+    if not i==iSmallest:
+        NR[i]=(max(int(round(NRSmallest * abs(rad_len_block[i]) / smallestRBlockSize)), 1))
+NS=[NR[0]*2]
+
 # Now figure out grading of each block
 for ir in range(len(R)):
     gradR_l.append(1.0)

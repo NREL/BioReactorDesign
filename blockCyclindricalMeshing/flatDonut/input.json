@@ -1,6 +1,6 @@
 {
 	"Meshing": {
-    		"NS": 6,
+    		"NRSmallest": 3,
     		"NVertSmallest": 2,
     		"verticalCoarseningRatio": 0.5,
     		"radialCoarseningRatio": 1
