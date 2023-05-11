@@ -3,10 +3,10 @@ import sys
 
 import numpy as np
 
-sys.path.append('util')
+sys.path.append("util")
 import argument
-from myparser import parseJsonFile
 from meshing import *
+from myparser import parseJsonFile
 
 # ~~~ Initialize
 args = argument.initArg()
@@ -15,11 +15,13 @@ geom = parseJsonFile(args.geom_file)
 out_folder = args.out_folder
 
 # ~~~~ Define dimensions based on input
-r_dimensions_name = list(inpt['Geometry']['Radial'].keys())
-r_dimensions = [float(inpt['Geometry']['Radial'][dim]) for dim in r_dimensions_name]
+r_dimensions_name = list(inpt["Geometry"]["Radial"].keys())
+r_dimensions = [float(inpt["Geometry"]["Radial"][dim]) for dim in r_dimensions_name]
 
-l_dimensions_name = list(inpt['Geometry']['Longitudinal'].keys())
-l_dimensions = [float(inpt['Geometry']['Longitudinal'][dim]) for dim in l_dimensions_name]
+l_dimensions_name = list(inpt["Geometry"]["Longitudinal"].keys())
+l_dimensions = [
+    float(inpt["Geometry"]["Longitudinal"][dim]) for dim in l_dimensions_name
+]
 
 outfile = os.path.join(out_folder, "blockMeshDict")
 
@@ -32,13 +34,12 @@ L = mergeSort(l_dimensions, True)
 WallR, WallL = make_walls_from_geom(geom)
 boundDict = make_bound_from_geom(geom)
 
-BoundaryNames=boundDict['names']
-BoundaryType=boundDict['types']
-BoundaryRmin=boundDict['rmin']
-BoundaryRmax=boundDict['rmax']
-BoundaryLmin=boundDict['lmin']
-BoundaryLmax=boundDict['lmax']
-
+BoundaryNames = boundDict["names"]
+BoundaryType = boundDict["types"]
+BoundaryRmin = boundDict["rmin"]
+BoundaryRmax = boundDict["rmax"]
+BoundaryLmin = boundDict["lmin"]
+BoundaryLmax = boundDict["lmax"]
 
 
 N1 = len(R)
@@ -81,7 +82,7 @@ for ir in range(len(R)):
     gradR.append(1.0)
 
 # Vertical meshing
-vert_len_block = np.array([abs(L[i+1]-L[i]) for i in range(len(L) - 1)])
+vert_len_block = np.array([abs(L[i + 1] - L[i]) for i in range(len(L) - 1)])
 iSmallest = np.argmin(vert_len_block)
 NVert = [0] * (len(L) - 1)
 NVert[iSmallest] = NVertSmallest

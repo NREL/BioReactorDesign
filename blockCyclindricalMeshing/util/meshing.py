@@ -1,54 +1,60 @@
-import numpy as np
 import sys
+
+import numpy as np
 
 
 def make_walls_from_geom(geom):
     WallR = []
     WallL = []
-    elements = geom['Walls']
+    elements = geom["Walls"]
     for element in elements:
         for block in elements[element]:
-            WallR.append(block['R'])
-            WallL.append(block['L'])
+            WallR.append(block["R"])
+            WallL.append(block["L"])
     return WallR, WallL
 
-def make_bound_from_geom(geom):
 
-    
+def make_bound_from_geom(geom):
     BoundaryNames = []
     BoundaryType = []
     BoundaryRmin = []
     BoundaryRmax = []
     BoundaryLmin = []
     BoundaryLmax = []
-    
-    for boundary in geom['Boundary']:
+
+    for boundary in geom["Boundary"]:
         BoundaryNames.append(boundary)
         tmp_bound_type = []
         tmp_rmin = []
         tmp_rmax = []
         tmp_lmin = []
         tmp_lmax = []
-        for bound_element in geom['Boundary'][boundary]:
-            tmp_bound_type.append(bound_element['type'])
-            tmp_rmin.append(bound_element['Rmin'])
-            tmp_rmax.append(bound_element['Rmax'])
-            tmp_lmin.append(bound_element['Lmin'])
-            tmp_lmax.append(bound_element['Lmax'])
+        for bound_element in geom["Boundary"][boundary]:
+            tmp_bound_type.append(bound_element["type"])
+            tmp_rmin.append(bound_element["Rmin"])
+            tmp_rmax.append(bound_element["Rmax"])
+            tmp_lmin.append(bound_element["Lmin"])
+            tmp_lmax.append(bound_element["Lmax"])
         BoundaryType.append(tmp_bound_type)
         BoundaryRmin.append(tmp_rmin)
         BoundaryRmax.append(tmp_rmax)
         BoundaryLmin.append(tmp_lmin)
         BoundaryLmax.append(tmp_lmax)
-    
 
-    return {"names": BoundaryNames, "types":BoundaryType, "rmin":BoundaryRmin, "rmax":BoundaryRmax, "lmin":BoundaryLmin, "lmax":BoundaryLmax}
-
+    return {
+        "names": BoundaryNames,
+        "types": BoundaryType,
+        "rmin": BoundaryRmin,
+        "rmax": BoundaryRmax,
+        "lmin": BoundaryLmin,
+        "lmax": BoundaryLmax,
+    }
 
 
 def stretch_fun(G, N1):
     result = (1.0 - G) / (G * (1 - np.power(G, 1.0 / N1)))
     return result
+
 
 # def stretch_fun(G,N1):
 #    result = (1.0-G**(N1/(N1-1)))/((G**(1.0+1.0/(N1-1)))*(1-np.power(G,1.0/(N1-1))))

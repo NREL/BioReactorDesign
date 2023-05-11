@@ -1,6 +1,6 @@
+import json
 import os
 import sys
-import json
 
 
 def parseInputFile(input_filename):
@@ -19,6 +19,7 @@ def parseInputFile(input_filename):
     f.close()
 
     return inpt
+
 
 def parseJsonFile(input_filename):
     with open(input_filename) as f:
