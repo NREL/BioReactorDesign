@@ -145,12 +145,14 @@ In the case of sparger walls shown below with the red lines
 
 the boundary is defined in the `geometry.json` as
 ```
-BoundaryNames.append('SpargerWalls')
-BoundaryType.append(['bottom', 'top', 'top', 'top'])
-BoundaryRmin.append([2, 0, 1, 2])
-BoundaryRmax.append([2, 0, 1, 2])
-BoundaryLmin.append([2, 1, 1, 1])
-BoundaryLmax.append([3, 2, 2, 2])
+"Boundary": {
+                "wall_sparger":[
+                           {"type": "bottom", "Rmin": 2, "Rmax": 2, "Lmin": 2, "Lmax": 3},
+                           {"type": "top", "Rmin": 0, "Rmax": 0, "Lmin": 1, "Lmax": 2},
+                           {"type": "top", "Rmin": 1, "Rmax": 1, "Lmin": 1, "Lmax": 2},
+                           {"type": "top", "Rmin": 2, "Rmax": 2, "Lmin": 1, "Lmax": 2}
+                         ],
+...
 ```
 
 In the case of sparger inlet shown below with the red line
@@ -163,7 +165,7 @@ the boundary is implemented as
 "Boundary": {
                 "inlet": [
                            {"type": "lateral", "Rmin": 2, "Rmax": 3, "Lmin": 2, "Lmax": 2}
-                         ]
+                         ],
 ...
 ```
 
