@@ -11,7 +11,7 @@ def make_walls_from_geom(geom):
         for block in elements[element]:
             WallR.append(block["R"])
             WallL.append(block["L"])
-    return WallR, WallL
+    return {"WallR": WallR, "WallL": WallL}
 
 
 def make_bound_from_geom(geom):
