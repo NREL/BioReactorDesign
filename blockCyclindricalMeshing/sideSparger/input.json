@@ -1,0 +1,24 @@
+
+{
+	"Meshing": {
+    		"NRSmallest": 5,
+    		"NVertSmallest": 6,
+    		"verticalCoarseningRatio": 0.5,
+    		"radialCoarseningRatio": 0.5
+	},
+	"Geometry": {
+		"Radial": {
+			"support" : 10,
+			"sparger" : 20,
+			"column" : 50
+		},
+		"Longitudinal": {
+			"column_top" : 200,
+			"sparger_top" : 50,
+			"support_top" : 30,
+			"bottom" : 0
+		}
+	}
+}
+
+
