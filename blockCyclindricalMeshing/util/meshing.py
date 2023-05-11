@@ -3,10 +3,10 @@ import sys
 import numpy as np
 
 
-def make_walls_from_geom(geom):
+def make_walls_from_topo(topo):
     WallR = []
     WallL = []
-    elements = geom["Walls"]
+    elements = topo["Walls"]
     for element in elements:
         for block in elements[element]:
             WallR.append(block["R"])
@@ -14,7 +14,7 @@ def make_walls_from_geom(geom):
     return {"WallR": WallR, "WallL": WallL}
 
 
-def make_bound_from_geom(geom):
+def make_bound_from_topo(topo):
     BoundaryNames = []
     BoundaryType = []
     BoundaryRmin = []
@@ -22,14 +22,14 @@ def make_bound_from_geom(geom):
     BoundaryLmin = []
     BoundaryLmax = []
 
-    for boundary in geom["Boundary"]:
+    for boundary in topo["Boundary"]:
         BoundaryNames.append(boundary)
         tmp_bound_type = []
         tmp_rmin = []
         tmp_rmax = []
         tmp_lmin = []
         tmp_lmax = []
-        for bound_element in geom["Boundary"][boundary]:
+        for bound_element in topo["Boundary"][boundary]:
             tmp_bound_type.append(bound_element["type"])
             tmp_rmin.append(bound_element["Rmin"])
             tmp_rmax.append(bound_element["Rmax"])

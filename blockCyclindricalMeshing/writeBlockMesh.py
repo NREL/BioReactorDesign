@@ -11,7 +11,7 @@ from myparser import parseJsonFile
 
 def assemble_geom(args):
     inpt = parseJsonFile(args.input_file)
-    geom = parseJsonFile(args.geom_file)
+    topo = parseJsonFile(args.topo_file)
 
     # ~~~~ Define dimensions based on input
     r_dimensions_name = list(inpt["Geometry"]["Radial"].keys())
@@ -28,8 +28,8 @@ def assemble_geom(args):
     dimensionDict = {"R": R, "L": L}
 
     # Define blocks that will be walls
-    wallDict = make_walls_from_geom(geom)
-    boundDict = make_bound_from_geom(geom)
+    wallDict = make_walls_from_topo(topo)
+    boundDict = make_bound_from_topo(topo)
 
     return {**wallDict, **boundDict, **dimensionDict}
 

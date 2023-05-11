@@ -9,25 +9,25 @@ def initArg():
         "--input_file",
         type=str,
         metavar="",
-        required=False,
+        required=True,
         help="Input file for meshing and geometry parameters",
-        default="input",
+        default="input.json",
     )
     parser.add_argument(
-        "-g",
-        "--geom_file",
+        "-t",
+        "--topo_file",
         type=str,
         metavar="",
-        required=False,
+        required=True,
         help="Block description of the configuration",
-        default="geometry",
+        default="topology.json",
     )
     parser.add_argument(
         "-o",
         "--out_folder",
         type=str,
         metavar="",
-        required=False,
+        required=True,
         help="Output folder for blockMeshDict",
         default="system",
     )
