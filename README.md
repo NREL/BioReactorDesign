@@ -80,8 +80,6 @@ optional arguments:
 
 Generates `blockMeshDict` in `system`
 
-`python writeBlockMesh.py -i sideSparger/input.json -g sideSparger/geometry.json -o $caseFolder/system`
-
 ```
 root=`pwd`
 caseFolder=case
