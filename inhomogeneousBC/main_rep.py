@@ -1,11 +1,12 @@
-import shutil
-import numpy as np
 import os
+import shutil
 import sys
 
-sys.path.append("../util")
-from fromMomtoPdf import *
+import numpy as np
+
+sys.path.append("util")
 import argument_inhomo
+from fromMomtoPdf import *
 
 
 def writeFfield(filename, fieldname, xcent, zcent, schedule, defaultVal, ind):
