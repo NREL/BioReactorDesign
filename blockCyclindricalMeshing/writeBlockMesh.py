@@ -74,7 +74,12 @@ rad_len_block = np.zeros(len(R))
 rad_len_block[0] = R[0] / 2
 for i in range(len(R) - 1):
     rad_len_block[i + 1] = abs(R[i + 1] - R[i])
-iSmallest = np.argmin(rad_len_block)
+
+try:
+    iSmallest = int(inpt["Meshing"]["iRSmallest"])
+except KeyError:
+    iSmallest = np.argmin(rad_len_block)
+
 smallestRBlockSize = rad_len_block[iSmallest]
 
 NR = [0 for i in range(len(R))]
@@ -94,7 +99,14 @@ for ir in range(len(R)):
 
 # Vertical meshing
 vert_len_block = np.array([abs(L[i + 1] - L[i]) for i in range(len(L) - 1)])
-iSmallest = np.argmin(vert_len_block)
+
+try:
+    iSmallest = int(inpt["Meshing"]["iVertSmallest"])
+except KeyError:
+    iSmallest = np.argmin(vert_len_block)
+
+smallestVertBlockSize = vert_len_block[iSmallest]
+
 NVert = [0] * (len(L) - 1)
 NVert[iSmallest] = NVertSmallest
 for i in range(len(L) - 1):
@@ -104,7 +116,7 @@ for i in range(len(L) - 1):
                 round(
                     NVert[iSmallest]
                     * abs(L[i + 1] - L[i])
-                    / abs(L[iSmallest + 1] - L[iSmallest])
+                    / smallestVertBlockSize
                 )
             ),
             1,
