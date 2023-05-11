@@ -74,16 +74,26 @@ optional arguments:
 
 ## Generate 3D sparger
 
-`cd blockMeshDesign`
+`cd blockCyclindricalMeshing`
 
 ### Execute
 
 Generates `blockMeshDict` in `system`
 
-`cd system`<br>
-`python writeBlockMesh.py input`<br>
-`cd ..`<br>
+`python writeBlockMesh.py -i sideSparger/input.json -g sideSparger/geometry.json -o $caseFolder/system`
 
+```
+root=`pwd`
+caseFolder=case
+
+python writeBlockMesh.py -i sideSparger/input.json -g sideSparger/geometry.json -o $caseFolder/system
+
+cd $caseFolder
+blockMesh
+transformPoints "scale=(0.001 0.001 0.001)"
+transformPoints "rotate=((0 0 1) (0 1 0))"
+cd $root
+```
 
 Will generate this
 
@@ -91,20 +101,15 @@ Will generate this
   <img src="image/3dsparger.png" width="250"/>
 </p>
 
-### Generate OpenFOAM mesh
 
-`blockMesh`
-<br>
-`transformPoints "scale=(0.001 0.001 0.001)"`
-<br>
-`transformPoints "rotate=((0 0 1) (0 1 0))"`
+### How to change the dimensions or mesh refinement
 
-### How to change the dimensions
+All dimensions and mesh are controlled by the input file `input.json`. 
 
-All dimensions are controlled by the input file `system/input`
 
 ### How to change the arrangement of concentric cylinders
 
+The block topology is controlled by the `geometry.json`
 Always work with a schematic. Here is the schematic for this case
 
 <p float="left">
@@ -113,23 +118,20 @@ Always work with a schematic. Here is the schematic for this case
 
 The purple blocks are walls (not meshed) and the white blocks are fluid blocks (meshed). The symmetry axis is indicated as a dashed line
 
-In the code, the purple blocks are defined as
+In the `geometry.json`, the purple blocks are defined as
 
 ```
-WallR=[]
-WallL=[]
-#Support
-WallR.append(0)
-WallL.append(3)
-WallR.append(1)
-WallL.append(3)
-# Sparger
-WallR.append(0)
-WallL.append(2)
-WallR.append(1)
-WallL.append(2)
-WallR.append(2)
-WallL.append(2)
+"Walls": {
+                "Support": [
+                            {"R": 0, "L": 3},
+                            {"R": 1, "L": 3}
+                           ],
+                "Sparger": [
+                            {"R": 0, "L": 2},
+                            {"R": 1, "L": 2},
+                            {"R": 2, "L": 2}
+                           ]
+        }
 ```
 
 ### How to change boundaries
@@ -141,7 +143,7 @@ In the case of sparger walls shown below with the red lines
   <img src="image/schematicSpargerWalls.png" width="250"/>
 </p>
 
-the boundary is implemented as 
+the boundary is defined in the `geometry.json` as
 ```
 BoundaryNames.append('SpargerWalls')
 BoundaryType.append(['bottom', 'top', 'top', 'top'])
@@ -158,12 +160,11 @@ In the case of sparger inlet shown below with the red line
 
 the boundary is implemented as
 ```
-BoundaryNames.append('SpargerInflow')
-BoundaryType.append(['lateral'])
-BoundaryRmin.append([2])
-BoundaryRmax.append([3])
-BoundaryLmin.append([2])
-BoundaryLmax.append([2])
+"Boundary": {
+                "inlet": [
+                           {"type": "lateral", "Rmin": 2, "Rmax": 3, "Lmin": 2, "Lmax": 2}
+                         ]
+...
 ```
 
 ### Acknowledgments
