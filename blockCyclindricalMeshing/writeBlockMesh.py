@@ -73,16 +73,18 @@ gradVert = []
 rad_len_block = np.zeros(len(R))
 rad_len_block[0] = R[0] / 2
 for i in range(len(R) - 1):
-    rad_len_block[i+1] = abs(R[i + 1] - R[i]) 
+    rad_len_block[i + 1] = abs(R[i + 1] - R[i])
 iSmallest = np.argmin(rad_len_block)
 smallestRBlockSize = rad_len_block[iSmallest]
 
 NR = [0 for i in range(len(R))]
-NR[iSmallest]=NRSmallest
+NR[iSmallest] = NRSmallest
 for i in range(len(R)):
-    if not i==iSmallest:
-        NR[i]=(max(int(round(NRSmallest * abs(rad_len_block[i]) / smallestRBlockSize)), 1))
-NS=[NR[0]*2]
+    if not i == iSmallest:
+        NR[i] = max(
+            int(round(NRSmallest * abs(rad_len_block[i]) / smallestRBlockSize)), 1
+        )
+NS = [NR[0] * 2]
 
 # Now figure out grading of each block
 for ir in range(len(R)):
