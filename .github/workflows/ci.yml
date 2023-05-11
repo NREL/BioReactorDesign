@@ -37,6 +37,6 @@ jobs:
           cd blockCyclindricalMeshing/tests
           python -m pytest -v
           cd ../..
-          cd spiderSpargerformat/tests
+          cd spiderSparger/tests
           python -m pytest -v
           cd ../..
