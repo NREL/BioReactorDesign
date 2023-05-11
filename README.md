@@ -15,6 +15,7 @@ follow `README.md`
 ## Generate fi.gas
 
 `cd inhomogeneousBC`
+
 follow `README.md`
 
 ## Generate 3D sparger
