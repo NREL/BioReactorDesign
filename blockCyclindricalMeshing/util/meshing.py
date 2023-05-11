@@ -67,7 +67,9 @@ def bissection(val, stretch_fun, N1):
     resultmin = stretch_fun(Gmin, N1) - val
     resultmax = stretch_fun(Gmax, N1) - val
     if resultmin * resultmax > 0:
-        print("Error,the initial bounds of grading do not encompass the solution")
+        print(
+            "Error,the initial bounds of grading do not encompass the solution"
+        )
         # stop
 
     for i in range(100):
@@ -102,7 +104,9 @@ def mergeSort(list, reverse):
     return listtmp
 
 
-def verticalOutletCoarsening(ratio, NVert, L=None, gradVert=None, smooth=False):
+def verticalOutletCoarsening(
+    ratio, NVert, L=None, gradVert=None, smooth=False
+):
     if ratio > 1:
         sys.exit("ERROR: vertical coarsening ratio should be < 1")
 
@@ -110,7 +114,9 @@ def verticalOutletCoarsening(ratio, NVert, L=None, gradVert=None, smooth=False):
 
     if smooth:
         if gradVert is None or L is None:
-            sys.exit("Error: cannot smooth vertical transition without grading list")
+            sys.exit(
+                "Error: cannot smooth vertical transition without grading list"
+            )
 
         Length = L[0] - L[1]
         deltaE = (L[1] - L[2]) / NVert[1]
@@ -120,7 +126,9 @@ def verticalOutletCoarsening(ratio, NVert, L=None, gradVert=None, smooth=False):
             print(
                 "WARNING: vertical smoothing had to be used because your mesh is very coarse"
             )
-            print("\tIncrease NVertSparger in input file to avoid this warning")
+            print(
+                "\tIncrease NVertSparger in input file to avoid this warning"
+            )
 
     return NVert, gradVert
 
@@ -133,7 +141,9 @@ def radialFlowCoarseing(ratio, NR, R=None, gradR=None, smooth=False):
 
     if smooth:
         if gradR is None or R is None:
-            sys.exit("ERROR: cannot smooth radial transition without grading list")
+            sys.exit(
+                "ERROR: cannot smooth radial transition without grading list"
+            )
 
         Length = R[2] - R[1]
         deltaE = ((R[1] - R[0])) / NR[1]

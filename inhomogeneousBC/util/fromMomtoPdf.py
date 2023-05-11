@@ -83,7 +83,10 @@ def get_f_vals(meanTar, stdTar, diam, verb=True):
         stdOut = np.sqrt(
             np.sum(np.clip(x, a_min=0, a_max=None) * (diam - meanTar) ** 2)
         )
-        tol = abs(meanOut - meanTar) / meanTar + 0.1 * abs(stdOut - stdTar) / stdTar
+        tol = (
+            abs(meanOut - meanTar) / meanTar
+            + 0.1 * abs(stdOut - stdTar) / stdTar
+        )
         irep += 1
         if irep > 100:
             sys.exit(
@@ -97,7 +100,9 @@ def get_f_vals(meanTar, stdTar, diam, verb=True):
         print("mean = ", np.sum(x * diam))
         print(
             "std = ",
-            np.sqrt(np.sum(np.clip(x, a_min=0, a_max=None) * (diam - meanTar) ** 2)),
+            np.sqrt(
+                np.sum(np.clip(x, a_min=0, a_max=None) * (diam - meanTar) ** 2)
+            ),
         )
     return x
 
@@ -113,7 +118,8 @@ def poreDiamCorr(dp, ds, Ugs):
     d32 = (
         ds
         * 7.35
-        * (We ** (-1.7) * Re ** (0.1) * Fr ** (1.8) * (dp / ds) ** (1.7)) ** 0.2
+        * (We ** (-1.7) * Re ** (0.1) * Fr ** (1.8) * (dp / ds) ** (1.7))
+        ** 0.2
     )
     return d32, d32 * 0.15
 

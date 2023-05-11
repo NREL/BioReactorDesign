@@ -9,17 +9,20 @@ from meshing import *
 from myparser import parseJsonFile
 
 
-def assemble_geom(args):
-    inpt = parseJsonFile(args.input_file)
-    topo = parseJsonFile(args.topo_file)
+def assemble_geom(argsDict):
+    inpt = parseJsonFile(argsDict["input_file"])
+    topo = parseJsonFile(argsDict["topo_file"])
 
     # ~~~~ Define dimensions based on input
     r_dimensions_name = list(inpt["Geometry"]["Radial"].keys())
-    r_dimensions = [float(inpt["Geometry"]["Radial"][dim]) for dim in r_dimensions_name]
+    r_dimensions = [
+        float(inpt["Geometry"]["Radial"][dim]) for dim in r_dimensions_name
+    ]
 
     l_dimensions_name = list(inpt["Geometry"]["Longitudinal"].keys())
     l_dimensions = [
-        float(inpt["Geometry"]["Longitudinal"][dim]) for dim in l_dimensions_name
+        float(inpt["Geometry"]["Longitudinal"][dim])
+        for dim in l_dimensions_name
     ]
 
     # Merge and sort R and L
@@ -34,8 +37,8 @@ def assemble_geom(args):
     return {**wallDict, **boundDict, **dimensionDict}
 
 
-def assemble_mesh(args, geomDict):
-    inpt = parseJsonFile(args.input_file)
+def assemble_mesh(argsDict, geomDict):
+    inpt = parseJsonFile(argsDict["input_file"])
     R = geomDict["R"]
     L = geomDict["L"]
     N1 = len(R)
@@ -82,7 +85,12 @@ def assemble_mesh(args, geomDict):
     for i in range(len(R)):
         if not i == iSmallest:
             NR[i] = max(
-                int(round(NRSmallest * abs(rad_len_block[i]) / smallestRBlockSize)), 1
+                int(
+                    round(
+                        NRSmallest * abs(rad_len_block[i]) / smallestRBlockSize
+                    )
+                ),
+                1,
             )
     NS = [NR[0] * 2]
 
@@ -93,7 +101,9 @@ def assemble_mesh(args, geomDict):
         gradR.append(1.0)
 
     # Vertical meshing
-    vert_len_block = np.array([abs(L[i + 1] - L[i]) for i in range(len(L) - 1)])
+    vert_len_block = np.array(
+        [abs(L[i + 1] - L[i]) for i in range(len(L) - 1)]
+    )
 
     try:
         iSmallest = int(inpt["Meshing"]["iVertSmallest"])
@@ -109,7 +119,9 @@ def assemble_mesh(args, geomDict):
             NVert[i] = max(
                 int(
                     round(
-                        NVert[iSmallest] * abs(L[i + 1] - L[i]) / smallestVertBlockSize
+                        NVert[iSmallest]
+                        * abs(L[i + 1] - L[i])
+                        / smallestVertBlockSize
                     )
                 ),
                 1,
@@ -119,7 +131,9 @@ def assemble_mesh(args, geomDict):
 
     # Mesh stretching
     try:
-        verticalCoarseningRatio = float(inpt["Meshing"]["verticalCoarseningRatio"])
+        verticalCoarseningRatio = float(
+            inpt["Meshing"]["verticalCoarseningRatio"]
+        )
         verticalCoarsening = True
     except KeyError:
         verticalCoarsening = False
@@ -159,8 +173,8 @@ def assemble_mesh(args, geomDict):
     }
 
 
-def writeBlockMeshDict(args, geomDict, meshDict):
-    outfile = os.path.join(args.out_folder, "blockMeshDict")
+def writeBlockMeshDict(argsDict, geomDict, meshDict):
+    outfile = os.path.join(argsDict["out_folder"], "blockMeshDict")
 
     R = geomDict["R"]
     L = geomDict["L"]
@@ -245,7 +259,9 @@ def writeBlockMeshDict(args, geomDict, meshDict):
     fw.write("\n")
     counter = 1
     for nVert in NVert:
-        fw.write("NVert" + str(counter) + " " + str(NVert[counter - 1]) + ";\n")
+        fw.write(
+            "NVert" + str(counter) + " " + str(NVert[counter - 1]) + ";\n"
+        )
         counter = counter + 1
     fw.write("\n")
 
@@ -286,8 +302,12 @@ def writeBlockMeshDict(args, geomDict, meshDict):
 
         i1 = int((i + 1) * 4)
         i2 = int(i * 4)
-        fw.write(f"     hex ({i1} {i1+1} {i1+2} {i1+3} {i2} {i2+1} {i2+2} {i2+3})")
-        fw.write(f" ($NS1 $NS1 $NVert{i+1}) simpleGrading (1 1 {gradingVert})\n")
+        fw.write(
+            f"     hex ({i1} {i1+1} {i1+2} {i1+3} {i2} {i2+1} {i2+2} {i2+3})"
+        )
+        fw.write(
+            f" ($NS1 $NS1 $NVert{i+1}) simpleGrading (1 1 {gradingVert})\n"
+        )
     fw.write("\n")
     # Write the squares then
     for ir in range(N1):
@@ -313,7 +333,9 @@ def writeBlockMeshDict(args, geomDict, meshDict):
             # outlet
             if iwall == 1:
                 fw.write("//")
-            fw.write(f"     hex ({i1} {i2} {i2+1} {i1+1} {i3} {i4} {i4+1} {i3+1})")
+            fw.write(
+                f"     hex ({i1} {i2} {i2+1} {i1+1} {i3} {i4} {i4+1} {i3+1})"
+            )
             fw.write(
                 f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
             )
@@ -335,7 +357,9 @@ def writeBlockMeshDict(args, geomDict, meshDict):
             )
             if iwall == 1:
                 fw.write("//")
-            fw.write(f"     hex ({i1+3} {i2+3} {i2} {i1} {i3+3} {i4+3} {i4} {i3})")
+            fw.write(
+                f"     hex ({i1+3} {i2+3} {i2} {i1} {i3+3} {i4+3} {i4} {i3})"
+            )
             fw.write(
                 f" ($NR{ir+1} $NS1  $NVert{il+1}) simpleGrading ({gradingR} 1 {gradingVert})\n"
             )
@@ -455,9 +479,10 @@ def writeBlockMeshDict(args, geomDict, meshDict):
 
 def main():
     args = argument.initArg()
-    geomDict = assemble_geom(args)
-    meshDict = assemble_mesh(args, geomDict)
-    writeBlockMeshDict(args, geomDict, meshDict)
+    argsDict = vars(args)
+    geomDict = assemble_geom(argsDict)
+    meshDict = assemble_mesh(argsDict, geomDict)
+    writeBlockMeshDict(argsDict, geomDict, meshDict)
 
 
 if __name__ == "__main__":

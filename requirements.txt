@@ -1,4 +1,7 @@
 numpy
-matplotlib
+matplotlib==3.2.2
 numpy-stl
 scipy
+black
+isort
+imageio

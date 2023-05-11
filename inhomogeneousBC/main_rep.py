@@ -46,7 +46,9 @@ def writeFfield(filename, fieldname, xcent, zcent, schedule, defaultVal, ind):
         fw.write("        code\n")
         fw.write("        #{\n")
         fw.write("            const fvPatch& boundaryPatch = patch();" + "\n")
-        fw.write("            const vectorField& Cf = boundaryPatch.Cf();" + "\n")
+        fw.write(
+            "            const vectorField& Cf = boundaryPatch.Cf();" + "\n"
+        )
         fw.write("            forAll(Cf, faceI)\n")
         fw.write("            {\n")
         fw.write(
@@ -55,7 +57,9 @@ def writeFfield(filename, fieldname, xcent, zcent, schedule, defaultVal, ind):
         fw.write(
             f"                scalar zpos = boundaryPatch.Cf()[faceI][2]-{zcent};\n"
         )
-        fw.write("                scalar rad = std::sqrt(xpos*xpos + zpos*zpos);\n")
+        fw.write(
+            "                scalar rad = std::sqrt(xpos*xpos + zpos*zpos);\n"
+        )
         fw.write(f'                if( rad < {schedule["r_const"]} )\n')
         fw.write("                {\n")
         fw.write(
@@ -153,7 +157,9 @@ if __name__ == "__main__":
 
     fig = plt.figure()
     for i in range(20):
-        meanTar, stdTar = poreDiamCorr(dp=schedule["pore_out"], ds=0.15, Ugs=0.01)
+        meanTar, stdTar = poreDiamCorr(
+            dp=schedule["pore_out"], ds=0.15, Ugs=0.01
+        )
         f_in = get_f_vals(meanTar, stdTar, np.array(diam), verb=args.verbose)
         plt.plot(diam, f_in)
     plt.show()
