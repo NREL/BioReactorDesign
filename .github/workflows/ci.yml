@@ -31,7 +31,7 @@ jobs:
           source .github/linters/formatting.sh
           format blockCyclindricalMeshing true
           format inhomogeneousBC true
-          format spiderSpargerformat true
+          format spiderSparger true
       - name: Run pytest
         run: |
           cd blockCyclindricalMeshing/tests
