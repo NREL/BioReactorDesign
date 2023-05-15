@@ -113,7 +113,7 @@ def verticalOutletCoarsening(
     if ratio > 1:
         sys.exit("ERROR: vertical coarsening ratio should be < 1")
 
-    if abs(ratio - 1) < 1e-12:
+    if abs(ratio - 1) < 1e-12 or len(L) < 3:
         return NVert, [1 for _ in range(len(NVert))]
 
     NVert[0] = int(NVert[0] * ratio)
@@ -142,7 +142,7 @@ def verticalOutletCoarsening(
 def radialFlowCoarseing(ratio, NR, R=None, gradR=None, smooth=False):
     if ratio > 1:
         sys.exit("ERROR: radial coarsening ratio should be < 1")
-    if abs(ratio - 1) < 1e-12:
+    if abs(ratio - 1) < 1e-12 or len(R) < 3:
         return NR, [1 for _ in range(len(NR))]
 
     lastR = len(NR) - 1
