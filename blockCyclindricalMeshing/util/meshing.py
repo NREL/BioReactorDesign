@@ -107,64 +107,75 @@ def mergeSort(list, reverse):
     return listtmp
 
 
-def verticalOutletCoarsening(
-    ratio, NVert, L=None, gradVert=None, smooth=False
+def verticalCoarsening(
+    ratio_properties, NVert, L=None, gradVert=None, smooth=False
 ):
-    if ratio > 1:
-        sys.exit("ERROR: vertical coarsening ratio should be < 1")
 
-    if abs(ratio - 1) < 1e-12 or len(L) < 3:
-        return NVert, [1 for _ in range(len(NVert))]
+    if gradVert is None:
+        gradVert = [1.0 for _ in range(len(NVert))]
 
-    NVert[0] = int(NVert[0] * ratio)
+    ratio_list = [entry['ratio'] for entry in ratio_properties]
 
-    if smooth:
-        if gradVert is None or L is None:
-            sys.exit(
-                "Error: cannot smooth vertical transition without grading list"
-            )
+    for iratio, ratio in enumerate(ratio_list):
 
-        Length = L[0] - L[1]
-        deltaE = (L[1] - L[2]) / NVert[1]
-        gradVert[0] = 1 / (bissection(Length / deltaE, stretch_fun, NVert[0]))
+        if abs(ratio - 1) < 1e-12:
+            pass
+        else: 
+            NVert[iratio] = max(int(round(NVert[iratio] * ratio)),1) 
 
-        if (gradVert[0] > 2 or gradVert[0] < 0.5) and abs(ratio - 1) <= 1e-12:
-            print(
-                "WARNING: vertical smoothing had to be used because your mesh is very coarse"
-            )
-            print(
-                "\tIncrease NVertSparger in input file to avoid this warning"
-            )
+        #if smooth:
+        #    if gradVert is None or L is None:
+        #        sys.exit(
+        #            "Error: cannot smooth vertical transition without grading list"
+        #        )
+
+        #    Length = L[0] - L[1]
+        #    deltaE = (L[1] - L[2]) / NVert[1]
+        #    gradVert[0] = 1 / (bissection(Length / deltaE, stretch_fun, NVert[0]))
+
+        #    if (gradVert[0] > 2 or gradVert[0] < 0.5) and abs(ratio - 1) <= 1e-12:
+        #        print(
+        #            "WARNING: vertical smoothing had to be used because your mesh is very coarse"
+        #        )
+        #        print(
+        #            "\tIncrease NVertSparger in input file to avoid this warning"
+        #        )
 
     return NVert, gradVert
 
 
-def radialFlowCoarseing(ratio, NR, R=None, gradR=None, smooth=False):
-    if ratio > 1:
-        sys.exit("ERROR: radial coarsening ratio should be < 1")
-    if abs(ratio - 1) < 1e-12 or len(R) < 3:
-        return NR, [1 for _ in range(len(NR))]
+def radialCoarsening(ratio_properties, NR, R=None, gradR=None, smooth=False):
 
-    lastR = len(NR) - 1
-    NR[lastR] = int(NR[lastR] * ratio)
+    if gradR is None:
+        gradR = [1.0 for _ in range(len(NR))]
 
-    if smooth:
-        if gradR is None or R is None:
-            sys.exit(
-                "ERROR: cannot smooth radial transition without grading list"
-            )
+    ratio_list = [entry['ratio'] for entry in ratio_properties]
 
-        Length = R[lastR] - R[lastR - 1]
-        deltaE = ((R[lastR - 1] - R[lastR - 2])) / NR[lastR - 1]
-        gradR[lastR] = 1 / (
-            bissection(Length / deltaE, stretch_fun, NR[lastR])
-        )
-        if (gradR[lastR] > 2 or gradR[lastR] < 0.5) and abs(
-            ratio - 1
-        ) <= 1e-12:
-            print(
-                "WARNING: radial smoothing had to be used because your mesh is very coarse"
-            )
-            print("\tIncrease NS in input file to avoid this warning")
+    for iratio, ratio in enumerate(ratio_list):
+
+        if abs(ratio - 1) < 1e-12 or len(R) < 3:
+            pass
+        else:
+            NR[iratio] = max(int(round(NR[iratio] * ratio)),1)
+
+
+    #if smooth:
+    #    if gradR is None or R is None:
+    #        sys.exit(
+    #            "ERROR: cannot smooth radial transition without grading list"
+    #        )
+
+    #    Length = R[lastR] - R[lastR - 1]
+    #    deltaE = ((R[lastR - 1] - R[lastR - 2])) / NR[lastR - 1]
+    #    gradR[lastR] = 1 / (
+    #        bissection(Length / deltaE, stretch_fun, NR[lastR])
+    #    )
+    #    if (gradR[lastR] > 2 or gradR[lastR] < 0.5) and abs(
+    #        ratio - 1
+    #    ) <= 1e-12:
+    #        print(
+    #            "WARNING: radial smoothing had to be used because your mesh is very coarse"
+    #        )
+    #        print("\tIncrease NS in input file to avoid this warning")
 
     return NR, gradR

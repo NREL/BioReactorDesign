@@ -12,7 +12,6 @@ from myparser import parseJsonFile
 def assemble_geom(argsDict):
     inpt = parseJsonFile(argsDict["input_file"])
     topo = parseJsonFile(argsDict["topo_file"])
-
     # ~~~~ Define dimensions based on input
     r_dimensions_name = list(inpt["Geometry"]["Radial"].keys())
     r_dimensions = [
@@ -131,29 +130,27 @@ def assemble_mesh(argsDict, geomDict):
 
     # Mesh stretching
     try:
-        verticalCoarseningRatio = float(
-            inpt["Meshing"]["verticalCoarseningRatio"]
-        )
-        verticalCoarsening = True
+        verticalCoarseningProperties = inpt["Meshing"]["verticalCoarsening"]
+        do_verticalCoarsening = True
     except KeyError:
-        verticalCoarsening = False
+        do_verticalCoarsening = False
     try:
-        radialCoarseningRatio = float(inpt["Meshing"]["radialCoarseningRatio"])
-        radialCoarsening = True
+        radialCoarseningProperties = inpt["Meshing"]["radialCoarsening"]
+        do_radialCoarsening = True
     except KeyError:
-        radialCoarsening = False
+        do_radialCoarsening = False
 
-    if verticalCoarsening:
-        NVert, gradVert = verticalOutletCoarsening(
-            ratio=verticalCoarseningRatio,
+    if do_verticalCoarsening:
+        NVert, gradVert = verticalCoarsening(
+            ratio_properties=verticalCoarseningProperties,
             NVert=NVert,
             L=L,
             gradVert=gradVert,
-            smooth=True,
+            smooth=False,
         )
-    if radialCoarsening:
-        NR, gradR = radialFlowCoarseing(
-            ratio=radialCoarseningRatio, NR=NR, R=R, gradR=gradR, smooth=True
+    if do_radialCoarsening:
+        NR, gradR = radialCoarsening(
+            ratio_properties=radialCoarseningProperties, NR=NR, R=R, gradR=gradR, smooth=False
         )
 
     return {
