@@ -113,8 +113,8 @@ def verticalOutletCoarsening(
     if ratio > 1:
         sys.exit("ERROR: vertical coarsening ratio should be < 1")
 
-    if abs(ratio-1) < 1e-12:
-        return NVert, [1 for _ in range(len(NVert))]    
+    if abs(ratio - 1) < 1e-12:
+        return NVert, [1 for _ in range(len(NVert))]
 
     NVert[0] = int(NVert[0] * ratio)
 
@@ -142,10 +142,10 @@ def verticalOutletCoarsening(
 def radialFlowCoarseing(ratio, NR, R=None, gradR=None, smooth=False):
     if ratio > 1:
         sys.exit("ERROR: radial coarsening ratio should be < 1")
-    if abs(ratio-1) < 1e-12:
-        return NR, [1 for _ in range(len(NR))]    
-    
-    lastR = len(NR)-1
+    if abs(ratio - 1) < 1e-12:
+        return NR, [1 for _ in range(len(NR))]
+
+    lastR = len(NR) - 1
     NR[lastR] = int(NR[lastR] * ratio)
 
     if smooth:
@@ -154,10 +154,14 @@ def radialFlowCoarseing(ratio, NR, R=None, gradR=None, smooth=False):
                 "ERROR: cannot smooth radial transition without grading list"
             )
 
-        Length = R[lastR] - R[lastR-1]
-        deltaE = ((R[lastR-1] - R[lastR-2])) / NR[lastR-1]
-        gradR[lastR] = 1 / (bissection(Length / deltaE, stretch_fun, NR[lastR]))
-        if (gradR[lastR] > 2 or gradR[lastR] < 0.5) and abs(ratio - 1) <= 1e-12:
+        Length = R[lastR] - R[lastR - 1]
+        deltaE = ((R[lastR - 1] - R[lastR - 2])) / NR[lastR - 1]
+        gradR[lastR] = 1 / (
+            bissection(Length / deltaE, stretch_fun, NR[lastR])
+        )
+        if (gradR[lastR] > 2 or gradR[lastR] < 0.5) and abs(
+            ratio - 1
+        ) <= 1e-12:
             print(
                 "WARNING: radial smoothing had to be used because your mesh is very coarse"
             )

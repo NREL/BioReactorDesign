@@ -17,6 +17,7 @@ def base_mesh(argsDict):
     meshDict = assemble_mesh(argsDict, geomDict)
     writeBlockMeshDict(argsDict, geomDict, meshDict)
 
+
 def test_side_sparger():
     argsDict = {
         "input_file": "../sideSparger/input.json",
@@ -33,6 +34,7 @@ def test_flat_donut():
         "out_folder": "../case/system",
     }
     base_mesh(argsDict)
+
 
 def test_base_column():
     argsDict = {
