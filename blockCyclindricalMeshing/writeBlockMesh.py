@@ -414,12 +414,15 @@ def writeBlockMeshDict(argsDict, geomDict, meshDict):
     fw.write("boundary\n")
     fw.write("(\n")
 
-    for i in range(len(BoundaryNames)):
-        fw.write("    " + BoundaryNames[i] + "\n")
-        fw.write("    " + "{\n")
-        fw.write("        " + "type patch;\n")
-        fw.write("        " + "faces\n")
-        fw.write("        " + "(\n")
+    for i, name in enumerate(BoundaryNames):
+        fw.write(f"    {name}\n")
+        fw.write("    {\n")
+        if name.startswith("wall"):
+            fw.write("        " + "type wall;\n")
+        else:
+            fw.write("        " + "type patch;\n")
+        fw.write("        faces\n")
+        fw.write("        (\n")
 
         for ibound in range(len(BoundaryType[i])):
             boundType = BoundaryType[i][ibound]
