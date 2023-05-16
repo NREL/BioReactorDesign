@@ -65,8 +65,8 @@ def stretch_fun(G, N1):
 
 
 def bissection(val, stretch_fun, N1):
-    Gmin = 0.001
-    Gmax = 1000
+    Gmin = 0.00001
+    Gmax = 1000000
     resultmin = stretch_fun(Gmin, N1) - val
     resultmax = stretch_fun(Gmax, N1) - val
     if resultmin * resultmax > 0:
@@ -75,7 +75,7 @@ def bissection(val, stretch_fun, N1):
         )
         # stop
 
-    for i in range(100):
+    for i in range(1000):
         Gmid = 0.5 * (Gmax + Gmin)
         resultmid = stretch_fun(Gmid, N1) - val
         if resultmid * resultmax < 0:
@@ -125,7 +125,7 @@ def verticalCoarsening(
             ratio_dir_ref.append(entry["directionRef"])
         except KeyError:
             ratio_dir_ref.append("+")
-
+   
     for iratio, ratio in enumerate(ratio_list):
         if abs(ratio - 1) < 1e-12:
             pass
@@ -150,7 +150,12 @@ def verticalCoarsening(
         for i in range(indRef + 1, len(NVert)):
             indList.append(i)
 
+        historyRatio = []
         for ind in indList:
+            historyRatio.append(ratio_list[ind])
+            if abs(max(historyRatio)-1) < 1e-12 and abs(min(historyRatio)-1) < 1e-12:
+                continue
+
             length = block_length[ind]
 
             if ratio_dir_ref[ind] == "-":
@@ -170,7 +175,7 @@ def verticalCoarsening(
                 )
                 iterate = False
                 origNVert = NVert[ind]
-                while gradVert[ind] <= 1:
+                while gradVert[ind] < 1 and NVert[ind] > 1:
                     iterate = True
                     NVert[ind] = max(
                         int(round(min(0.99 * NVert[ind], NVert[ind] - 1))), 1
@@ -190,9 +195,10 @@ def verticalCoarsening(
                 gradVert[ind] = bissection(
                     length / deltaE, stretch_fun, NVert[ind]
                 )
+                
                 iterate = False
                 origNVert = NVert[ind]
-                while gradVert[ind] >= 1:
+                while gradVert[ind] > 1 and NVert[ind] > 1:
                     iterate = True
                     NVert[ind] = max(
                         int(round(min(0.99 * NVert[ind], NVert[ind] - 1))), 1
@@ -207,6 +213,7 @@ def verticalCoarsening(
                 block_cell_minus_length[ind] = deltaE / gradVert[ind]
                 block_cell_plus_length[ind] = deltaE
 
+    print(gradVert)
     return NVert, gradVert
 
 
@@ -238,7 +245,6 @@ def radialCoarsening(
     block_length = [R[0] / 2] + [
         abs(R[i] - R[i + 1]) for i in range(len(R) - 1)
     ]
-
     block_cell_plus_length = [block_length[i] / NR[i] for i in range(len(NR))]
     block_cell_minus_length = [block_length[i] / NR[i] for i in range(len(NR))]
 
@@ -252,9 +258,13 @@ def radialCoarsening(
         for i in range(indRef + 1, len(NR)):
             indList.append(i)
 
+        historyRatio = []
         for ind in indList:
+            historyRatio.append(ratio_list[ind])
+            if abs(max(historyRatio)-1) < 1e-12 and abs(min(historyRatio)-1) < 1e-12:
+                continue
             length = block_length[ind]
-
+            
             if ratio_dir_ref[ind] == "-":
                 deltaE = block_cell_plus_length[ind - 1]
             elif ratio_dir_ref[ind] == "+":
@@ -270,10 +280,9 @@ def radialCoarsening(
                 gradR[ind] = 1.0 / bissection(
                     length / deltaE, stretch_fun, NR[ind]
                 )
-
                 iterate = False
                 origNR = NR[ind]
-                while gradR[ind] <= 1:
+                while gradR[ind] < 1 and NR[ind] > 1:
                     iterate = True
                     NR[ind] = max(
                         int(round(min(0.99 * NR[ind], NR[ind] - 1))), 1
@@ -293,7 +302,7 @@ def radialCoarsening(
                 gradR[ind] = bissection(length / deltaE, stretch_fun, NR[ind])
                 iterate = False
                 origNR = NR[ind]
-                while gradR[ind] >= 1:
+                while gradR[ind] > 1 and NR[ind] > 1:
                     iterate = True
                     NR[ind] = max(int(round(min(0.99 * NR[ind], -1))), 1)
                     gradR[ind] = bissection(

@@ -1,0 +1,55 @@
+{
+	"Meshing": {
+    		"NRSmallest": 4,
+    		"NVertSmallest": 2,
+                "verticalCoarsening":[
+                                       {"ratio": 0.05, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 0.25, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "-", "directionRef": "+"},
+                                       {"ratio": 0.25, "direction": "-", "directionRef": "+"}
+                                     ],
+                "radialCoarsening":  [
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 0.6, "direction": "+", "directionRef": "-"}
+                                     ]
+	},
+	"Geometry": {
+                "Radial": {
+                        "inner_ring1" : 36,
+                        "outter_ring1" : 60,
+                        "inner_ring2" : 84,
+                        "outter_ring2" : 108,
+                        "inner_ring3" : 132,
+                        "outter_ring3" : 156,
+                        "inner_ring4" : 180,
+                        "outter_ring4" : 204,
+                        "inner_ring5" : 228,
+                        "outter_ring5" : 252,
+                        "column_radius"  : 360
+                },
+		"Longitudinal": {
+			"column_top" : 10000,
+			"head_space" : 7200,
+                        "sparger_trans": 1000,
+                        "sparger_top_ref": 600,
+                        "sparger_top": 505,
+                        "sparger_bottom": 495,
+                        "sparger_bottom_ref" : 400, 
+			"bottom" : 0
+		}
+	}
+}
+
+
