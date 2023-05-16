@@ -125,7 +125,7 @@ def verticalCoarsening(
             ratio_dir_ref.append(entry["directionRef"])
         except KeyError:
             ratio_dir_ref.append("+")
-   
+
     for iratio, ratio in enumerate(ratio_list):
         if abs(ratio - 1) < 1e-12:
             pass
@@ -153,7 +153,10 @@ def verticalCoarsening(
         historyRatio = []
         for ind in indList:
             historyRatio.append(ratio_list[ind])
-            if abs(max(historyRatio)-1) < 1e-12 and abs(min(historyRatio)-1) < 1e-12:
+            if (
+                abs(max(historyRatio) - 1) < 1e-12
+                and abs(min(historyRatio) - 1) < 1e-12
+            ):
                 continue
 
             length = block_length[ind]
@@ -195,7 +198,7 @@ def verticalCoarsening(
                 gradVert[ind] = bissection(
                     length / deltaE, stretch_fun, NVert[ind]
                 )
-                
+
                 iterate = False
                 origNVert = NVert[ind]
                 while gradVert[ind] > 1 and NVert[ind] > 1:
@@ -261,10 +264,13 @@ def radialCoarsening(
         historyRatio = []
         for ind in indList:
             historyRatio.append(ratio_list[ind])
-            if abs(max(historyRatio)-1) < 1e-12 and abs(min(historyRatio)-1) < 1e-12:
+            if (
+                abs(max(historyRatio) - 1) < 1e-12
+                and abs(min(historyRatio) - 1) < 1e-12
+            ):
                 continue
             length = block_length[ind]
-            
+
             if ratio_dir_ref[ind] == "-":
                 deltaE = block_cell_plus_length[ind - 1]
             elif ratio_dir_ref[ind] == "+":

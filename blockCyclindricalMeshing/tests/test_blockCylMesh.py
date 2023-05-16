@@ -53,6 +53,7 @@ def test_base_column_refine():
     }
     base_mesh(argsDict)
 
+
 def test_multiring():
     argsDict = {
         "input_file": "../multiring/input.json",
@@ -60,6 +61,7 @@ def test_multiring():
         "out_folder": "../case/system",
     }
     base_mesh(argsDict)
+
 
 def test_multiring_coarse():
     argsDict = {
