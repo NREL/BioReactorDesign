@@ -154,7 +154,7 @@ def assemble_mesh(argsDict, geomDict):
         block_length = [abs(L[i] - L[i + 1]) for i in range(len(NVert))]
         block_cell_length = [
             block_length[i] / NVert[i] for i in range(len(NVert))
-        ]   
+        ]
         minCellVert = np.amin(block_cell_length)
         maxCellVert = np.amax(block_cell_length)
     if do_radialCoarsening:
@@ -167,7 +167,9 @@ def assemble_mesh(argsDict, geomDict):
             smooth=True,
         )
     else:
-        block_length = [R[0] / 2] + [abs(R[i] - R[i + 1]) for i in range(len(R) - 1)]
+        block_length = [R[0] / 2] + [
+            abs(R[i] - R[i + 1]) for i in range(len(R) - 1)
+        ]
         block_cell_length = [block_length[i] / NR[i] for i in range(len(NR))]
         minCellR = np.amin(block_cell_length)
         maxCellR = np.amax(block_cell_length)
@@ -177,7 +179,7 @@ def assemble_mesh(argsDict, geomDict):
     print(f"\tsize min {minCellVert:.2f}mm max {maxCellVert:.2f}mm")
     print("Radial mesh:")
     print(f"\tTotal NR {sum(NR)}")
-    print(f"\tsize min {minCellR:.2f}mm max {maxCellR:.2f}mm") 
+    print(f"\tsize min {minCellR:.2f}mm max {maxCellR:.2f}mm")
 
     return {
         "NR": NR,

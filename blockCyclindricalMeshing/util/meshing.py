@@ -221,7 +221,6 @@ def verticalCoarsening(
     maxCell = np.amax(block_cell_minus_length)
     maxCell = max(maxCell, np.amax(block_cell_plus_length))
 
-
     return NVert, gradVert, minCell, maxCell
 
 
