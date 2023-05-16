@@ -13,7 +13,7 @@
                 "radialCoarsening":  [
                                        {"ratio": 1.0, "direction": "+", "directionRef": "-"},
                                        {"ratio": 1.0, "direction": "+", "directionRef": "-"},
-                                       {"ratio": 0.5, "direction": "+", "directionRef": "-"}
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"}
                                      ]
 	},
 	"Geometry": {
