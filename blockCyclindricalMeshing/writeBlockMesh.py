@@ -12,7 +12,6 @@ from myparser import parseJsonFile
 def assemble_geom(argsDict):
     inpt = parseJsonFile(argsDict["input_file"])
     topo = parseJsonFile(argsDict["topo_file"])
-
     # ~~~~ Define dimensions based on input
     r_dimensions_name = list(inpt["Geometry"]["Radial"].keys())
     r_dimensions = [
@@ -78,7 +77,8 @@ def assemble_mesh(argsDict, geomDict):
     except KeyError:
         iSmallest = np.argmin(rad_len_block)
 
-    smallestRBlockSize = rad_len_block[iSmallest]
+    i_smallest_rad = iSmallest
+    smallestRBlockSize = rad_len_block[i_smallest_rad]
 
     NR = [0 for i in range(len(R))]
     NR[iSmallest] = NRSmallest
@@ -93,7 +93,6 @@ def assemble_mesh(argsDict, geomDict):
                 1,
             )
     NS = [NR[0] * 2]
-
     # Now figure out grading of each block
     for ir in range(len(R)):
         gradR_l.append(1.0)
@@ -110,7 +109,8 @@ def assemble_mesh(argsDict, geomDict):
     except KeyError:
         iSmallest = np.argmin(vert_len_block)
 
-    smallestVertBlockSize = vert_len_block[iSmallest]
+    i_smallest_vert = iSmallest
+    smallestVertBlockSize = vert_len_block[i_smallest_vert]
 
     NVert = [0] * (len(L) - 1)
     NVert[iSmallest] = NVertSmallest
@@ -131,30 +131,55 @@ def assemble_mesh(argsDict, geomDict):
 
     # Mesh stretching
     try:
-        verticalCoarseningRatio = float(
-            inpt["Meshing"]["verticalCoarseningRatio"]
-        )
-        verticalCoarsening = True
+        verticalCoarseningProperties = inpt["Meshing"]["verticalCoarsening"]
+        do_verticalCoarsening = True
     except KeyError:
-        verticalCoarsening = False
+        do_verticalCoarsening = False
     try:
-        radialCoarseningRatio = float(inpt["Meshing"]["radialCoarseningRatio"])
-        radialCoarsening = True
+        radialCoarseningProperties = inpt["Meshing"]["radialCoarsening"]
+        do_radialCoarsening = True
     except KeyError:
-        radialCoarsening = False
+        do_radialCoarsening = False
 
-    if verticalCoarsening:
-        NVert, gradVert = verticalOutletCoarsening(
-            ratio=verticalCoarseningRatio,
+    if do_verticalCoarsening:
+        NVert, gradVert, minCellVert, maxCellVert = verticalCoarsening(
+            ratio_properties=verticalCoarseningProperties,
+            ref_block=i_smallest_vert,
             NVert=NVert,
             L=L,
             gradVert=gradVert,
             smooth=True,
         )
-    if radialCoarsening:
-        NR, gradR = radialFlowCoarseing(
-            ratio=radialCoarseningRatio, NR=NR, R=R, gradR=gradR, smooth=True
+    else:
+        block_length = [abs(L[i] - L[i + 1]) for i in range(len(NVert))]
+        block_cell_length = [
+            block_length[i] / NVert[i] for i in range(len(NVert))
+        ]
+        minCellVert = np.amin(block_cell_length)
+        maxCellVert = np.amax(block_cell_length)
+    if do_radialCoarsening:
+        NR, gradR, minCellR, maxCellR = radialCoarsening(
+            ratio_properties=radialCoarseningProperties,
+            ref_block=i_smallest_rad,
+            NR=NR,
+            R=R,
+            gradR=gradR,
+            smooth=True,
         )
+    else:
+        block_length = [R[0] / 2] + [
+            abs(R[i] - R[i + 1]) for i in range(len(R) - 1)
+        ]
+        block_cell_length = [block_length[i] / NR[i] for i in range(len(NR))]
+        minCellR = np.amin(block_cell_length)
+        maxCellR = np.amax(block_cell_length)
+
+    print("Vertical mesh:")
+    print(f"\tTotal NVert {sum(NVert)}")
+    print(f"\tsize min {minCellVert:.2f}mm max {maxCellVert:.2f}mm")
+    print("Radial mesh:")
+    print(f"\tTotal NR {sum(NR)}")
+    print(f"\tsize min {minCellR:.2f}mm max {maxCellR:.2f}mm")
 
     return {
         "NR": NR,
@@ -410,12 +435,15 @@ def writeBlockMeshDict(argsDict, geomDict, meshDict):
     fw.write("boundary\n")
     fw.write("(\n")
 
-    for i in range(len(BoundaryNames)):
-        fw.write("    " + BoundaryNames[i] + "\n")
-        fw.write("    " + "{\n")
-        fw.write("        " + "type patch;\n")
-        fw.write("        " + "faces\n")
-        fw.write("        " + "(\n")
+    for i, name in enumerate(BoundaryNames):
+        fw.write(f"    {name}\n")
+        fw.write("    {\n")
+        if name.startswith("wall"):
+            fw.write("        " + "type wall;\n")
+        else:
+            fw.write("        " + "type patch;\n")
+        fw.write("        faces\n")
+        fw.write("        (\n")
 
         for ibound in range(len(BoundaryType[i])):
             boundType = BoundaryType[i][ibound]

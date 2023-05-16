@@ -43,3 +43,30 @@ def test_base_column():
         "out_folder": "../case/system",
     }
     base_mesh(argsDict)
+
+
+def test_base_column_refine():
+    argsDict = {
+        "input_file": "../baseColumn_refineSparg/input.json",
+        "topo_file": "../baseColumn_refineSparg/topology.json",
+        "out_folder": "../case/system",
+    }
+    base_mesh(argsDict)
+
+
+def test_multiring():
+    argsDict = {
+        "input_file": "../multiRing_simple/input.json",
+        "topo_file": "../multiRing_simple/topology.json",
+        "out_folder": "../case/system",
+    }
+    base_mesh(argsDict)
+
+
+def test_multiring_coarse():
+    argsDict = {
+        "input_file": "../multiRing_coarse/input.json",
+        "topo_file": "../multiRing_coarse/topology.json",
+        "out_folder": "../case/system",
+    }
+    base_mesh(argsDict)
