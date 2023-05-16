@@ -1,10 +1,17 @@
 root=`pwd`
 caseFolder=case
 #geometryFolder=flatDonut
-#geometryFolder=sideSparger
+geometryFolder=sideSparger
 #geometryFolder=baseColumn
 #geometryFolder=baseColumn_refineSparg
-geometryFolder=multiRing
+#geometryFolder=multiRing_simple
+#yygeometryFolder=multiRing_coarse
+#geometryFolder=flatDonut_slot
+#geometryFolder=flatDonut_projected
+#geometryFolder=multiRing_simple_projected
+#geometryFolder=circle
+#geometryFolder=circle_projected
+
 
 
 python writeBlockMesh.py -i $geometryFolder/input.json -t $geometryFolder/topology.json -o $caseFolder/system

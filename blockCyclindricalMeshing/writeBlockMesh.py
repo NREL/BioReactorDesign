@@ -142,7 +142,7 @@ def assemble_mesh(argsDict, geomDict):
         do_radialCoarsening = False
 
     if do_verticalCoarsening:
-        NVert, gradVert = verticalCoarsening(
+        NVert, gradVert, minCellVert, maxCellVert = verticalCoarsening(
             ratio_properties=verticalCoarseningProperties,
             ref_block=i_smallest_vert,
             NVert=NVert,
@@ -150,8 +150,15 @@ def assemble_mesh(argsDict, geomDict):
             gradVert=gradVert,
             smooth=True,
         )
+    else:
+        block_length = [abs(L[i] - L[i + 1]) for i in range(len(NVert))]
+        block_cell_length = [
+            block_length[i] / NVert[i] for i in range(len(NVert))
+        ]   
+        minCellVert = np.amin(block_cell_length)
+        maxCellVert = np.amax(block_cell_length)
     if do_radialCoarsening:
-        NR, gradR = radialCoarsening(
+        NR, gradR, minCellR, maxCellR = radialCoarsening(
             ratio_properties=radialCoarseningProperties,
             ref_block=i_smallest_rad,
             NR=NR,
@@ -159,6 +166,18 @@ def assemble_mesh(argsDict, geomDict):
             gradR=gradR,
             smooth=True,
         )
+    else:
+        block_length = [R[0] / 2] + [abs(R[i] - R[i + 1]) for i in range(len(R) - 1)]
+        block_cell_length = [block_length[i] / NR[i] for i in range(len(NR))]
+        minCellR = np.amin(block_cell_length)
+        maxCellR = np.amax(block_cell_length)
+
+    print("Vertical mesh:")
+    print(f"\tTotal NVert {sum(NVert)}")
+    print(f"\tsize min {minCellVert:.2f}mm max {maxCellVert:.2f}mm")
+    print("Radial mesh:")
+    print(f"\tTotal NR {sum(NR)}")
+    print(f"\tsize min {minCellR:.2f}mm max {maxCellR:.2f}mm") 
 
     return {
         "NR": NR,

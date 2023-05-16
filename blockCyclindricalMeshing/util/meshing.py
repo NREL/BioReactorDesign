@@ -216,8 +216,13 @@ def verticalCoarsening(
                 block_cell_minus_length[ind] = deltaE / gradVert[ind]
                 block_cell_plus_length[ind] = deltaE
 
-    print(gradVert)
-    return NVert, gradVert
+    minCell = np.amin(block_cell_minus_length)
+    minCell = min(minCell, np.amin(block_cell_plus_length))
+    maxCell = np.amax(block_cell_minus_length)
+    maxCell = max(maxCell, np.amax(block_cell_plus_length))
+
+
+    return NVert, gradVert, minCell, maxCell
 
 
 def radialCoarsening(
@@ -321,6 +326,11 @@ def radialCoarsening(
                 block_cell_minus_length[ind] = deltaE / gradR[ind]
                 block_cell_plus_length[ind] = deltaE
 
+    minCell = np.amin(block_cell_minus_length)
+    minCell = min(minCell, np.amin(block_cell_plus_length))
+    maxCell = np.amax(block_cell_minus_length)
+    maxCell = min(maxCell, np.amax(block_cell_plus_length))
+
     # if smooth:
     #    if gradR is None or R is None:
     #        sys.exit(
@@ -340,4 +350,4 @@ def radialCoarsening(
     #        )
     #        print("\tIncrease NS in input file to avoid this warning")
 
-    return NR, gradR
+    return NR, gradR, minCell, maxCell
