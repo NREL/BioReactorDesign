@@ -56,8 +56,8 @@ def test_base_column_refine():
 
 def test_multiring():
     argsDict = {
-        "input_file": "../multiRing/input.json",
-        "topo_file": "../multiRing/topology.json",
+        "input_file": "../multiRing_simple/input.json",
+        "topo_file": "../multiRing_simple/topology.json",
         "out_folder": "../case/system",
     }
     base_mesh(argsDict)
