@@ -77,7 +77,8 @@ def assemble_mesh(argsDict, geomDict):
     except KeyError:
         iSmallest = np.argmin(rad_len_block)
 
-    smallestRBlockSize = rad_len_block[iSmallest]
+    i_smallest_rad = iSmallest
+    smallestRBlockSize = rad_len_block[i_smallest_rad]
 
     NR = [0 for i in range(len(R))]
     NR[iSmallest] = NRSmallest
@@ -92,7 +93,6 @@ def assemble_mesh(argsDict, geomDict):
                 1,
             )
     NS = [NR[0] * 2]
-
     # Now figure out grading of each block
     for ir in range(len(R)):
         gradR_l.append(1.0)
@@ -109,7 +109,8 @@ def assemble_mesh(argsDict, geomDict):
     except KeyError:
         iSmallest = np.argmin(vert_len_block)
 
-    smallestVertBlockSize = vert_len_block[iSmallest]
+    i_smallest_vert = iSmallest
+    smallestVertBlockSize = vert_len_block[i_smallest_vert]
 
     NVert = [0] * (len(L) - 1)
     NVert[iSmallest] = NVertSmallest
@@ -143,14 +144,20 @@ def assemble_mesh(argsDict, geomDict):
     if do_verticalCoarsening:
         NVert, gradVert = verticalCoarsening(
             ratio_properties=verticalCoarseningProperties,
+            ref_block=i_smallest_vert,
             NVert=NVert,
             L=L,
             gradVert=gradVert,
-            smooth=False,
+            smooth=True,
         )
     if do_radialCoarsening:
         NR, gradR = radialCoarsening(
-            ratio_properties=radialCoarseningProperties, NR=NR, R=R, gradR=gradR, smooth=False
+            ratio_properties=radialCoarseningProperties,
+            ref_block=i_smallest_rad,
+            NR=NR,
+            R=R,
+            gradR=gradR,
+            smooth=True,
         )
 
     return {

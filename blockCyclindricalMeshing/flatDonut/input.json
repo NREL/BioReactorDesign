@@ -2,8 +2,17 @@
 	"Meshing": {
     		"NRSmallest": 3,
     		"NVertSmallest": 2,
-    		"verticalCoarseningRatio": 0.5,
-    		"radialCoarseningRatio": 1
+                "verticalCoarsening":[
+                                       {"ratio": 0.5, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0},
+                                       {"ratio": 1.0, "direction": "-", "directionRef": "+"}
+                                     ],
+                "radialCoarsening":  [
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"}
+                                     ]
 	},
 	"Geometry": {
 		"Radial": {

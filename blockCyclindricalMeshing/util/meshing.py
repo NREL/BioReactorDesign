@@ -108,58 +108,205 @@ def mergeSort(list, reverse):
 
 
 def verticalCoarsening(
-    ratio_properties, NVert, L=None, gradVert=None, smooth=False
+    ratio_properties, ref_block, NVert, L=None, gradVert=None, smooth=False
 ):
-
     if gradVert is None:
         gradVert = [1.0 for _ in range(len(NVert))]
 
-    ratio_list = [entry['ratio'] for entry in ratio_properties]
+    ratio_list = [entry["ratio"] for entry in ratio_properties]
+    ratio_dir = []
+    ratio_dir_ref = []
+    for entry in ratio_properties:
+        try:
+            ratio_dir.append(entry["direction"])
+        except KeyError:
+            ratio_dir.append("+")
+        try:
+            ratio_dir_ref.append(entry["directionRef"])
+        except KeyError:
+            ratio_dir_ref.append("+")
 
     for iratio, ratio in enumerate(ratio_list):
-
         if abs(ratio - 1) < 1e-12:
             pass
-        else: 
-            NVert[iratio] = max(int(round(NVert[iratio] * ratio)),1) 
+        else:
+            NVert[iratio] = max(int(round(NVert[iratio] * ratio)), 1)
 
-        #if smooth:
-        #    if gradVert is None or L is None:
-        #        sys.exit(
-        #            "Error: cannot smooth vertical transition without grading list"
-        #        )
+    block_length = [abs(L[i] - L[i + 1]) for i in range(len(NVert))]
+    block_cell_plus_length = [
+        block_length[i] / NVert[i] for i in range(len(NVert))
+    ]
+    block_cell_minus_length = [
+        block_length[i] / NVert[i] for i in range(len(NVert))
+    ]
 
-        #    Length = L[0] - L[1]
-        #    deltaE = (L[1] - L[2]) / NVert[1]
-        #    gradVert[0] = 1 / (bissection(Length / deltaE, stretch_fun, NVert[0]))
+    if smooth:
+        # Find which block to leave untouched
+        indRef = int(ref_block)
+        # Decide the order to follow
+        indList = []
+        for i in range(1, indRef + 1):
+            indList.append(indRef - i)
+        for i in range(indRef + 1, len(NVert)):
+            indList.append(i)
 
-        #    if (gradVert[0] > 2 or gradVert[0] < 0.5) and abs(ratio - 1) <= 1e-12:
-        #        print(
-        #            "WARNING: vertical smoothing had to be used because your mesh is very coarse"
-        #        )
-        #        print(
-        #            "\tIncrease NVertSparger in input file to avoid this warning"
-        #        )
+        for ind in indList:
+            length = block_length[ind]
+
+            if ratio_dir_ref[ind] == "-":
+                deltaE = block_cell_plus_length[ind + 1]
+            elif ratio_dir_ref[ind] == "+":
+                deltaE = block_cell_minus_length[ind - 1]
+
+            if ratio_dir[ind] == ratio_dir_ref[ind]:
+                message = "ERROR:"
+                message += f"Invalid coarsening ratio for vertical block {ind}"
+                message += "\nratio dir and ratio dir ref must be opposite"
+                sys.exit(message)
+
+            if ratio_dir[ind] == "+":
+                gradVert[ind] = 1.0 / bissection(
+                    length / deltaE, stretch_fun, NVert[ind]
+                )
+                iterate = False
+                origNVert = NVert[ind]
+                while gradVert[ind] <= 1:
+                    iterate = True
+                    NVert[ind] = max(
+                        int(round(min(0.99 * NVert[ind], NVert[ind] - 1))), 1
+                    )
+                    gradVert[ind] = 1.0 / bissection(
+                        length / deltaE, stretch_fun, NVert[ind]
+                    )
+                if iterate:
+                    print(
+                        f"WARNING: reduced NVert[{ind}] from {origNVert} to {NVert[ind]}"
+                    )
+                block_cell_minus_length[ind] = deltaE
+                block_cell_plus_length[ind] = deltaE * gradVert[ind]
+
+            elif ratio_dir[ind] == "-":
+                deltaE = block_cell_minus_length[ind - 1]
+                gradVert[ind] = bissection(
+                    length / deltaE, stretch_fun, NVert[ind]
+                )
+                iterate = False
+                origNVert = NVert[ind]
+                while gradVert[ind] >= 1:
+                    iterate = True
+                    NVert[ind] = max(
+                        int(round(min(0.99 * NVert[ind], NVert[ind] - 1))), 1
+                    )
+                    gradVert[ind] = bissection(
+                        length / deltaE, stretch_fun, NVert[ind]
+                    )
+                if iterate:
+                    print(
+                        f"WARNING: reduced NVert[{ind}] from {origNVert} to {NVert[ind]}"
+                    )
+                block_cell_minus_length[ind] = deltaE / gradVert[ind]
+                block_cell_plus_length[ind] = deltaE
 
     return NVert, gradVert
 
 
-def radialCoarsening(ratio_properties, NR, R=None, gradR=None, smooth=False):
-
+def radialCoarsening(
+    ratio_properties, ref_block, NR, R=None, gradR=None, smooth=False
+):
     if gradR is None:
         gradR = [1.0 for _ in range(len(NR))]
 
-    ratio_list = [entry['ratio'] for entry in ratio_properties]
+    ratio_list = [entry["ratio"] for entry in ratio_properties]
+    ratio_dir = []
+    ratio_dir_ref = []
+    for entry in ratio_properties:
+        try:
+            ratio_dir.append(entry["direction"])
+        except KeyError:
+            ratio_dir.append("+")
+        try:
+            ratio_dir_ref.append(entry["directionRef"])
+        except KeyError:
+            ratio_dir_ref.append("+")
 
     for iratio, ratio in enumerate(ratio_list):
-
-        if abs(ratio - 1) < 1e-12 or len(R) < 3:
+        if abs(ratio - 1) < 1e-12:
             pass
         else:
-            NR[iratio] = max(int(round(NR[iratio] * ratio)),1)
+            NR[iratio] = max(int(round(NR[iratio] * ratio)), 1)
 
+    block_length = [R[0] / 2] + [
+        abs(R[i] - R[i + 1]) for i in range(len(R) - 1)
+    ]
 
-    #if smooth:
+    block_cell_plus_length = [block_length[i] / NR[i] for i in range(len(NR))]
+    block_cell_minus_length = [block_length[i] / NR[i] for i in range(len(NR))]
+
+    if smooth:
+        # Find which block to leave untouched
+        indRef = int(ref_block)
+        # Decide the order to follow
+        indList = []
+        for i in range(1, indRef + 1):
+            indList.append(indRef - i)
+        for i in range(indRef + 1, len(NR)):
+            indList.append(i)
+
+        for ind in indList:
+            length = block_length[ind]
+
+            if ratio_dir_ref[ind] == "-":
+                deltaE = block_cell_plus_length[ind - 1]
+            elif ratio_dir_ref[ind] == "+":
+                deltaE = block_cell_minus_length[ind + 1]
+
+            if ratio_dir[ind] == ratio_dir_ref[ind]:
+                message = "ERROR:"
+                message += f"Invalid coarsening ratio for radial block {ind}"
+                message += "\nratio dir and ratio dir ref must be opposite"
+                sys.exit(message)
+
+            if ratio_dir[ind] == "+":
+                gradR[ind] = 1.0 / bissection(
+                    length / deltaE, stretch_fun, NR[ind]
+                )
+
+                iterate = False
+                origNR = NR[ind]
+                while gradR[ind] <= 1:
+                    iterate = True
+                    NR[ind] = max(
+                        int(round(min(0.99 * NR[ind], NR[ind] - 1))), 1
+                    )
+                    gradR[ind] = 1.0 / bissection(
+                        length / deltaE, stretch_fun, NR[ind]
+                    )
+                if iterate:
+                    print(
+                        f"WARNING: reduced NR[{ind}] from {origNR} to {NR[ind]}"
+                    )
+                block_cell_minus_length[ind] = deltaE
+                block_cell_plus_length[ind] = deltaE * gradR[ind]
+
+            elif ratio_dir[ind] == "-":
+                deltaE = block_cell_minus_length[ind - 1]
+                gradR[ind] = bissection(length / deltaE, stretch_fun, NR[ind])
+                iterate = False
+                origNR = NR[ind]
+                while gradR[ind] >= 1:
+                    iterate = True
+                    NR[ind] = max(int(round(min(0.99 * NR[ind], -1))), 1)
+                    gradR[ind] = bissection(
+                        length / deltaE, stretch_fun, NR[ind]
+                    )
+                if iterate:
+                    print(
+                        f"WARNING: reduced NR[{ind}] from {origNR} to {NR[ind]}"
+                    )
+                block_cell_minus_length[ind] = deltaE / gradR[ind]
+                block_cell_plus_length[ind] = deltaE
+
+    # if smooth:
     #    if gradR is None or R is None:
     #        sys.exit(
     #            "ERROR: cannot smooth radial transition without grading list"
