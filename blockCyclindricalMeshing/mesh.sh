@@ -1,8 +1,9 @@
 root=`pwd`
 caseFolder=case
 #geometryFolder=flatDonut
-geometryFolder=sideSparger
+#geometryFolder=sideSparger
 #geometryFolder=baseColumn
+geometryFolder=baseColumn_projected
 #geometryFolder=baseColumn_refineSparg
 #geometryFolder=multiRing_simple
 #yygeometryFolder=multiRing_coarse
