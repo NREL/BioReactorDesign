@@ -130,6 +130,6 @@ def multi_ring_variations(
 
 
 if __name__ == "__main__":
-    # side_sparger_variations(10, 'study', template_folder='template_sideSparger')
-    flat_donut_variations(10, "study", template_folder="template_flatDonut")
-    # multi_ring_variations(10, 'study', template_folder='template_multiRing')
+    # side_sparger_variations(10, 'study', case_template_folder='case', template_folder='template_sideSparger')
+    flat_donut_variations(10, "study", case_template_folder='case', template_folder="template_flatDonut")
+    # multi_ring_variations(10, 'study', case_template_folder='case', template_folder='template_multiRing')
