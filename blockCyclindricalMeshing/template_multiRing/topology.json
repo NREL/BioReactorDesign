@@ -1,0 +1,45 @@
+{
+	"Walls": {
+    		"Sparger": [ 
+                            {"R": 2, "L": 4},
+                            {"R": 4, "L": 4}
+                           ]
+	},
+	"Boundary": {
+		"inlet": [
+			   {"type": "top", "Rmin": 2, "Rmax": 2, "Lmin": 3, "Lmax": 4},
+			   {"type": "top", "Rmin": 4, "Rmax": 4, "Lmin": 3, "Lmax": 4}
+			 ],
+		"outlet":[
+			   {"type": "top", "Rmin": 0, "Rmax": 0, "Lmin": 0, "Lmax": 1},
+			   {"type": "top", "Rmin": 1, "Rmax": 1, "Lmin": 0, "Lmax": 1},
+			   {"type": "top", "Rmin": 2, "Rmax": 2, "Lmin": 0, "Lmax": 1},
+			   {"type": "top", "Rmin": 3, "Rmax": 3, "Lmin": 0, "Lmax": 1},
+			   {"type": "top", "Rmin": 4, "Rmax": 4, "Lmin": 0, "Lmax": 1},
+			   {"type": "top", "Rmin": 5, "Rmax": 5, "Lmin": 0, "Lmax": 1}
+			 ],
+		"walls": [
+			   {"type": "lateral", "Rmin": 5, "Rmax": 6, "Lmin": 1, "Lmax": 1},
+			   {"type": "lateral", "Rmin": 5, "Rmax": 6, "Lmin": 2, "Lmax": 2},
+			   {"type": "lateral", "Rmin": 5, "Rmax": 6, "Lmin": 3, "Lmax": 3},
+			   {"type": "lateral", "Rmin": 5, "Rmax": 6, "Lmin": 4, "Lmax": 4},
+			   {"type": "lateral", "Rmin": 5, "Rmax": 6, "Lmin": 5, "Lmax": 5},
+			   {"type": "lateral", "Rmin": 4, "Rmax": 5, "Lmin": 4, "Lmax": 4},
+			   {"type": "lateral", "Rmin": 3, "Rmax": 4, "Lmin": 4, "Lmax": 4},
+			   {"type": "lateral", "Rmin": 2, "Rmax": 3, "Lmin": 4, "Lmax": 4},
+			   {"type": "lateral", "Rmin": 1, "Rmax": 2, "Lmin": 4, "Lmax": 4},
+			   {"type": "bottom", "Rmin": 2, "Rmax": 2, "Lmin": 4, "Lmax": 5},
+			   {"type": "bottom", "Rmin": 4, "Rmax": 4, "Lmin": 4, "Lmax": 5},
+			   {"type": "bottom", "Rmin": 0, "Rmax": 0, "Lmin": 5, "Lmax": 6},
+			   {"type": "bottom", "Rmin": 1, "Rmax": 1, "Lmin": 5, "Lmax": 6},
+			   {"type": "bottom", "Rmin": 2, "Rmax": 2, "Lmin": 5, "Lmax": 6},
+			   {"type": "bottom", "Rmin": 3, "Rmax": 3, "Lmin": 5, "Lmax": 6},
+			   {"type": "bottom", "Rmin": 4, "Rmax": 4, "Lmin": 5, "Lmax": 6},
+			   {"type": "bottom", "Rmin": 5, "Rmax": 5, "Lmin": 5, "Lmax": 6}
+			 ]
+	}
+}
+
+
+
+
