@@ -14,8 +14,8 @@ def modify_multiring(width, spacing, template_folder, target_folder):
     with open(os.path.join(target_folder, 'topology.json'), 'w+') as f:
         json.dump(data_topo, f, indent=4)
     with open(os.path.join(target_folder, 'input.json'), 'w+') as f:
-        ring_width = 32
-        ring_spacing = 100
+        ring_width = width
+        ring_spacing = spacing
         r_outterRing = data_input['Geometry']['Radial']["outter_ring5"]
         data_input['Geometry']['Radial']["inner_ring5"] = r_outterRing - ring_width
         data_input['Geometry']['Radial']["outter_ring4"] = r_outterRing - ring_width - ring_spacing
