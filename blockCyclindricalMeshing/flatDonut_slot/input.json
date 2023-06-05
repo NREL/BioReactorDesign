@@ -17,7 +17,7 @@
 	"Geometry": {
 		"Radial": {
 			"inner_sparger" : 109,
-			"outer_sparger" : 275,
+			"outter_sparger" : 275,
 			"column" : 360
 		},
 		"Longitudinal": {
