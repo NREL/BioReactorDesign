@@ -1,11 +1,14 @@
 root=`pwd`
 caseFolder=case
-#geometryFolder=flatDonut
+geometryFolder=flatDonut
 #geometryFolder=sideSparger
 #geometryFolder=baseColumn
-geometryFolder=baseColumn_projected
+#geometryFolder=baseColumn_projected
 #geometryFolder=baseColumn_refineSparg
-#geometryFolder=multiRing_simple
+#geometryFolder=multiRing_rad_width
+#geometryFolder=template_flatDonut
+#geometryFolder=template_sideSparger
+#geometryFolder=testMR
 #yygeometryFolder=multiRing_coarse
 #geometryFolder=flatDonut_slot
 #geometryFolder=flatDonut_projected
