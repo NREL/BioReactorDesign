@@ -37,6 +37,7 @@ def setupCaseFolder(target_folder):
 def side_sparger_variations(nCases, study_folder, template_folder='template_sideSparger'):
     os.makedirs(study_folder, exist_ok=True)   
     heights = np.linspace(10, 200, nCases)
+    np.savez(os.path.join(study_folder,'param_sideSparger.npz'), height=heights)
     for i in range(nCases):
         case_folder = os.path.join(study_folder,f'side_sparger_{i}')
         try:
@@ -53,6 +54,7 @@ def side_sparger_variations(nCases, study_folder, template_folder='template_side
 def flat_donut_variations(nCases, study_folder, template_folder='template_flatDonut'):
     os.makedirs(study_folder, exist_ok=True)   
     widths = np.linspace(30, 200, nCases)
+    np.savez(os.path.join(study_folder,'param_flatDonut.npz'), width=widths)
     for i in range(nCases):
         case_folder = os.path.join(study_folder,f'flat_donut_{i}')
         try:
@@ -75,6 +77,8 @@ def multiRing_variations(nCases, study_folder, template_folder='template_multiRi
     nCases = n_1D*n_1D
     widths = np.ndarray.flatten(widthv)
     spacings = np.ndarray.flatten(spacingv)
+    np.savez(os.path.join(study_folder,'param_multiRing.npz'), width=widths, spacing=spacings)
+ 
     for i in range(nCases):
         case_folder = os.path.join(study_folder,f'multiRing_{i}')
         try:
@@ -91,5 +95,5 @@ def multiRing_variations(nCases, study_folder, template_folder='template_multiRi
  
 if __name__ == "__main__":
     #side_sparger_variations(10, 'study', template_folder='template_sideSparger')
-    #flat_donut_variations(10, 'study', template_folder='template_flatDonut')
-    multiRing_variations(10, 'study', template_folder='template_multiRing')
+    flat_donut_variations(10, 'study', template_folder='template_flatDonut')
+    #multiRing_variations(10, 'study', template_folder='template_multiRing')
