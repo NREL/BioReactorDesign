@@ -29,15 +29,20 @@ def generate_blockMeshDict(case_folder):
     base_mesh(argsDict)
 
 
-def setupCaseFolder(target_folder):
+def setupCaseFolder(target_folder, case_template_folder="case"):
     system_target_folder = os.path.join(target_folder, "system")
     os.makedirs(system_target_folder, exist_ok=True)
-    copy_tree("case/system", system_target_folder)
-    copy("case/test.foam", target_folder)
+    copy_tree(
+        os.path.join(case_template_folder, "system"), system_target_folder
+    )
+    copy(os.path.join(case_template_folder, "test.foam"), target_folder)
 
 
 def side_sparger_variations(
-    nCases, study_folder, template_folder="template_sideSparger"
+    nCases,
+    study_folder,
+    case_template_folder="case",
+    template_folder="template_sideSparger",
 ):
     os.makedirs(study_folder, exist_ok=True)
     heights = np.linspace(10, 200, nCases)
@@ -51,7 +56,7 @@ def side_sparger_variations(
         except OSError:
             sys.exit(f"ERROR: folder {case_folder} exists already")
         # Setup folder
-        setupCaseFolder(case_folder)
+        setupCaseFolder(case_folder, case_template_folder=case_template_folder)
         # Setup json files
         modify_sideSparger(
             heights[i], template_folder, os.path.join(case_folder, "system")
@@ -61,7 +66,10 @@ def side_sparger_variations(
 
 
 def flat_donut_variations(
-    nCases, study_folder, template_folder="template_flatDonut"
+    nCases,
+    study_folder,
+    case_template_folder="case",
+    template_folder="template_flatDonut",
 ):
     os.makedirs(study_folder, exist_ok=True)
     widths = np.linspace(30, 200, nCases)
@@ -73,7 +81,7 @@ def flat_donut_variations(
         except OSError:
             sys.exit(f"ERROR: folder {case_folder} exists already")
         # Setup folder
-        setupCaseFolder(case_folder)
+        setupCaseFolder(case_folder, case_template_folder=case_template_folder)
         # Setup json files
         modify_flatDonut(
             widths[i], template_folder, os.path.join(case_folder, "system")
@@ -82,8 +90,11 @@ def flat_donut_variations(
         generate_blockMeshDict(os.path.join(case_folder))
 
 
-def multiRing_variations(
-    nCases, study_folder, template_folder="template_multiRing"
+def multi_ring_variations(
+    nCases,
+    study_folder,
+    case_template_folder="case",
+    template_folder="template_multiRing",
 ):
     os.makedirs(study_folder, exist_ok=True)
     n_1D = round(np.sqrt(nCases))
@@ -106,7 +117,7 @@ def multiRing_variations(
         except OSError:
             sys.exit(f"ERROR: folder {case_folder} exists already")
         # Setup folder
-        setupCaseFolder(case_folder)
+        setupCaseFolder(case_folder, case_template_folder=case_template_folder)
         # Setup json files
         modify_multiring(
             widths[i],
@@ -121,4 +132,4 @@ def multiRing_variations(
 if __name__ == "__main__":
     # side_sparger_variations(10, 'study', template_folder='template_sideSparger')
     flat_donut_variations(10, "study", template_folder="template_flatDonut")
-    # multiRing_variations(10, 'study', template_folder='template_multiRing')
+    # multi_ring_variations(10, 'study', template_folder='template_multiRing')
