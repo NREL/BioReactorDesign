@@ -1,11 +1,14 @@
 {
 	"Meshing": {
-    		"NRSmallest": 3,
-    		"NVertSmallest": 14,
+                "iRSmallest": 2,
+    		"NRSmallest": 4,
+    		"NVertSmallest": 1,
                 "verticalCoarsening":[
                                        {"ratio": 0.2, "direction": "+", "directionRef": "-"},
                                        {"ratio": 1.0, "direction": "+", "directionRef": "-"},
-                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"}
+                                       {"ratio": 0.7, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0},
+                                       {"ratio": 0.7, "direction": "-", "directionRef": "+"}
                                      ],
                 "radialCoarsening":  [
                                        {"ratio": 1.0, "direction": "+", "directionRef": "-"},
@@ -22,8 +25,10 @@
 		"Longitudinal": {
 			"column_top" : 10000,
 			"head_space" : 7200,
-                        "sparger_trans": 1000,
-			"sparger_top" : 510
+			"sparger_trans" : 1000,
+			"sparger_top" : 510,
+			"sparger_bottom" : 490,
+			"bottom" : 0
 		}
 	}
 }

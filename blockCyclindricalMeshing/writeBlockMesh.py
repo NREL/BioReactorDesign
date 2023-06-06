@@ -92,6 +92,7 @@ def assemble_mesh(argsDict, geomDict):
                 ),
                 1,
             )
+    print(NR)
     NS = [NR[0] * 2]
     # Now figure out grading of each block
     for ir in range(len(R)):
@@ -176,9 +177,11 @@ def assemble_mesh(argsDict, geomDict):
 
     print("Vertical mesh:")
     print(f"\tTotal NVert {sum(NVert)}")
+    print(f"\tNVert {NVert}")
     print(f"\tsize min {minCellVert:.2f}mm max {maxCellVert:.2f}mm")
     print("Radial mesh:")
     print(f"\tTotal NR {sum(NR)}")
+    print(f"\tNR {NR}")
     print(f"\tsize min {minCellR:.2f}mm max {maxCellR:.2f}mm")
 
     return {
