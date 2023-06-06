@@ -1,3 +1,6 @@
+# Sparger mesh generation for OpenFOAM [![SpargerDesign-CI](https://github.com/NREL/spargerDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NREL/spargerDesign/actions/workflows/ci.yml)
+
+
 ## Installation
 
 ```
