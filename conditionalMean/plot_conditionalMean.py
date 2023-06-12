@@ -110,6 +110,10 @@ for case_folder in case_folders:
 for field_name in field_names:
     fig = plt.figure()
     sequencePlot(cond, case_names, case_folders, field_name, symbList)
-    prettyLabels(field_name, "y [m]", 14)
-    plt.savefig(os.path.join(figureFolder, f"{field_name}.png"))
+    if field_name == "alpha.gas":
+        plot_name = "gasHoldup"
+    else:
+        plot_name = field_name
+    prettyLabels(plot_name, "y [m]", 14)
+    plt.savefig(os.path.join(figureFolder, f"{plot_name}.png"))
     plt.close()

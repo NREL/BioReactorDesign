@@ -108,9 +108,9 @@ def getMeshTime(casePath):
             return entry[16:-4]
 
 
-def compute_gas_holdup(caseFolder, timeFolder, nCells):
+def compute_gas_holdup(caseFolder, timeFolder, nCells, firstTimeFolder):
     alpha_gas_file = os.path.join(caseFolder, timeFolder, "alpha.gas")
-    volume_file = os.path.join(caseFolder, timeFolder, "V")
+    volume_file = os.path.join(caseFolder, str(firstTimeFolder), "V")
     alpha_gas = readOFScal(alpha_gas_file, nCells)
     volume = readOFScal(volume_file, nCells)
     holdup = np.sum(alpha_gas * volume) / np.sum(volume)
