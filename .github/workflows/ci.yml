@@ -31,6 +31,7 @@ jobs:
           format blockCyclindricalMeshing true
           format inhomogeneousBC true
           format spiderSparger true
+          format conditionalMean true
   Test:
     runs-on: ubuntu-latest
     strategy:
