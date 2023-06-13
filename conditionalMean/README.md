@@ -7,7 +7,7 @@ Follow `exec.sh`
 ```
 usage: compute_conditionalMean.py [-h] -f  [-vert] [-avg] [-fl FIELD_LIST [FIELD_LIST ...]]
 
-Case folder
+Compute conditional means of OpenFOAM fields
 
 options:
   -h, --help            show this help message and exit

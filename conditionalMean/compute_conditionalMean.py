@@ -9,7 +9,9 @@ import pickle
 
 from ofio import *
 
-parser = argparse.ArgumentParser(description="Case folder")
+parser = argparse.ArgumentParser(
+    description="Compute conditional means of OpenFOAM fields"
+)
 parser.add_argument(
     "-f",
     "--caseFolder",
