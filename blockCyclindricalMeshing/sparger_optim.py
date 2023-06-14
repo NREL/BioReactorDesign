@@ -29,13 +29,25 @@ def generate_blockMeshDict(case_folder):
     base_mesh(argsDict)
 
 
-def setupCaseFolder(target_folder, case_template_folder="case"):
+def setupCaseFolder(target_folder, case_template_folder="case_template"):
     system_target_folder = os.path.join(target_folder, "system")
     os.makedirs(system_target_folder, exist_ok=True)
     copy_tree(
         os.path.join(case_template_folder, "system"), system_target_folder
     )
-    copy(os.path.join(case_template_folder, "test.foam"), target_folder)
+    constant_target_folder = os.path.join(target_folder, "constant")
+    os.makedirs(constant_target_folder, exist_ok=True)
+    copy_tree(
+        os.path.join(case_template_folder, "constant"), constant_target_folder
+    )
+    orig_target_folder = os.path.join(target_folder, "0.orig")
+    os.makedirs(orig_target_folder, exist_ok=True)
+    copy_tree(
+        os.path.join(case_template_folder, "0.orig"), orig_target_folder
+    )
+    
+    copy(os.path.join(case_template_folder, "script.sh"), target_folder)
+    copy(os.path.join(case_template_folder, "Allrun"), target_folder)
 
 
 def side_sparger_variations(
@@ -72,7 +84,7 @@ def flat_donut_variations(
     template_folder="template_flatDonut",
 ):
     os.makedirs(study_folder, exist_ok=True)
-    widths = np.linspace(30, 200, nCases)
+    widths = np.linspace(50, 200, nCases)
     np.savez(os.path.join(study_folder, "param_flatDonut.npz"), width=widths)
     for i in range(nCases):
         case_folder = os.path.join(study_folder, f"flat_donut_{i}")
@@ -134,7 +146,7 @@ if __name__ == "__main__":
     flat_donut_variations(
         10,
         "study",
-        case_template_folder="case",
+        case_template_folder="case_template",
         template_folder="template_flatDonut",
     )
     # multi_ring_variations(10, 'study', case_template_folder='case', template_folder='template_multiRing')
