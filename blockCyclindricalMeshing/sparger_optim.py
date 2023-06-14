@@ -150,7 +150,7 @@ def multi_ring_variations(
 def gen_slurm_script(folder, prefix, nCases):
     f = open(os.path.join(folder, "exec.sh"), "w+")
     for i in range(nCases):
-        script_path = os.path.join(folder, f"{prefix}{i}", "script.sh")
+        script_path = os.path.join(f"{prefix}{i}", "script.sh")
         f.write(f"sbatch {script_path}\n")
     f.close()
 
