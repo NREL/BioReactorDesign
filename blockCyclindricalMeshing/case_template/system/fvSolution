@@ -34,7 +34,7 @@ solvers
     {
         solver          GAMG;
         smoother        DIC;
-        tolerance       1e-8;
+        tolerance       1e-6;
         relTol          0;
     }
 
