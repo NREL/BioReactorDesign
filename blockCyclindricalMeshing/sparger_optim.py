@@ -42,10 +42,8 @@ def setupCaseFolder(target_folder, case_template_folder="case_template"):
     )
     orig_target_folder = os.path.join(target_folder, "0.orig")
     os.makedirs(orig_target_folder, exist_ok=True)
-    copy_tree(
-        os.path.join(case_template_folder, "0.orig"), orig_target_folder
-    )
-    
+    copy_tree(os.path.join(case_template_folder, "0.orig"), orig_target_folder)
+
     copy(os.path.join(case_template_folder, "script.sh"), target_folder)
     copy(os.path.join(case_template_folder, "Allrun"), target_folder)
 
@@ -143,10 +141,21 @@ def multi_ring_variations(
 
 if __name__ == "__main__":
     # side_sparger_variations(10, 'study', case_template_folder='case', template_folder='template_sideSparger')
-    flat_donut_variations(
+    # flat_donut_variations(
+    #    10,
+    #    "study",
+    #    case_template_folder="case_template",
+    #    template_folder="template_flatDonut",
+    # )
+    # side_sparger_variations(
+    #    10,
+    #    "study",
+    #    case_template_folder="case_template",
+    #    template_folder="template_sideSparger",
+    # )
+    multi_ring_variations(
         10,
         "study",
         case_template_folder="case_template",
-        template_folder="template_flatDonut",
+        template_folder="template_multiRing",
     )
-    # multi_ring_variations(10, 'study', case_template_folder='case', template_folder='template_multiRing')
