@@ -74,6 +74,10 @@ def side_sparger_variations(
         # Generate blockmesh
         generate_blockMeshDict(case_folder)
 
+    gen_slurm_script(
+        folder=study_folder, prefix="side_sparger_", nCases=nCases
+    )
+
 
 def flat_donut_variations(
     nCases,
@@ -98,6 +102,8 @@ def flat_donut_variations(
         )
         # Generate blockmesh
         generate_blockMeshDict(os.path.join(case_folder))
+
+    gen_slurm_script(folder=study_folder, prefix="flat_donut_", nCases=nCases)
 
 
 def multi_ring_variations(
@@ -138,24 +144,33 @@ def multi_ring_variations(
         # Generate blockmesh
         generate_blockMeshDict(os.path.join(case_folder))
 
+    gen_slurm_script(folder=study_folder, prefix="multiRing_", nCases=nCases)
+
+
+def gen_slurm_script(folder, prefix, nCases):
+    f = open(os.path.join(folder, "exec.sh"), "w+")
+    for i in range(nCases):
+        script_path = os.path.join(folder, f"{prefix}{i}", "script.sh")
+        f.write(f"sbatch {script_path}\n")
+    f.close()
+
 
 if __name__ == "__main__":
-    # side_sparger_variations(10, 'study', case_template_folder='case', template_folder='template_sideSparger')
-    # flat_donut_variations(
-    #    10,
-    #    "study",
-    #    case_template_folder="case_template",
-    #    template_folder="template_flatDonut",
-    # )
-    # side_sparger_variations(
-    #    10,
-    #    "study",
-    #    case_template_folder="case_template",
-    #    template_folder="template_sideSparger",
-    # )
+    flat_donut_variations(
+        10,
+        "study_flatDonut",
+        case_template_folder="case_template",
+        template_folder="template_flatDonut",
+    )
+    side_sparger_variations(
+        10,
+        "study_sideSparger",
+        case_template_folder="case_template",
+        template_folder="template_sideSparger",
+    )
     multi_ring_variations(
         10,
-        "study",
+        "study_multiRing",
         case_template_folder="case_template",
         template_folder="template_multiRing",
     )
