@@ -27,6 +27,19 @@ def modify_multiring(width, spacing, template_folder, target_folder):
         json.dump(data_input, f, indent=4)
 
 
+def modify_multiring_num(template_folder, target_folder):
+    with open(os.path.join(template_folder, "input.json"), "r+") as f:
+        data_input = json.load(f)
+    with open(os.path.join(template_folder, "topology.json"), "r+") as f:
+        data_topo = json.load(f)
+
+    os.makedirs(target_folder, exist_ok=True)
+    with open(os.path.join(target_folder, "topology.json"), "w+") as f:
+        json.dump(data_topo, f, indent=4)
+    with open(os.path.join(target_folder, "input.json"), "w+") as f:
+        json.dump(data_input, f, indent=4)
+
+
 def modify_flatDonut(width, template_folder, target_folder):
     with open(os.path.join(template_folder, "input.json"), "r+") as f:
         data_input = json.load(f)

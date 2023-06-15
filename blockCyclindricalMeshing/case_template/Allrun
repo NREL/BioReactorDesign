@@ -1,0 +1,9 @@
+#!/bin/sh
+cp -r 0.orig 0
+blockMesh
+transformPoints "scale=(0.001 0.001 0.001)"
+transformPoints "rotate=((0 0 1) (0 1 0))"
+#topoSet
+setFields
+touch sol.foam
+writeMeshObj

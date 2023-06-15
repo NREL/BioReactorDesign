@@ -29,13 +29,23 @@ def generate_blockMeshDict(case_folder):
     base_mesh(argsDict)
 
 
-def setupCaseFolder(target_folder, case_template_folder="case"):
+def setupCaseFolder(target_folder, case_template_folder="case_template"):
     system_target_folder = os.path.join(target_folder, "system")
     os.makedirs(system_target_folder, exist_ok=True)
     copy_tree(
         os.path.join(case_template_folder, "system"), system_target_folder
     )
-    copy(os.path.join(case_template_folder, "test.foam"), target_folder)
+    constant_target_folder = os.path.join(target_folder, "constant")
+    os.makedirs(constant_target_folder, exist_ok=True)
+    copy_tree(
+        os.path.join(case_template_folder, "constant"), constant_target_folder
+    )
+    orig_target_folder = os.path.join(target_folder, "0.orig")
+    os.makedirs(orig_target_folder, exist_ok=True)
+    copy_tree(os.path.join(case_template_folder, "0.orig"), orig_target_folder)
+
+    copy(os.path.join(case_template_folder, "script.sh"), target_folder)
+    copy(os.path.join(case_template_folder, "Allrun"), target_folder)
 
 
 def side_sparger_variations(
@@ -64,6 +74,10 @@ def side_sparger_variations(
         # Generate blockmesh
         generate_blockMeshDict(case_folder)
 
+    gen_slurm_script(
+        folder=study_folder, prefix="side_sparger_", nCases=nCases
+    )
+
 
 def flat_donut_variations(
     nCases,
@@ -72,7 +86,7 @@ def flat_donut_variations(
     template_folder="template_flatDonut",
 ):
     os.makedirs(study_folder, exist_ok=True)
-    widths = np.linspace(30, 200, nCases)
+    widths = np.linspace(50, 200, nCases)
     np.savez(os.path.join(study_folder, "param_flatDonut.npz"), width=widths)
     for i in range(nCases):
         case_folder = os.path.join(study_folder, f"flat_donut_{i}")
@@ -88,6 +102,8 @@ def flat_donut_variations(
         )
         # Generate blockmesh
         generate_blockMeshDict(os.path.join(case_folder))
+
+    gen_slurm_script(folder=study_folder, prefix="flat_donut_", nCases=nCases)
 
 
 def multi_ring_variations(
@@ -128,13 +144,78 @@ def multi_ring_variations(
         # Generate blockmesh
         generate_blockMeshDict(os.path.join(case_folder))
 
+    gen_slurm_script(folder=study_folder, prefix="multiRing_", nCases=nCases)
+
+
+def multi_ring_num_variations(
+    study_folder,
+    case_template_folder="case",
+    template_root_folder=".",
+):
+    os.makedirs(study_folder, exist_ok=True)
+
+    multiRing_template_folder = [
+        "multiRing_simple2",
+        "multiRing_simple3",
+        "multiRing_simple4",
+        "multiRing_simple5",
+    ]
+    multiRing_num = [2, 3, 4, 5]
+    nCases = len(multiRing_template_folder)
+
+    for i, (num, template_folder) in enumerate(
+        zip(multiRing_num, multiRing_template_folder)
+    ):
+        case_folder = os.path.join(study_folder, f"multiRing_num_{i}")
+        try:
+            os.makedirs(case_folder)
+        except OSError:
+            sys.exit(f"ERROR: folder {case_folder} exists already")
+        # Setup folder
+        setupCaseFolder(case_folder, case_template_folder=case_template_folder)
+        # Setup json files
+        modify_multiring_num(
+            os.path.join(template_root_folder, template_folder),
+            os.path.join(case_folder, "system"),
+        )
+        # Generate blockmesh
+        generate_blockMeshDict(os.path.join(case_folder))
+
+    gen_slurm_script(
+        folder=study_folder, prefix="multiRing_num_", nCases=nCases
+    )
+
+
+def gen_slurm_script(folder, prefix, nCases):
+    f = open(os.path.join(folder, "exec.sh"), "w+")
+    for i in range(nCases):
+        f.write(f"cd {prefix}{i}\n")
+        f.write(f"sbatch script.sh\n")
+        f.write(f"cd ..\n")
+    f.close()
+
 
 if __name__ == "__main__":
-    # side_sparger_variations(10, 'study', case_template_folder='case', template_folder='template_sideSparger')
     flat_donut_variations(
         10,
-        "study",
-        case_template_folder="case",
+        "study_flatDonut",
+        case_template_folder="case_template",
         template_folder="template_flatDonut",
     )
-    # multi_ring_variations(10, 'study', case_template_folder='case', template_folder='template_multiRing')
+    side_sparger_variations(
+        10,
+        "study_sideSparger",
+        case_template_folder="case_template",
+        template_folder="template_sideSparger",
+    )
+    multi_ring_variations(
+        10,
+        "study_multiRing",
+        case_template_folder="case_template",
+        template_folder="template_multiRing",
+    )
+    multi_ring_num_variations(
+        "study_multiRing_num",
+        case_template_folder="case_template",
+        template_root_folder=".",
+    )
