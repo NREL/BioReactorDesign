@@ -147,11 +147,51 @@ def multi_ring_variations(
     gen_slurm_script(folder=study_folder, prefix="multiRing_", nCases=nCases)
 
 
+def multi_ring_num_variations(
+    study_folder,
+    case_template_folder="case",
+    template_root_folder=".",
+):
+    os.makedirs(study_folder, exist_ok=True)
+
+    multiRing_template_folder = [
+        "multiRing_simple2",
+        "multiRing_simple3",
+        "multiRing_simple4",
+        "multiRing_simple5",
+    ]
+    multiRing_num = [2, 3, 4, 5]
+    nCases = len(multiRing_template_folder)
+
+    for i, (num, template_folder) in enumerate(
+        zip(multiRing_num, multiRing_template_folder)
+    ):
+        case_folder = os.path.join(study_folder, f"multiRing_num_{i}")
+        try:
+            os.makedirs(case_folder)
+        except OSError:
+            sys.exit(f"ERROR: folder {case_folder} exists already")
+        # Setup folder
+        setupCaseFolder(case_folder, case_template_folder=case_template_folder)
+        # Setup json files
+        modify_multiring_num(
+            os.path.join(template_root_folder, template_folder),
+            os.path.join(case_folder, "system"),
+        )
+        # Generate blockmesh
+        generate_blockMeshDict(os.path.join(case_folder))
+
+    gen_slurm_script(
+        folder=study_folder, prefix="multiRing_num_", nCases=nCases
+    )
+
+
 def gen_slurm_script(folder, prefix, nCases):
     f = open(os.path.join(folder, "exec.sh"), "w+")
     for i in range(nCases):
-        script_path = os.path.join(f"{prefix}{i}", "script.sh")
-        f.write(f"sbatch {script_path}\n")
+        f.write(f"cd {prefix}{i}\n")
+        f.write(f"sbatch script.sh\n")
+        f.write(f"cd ..\n")
     f.close()
 
 
@@ -173,4 +213,9 @@ if __name__ == "__main__":
         "study_multiRing",
         case_template_folder="case_template",
         template_folder="template_multiRing",
+    )
+    multi_ring_num_variations(
+        "study_multiRing_num",
+        case_template_folder="case_template",
+        template_root_folder=".",
     )
