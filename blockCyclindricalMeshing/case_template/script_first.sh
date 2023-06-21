@@ -13,6 +13,7 @@ TMPDIR=/tmp/scratch/
 touch sol.foam
 ./Allrun
 cp system/fvSchemes.upwind system/fvSchemes
+cp system/controlDict.first system/controlDict
 decomposePar -fileHandler collated -latestTime
 srun -n 36 multiphaseEulerFoam -parallel -fileHandler collated
 

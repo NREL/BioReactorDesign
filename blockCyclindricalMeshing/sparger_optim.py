@@ -44,7 +44,8 @@ def setupCaseFolder(target_folder, case_template_folder="case_template"):
     os.makedirs(orig_target_folder, exist_ok=True)
     copy_tree(os.path.join(case_template_folder, "0.orig"), orig_target_folder)
 
-    copy(os.path.join(case_template_folder, "script.sh"), target_folder)
+    copy(os.path.join(case_template_folder, "script_first.sh"), target_folder)
+    copy(os.path.join(case_template_folder, "script_second.sh"), target_folder)
     copy(os.path.join(case_template_folder, "Allrun"), target_folder)
 
 
@@ -53,7 +54,9 @@ def side_sparger_variations(
     study_folder,
     case_template_folder="case",
     template_folder="template_sideSparger",
+    coarse=False,
 ):
+    print("\n\nSideSparger\n\n")
     os.makedirs(study_folder, exist_ok=True)
     heights = np.linspace(10, 200, nCases)
     np.savez(
@@ -68,13 +71,18 @@ def side_sparger_variations(
         # Setup folder
         setupCaseFolder(case_folder, case_template_folder=case_template_folder)
         # Setup json files
-        modify_sideSparger(
-            heights[i], template_folder, os.path.join(case_folder, "system")
-        )
+        if coarse:
+            modify_sideSparger_coarse(
+                heights[i], template_folder, os.path.join(case_folder, "system")
+            )
+        else:
+            modify_sideSparger(
+                heights[i], template_folder, os.path.join(case_folder, "system")
+            )
         # Generate blockmesh
         generate_blockMeshDict(case_folder)
 
-    gen_slurm_script(
+    gen_slurm_script_first(
         folder=study_folder, prefix="side_sparger_", nCases=nCases
     )
     gen_slurm_script_second(
@@ -88,6 +96,7 @@ def flat_donut_variations(
     case_template_folder="case",
     template_folder="template_flatDonut",
 ):
+    print("\n\nFlat donut\n\n")
     os.makedirs(study_folder, exist_ok=True)
     widths = np.linspace(50, 200, nCases)
     np.savez(os.path.join(study_folder, "param_flatDonut.npz"), width=widths)
@@ -106,7 +115,7 @@ def flat_donut_variations(
         # Generate blockmesh
         generate_blockMeshDict(os.path.join(case_folder))
 
-    gen_slurm_script(folder=study_folder, prefix="flat_donut_", nCases=nCases)
+    gen_slurm_script_first(folder=study_folder, prefix="flat_donut_", nCases=nCases)
     gen_slurm_script_second(folder=study_folder, prefix="flat_donut_", nCases=nCases)
 
 
@@ -116,6 +125,7 @@ def multi_ring_variations(
     case_template_folder="case",
     template_folder="template_multiRing",
 ):
+    print("\n\nMulti ring\n\n")
     os.makedirs(study_folder, exist_ok=True)
     n_1D = round(np.sqrt(nCases))
     width = np.linspace(10, 50, n_1D)
@@ -148,7 +158,7 @@ def multi_ring_variations(
         # Generate blockmesh
         generate_blockMeshDict(os.path.join(case_folder))
 
-    gen_slurm_script(folder=study_folder, prefix="multiRing_", nCases=nCases)
+    gen_slurm_script_first(folder=study_folder, prefix="multiRing_", nCases=nCases)
     gen_slurm_script_second(folder=study_folder, prefix="multiRing_", nCases=nCases)
 
 
@@ -157,6 +167,7 @@ def multi_ring_num_variations(
     case_template_folder="case",
     template_root_folder=".",
 ):
+    print("\n\nMultiRing num\n\n")
     os.makedirs(study_folder, exist_ok=True)
 
     multiRing_template_folder = [
@@ -186,7 +197,7 @@ def multi_ring_num_variations(
         # Generate blockmesh
         generate_blockMeshDict(os.path.join(case_folder))
 
-    gen_slurm_script(
+    gen_slurm_script_first(
         folder=study_folder, prefix="multiRing_num_", nCases=nCases
     )
     gen_slurm_script_second(
@@ -194,11 +205,11 @@ def multi_ring_num_variations(
     )
 
 
-def gen_slurm_script(folder, prefix, nCases):
+def gen_slurm_script_first(folder, prefix, nCases):
     f = open(os.path.join(folder, "exec_first.sh"), "w+")
     for i in range(nCases):
         f.write(f"cd {prefix}{i}\n")
-        f.write(f"sbatch script.sh\n")
+        f.write(f"sbatch script_first.sh\n")
         f.write(f"cd ..\n")
     f.close()
 def gen_slurm_script_second(folder, prefix, nCases):
@@ -245,6 +256,7 @@ if __name__ == "__main__":
         "study_coarse_sideSparger",
         case_template_folder="case_template",
         template_folder="template_sideSparger_coarse",
+        coarse=True,
     )
     multi_ring_variations(
         10,

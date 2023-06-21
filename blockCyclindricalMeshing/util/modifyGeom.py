@@ -73,12 +73,35 @@ def modify_sideSparger(height, template_folder, target_folder):
         )
         data_input["Meshing"]["NVertSmallest"] = max(round(1 * height / 20), 1)
         vertCoarse = (
-            0.7 * (height / data_input["Meshing"]["NVertSmallest"]) / (20 / 2)
+            0.35 * (height / data_input["Meshing"]["NVertSmallest"]) / (20 / 2)
         )
         data_input["Meshing"]["verticalCoarsening"][2]["ratio"] = vertCoarse
         data_input["Meshing"]["verticalCoarsening"][4]["ratio"] = vertCoarse
         json.dump(data_input, f, indent=4)
 
+def modify_sideSparger_coarse(height, template_folder, target_folder):
+    with open(os.path.join(template_folder, "input.json"), "r+") as f:
+        data_input = json.load(f)
+    with open(os.path.join(template_folder, "topology.json"), "r+") as f:
+        data_topo = json.load(f)
+
+    os.makedirs(target_folder, exist_ok=True)
+    with open(os.path.join(target_folder, "topology.json"), "w+") as f:
+        json.dump(data_topo, f, indent=4)
+    with open(os.path.join(target_folder, "input.json"), "w+") as f:
+        data_input["Geometry"]["Longitudinal"]["sparger_top"] = (
+            500 + height / 2
+        )
+        data_input["Geometry"]["Longitudinal"]["sparger_bottom"] = (
+            500 - height / 2
+        )
+        data_input["Meshing"]["NVertSmallest"] = max(round(1 * height / 20), 1)
+        vertCoarse = (
+            0.25 * (height / data_input["Meshing"]["NVertSmallest"]) / (20 / 2)
+        )
+        data_input["Meshing"]["verticalCoarsening"][2]["ratio"] = vertCoarse
+        data_input["Meshing"]["verticalCoarsening"][4]["ratio"] = vertCoarse
+        json.dump(data_input, f, indent=4)
 
 if __name__ == "__main__":
     modify_multiring(
