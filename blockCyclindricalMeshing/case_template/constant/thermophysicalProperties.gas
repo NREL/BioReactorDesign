@@ -21,7 +21,7 @@ thermoType
     thermo          janaf; //eConst;//
     equationOfState perfectGas;
     specie          specie;
-    energy          sensibleInternalEnergy;
+    energy          sensibleEnthalpy;
 }
 
 species
