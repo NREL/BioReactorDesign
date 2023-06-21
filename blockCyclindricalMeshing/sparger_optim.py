@@ -73,11 +73,15 @@ def side_sparger_variations(
         # Setup json files
         if coarse:
             modify_sideSparger_coarse(
-                heights[i], template_folder, os.path.join(case_folder, "system")
+                heights[i],
+                template_folder,
+                os.path.join(case_folder, "system"),
             )
         else:
             modify_sideSparger(
-                heights[i], template_folder, os.path.join(case_folder, "system")
+                heights[i],
+                template_folder,
+                os.path.join(case_folder, "system"),
             )
         # Generate blockmesh
         generate_blockMeshDict(case_folder)
@@ -115,8 +119,12 @@ def flat_donut_variations(
         # Generate blockmesh
         generate_blockMeshDict(os.path.join(case_folder))
 
-    gen_slurm_script_first(folder=study_folder, prefix="flat_donut_", nCases=nCases)
-    gen_slurm_script_second(folder=study_folder, prefix="flat_donut_", nCases=nCases)
+    gen_slurm_script_first(
+        folder=study_folder, prefix="flat_donut_", nCases=nCases
+    )
+    gen_slurm_script_second(
+        folder=study_folder, prefix="flat_donut_", nCases=nCases
+    )
 
 
 def multi_ring_variations(
@@ -158,8 +166,12 @@ def multi_ring_variations(
         # Generate blockmesh
         generate_blockMeshDict(os.path.join(case_folder))
 
-    gen_slurm_script_first(folder=study_folder, prefix="multiRing_", nCases=nCases)
-    gen_slurm_script_second(folder=study_folder, prefix="multiRing_", nCases=nCases)
+    gen_slurm_script_first(
+        folder=study_folder, prefix="multiRing_", nCases=nCases
+    )
+    gen_slurm_script_second(
+        folder=study_folder, prefix="multiRing_", nCases=nCases
+    )
 
 
 def multi_ring_num_variations(
@@ -212,6 +224,8 @@ def gen_slurm_script_first(folder, prefix, nCases):
         f.write(f"sbatch script_first.sh\n")
         f.write(f"cd ..\n")
     f.close()
+
+
 def gen_slurm_script_second(folder, prefix, nCases):
     f = open(os.path.join(folder, "exec_second.sh"), "w+")
     for i in range(nCases):

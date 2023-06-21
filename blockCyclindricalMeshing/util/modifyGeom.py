@@ -79,6 +79,7 @@ def modify_sideSparger(height, template_folder, target_folder):
         data_input["Meshing"]["verticalCoarsening"][4]["ratio"] = vertCoarse
         json.dump(data_input, f, indent=4)
 
+
 def modify_sideSparger_coarse(height, template_folder, target_folder):
     with open(os.path.join(template_folder, "input.json"), "r+") as f:
         data_input = json.load(f)
@@ -102,6 +103,7 @@ def modify_sideSparger_coarse(height, template_folder, target_folder):
         data_input["Meshing"]["verticalCoarsening"][2]["ratio"] = vertCoarse
         data_input["Meshing"]["verticalCoarsening"][4]["ratio"] = vertCoarse
         json.dump(data_input, f, indent=4)
+
 
 if __name__ == "__main__":
     modify_multiring(
