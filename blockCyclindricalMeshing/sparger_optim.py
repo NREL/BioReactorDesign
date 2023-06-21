@@ -77,6 +77,9 @@ def side_sparger_variations(
     gen_slurm_script(
         folder=study_folder, prefix="side_sparger_", nCases=nCases
     )
+    gen_slurm_script_second(
+        folder=study_folder, prefix="side_sparger_", nCases=nCases
+    )
 
 
 def flat_donut_variations(
@@ -104,6 +107,7 @@ def flat_donut_variations(
         generate_blockMeshDict(os.path.join(case_folder))
 
     gen_slurm_script(folder=study_folder, prefix="flat_donut_", nCases=nCases)
+    gen_slurm_script_second(folder=study_folder, prefix="flat_donut_", nCases=nCases)
 
 
 def multi_ring_variations(
@@ -145,6 +149,7 @@ def multi_ring_variations(
         generate_blockMeshDict(os.path.join(case_folder))
 
     gen_slurm_script(folder=study_folder, prefix="multiRing_", nCases=nCases)
+    gen_slurm_script_second(folder=study_folder, prefix="multiRing_", nCases=nCases)
 
 
 def multi_ring_num_variations(
@@ -184,13 +189,23 @@ def multi_ring_num_variations(
     gen_slurm_script(
         folder=study_folder, prefix="multiRing_num_", nCases=nCases
     )
+    gen_slurm_script_second(
+        folder=study_folder, prefix="multiRing_num_", nCases=nCases
+    )
 
 
 def gen_slurm_script(folder, prefix, nCases):
-    f = open(os.path.join(folder, "exec.sh"), "w+")
+    f = open(os.path.join(folder, "exec_first.sh"), "w+")
     for i in range(nCases):
         f.write(f"cd {prefix}{i}\n")
         f.write(f"sbatch script.sh\n")
+        f.write(f"cd ..\n")
+    f.close()
+def gen_slurm_script_second(folder, prefix, nCases):
+    f = open(os.path.join(folder, "exec_second.sh"), "w+")
+    for i in range(nCases):
+        f.write(f"cd {prefix}{i}\n")
+        f.write(f"sbatch script_second.sh\n")
         f.write(f"cd ..\n")
     f.close()
 
@@ -198,24 +213,42 @@ def gen_slurm_script(folder, prefix, nCases):
 if __name__ == "__main__":
     flat_donut_variations(
         10,
-        "study_flatDonut",
+        "study_fine_flatDonut",
         case_template_folder="case_template",
         template_folder="template_flatDonut",
     )
     side_sparger_variations(
         10,
-        "study_sideSparger",
+        "study_fine_sideSparger",
         case_template_folder="case_template",
         template_folder="template_sideSparger",
     )
     multi_ring_variations(
         10,
-        "study_multiRing",
+        "study_fine_multiRing",
         case_template_folder="case_template",
         template_folder="template_multiRing",
     )
     multi_ring_num_variations(
-        "study_multiRing_num",
+        "study_fine_multiRing_num",
         case_template_folder="case_template",
         template_root_folder=".",
+    )
+    flat_donut_variations(
+        10,
+        "study_coarse_flatDonut",
+        case_template_folder="case_template",
+        template_folder="template_flatDonut_coarse",
+    )
+    side_sparger_variations(
+        10,
+        "study_coarse_sideSparger",
+        case_template_folder="case_template",
+        template_folder="template_sideSparger_coarse",
+    )
+    multi_ring_variations(
+        10,
+        "study_coarse_multiRing",
+        case_template_folder="case_template",
+        template_folder="template_multiRing_coarse",
     )

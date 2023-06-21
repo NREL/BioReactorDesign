@@ -169,8 +169,10 @@ drag
 (
     (gas in liquid)
     {
-        type           Grace;
+        type           Grace_limited;
         residualRe 1e-3;
+        height_lim $LiqHt;
+        height_dir 1;
         swarmCorrection
         {
             type        none;
@@ -227,10 +229,12 @@ interfaceComposition.liquid
 (
     (liquid and gas)
     {
-        type Henry;
+        type Henry_limited;
         species ( CO2 CO H2);
         k ( 0.83 2.0e-2 1.8e-2);
         Le $LeLiqMix;
+        height_lim $LiqHt;
+        height_dir 1;
     }
 );
 
@@ -241,14 +245,18 @@ diffusiveMassTransfer.liquid
 (
     (gas in liquid)
     {
-        type Higbie;
+        type Higbie_limited;
         Le $LeLiqMix;
+        height_lim $LiqHt;
+        height_dir 1;
     }
 
     (liquid in gas)
     {
-        type spherical;
+        type spherical_limited;
         Le 1.0; //not used for spherical
+        height_lim $LiqHt;
+        height_dir 1;
     }
 );
 
@@ -269,7 +277,9 @@ lift
 
         lift
         {
-            type        Tomiyama;
+            type        Tomiyama_limited;
+            height_lim $LiqHt;
+            height_dir 1;
 
             swarmCorrection
             {
@@ -284,9 +294,11 @@ wallLubrication
 (
     (gas in liquid)
     {
-        type            Antal;
+        type            Antal_limited;
         Cw1             -0.01;
         Cw2             0.05;
+        height_lim $LiqHt;
+        height_dir 1;
     }
 );
 
@@ -294,8 +306,10 @@ turbulentDispersion
 (
     (gas in liquid)
     {
-        type            Burns;
+        type            Burns_limited;
         sigma           0.9;
+        height_lim $LiqHt;
+        height_dir 1;
     }
 );
 

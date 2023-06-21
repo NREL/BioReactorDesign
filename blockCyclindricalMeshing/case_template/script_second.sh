@@ -10,14 +10,11 @@ module purge
 source /projects/gas2fuels/load_OF9_pbe
 TMPDIR=/tmp/scratch/
 
-touch sol.foam
-./Allrun
-cp system/fvSchemes.upwind system/fvSchemes
-decomposePar -fileHandler collated -latestTime
+cp system/fvSchemes.second system/fvSchemes
 srun -n 36 multiphaseEulerFoam -parallel -fileHandler collated
 
 # post-process
-#reconstructPar -newTimes
+reconstructPar -newTimes
 #module purge
 #ml paraview/5.8.1-gui
 #pvpython get_avg_conc.py
