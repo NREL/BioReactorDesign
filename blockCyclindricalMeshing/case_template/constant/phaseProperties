@@ -93,9 +93,11 @@ populationBalanceCoeffs
 
         coalescenceModels
         (
-            LehrMilliesMewes{
+            LehrMilliesMewes_limited{
                uCrit 0.08;
                alphaMax 0.6;
+               height_lim $LiqHt_limit;
+               height_dir 1;
             }
         );
 
@@ -106,8 +108,10 @@ populationBalanceCoeffs
 
         breakupModels
         (
-            Laakkonen{
+            Laakkonen_limited{
                 daughterSizeDistributionModel Laakkonen;
+                height_lim $LiqHt_limit;
+                height_dir 1;
             }
         );
 
@@ -171,7 +175,7 @@ drag
     {
         type           Grace_limited;
         residualRe 1e-3;
-        height_lim $LiqHt;
+        height_lim $LiqHt_limit;
         height_dir 1;
         swarmCorrection
         {
@@ -233,7 +237,7 @@ interfaceComposition.liquid
         species ( CO2 CO H2);
         k ( 0.83 2.0e-2 1.8e-2);
         Le $LeLiqMix;
-        height_lim $LiqHt;
+        height_lim $LiqHt_limit;
         height_dir 1;
     }
 );
@@ -247,7 +251,7 @@ diffusiveMassTransfer.liquid
     {
         type Higbie_limited;
         Le $LeLiqMix;
-        height_lim $LiqHt;
+        height_lim $LiqHt_limit;
         height_dir 1;
     }
 
@@ -255,7 +259,7 @@ diffusiveMassTransfer.liquid
     {
         type spherical_limited;
         Le 1.0; //not used for spherical
-        height_lim $LiqHt;
+        height_lim $LiqHt_limit;
         height_dir 1;
     }
 );
@@ -278,7 +282,7 @@ lift
         lift
         {
             type        Tomiyama_limited;
-            height_lim $LiqHt;
+            height_lim $LiqHt_limit;
             height_dir 1;
 
             swarmCorrection
@@ -297,7 +301,7 @@ wallLubrication
         type            Antal_limited;
         Cw1             -0.01;
         Cw2             0.05;
-        height_lim $LiqHt;
+        height_lim $LiqHt_limit;
         height_dir 1;
     }
 );
@@ -308,7 +312,7 @@ turbulentDispersion
     {
         type            Burns_limited;
         sigma           0.9;
-        height_lim $LiqHt;
+        height_lim $LiqHt_limit;
         height_dir 1;
     }
 );
