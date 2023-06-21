@@ -34,6 +34,7 @@ PrCO2 #calc "$muMixLiq*$CpMixLiq / $kCO2";
 HtBcol  10.0;
 DiaBcol 0.72;
 LiqHt   7.0;
+LiqHt_limit   9.0;
 NPS 8;
 NPD 8;
 NPY 200;
