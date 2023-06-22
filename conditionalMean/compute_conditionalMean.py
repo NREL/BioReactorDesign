@@ -8,6 +8,7 @@ import os
 import pickle
 
 from ofio import *
+from bcr_util import *
 
 parser = argparse.ArgumentParser(
     description="Compute conditional means of OpenFOAM fields"
@@ -97,7 +98,11 @@ for i_ave in range(window_ave):
     #    has_d = False
 
     for filename, name in zip(field_file, field_name_list):
-        field_tmp = readOFScal(filename, nCells)
+        val_dict = {}
+        if name == "kla":
+           field_tmp, val_dict = computeSpec_kla(os.path.join(case_path, time_folder), nCells, 'co2', val_dict=val_dict) 
+        else:
+           field_tmp = readOFScal(filename, nCells)
         vert_axis, field_cond_tmp = conditionalAverage(
             cellCentres[:, vert_ind], field_tmp, nbin=nbins
         )

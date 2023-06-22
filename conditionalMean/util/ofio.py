@@ -39,6 +39,51 @@ def readOFScal(file, nCells, nHeader=None):
     return Array
 
 
+def ofvec2arr(vec):
+    vec_list = vec[1:-1].split()
+    vec_float = [float(entry) for entry in vec_list]
+    return np.array(vec_float)
+
+
+def readOFVec(file, nCells, nHeader=None):
+    # Check that the field is not a uniform field
+    try:
+        f = open(file, "r")
+        for i in range(20):
+            line = f.readline()
+        f.close()
+        lineList = line.split()
+        if len(lineList) == 3 and lineList[1] == "uniform":
+            # Uniform field
+            raise NotImplementedError
+            val = ofvec2arr(lineList[2][:-1])
+            Array = val * np.ones(nCells)
+        else:
+            # Not a uniform field
+            f = open(file, "r")
+            if nHeader is None:
+                # Find header
+                lines = f.readlines()
+                for iline, line in enumerate(lines[:-2]):
+                    if str(nCells) in lines[iline] and "(" in lines[iline + 1]:
+                        break
+                nHeader = iline + 2
+                f.close()
+            Array = np.loadtxt(
+                file, dtype=tuple, skiprows=nHeader, max_rows=nCells
+            )
+            for i in range(nCells):
+                Array[i, 0] = float(Array[i, 0][1:])
+                Array[i, 1] = float(Array[i, 1])
+                Array[i, 2] = float(Array[i, 2][:-1])
+            Array = np.array(Array).astype(float)
+    except:
+        print("Issue when reading %s" % file)
+        sys.exit()
+
+    return Array
+
+
 def readSizeGroups(file):
     sizeGroup = {}
     f = open(file, "r")
@@ -157,3 +202,8 @@ def conditionalAverage(x, y, nbin):
     weightVal = avalsum + bvalsum
 
     return x_bin, weightVal / (weight)
+
+
+if __name__ == "__main__":
+    ufile = "../../sparger_geom/study_coarse_flatDonut/flat_donut_0/7/U.gas"
+    readOFVec(ufile, 93880)

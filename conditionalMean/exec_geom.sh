@@ -1,4 +1,4 @@
-fields="alpha.gas CO.gas CO.liquid CO2.gas CO2.liquid H2.gas H2.liquid d.gas"
+fields="alpha.gas CO.gas CO.liquid CO2.gas CO2.liquid H2.gas H2.liquid d.gas kla"
 rootFolder=../sparger_geom/study_coarse_flatDonut/
 
 python compute_conditionalMean.py -f $rootFolder/flat_donut_0/  -avg 2 -fl $fields
