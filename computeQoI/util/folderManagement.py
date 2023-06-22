@@ -1,6 +1,7 @@
 import os
 import re
 
+
 def makeRecursiveFolder(path):
     folder_list = path.split("/")
     localFolder = ""

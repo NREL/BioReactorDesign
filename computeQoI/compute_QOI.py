@@ -7,8 +7,8 @@ sys.path.append("util")
 import os
 import pickle
 
-from ofio import *
 from bcr_util import *
+from ofio import *
 
 parser = argparse.ArgumentParser(
     description="Compute means QoI of OpenFOAM fields"
@@ -78,10 +78,16 @@ for i_ave in range(window_ave):
         localFolder_vol = os.path.join(case_path, mesh_time_str)
         val_dict = {}
         if name == "GH":
-            var, val_dict = computeGH(localFolder, localFolder_vol, nCells, val_dict)
+            var, val_dict = computeGH(
+                localFolder, localFolder_vol, nCells, val_dict
+            )
         elif name == "GH_height":
             var, val_dict = computeGH_height(
-                localFolder, nCells, cellCentres, height_liq_base=7.0, val_dict=val_dict
+                localFolder,
+                nCells,
+                cellCentres,
+                height_liq_base=7.0,
+                val_dict=val_dict,
             )
         elif name == "d":
             var, val_dict = computeDiam(localFolder, nCells, val_dict)
