@@ -11,7 +11,7 @@ from folderManagement import *
 from ofio import *
 from plotsUtil import *
 
-parser = argparse.ArgumentParser(description="Plot Qoi")
+parser = argparse.ArgumentParser(description="Plot cond qoi")
 parser.add_argument(
     "-sf",
     "--studyFolder",
@@ -32,25 +32,25 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "-vl",
-    "--var_list",
+    "-fl",
+    "--field_list",
     type=str,
     metavar="",
     required=False,
-    help="variables to analyze",
+    help="fields to analyze",
     nargs="+",
     default=[
-        "GH",
-        "GH_height",
-        "d",    
-        "CO2_liq",
-        "CO_liq",
-        "H2_liq",
-        "kla_CO2",
-        "kla_CO",
-        "kla_H2",
+        "CO.gas",
+        "CO.liquid",
+        "CO2.gas",
+        "CO2.liquid",
+        "H2.gas",
+        "H2.liquid",
+        "alpha.gas",
+        "d.gas",
     ],
 )
+
 parser.add_argument(
     "-pl",
     "--param_list",
@@ -94,9 +94,9 @@ parser.add_argument(
 
 args = parser.parse_args()
 figureFolder = "Figures"
-figureFolder = os.path.join(figureFolder, args.figureFolder)
+figureFolder = os.path.join(figureFolder, args.figureFolder, 'cond')
 makeRecursiveFolder(figureFolder)
-var_names = args.var_list
+field_names = args.field_list
 param_file = args.paramFile
 study_folder = args.studyFolder
 param_names = args.param_list
@@ -107,7 +107,7 @@ for param_name in param_names:
 params = np.load(os.path.join(study_folder,param_file))
 case_folders = getManyFolders(study_folder, prefix=args.casePrefix)
 for folder in case_folders:
-    if not os.path.isfile(os.path.join(study_folder, folder, 'qoi.pkl')):
+    if not os.path.isfile(os.path.join(study_folder, folder, 'cond.pkl')):
         if folder not in case_folder_exclude:
             case_folder_exclude += [folder]  
 ind_exclude = []
@@ -125,14 +125,26 @@ cond = {}
 
 for case_folder in case_folders_final:
     print(f"Case : {case_folder}")
-    with open(os.path.join(study_folder, case_folder, "qoi.pkl"), "rb") as f:
+    with open(os.path.join(study_folder, case_folder, "cond.pkl"), "rb") as f:
         cond[case_folder] = pickle.load(f)
 
-for var_name in var_names:
-    for param_name in param_names:
-        fig = plt.figure()
-        var_val = [cond[case_folder][var_name] for case_folder in case_folders_final]
-        plt.plot(params[param_name][ind_keep], var_val, 'o')
-        prettyLabels(param_name, var_name,  14)
-        plt.savefig(os.path.join(figureFolder, param_name, f"{var_name}.png"))
-        plt.close()
+
+def sequencePlotShade(seq,listShade,fieldName):
+    color='b'
+    minVal = min(listShade)
+    maxVal = max(listShade)
+    shadeArr = (np.array(listShade) - minVal)*0.8/(maxVal-minVal) + 0.2
+    shades = plt.cm.Blues(shadeArr)
+
+    for ic, c in enumerate(seq):
+        xval = seq[c][fieldName]['val']
+        yval = seq[c][fieldName]['vert']
+        plt.plot(xval,yval, markersize=10, markevery=10, linewidth=3, color=shades[ic])
+
+
+for field_name in field_names:
+    fig = plt.figure()
+    sequencePlotShade(cond, params[param_name][ind_keep], field_name)
+    prettyLabels(field_name, 'z', 14)
+    plt.savefig(os.path.join(figureFolder, param_name, f"{field_name}.png"))
+    plt.close()
