@@ -124,10 +124,10 @@ for i_ave in range(window_ave):
         else:
             sys.exit(f"ERROR: unknown variable {name}")
 
-    if i_ave == 0:
-        variables[name] = var / window_ave
-    else:
-        variables[name] += var / window_ave
+        if i_ave == 0:
+            variables[name] = var / window_ave
+        else:
+            variables[name] += var / window_ave
 
 with open(os.path.join(case_path, "qoi.pkl"), "wb") as f:
     pickle.dump(variables, f)

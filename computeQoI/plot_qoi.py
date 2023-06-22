@@ -11,35 +11,66 @@ from folderManagement import *
 from ofio import *
 from plotsUtil import *
 
-parser = argparse.ArgumentParser(description="Plot conditional means")
+parser = argparse.ArgumentParser(description="Plot Qoi")
 parser.add_argument(
-    "-cf",
-    "--caseFolders",
+    "-sf",
+    "--studyFolder",
     type=str,
     metavar="",
     required=False,
-    help="caseFolder to analyze",
-    nargs="+",
+    help="studyFolder to analyze",
     default=None,
 )
 parser.add_argument(
-    "-fl",
-    "--field_list",
+    "-cp",
+    "--casePrefix",
     type=str,
     metavar="",
     required=False,
-    help="fields to analyze",
+    help="case folder prefix to analyze",
+    default=None,
+)
+
+parser.add_argument(
+    "-vl",
+    "--var_list",
+    type=str,
+    metavar="",
+    required=False,
+    help="variables to analyze",
     nargs="+",
     default=[
-        "CO.gas",
-        "CO.liquid",
-        "CO2.gas",
-        "CO2.liquid",
-        "H2.gas",
-        "H2.liquid",
-        "alpha.gas",
-        "d.gas",
+        "GH",
+        "GH_height",
+        "d",    
+        "CO2_liq",
+        "CO_liq",
+        "H2_liq",
+        "kla_CO2",
+        "kla_CO",
+        "kla_H2",
     ],
+)
+parser.add_argument(
+    "-pl",
+    "--param_list",
+    type=str,
+    metavar="",
+    required=False,
+    help="parameters to analyze",
+    nargs="+",
+    default=[
+        "width"
+    ],
+)
+parser.add_argument(
+    "-cfe",
+    "--case_folders_exclude",
+    type=str,
+    metavar="",
+    required=False,
+    help="case folders to exclude",
+    nargs="+",
 )
 parser.add_argument(
     "-ff",
@@ -51,69 +82,57 @@ parser.add_argument(
     default=None,
 )
 parser.add_argument(
-    "-n",
-    "--names",
+    "-p",
+    "--paramFile",
     type=str,
     metavar="",
-    required=False,
-    help="names of cases",
-    nargs="+",
+    required=True,
+    help="parameter being varied",
     default=None,
 )
-
-
-def sequencePlot(cond, case_names, folder_names, field_name, symbList):
-    for ic, (case_name, folder_name) in enumerate(
-        zip(case_names, folder_names)
-    ):
-        label = ""
-        if ic == 0:
-            label = case_names[ic]
-        plt.plot(
-            cond[folder_name][field_name]["val"],
-            cond[folder_name][field_name]["vert"],
-            symbList[ic],
-            markersize=10,
-            markevery=10,
-            linewidth=3,
-            color="k",
-            label=label,
-        )
 
 
 args = parser.parse_args()
 figureFolder = "Figures"
 figureFolder = os.path.join(figureFolder, args.figureFolder)
 makeRecursiveFolder(figureFolder)
-field_names = args.field_list
-case_names = args.names
-case_folders = args.caseFolders
+var_names = args.var_list
+param_file = args.paramFile
+study_folder = args.studyFolder
+param_names = args.param_list
+case_folder_exclude = args.case_folders_exclude
+for param_name in param_names:
+    os.makedirs(os.path.join(figureFolder, param_name), exist_ok=True)
 
-assert len(case_names) == len(case_folders)
-
-symbList = ["-", "-d", "-^", "-.", "-s", "-o", "-+"]
-if len(case_names) > len(symbList):
-    print(
-        f"ERROR: too many cases ({len(case_names)}), reduce number of case to {len(symbList)} or add symbols"
-    )
-    sys.exit()
+params = np.load(os.path.join(study_folder,param_file))
+case_folders = getManyFolders(study_folder, prefix=args.casePrefix)
+for folder in case_folders:
+    if not os.path.isfile(os.path.join(study_folder, folder, 'qoi.pkl')):
+        if folder not in case_folder_exclude:
+            case_folder_exclude += [folder]  
+ind_exclude = []
+for folder in case_folder_exclude:
+     if folder in case_folders:
+         ind_exclude.append(case_folders.index(folder))
+ind_keep = list(set(list(range(len(case_folders)))).difference(ind_exclude))
+case_folders_final = []
+for folder in case_folders:
+    if folder not in case_folder_exclude:
+        case_folders_final.append(folder)
 
 
 cond = {}
 
-for case_folder in case_folders:
+for case_folder in case_folders_final:
     print(f"Case : {case_folder}")
-    with open(os.path.join(case_folder, "cond.pkl"), "rb") as f:
+    with open(os.path.join(study_folder, case_folder, "qoi.pkl"), "rb") as f:
         cond[case_folder] = pickle.load(f)
 
-
-for field_name in field_names:
-    fig = plt.figure()
-    sequencePlot(cond, case_names, case_folders, field_name, symbList)
-    if field_name == "alpha.gas":
-        plot_name = "gasHoldup"
-    else:
-        plot_name = field_name
-    prettyLabels(plot_name, "y [m]", 14)
-    plt.savefig(os.path.join(figureFolder, f"{plot_name}.png"))
-    plt.close()
+for var_name in var_names:
+    for param_name in param_names:
+        fig = plt.figure()
+        var_val = [cond[case_folder][var_name] for case_folder in case_folders_final]
+        plt.plot(params[param_name][ind_keep], var_val, 'o')
+        prettyLabels(param_name, var_name,  14)
+        plt.savefig(os.path.join(figureFolder, param_name, f"{var_name}.png"))
+        plt.close()
