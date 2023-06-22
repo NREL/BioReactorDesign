@@ -4,4 +4,5 @@ format blockCyclindricalMeshing
 format inhomogeneousBC
 format spiderSparger 
 format conditionalMean
+format computeQoI
 
