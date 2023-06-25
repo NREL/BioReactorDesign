@@ -69,6 +69,7 @@ parser.add_argument(
     required=False,
     help="case folders to exclude",
     nargs="+",
+    default=[],
 )
 parser.add_argument(
     "-ff",
