@@ -159,7 +159,15 @@ for var_name in var_names:
             plt.plot(
                 qoi_conv[case_folder][var_name]["x"],
                 qoi_conv[case_folder][var_name]["y"],
-                linewidth=3,
+                linewidth=2,
+                color="k",
+            )
+        for case_folder in case_folders_final:
+            plt.plot(
+                qoi_conv[case_folder][var_name]["x"][-1],
+                qoi_conv[case_folder][var_name]["y"][-1],
+                "*",
+                markersize=15,
                 color="k",
             )
         prettyLabels("t [s]", var_name, 14)
