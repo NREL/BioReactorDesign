@@ -62,7 +62,19 @@ def computeGH_height(
         nCells=nCells,
     )
 
-    ind_height = np.argwhere(abs(alpha_gas - 0.9) < 1e-2)
+    tol = 1e-2
+    nFound = 0
+    iteration=0
+    while nFound <= 10:
+        ind_height = np.argwhere(abs(alpha_gas - 0.9) < tol)
+        nFound = len(ind_height)
+        tol *= 1.1
+        tol = np.clip(tol, a_min=None, a_max=0.99)
+        iteration += 1
+
+    if iteration > 1:
+        print(f"\tChanged GH tol to {tol:.2g}")
+
     height_liq = np.mean(cellCentres[ind_height, 1])
     holdup = height_liq / height_liq_base - 1
 
