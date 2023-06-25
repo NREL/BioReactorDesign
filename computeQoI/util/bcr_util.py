@@ -28,7 +28,7 @@ def indLiqFromDict(val_dict, localFolder, nCells):
     return ind_liq, val_dict
 
 
-def computeGH(localFolder, localFolder_vol, nCells, vol_time="0", val_dict={}):
+def computeGH(localFolder, localFolder_vol, nCells, val_dict={}):
     alpha_gas, val_dict = readFromDict(
         val_dict=val_dict,
         key="alpha_gas",
@@ -139,14 +139,14 @@ def computeSpec_kla(localFolder, nCells, key_suffix, val_dict={}):
     else:
         D = val_dict["D_" + key_suffix]
 
+    d_gas, val_dict = readFromDict(
+        val_dict=val_dict,
+        key="d_gas",
+        read_func=readOFScal,
+        path=os.path.join(localFolder, "d.gas"),
+        nCells=nCells,
+    )
     if "Sh_" + key_suffix not in val_dict:
-        d_gas, val_dict = readFromDict(
-            val_dict=val_dict,
-            key="d_gas",
-            read_func=readOFScal,
-            path=os.path.join(localFolder, "d.gas"),
-            nCells=nCells,
-        )
         # Sh = 1.12*np.sqrt(rho_gas*slipvel*d_gas/(D*0.7*rho_gas))*np.sqrt(0.7)
         Sh = (
             2.0

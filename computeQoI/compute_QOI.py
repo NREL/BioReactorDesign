@@ -49,6 +49,15 @@ parser.add_argument(
     help="Window Average",
     default=1,
 )
+parser.add_argument(
+    "-conv",
+    "--windowConv",
+    type=int,
+    metavar="",
+    required=False,
+    help="Window Convergence",
+    default=1,
+)
 args = parser.parse_args()
 
 
@@ -61,79 +70,106 @@ cellCentres = readMesh(
 )
 nCells = len(cellCentres)
 
-window_ave = min(args.windowAve, len(time_str_sorted))
+window_ave = min(args.windowAve, len(time_str_sorted)-1)
+window_conv = min(args.windowConv, len(time_str_sorted)-1)
 
 variables = {}
+variables_conv = {}
 for name in var_name_list:
-    variables[name] = {}
+    variables_conv[name] = {}
+    variables_conv[name]['x'] = []
+    variables_conv[name]['y'] = []
+
+
+def get_var(case_path, time_folder, mesh_time_str, cellCentres, nCells, val_dict, name):
+    localFolder = os.path.join(case_path, time_folder)
+    localFolder_vol = os.path.join(case_path, mesh_time_str)
+    if name == "GH":
+        var, val_dict = computeGH(
+            localFolder, localFolder_vol, nCells, val_dict
+        )
+    elif name == "GH_height":
+        var, val_dict = computeGH_height(
+            localFolder,
+            nCells,
+            cellCentres,
+            height_liq_base=7.0,
+            val_dict=val_dict,
+        )
+    elif name == "d":
+        var, val_dict = computeDiam(localFolder, nCells, val_dict)
+    elif name == "CO2_liq":
+        var, val_dict = computeSpec_liq(
+            localFolder,
+            nCells,
+            field_name="CO2.liquid",
+            key="co2_liq",
+            val_dict=val_dict,
+        )
+    elif name == "CO_liq":
+        var, val_dict = computeSpec_liq(
+            localFolder,
+            nCells,
+            field_name="CO.liquid",
+            key="co_liq",
+            val_dict=val_dict,
+        )
+    elif name == "H2_liq":
+        var, val_dict = computeSpec_liq(
+            localFolder,
+            nCells,
+            field_name="H2.liquid",
+            key="h2_liq",
+            val_dict=val_dict,
+        )
+    elif name == "kla_CO":
+        var, val_dict = computeSpec_kla(
+            localFolder, nCells, key_suffix="co", val_dict=val_dict
+        )
+    elif name == "kla_CO2":
+        var, val_dict = computeSpec_kla(
+            localFolder, nCells, key_suffix="co2", val_dict=val_dict
+        )
+    elif name == "kla_H2":
+        var, val_dict = computeSpec_kla(
+            localFolder, nCells, key_suffix="h2", val_dict=val_dict
+        )
+    else:
+        sys.exit(f"ERROR: unknown variable {name}")
+
+    return var, val_dict
+ 
 
 print(f"Case : {case_path}")
 
+print(f"Window Ave")
 for i_ave in range(window_ave):
     time_folder = time_str_sorted[-i_ave - 1]
     print(f"\tTime : {time_folder}")
     case_variables = []
+    val_dict = {}
     for name in var_name_list:
-        localFolder = os.path.join(case_path, time_folder)
-        localFolder_vol = os.path.join(case_path, mesh_time_str)
-        val_dict = {}
-        if name == "GH":
-            var, val_dict = computeGH(
-                localFolder, localFolder_vol, nCells, val_dict
-            )
-        elif name == "GH_height":
-            var, val_dict = computeGH_height(
-                localFolder,
-                nCells,
-                cellCentres,
-                height_liq_base=7.0,
-                val_dict=val_dict,
-            )
-        elif name == "d":
-            var, val_dict = computeDiam(localFolder, nCells, val_dict)
-        elif name == "CO2_liq":
-            var, val_dict = computeSpec_liq(
-                localFolder,
-                nCells,
-                field_name="CO2.liquid",
-                key="co2_liq",
-                val_dict=val_dict,
-            )
-        elif name == "CO_liq":
-            var, val_dict = computeSpec_liq(
-                localFolder,
-                nCells,
-                field_name="CO.liquid",
-                key="co_liq",
-                val_dict=val_dict,
-            )
-        elif name == "H2_liq":
-            var, val_dict = computeSpec_liq(
-                localFolder,
-                nCells,
-                field_name="H2.liquid",
-                key="h2_liq",
-                val_dict=val_dict,
-            )
-        elif name == "kla_CO":
-            var, val_dict = computeSpec_kla(
-                localFolder, nCells, key_suffix="co", val_dict=val_dict
-            )
-        elif name == "kla_CO2":
-            var, val_dict = computeSpec_kla(
-                localFolder, nCells, key_suffix="co2", val_dict=val_dict
-            )
-        elif name == "kla_H2":
-            var, val_dict = computeSpec_kla(
-                localFolder, nCells, key_suffix="h2", val_dict=val_dict
-            )
-        else:
-            sys.exit(f"ERROR: unknown variable {name}")
+        var, val_dict = get_var(case_path, time_folder, mesh_time_str, cellCentres, nCells, val_dict=val_dict, name=name)
 
         if i_ave == 0:
             variables[name] = var / window_ave
         else:
             variables[name] += var / window_ave
 
+
+print(f"Window Conv")
+for i_conv in range(window_conv):
+    time_folder = time_str_sorted[-window_conv + i_conv]
+    print(f"\tTime : {time_folder}")
+    case_variables = []
+    val_dict = {}
+    for name in var_name_list:
+        var, val_dict = get_var(case_path, time_folder, mesh_time_str, cellCentres, nCells, val_dict=val_dict, name=name)
+        variables_conv[name]['x'] += [float(time_folder)]
+        variables_conv[name]['y'] += [var]
+
+
 with open(os.path.join(case_path, "qoi.pkl"), "wb") as f:
     pickle.dump(variables, f)
+with open(os.path.join(case_path, "qoi_conv.pkl"), "wb") as f:
+    pickle.dump(variables_conv, f)
