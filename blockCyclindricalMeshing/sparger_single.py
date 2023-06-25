@@ -29,12 +29,14 @@ def generate_blockMeshDict(case_folder):
     base_mesh(argsDict)
 
 
-def setupCaseFolder(target_folder, geom_template_folder, case_template_folder="case_template"):
+def setupCaseFolder(
+    target_folder, geom_template_folder, case_template_folder="case_template"
+):
     try:
         rmtree(target_folder)
     except:
         pass
-    os.makedirs(target_folder)   
+    os.makedirs(target_folder)
 
     system_target_folder = os.path.join(target_folder, "system")
     os.makedirs(system_target_folder, exist_ok=True)
@@ -55,20 +57,25 @@ def setupCaseFolder(target_folder, geom_template_folder, case_template_folder="c
     copy(os.path.join(case_template_folder, "script_second.sh"), target_folder)
     copy(os.path.join(case_template_folder, "Allrun"), target_folder)
 
-    copy(os.path.join(geom_template_folder, "input.json"), os.path.join(target_folder, "system"))
-    copy(os.path.join(geom_template_folder, "topology.json"), os.path.join(target_folder, "system"))
+    copy(
+        os.path.join(geom_template_folder, "input.json"),
+        os.path.join(target_folder, "system"),
+    )
+    copy(
+        os.path.join(geom_template_folder, "topology.json"),
+        os.path.join(target_folder, "system"),
+    )
     generate_blockMeshDict(target_folder)
 
 
 def gen_slurm_sript(rootFolder):
     f = open(os.path.join(rootFolder, "exec_first.sh"), "w+")
-    f.write("for dir in */; do\n")   
+    f.write("for dir in */; do\n")
     f.write("    cd $dir\n")
     f.write("    sbatch script_first.sh\n")
     f.write("    cd ..\n")
     f.write("done\n")
     f.close()
-
 
 
 if __name__ == "__main__":
@@ -101,10 +108,24 @@ if __name__ == "__main__":
     )
     gen_slurm_sript(rootFolder)
 
-    rootFolders = ["pore_size_1mm", "pore_size_2mm", "pore_size_3mm", "pore_size_4mm", "pore_size_5mm"]
-    case_template_folders = ["case_template_poreSize_1mm", "case_template_poreSize_2mm", "case_template_poreSize_3mm", "case_template_poreSize_4mm", "case_template_poreSize_5mm"]
+    rootFolders = [
+        "pore_size_1mm",
+        "pore_size_2mm",
+        "pore_size_3mm",
+        "pore_size_4mm",
+        "pore_size_5mm",
+    ]
+    case_template_folders = [
+        "case_template_poreSize_1mm",
+        "case_template_poreSize_2mm",
+        "case_template_poreSize_3mm",
+        "case_template_poreSize_4mm",
+        "case_template_poreSize_5mm",
+    ]
 
-    for rootFolder, case_template_folder in zip(rootFolders, case_template_folders):
+    for rootFolder, case_template_folder in zip(
+        rootFolders, case_template_folders
+    ):
         os.makedirs(rootFolder, exist_ok=True)
         setupCaseFolder(
             os.path.join(rootFolder, "flat_donut"),

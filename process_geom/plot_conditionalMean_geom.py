@@ -59,9 +59,7 @@ parser.add_argument(
     required=False,
     help="parameters to analyze",
     nargs="+",
-    default=[
-        "width"
-    ],
+    default=["width"],
 )
 parser.add_argument(
     "-cfe",
@@ -94,7 +92,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 figureFolder = "Figures"
-figureFolder = os.path.join(figureFolder, args.figureFolder, 'cond')
+figureFolder = os.path.join(figureFolder, args.figureFolder, "cond")
 makeRecursiveFolder(figureFolder)
 field_names = args.field_list
 param_file = args.paramFile
@@ -104,16 +102,16 @@ case_folder_exclude = args.case_folders_exclude
 for param_name in param_names:
     os.makedirs(os.path.join(figureFolder, param_name), exist_ok=True)
 
-params = np.load(os.path.join(study_folder,param_file))
+params = np.load(os.path.join(study_folder, param_file))
 case_folders = getManyFolders(study_folder, prefix=args.casePrefix)
 for folder in case_folders:
-    if not os.path.isfile(os.path.join(study_folder, folder, 'cond.pkl')):
+    if not os.path.isfile(os.path.join(study_folder, folder, "cond.pkl")):
         if folder not in case_folder_exclude:
-            case_folder_exclude += [folder]  
+            case_folder_exclude += [folder]
 ind_exclude = []
 for folder in case_folder_exclude:
-     if folder in case_folders:
-         ind_exclude.append(case_folders.index(folder))
+    if folder in case_folders:
+        ind_exclude.append(case_folders.index(folder))
 ind_keep = list(set(list(range(len(case_folders)))).difference(ind_exclude))
 case_folders_final = []
 for folder in case_folders:
@@ -129,22 +127,29 @@ for case_folder in case_folders_final:
         cond[case_folder] = pickle.load(f)
 
 
-def sequencePlotShade(seq,listShade,fieldName):
-    color='b'
+def sequencePlotShade(seq, listShade, fieldName):
+    color = "b"
     minVal = min(listShade)
     maxVal = max(listShade)
-    shadeArr = (np.array(listShade) - minVal)*0.8/(maxVal-minVal) + 0.2
+    shadeArr = (np.array(listShade) - minVal) * 0.8 / (maxVal - minVal) + 0.2
     shades = plt.cm.Blues(shadeArr)
 
     for ic, c in enumerate(seq):
-        xval = seq[c][fieldName]['val']
-        yval = seq[c][fieldName]['vert']
-        plt.plot(xval,yval, markersize=10, markevery=10, linewidth=3, color=shades[ic])
+        xval = seq[c][fieldName]["val"]
+        yval = seq[c][fieldName]["vert"]
+        plt.plot(
+            xval,
+            yval,
+            markersize=10,
+            markevery=10,
+            linewidth=3,
+            color=shades[ic],
+        )
 
 
 for field_name in field_names:
     fig = plt.figure()
     sequencePlotShade(cond, params[param_name][ind_keep], field_name)
-    prettyLabels(field_name, 'z', 14)
+    prettyLabels(field_name, "z", 14)
     plt.savefig(os.path.join(figureFolder, param_name, f"{field_name}.png"))
     plt.close()

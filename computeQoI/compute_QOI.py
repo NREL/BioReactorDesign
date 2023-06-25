@@ -70,18 +70,20 @@ cellCentres = readMesh(
 )
 nCells = len(cellCentres)
 
-window_ave = min(args.windowAve, len(time_str_sorted)-1)
-window_conv = min(args.windowConv, len(time_str_sorted)-1)
+window_ave = min(args.windowAve, len(time_str_sorted) - 1)
+window_conv = min(args.windowConv, len(time_str_sorted) - 1)
 
 variables = {}
 variables_conv = {}
 for name in var_name_list:
     variables_conv[name] = {}
-    variables_conv[name]['x'] = []
-    variables_conv[name]['y'] = []
+    variables_conv[name]["x"] = []
+    variables_conv[name]["y"] = []
 
 
-def get_var(case_path, time_folder, mesh_time_str, cellCentres, nCells, val_dict, name):
+def get_var(
+    case_path, time_folder, mesh_time_str, cellCentres, nCells, val_dict, name
+):
     localFolder = os.path.join(case_path, time_folder)
     localFolder_vol = os.path.join(case_path, mesh_time_str)
     if name == "GH":
@@ -138,7 +140,7 @@ def get_var(case_path, time_folder, mesh_time_str, cellCentres, nCells, val_dict
         sys.exit(f"ERROR: unknown variable {name}")
 
     return var, val_dict
- 
+
 
 print(f"Case : {case_path}")
 
@@ -149,7 +151,15 @@ for i_ave in range(window_ave):
     case_variables = []
     val_dict = {}
     for name in var_name_list:
-        var, val_dict = get_var(case_path, time_folder, mesh_time_str, cellCentres, nCells, val_dict=val_dict, name=name)
+        var, val_dict = get_var(
+            case_path,
+            time_folder,
+            mesh_time_str,
+            cellCentres,
+            nCells,
+            val_dict=val_dict,
+            name=name,
+        )
 
         if i_ave == 0:
             variables[name] = var / window_ave
@@ -164,9 +174,17 @@ for i_conv in range(window_conv):
     case_variables = []
     val_dict = {}
     for name in var_name_list:
-        var, val_dict = get_var(case_path, time_folder, mesh_time_str, cellCentres, nCells, val_dict=val_dict, name=name)
-        variables_conv[name]['x'] += [float(time_folder)]
-        variables_conv[name]['y'] += [var]
+        var, val_dict = get_var(
+            case_path,
+            time_folder,
+            mesh_time_str,
+            cellCentres,
+            nCells,
+            val_dict=val_dict,
+            name=name,
+        )
+        variables_conv[name]["x"] += [float(time_folder)]
+        variables_conv[name]["y"] += [var]
 
 
 with open(os.path.join(case_path, "qoi.pkl"), "wb") as f:

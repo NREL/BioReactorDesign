@@ -32,6 +32,8 @@ jobs:
           format inhomogeneousBC true
           format spiderSparger true
           format conditionalMean true
+          format computeQoI true
+          format process_geom true
   Test:
     runs-on: ubuntu-latest
     strategy:

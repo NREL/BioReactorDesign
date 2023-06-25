@@ -20,11 +20,11 @@ def indLiqFromDict(val_dict, localFolder, nCells):
             path=os.path.join(localFolder, "alpha.gas"),
             nCells=nCells,
         )
-        ind_liq = np.argwhere(alpha_gas < 0.9)[:,0]
+        ind_liq = np.argwhere(alpha_gas < 0.9)[:, 0]
         val_dict["ind_liq"] = ind_liq
     else:
         ind_liq = val_dict["ind_liq"]
-    
+
     return ind_liq, val_dict
 
 
