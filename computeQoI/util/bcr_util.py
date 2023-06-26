@@ -64,7 +64,7 @@ def computeGH_height(
 
     tol = 1e-2
     nFound = 0
-    iteration=0
+    iteration = 0
     while nFound <= 10:
         ind_height = np.argwhere(abs(alpha_gas - 0.9) < tol)
         nFound = len(ind_height)
