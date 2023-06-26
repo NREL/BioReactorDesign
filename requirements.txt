@@ -1,7 +1,7 @@
 numpy
 matplotlib==3.2.2
 numpy-stl
-scipy
+scipy<1.11
 black
 isort
 imageio
