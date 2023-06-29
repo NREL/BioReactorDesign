@@ -16,7 +16,7 @@ def getManyFolders(rootFolder, prefix="flat_donut"):
     fold_num = []
     # remove non floats
     for i, entry in reversed(list(enumerate(fold_tmp))):
-        if not entry.startswith(prefix):
+        if not entry.startswith(prefix) or entry.endswith('N2'):
             a = fold_tmp.pop(i)
             # print('removed ', a)
     for entry in fold_tmp:
