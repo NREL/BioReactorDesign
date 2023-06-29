@@ -86,13 +86,18 @@ var_names = args.var_list
 param_name = args.param_name
 param_vals = args.param_value
 study_folders = args.studyFolder
-case_folders = ['circle', 'side_sparger', 'multiring_4']
+case_folders = ["circle", "side_sparger", "multiring_4"]
 
 for case_folder in case_folders:
     os.makedirs(os.path.join(figure_qoi_Folder, case_folder), exist_ok=True)
-    os.makedirs(os.path.join(figure_qoiConv_Folder, case_folder), exist_ok=True)
+    os.makedirs(
+        os.path.join(figure_qoiConv_Folder, case_folder), exist_ok=True
+    )
 for param_val in param_vals:
-    os.makedirs(os.path.join(figure_qoi_Folder, f"acrossDesign_{param_val:.2g}"), exist_ok=True)    
+    os.makedirs(
+        os.path.join(figure_qoi_Folder, f"acrossDesign_{param_val:.2g}"),
+        exist_ok=True,
+    )
 
 
 qoi = {}
@@ -101,14 +106,17 @@ for study_folder in study_folders:
     qoi[study_folder] = {}
     for case_folder in case_folders:
         print(f"Case : {study_folder}/{case_folder}")
-        with open(os.path.join(study_folder, case_folder, "qoi.pkl"), "rb") as f:
+        with open(
+            os.path.join(study_folder, case_folder, "qoi.pkl"), "rb"
+        ) as f:
             qoi[study_folder][case_folder] = pickle.load(f)
 
 for case_folder in case_folders:
     for var_name in var_names:
         fig = plt.figure()
         var_val = [
-            qoi[study_folder][case_folder][var_name] for study_folder in study_folders
+            qoi[study_folder][case_folder][var_name]
+            for study_folder in study_folders
         ]
         plt.plot(param_vals, var_val, "o", color="k")
         prettyLabels(param_name, var_name, 14)
@@ -121,11 +129,16 @@ for study_folder, param_val in zip(study_folders, param_vals):
     for var_name in var_names:
         fig = plt.figure()
         var_val = [
-            qoi[study_folder][case_folder][var_name] for case_folder in case_folders
+            qoi[study_folder][case_folder][var_name]
+            for case_folder in case_folders
         ]
-        plot_bar_names(case_folders, var_val)  
+        plot_bar_names(case_folders, var_val)
         plt.savefig(
-            os.path.join(figure_qoi_Folder, f"acrossDesign_{param_val:.2g}", f"{var_name}.png")
+            os.path.join(
+                figure_qoi_Folder,
+                f"acrossDesign_{param_val:.2g}",
+                f"{var_name}.png",
+            )
         )
         plt.close()
 
@@ -135,28 +148,31 @@ for study_folder in study_folders:
     qoi_conv[study_folder] = {}
     for case_folder in case_folders:
         print(f"Case : {study_folder}/{case_folder}")
-        with open(os.path.join(study_folder, case_folder, "qoi_conv.pkl"), "rb") as f:
+        with open(
+            os.path.join(study_folder, case_folder, "qoi_conv.pkl"), "rb"
+        ) as f:
             qoi_conv[study_folder][case_folder] = pickle.load(f)
 
 for case_folder in case_folders:
-     for var_name in var_names:
-         fig = plt.figure()
-         for study_folder in study_folders:
-             plt.plot(
-                 qoi_conv[study_folder][case_folder][var_name]["x"],
-                 qoi_conv[study_folder][case_folder][var_name]["y"],
-                 linewidth=2,
-                 color="k",
-             )
-         for study_folder in study_folders:
-
-             plt.plot(
-                 qoi_conv[study_folder][case_folder][var_name]["x"][-1],
-                 qoi_conv[study_folder][case_folder][var_name]["y"][-1],
-                 "*",
-                 markersize=15,
-                 color="k",
-             )
-         prettyLabels("t [s]", var_name, 14)
-         plt.savefig(os.path.join(figure_qoiConv_Folder, case_folder, f"{var_name}.png"))
-         plt.close()
+    for var_name in var_names:
+        fig = plt.figure()
+        for study_folder in study_folders:
+            plt.plot(
+                qoi_conv[study_folder][case_folder][var_name]["x"],
+                qoi_conv[study_folder][case_folder][var_name]["y"],
+                linewidth=2,
+                color="k",
+            )
+        for study_folder in study_folders:
+            plt.plot(
+                qoi_conv[study_folder][case_folder][var_name]["x"][-1],
+                qoi_conv[study_folder][case_folder][var_name]["y"][-1],
+                "*",
+                markersize=15,
+                color="k",
+            )
+        prettyLabels("t [s]", var_name, 14)
+        plt.savefig(
+            os.path.join(figure_qoiConv_Folder, case_folder, f"{var_name}.png")
+        )
+        plt.close()

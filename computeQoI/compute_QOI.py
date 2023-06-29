@@ -129,15 +129,27 @@ def get_var(
         )
     elif name == "kla_CO":
         var, val_dict = computeSpec_kla(
-            localFolder, nCells, key_suffix="co", cellCentres=cellCentres, val_dict=val_dict
+            localFolder,
+            nCells,
+            key_suffix="co",
+            cellCentres=cellCentres,
+            val_dict=val_dict,
         )
     elif name == "kla_CO2":
         var, val_dict = computeSpec_kla(
-            localFolder, nCells, key_suffix="co2", cellCentres=cellCentres, val_dict=val_dict
+            localFolder,
+            nCells,
+            key_suffix="co2",
+            cellCentres=cellCentres,
+            val_dict=val_dict,
         )
     elif name == "kla_H2":
         var, val_dict = computeSpec_kla(
-            localFolder, nCells, key_suffix="h2", cellCentres=cellCentres, val_dict=val_dict
+            localFolder,
+            nCells,
+            key_suffix="h2",
+            cellCentres=cellCentres,
+            val_dict=val_dict,
         )
     else:
         sys.exit(f"ERROR: unknown variable {name}")
