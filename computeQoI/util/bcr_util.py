@@ -10,8 +10,34 @@ def readFromDict(val_dict, key, read_func=None, path=None, nCells=None):
         field = val_dict[key]
     return field, val_dict
 
+def check_indLiq(ind_liq, cellCentres):
+    height_liq = cellCentres[ind_liq, 1]
+    ind_to_remove = np.argwhere(height_liq>9.5)
+    if len(ind_to_remove)>0:
+        ind_liq_copy = ind_liq.copy()
+        n_remove = len(ind_to_remove)
+        print(f"ind liq found to be at high heights {n_remove} times")
+        ind_to_remove = list(ind_liq[ind_to_remove[:,0]][:,0])
+        ind_liq_copy = list(set(list(ind_liq[:,0])) - set(ind_to_remove))
+        assert len(ind_liq_copy) == len(ind_liq) - n_remove
+        ind_liq = np.reshape(np.array(ind_liq_copy), (-1,1))
+    return ind_liq 
 
-def indLiqFromDict(val_dict, localFolder, nCells):
+def check_indHeight(ind_height, cellCentres):
+    height_liq = cellCentres[ind_height, 1]
+    ind_to_remove = np.argwhere(height_liq<6)
+    if len(ind_to_remove)>0:
+        ind_height_copy = ind_height.copy()
+        n_remove = len(ind_to_remove)
+        print(f"ind height found to be at low heights {n_remove} times")
+        ind_to_remove = list(ind_height[ind_to_remove[:,0]][:,0])
+        ind_height_copy = list(set(list(ind_height_copy[:,0])) - set(ind_to_remove))
+        assert len(ind_height_copy) == len(ind_height) - n_remove
+        ind_height = np.reshape(np.array(ind_height_copy), (-1,1))
+    return ind_height
+
+
+def indLiqFromDict(val_dict, localFolder, nCells, cellCentres):
     if "ind_liq" not in val_dict:
         alpha_gas, val_dict = readFromDict(
             val_dict=val_dict,
@@ -20,7 +46,8 @@ def indLiqFromDict(val_dict, localFolder, nCells):
             path=os.path.join(localFolder, "alpha.gas"),
             nCells=nCells,
         )
-        ind_liq = np.argwhere(alpha_gas < 0.9)[:, 0]
+        ind_liq = np.argwhere(alpha_gas < 0.8)[:, 0]
+        ind_liq = check_indLiq(ind_liq, cellCentres) 
         val_dict["ind_liq"] = ind_liq
     else:
         ind_liq = val_dict["ind_liq"]
@@ -28,7 +55,7 @@ def indLiqFromDict(val_dict, localFolder, nCells):
     return ind_liq, val_dict
 
 
-def computeGH(localFolder, localFolder_vol, nCells, val_dict={}):
+def computeGH(localFolder, localFolder_vol, nCells, cellCentres, val_dict={}):
     alpha_gas, val_dict = readFromDict(
         val_dict=val_dict,
         key="alpha_gas",
@@ -43,7 +70,7 @@ def computeGH(localFolder, localFolder_vol, nCells, val_dict={}):
         path=os.path.join(localFolder_vol, "V"),
         nCells=nCells,
     )
-    ind_liq, val_dict = indLiqFromDict(val_dict, localFolder, nCells)
+    ind_liq, val_dict = indLiqFromDict(val_dict, localFolder, nCells, cellCentres)
 
     holdup = np.sum(alpha_gas[ind_liq] * volume[ind_liq]) / np.sum(
         volume[ind_liq]
@@ -62,14 +89,16 @@ def computeGH_height(
         nCells=nCells,
     )
 
-    tol = 1e-2
+    tol = 1e-3
+    tol_max = 0.1
     nFound = 0
-    iteration = 0
-    while nFound <= 10:
-        ind_height = np.argwhere(abs(alpha_gas - 0.9) < tol)
+    iteration=0
+    while nFound <= 10 and tol<tol_max:
+        ind_height = np.argwhere(abs(alpha_gas - 0.8) < tol)
+        ind_height = check_indHeight(ind_height, cellCentres) 
         nFound = len(ind_height)
         tol *= 1.1
-        tol = np.clip(tol, a_min=None, a_max=0.99)
+        tol = np.clip(tol, a_min=None, a_max=0.2)
         iteration += 1
 
     if iteration > 1:
@@ -81,7 +110,7 @@ def computeGH_height(
     return holdup, val_dict
 
 
-def computeDiam(localFolder, nCells, val_dict={}):
+def computeDiam(localFolder, nCells, cellCentres, val_dict={}):
     d_gas, val_dict = readFromDict(
         val_dict=val_dict,
         key="d_gas",
@@ -89,14 +118,14 @@ def computeDiam(localFolder, nCells, val_dict={}):
         path=os.path.join(localFolder, "d.gas"),
         nCells=nCells,
     )
-    ind_liq, val_dict = indLiqFromDict(val_dict, localFolder, nCells)
+    ind_liq, val_dict = indLiqFromDict(val_dict, localFolder, nCells, cellCentres)
 
     diam = np.mean(d_gas[ind_liq])
 
     return diam, val_dict
 
 
-def computeSpec_liq(localFolder, nCells, field_name, key, val_dict={}):
+def computeSpec_liq(localFolder, nCells, field_name, key, cellCentres, val_dict={}):
     species, val_dict = readFromDict(
         val_dict=val_dict,
         key=key,
@@ -104,14 +133,14 @@ def computeSpec_liq(localFolder, nCells, field_name, key, val_dict={}):
         path=os.path.join(localFolder, field_name),
         nCells=nCells,
     )
-    ind_liq, val_dict = indLiqFromDict(val_dict, localFolder, nCells)
+    ind_liq, val_dict = indLiqFromDict(val_dict, localFolder, nCells, cellCentres)
 
     species = np.mean(species[ind_liq])
 
     return species, val_dict
 
 
-def computeSpec_kla(localFolder, nCells, key_suffix, val_dict={}):
+def computeSpec_kla(localFolder, nCells, key_suffix, cellCentres, val_dict={}):
     if "slip_vel" not in val_dict:
         u_gas, val_dict = readFromDict(
             val_dict=val_dict,
@@ -180,6 +209,6 @@ def computeSpec_kla(localFolder, nCells, key_suffix, val_dict={}):
 
     kla = Sh * 6 * alpha_gas / d_gas / d_gas * D
 
-    ind_liq, val_dict = indLiqFromDict(val_dict, localFolder, nCells)
+    ind_liq, val_dict = indLiqFromDict(val_dict, localFolder, nCells, cellCentres)
 
     return np.mean(kla[ind_liq]), val_dict
