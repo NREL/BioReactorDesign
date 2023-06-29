@@ -88,7 +88,7 @@ def get_var(
     localFolder_vol = os.path.join(case_path, mesh_time_str)
     if name == "GH":
         var, val_dict = computeGH(
-            localFolder, localFolder_vol, nCells, val_dict
+            localFolder, localFolder_vol, nCells, cellCentres, val_dict
         )
     elif name == "GH_height":
         var, val_dict = computeGH_height(
@@ -99,13 +99,14 @@ def get_var(
             val_dict=val_dict,
         )
     elif name == "d":
-        var, val_dict = computeDiam(localFolder, nCells, val_dict)
+        var, val_dict = computeDiam(localFolder, nCells, cellCentres, val_dict)
     elif name == "CO2_liq":
         var, val_dict = computeSpec_liq(
             localFolder,
             nCells,
             field_name="CO2.liquid",
             key="co2_liq",
+            cellCentres=cellCentres,
             val_dict=val_dict,
         )
     elif name == "CO_liq":
@@ -114,6 +115,7 @@ def get_var(
             nCells,
             field_name="CO.liquid",
             key="co_liq",
+            cellCentres=cellCentres,
             val_dict=val_dict,
         )
     elif name == "H2_liq":
@@ -122,19 +124,20 @@ def get_var(
             nCells,
             field_name="H2.liquid",
             key="h2_liq",
+            cellCentres=cellCentres,
             val_dict=val_dict,
         )
     elif name == "kla_CO":
         var, val_dict = computeSpec_kla(
-            localFolder, nCells, key_suffix="co", val_dict=val_dict
+            localFolder, nCells, key_suffix="co", cellCentres=cellCentres, val_dict=val_dict
         )
     elif name == "kla_CO2":
         var, val_dict = computeSpec_kla(
-            localFolder, nCells, key_suffix="co2", val_dict=val_dict
+            localFolder, nCells, key_suffix="co2", cellCentres=cellCentres, val_dict=val_dict
         )
     elif name == "kla_H2":
         var, val_dict = computeSpec_kla(
-            localFolder, nCells, key_suffix="h2", val_dict=val_dict
+            localFolder, nCells, key_suffix="h2", cellCentres=cellCentres, val_dict=val_dict
         )
     else:
         sys.exit(f"ERROR: unknown variable {name}")
