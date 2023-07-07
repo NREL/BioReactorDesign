@@ -1,0 +1,60 @@
+//****** diffusion coeff ***********
+D_H2        1.2097e-8; //Ngu et al., Chem. Engg. Sci., 251, 2022, 117478
+D_CO2       1.4663e-9; //Ngu et al., Chem. Engg. Sci., 251, 2022, 117478 SHOULD BE m2/s
+D_CO        3.9518e-9; //Ngu et al., Chem. Engg. Sci., 251, 2022, 117478
+//****** Henry coeff ***************
+He_H2       0.02;
+He_CO       0.018;
+He_CO2      0.83; //Ngu et al., Chem. Engg. Sci., 251, 2022, 117478  SHOULD BE mg/L/Pa
+//****Liquid properties**************
+CpMixLiq        4181;
+muMixLiq        0.001; // 1 cP  
+kThermLiq       0.62; // W/m-K
+rho0MixLiq      1000; // kg/m^3
+sigmaLiq        0.07; //surface tension N/m
+//*******inlet gas frac*************
+f_H2    0.07;
+f_CO2   0.70;
+f_CO    0.23;
+//*********************************
+LeLiqH2 #calc "$kThermLiq / $rho0MixLiq / $D_H2 / $CpMixLiq";
+LeLiqCO #calc "$kThermLiq / $rho0MixLiq / $D_CO / $CpMixLiq";
+LeLiqCO2 #calc "$kThermLiq / $rho0MixLiq / $D_CO2 / $CpMixLiq";
+LeLiqMix #calc "$f_H2*$LeLiqH2+$f_CO2*$LeLiqCO2+$f_CO*$LeLiqCO";
+//*********************************
+kH2 #calc "$D_H2*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrH2 #calc "$muMixLiq*$CpMixLiq / $kH2";
+
+kCO #calc "$D_CO*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrCO #calc "$muMixLiq*$CpMixLiq / $kCO";
+
+kCO2 #calc "$D_CO2*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrCO2 #calc "$muMixLiq*$CpMixLiq / $kCO2";
+//*********************************
+HtBcol  10.0;
+DiaBcol 0.72;
+LiqHt   7.0;
+LiqHt_limit   9.0;
+NPS 8;
+NPD 8;
+NPY 200;
+//*********************************
+T0 303.15;
+P0 101325.0;
+Pbot #calc "$P0+1000.0*$LiqHt*9.8";
+Pmid #calc "$P0+1000.0*0.5*$LiqHt*9.8";
+
+//bubble column cross-section divided by sparger area
+ArbyAs 2.0; 
+uSupVel 0.05;
+uGas #calc "$Pmid / $Pbot * $ArbyAs * $uSupVel";     
+A_Bcol #calc "3.14159 * $DiaBcol * $DiaBcol / 4.0";
+rho_gas #calc "$Pmid / 287.0 / $T0";
+mflowRate #calc "$uSupVel * $A_Bcol * $rho_gas";
+//mflowRate 4.5e-4;
+//*********************************
+intensity 0.01;
+k_inlet #calc "1.5 * Foam::pow(($uSupVel * Foam::pow($ArbyAs, 2)), 2) * Foam::pow($intensity, 2)";
+eps_gas_inlet #calc "0.09 * Foam::pow($k_inlet, 1.5) / (($DiaBcol / $ArbyAs) * 0.07)";
+eps_liq_inlet #calc "0.09 * 1000 * Foam::pow($k_inlet, 2) * 0.05 / 0.00089";
+omega_liq_inlet #calc "1000 * $k_inlet * 0.05 / 0.00089";
