@@ -58,6 +58,24 @@ parser.add_argument(
     help="Window Convergence",
     default=1,
 )
+parser.add_argument(
+    "-dv",
+    "--diff_val_list",
+    nargs="+",
+    type=float,
+    help="List of diffusivities",
+    default=[],
+    required=False,
+)
+parser.add_argument(
+    "-dn",
+    "--diff_name_list",
+    nargs="+",
+    type=str,
+    help="List of diffusivities",
+    default=[],
+    required=False,
+)
 args = parser.parse_args()
 
 
@@ -69,6 +87,9 @@ cellCentres = readMesh(
     os.path.join(case_path, f"meshCellCentres_{mesh_time_str}.obj")
 )
 nCells = len(cellCentres)
+diff_val_list = args.diff_val_list
+diff_name_list = args.diff_name_list
+assert len(diff_val_list) == len(diff_name_list)
 
 window_ave = min(args.windowAve, len(time_str_sorted) - 1)
 window_conv = min(args.windowConv, len(time_str_sorted) - 1)
@@ -128,28 +149,43 @@ def get_var(
             val_dict=val_dict,
         )
     elif name == "kla_CO":
+        if "D_CO" in diff_name_list:
+            diff = diff_val_list[diff_name_list.index("D_CO")]
+        else:
+            diff = None
         var, val_dict = computeSpec_kla(
             localFolder,
             nCells,
             key_suffix="co",
             cellCentres=cellCentres,
             val_dict=val_dict,
+            diff=diff,
         )
     elif name == "kla_CO2":
+        if "D_CO2" in diff_name_list:
+            diff = diff_val_list[diff_name_list.index("D_CO2")]
+        else:
+            diff = None
         var, val_dict = computeSpec_kla(
             localFolder,
             nCells,
             key_suffix="co2",
             cellCentres=cellCentres,
             val_dict=val_dict,
+            diff=diff,
         )
     elif name == "kla_H2":
+        if "D_H2" in diff_name_list:
+            diff = diff_val_list[diff_name_list.index("D_H2")]
+        else:
+            diff = None
         var, val_dict = computeSpec_kla(
             localFolder,
             nCells,
             key_suffix="h2",
             cellCentres=cellCentres,
             val_dict=val_dict,
+            diff=diff,
         )
     else:
         sys.exit(f"ERROR: unknown variable {name}")

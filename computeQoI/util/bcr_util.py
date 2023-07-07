@@ -152,7 +152,9 @@ def computeSpec_liq(
     return species, val_dict
 
 
-def computeSpec_kla(localFolder, nCells, key_suffix, cellCentres, val_dict={}):
+def computeSpec_kla(
+    localFolder, nCells, key_suffix, cellCentres, val_dict={}, diff=None
+):
     if "slip_vel" not in val_dict:
         u_gas, val_dict = readFromDict(
             val_dict=val_dict,
@@ -179,15 +181,18 @@ def computeSpec_kla(localFolder, nCells, key_suffix, cellCentres, val_dict={}):
         nCells=nCells,
     )
     if "D_" + key_suffix not in val_dict:
-        T_gas, val_dict = readFromDict(
-            val_dict=val_dict,
-            key="T_gas",
-            read_func=readOFScal,
-            path=os.path.join(localFolder, "T.gas"),
-            nCells=nCells,
-        )
-        mu = 1.67212e-06 * np.sqrt(T_gas) / (1 + 170.672 / T_gas)
-        D = mu / rho_gas / 0.7
+        if diff is None:
+            T_gas, val_dict = readFromDict(
+                val_dict=val_dict,
+                key="T_gas",
+                read_func=readOFScal,
+                path=os.path.join(localFolder, "T.gas"),
+                nCells=nCells,
+            )
+            mu = 1.67212e-06 * np.sqrt(T_gas) / (1 + 170.672 / T_gas)
+            D = mu / rho_gas / 0.7
+        else:
+            D = np.ones(rho_gas.shape) * diff
         val_dict["D_" + key_suffix] = D
     else:
         D = val_dict["D_" + key_suffix]
