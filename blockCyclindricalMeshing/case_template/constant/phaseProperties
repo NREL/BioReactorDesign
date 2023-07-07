@@ -235,7 +235,7 @@ interfaceComposition.liquid
     {
         type Henry_limited;
         species ( CO2 CO H2);
-        k ( 0.83 2.0e-2 1.8e-2);
+        k ( $He_CO2 $He_CO $He_H2);
         Le $LeLiqMix;
         height_lim $LiqHt_limit;
         height_dir 1;
