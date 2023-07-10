@@ -1,4 +1,4 @@
-fields="CO.gas CO.liquid CO2.gas CO2.liquid H2.gas H2.liquid alpha.gas d.gas kla"
+fields="CO.gas CO.liquid CO2.gas CO2.liquid H2.gas H2.liquid alpha.gas d.gas kla_H2 kla_CO kla_CO2"
 
 plotCond () {
     python plot_conditionalMean_geom.py -sf $1 -cp $2 -fl $fields -pl $3 -ff $4 -p $5
