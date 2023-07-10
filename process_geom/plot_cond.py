@@ -146,7 +146,8 @@ def sequencePlotShade(seq, listShade, fieldName):
             linewidth=3,
             color=shades[ic],
         )
-
+        ax=plt.gca()
+        ax.set_ylim([0, 7])
 
 for field_name in field_names:
     fig = plt.figure()
