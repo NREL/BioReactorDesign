@@ -3,7 +3,7 @@ import sys
 
 import numpy as np
 
-sys.path.append("util")
+sys.path.append("../utilities")
 import os
 import pickle
 
