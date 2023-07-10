@@ -107,11 +107,11 @@ def get_var(
 ):
     localFolder = os.path.join(case_path, time_folder)
     localFolder_vol = os.path.join(case_path, mesh_time_str)
-    if name == "GH":
+    if name.lower() == "gh":
         var, val_dict = computeGH(
             localFolder, localFolder_vol, nCells, cellCentres, val_dict
         )
-    elif name == "GH_height":
+    elif name.lower() == "gh_height":
         var, val_dict = computeGH_height(
             localFolder,
             nCells,
@@ -119,9 +119,9 @@ def get_var(
             height_liq_base=7.0,
             val_dict=val_dict,
         )
-    elif name == "d":
+    elif name.lower() == "d":
         var, val_dict = computeDiam(localFolder, nCells, cellCentres, val_dict)
-    elif name == "CO2_liq":
+    elif name.lower() == "co2_liq":
         var, val_dict = computeSpec_liq(
             localFolder,
             nCells,
@@ -130,7 +130,7 @@ def get_var(
             cellCentres=cellCentres,
             val_dict=val_dict,
         )
-    elif name == "CO_liq":
+    elif name.lower() == "co_liq":
         var, val_dict = computeSpec_liq(
             localFolder,
             nCells,
@@ -139,7 +139,7 @@ def get_var(
             cellCentres=cellCentres,
             val_dict=val_dict,
         )
-    elif name == "H2_liq":
+    elif name.lower() == "h2_liq":
         var, val_dict = computeSpec_liq(
             localFolder,
             nCells,
@@ -148,7 +148,7 @@ def get_var(
             cellCentres=cellCentres,
             val_dict=val_dict,
         )
-    elif name == "kla_CO":
+    elif name.lower() == "kla_co":
         if "D_CO" in diff_name_list:
             diff = diff_val_list[diff_name_list.index("D_CO")]
         else:
@@ -161,7 +161,7 @@ def get_var(
             val_dict=val_dict,
             diff=diff,
         )
-    elif name == "kla_CO2":
+    elif name.lower() == "kla_co2":
         if "D_CO2" in diff_name_list:
             diff = diff_val_list[diff_name_list.index("D_CO2")]
         else:
@@ -174,7 +174,7 @@ def get_var(
             val_dict=val_dict,
             diff=diff,
         )
-    elif name == "kla_H2":
+    elif name.lower() == "kla_h2":
         if "D_H2" in diff_name_list:
             diff = diff_val_list[diff_name_list.index("D_H2")]
         else:
