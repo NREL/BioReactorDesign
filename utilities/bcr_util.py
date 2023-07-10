@@ -152,7 +152,7 @@ def computeSpec_liq(
     return species, val_dict
 
 
-def computeSpec_kla(
+def computeSpec_kla_field(
     localFolder, nCells, key_suffix, cellCentres, val_dict={}, diff=None
 ):
     if "slip_vel" not in val_dict:
@@ -225,6 +225,13 @@ def computeSpec_kla(
     )
 
     kla = Sh * 6 * alpha_gas / d_gas / d_gas * D
+
+    return kla, val_dict
+
+def computeSpec_kla(
+    localFolder, nCells, key_suffix, cellCentres, val_dict={}, diff=None
+):
+    kla, val_dict = computeSpec_kla_field(localFolder, nCells, key_suffix, cellCentres, val_dict, diff)
 
     ind_liq, val_dict = indLiqFromDict(
         val_dict, localFolder, nCells, cellCentres
