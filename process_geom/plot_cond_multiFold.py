@@ -84,7 +84,7 @@ param_name = args.param_name
 param_vals = args.param_value
 study_folders = args.studyFolders
 case_folders = ["circle", "side_sparger", "multiring_4"]
-symbol_folders = ['o', 's', '^']
+symbol_folders = ["o", "s", "^"]
 
 for case_folder in case_folders:
     os.makedirs(os.path.join(figureFolder, case_folder), exist_ok=True)
@@ -100,7 +100,9 @@ for study_folder in study_folders:
     cond[study_folder] = {}
     for case_folder in case_folders:
         print(f"Case : {study_folder}/{case_folder}")
-        with open(os.path.join(study_folder, case_folder, "cond.pkl"), "rb") as f:
+        with open(
+            os.path.join(study_folder, case_folder, "cond.pkl"), "rb"
+        ) as f:
             cond[study_folder][case_folder] = pickle.load(f)
 
 
@@ -122,15 +124,24 @@ def sequencePlotShade(val_list, vert_list, listShade):
             linewidth=3,
             color=shades[ic],
         )
-        ax=plt.gca()
+        ax = plt.gca()
         ax.set_ylim([0, 7])
+
 
 for case_folder in case_folders:
     for field_name in field_names:
         fig = plt.figure()
-        val_list = [ cond[study_folder][case_folder][field_name]['val'] for study_folder in study_folders ]
-        vert_list = [ cond[study_folder][case_folder][field_name]['vert'] for study_folder in study_folders ]
-        sequencePlotShade(val_list=val_list, vert_list=vert_list, listShade=param_vals)
+        val_list = [
+            cond[study_folder][case_folder][field_name]["val"]
+            for study_folder in study_folders
+        ]
+        vert_list = [
+            cond[study_folder][case_folder][field_name]["vert"]
+            for study_folder in study_folders
+        ]
+        sequencePlotShade(
+            val_list=val_list, vert_list=vert_list, listShade=param_vals
+        )
         prettyLabels(field_name, "z", 14)
         plt.savefig(
             os.path.join(figureFolder, case_folder, f"{field_name}.png")
@@ -141,8 +152,8 @@ for study_folder, param_val in zip(study_folders, param_vals):
     for field_name in field_names:
         fig = plt.figure()
         for ic, case_folder in enumerate(case_folders):
-            val = cond[study_folder][case_folder][field_name]['val']
-            vert = cond[study_folder][case_folder][field_name]['vert']
+            val = cond[study_folder][case_folder][field_name]["val"]
+            vert = cond[study_folder][case_folder][field_name]["vert"]
             plt.plot(
                 val,
                 vert,
@@ -150,8 +161,8 @@ for study_folder, param_val in zip(study_folders, param_vals):
                 markersize=10,
                 markevery=10,
                 linewidth=3,
-            ) 
-            ax=plt.gca()
+            )
+            ax = plt.gca()
             ax.set_ylim([0, 7])
         plt.savefig(
             os.path.join(
@@ -161,4 +172,3 @@ for study_folder, param_val in zip(study_folders, param_vals):
             )
         )
         plt.close()
-
