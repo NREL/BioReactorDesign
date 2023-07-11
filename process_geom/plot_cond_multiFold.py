@@ -84,7 +84,7 @@ param_name = args.param_name
 param_vals = args.param_value
 study_folders = args.studyFolders
 case_folders = ["circle", "side_sparger", "multiring_4"]
-symbol_folders = ["o", "s", "^"]
+symbol_folders = ["-o", "-s", "-^"]
 
 for case_folder in case_folders:
     os.makedirs(os.path.join(figureFolder, case_folder), exist_ok=True)
@@ -116,16 +116,17 @@ def sequencePlotShade(val_list, vert_list, listShade):
     for ic, (val, vert) in enumerate(zip(val_list, vert_list)):
         xval = val
         yval = vert
+        ind = np.argwhere((yval>=0.5) & (yval<7))
         plt.plot(
-            xval,
-            yval,
-            markersize=10,
-            markevery=10,
+            xval[ind],
+            yval[ind],
+            #markersize=10,
+            #markevery=10,
             linewidth=3,
             color=shades[ic],
         )
         ax = plt.gca()
-        ax.set_ylim([0, 7])
+        #ax.set_ylim([0, 7])
 
 
 for case_folder in case_folders:
@@ -154,16 +155,20 @@ for study_folder, param_val in zip(study_folders, param_vals):
         for ic, case_folder in enumerate(case_folders):
             val = cond[study_folder][case_folder][field_name]["val"]
             vert = cond[study_folder][case_folder][field_name]["vert"]
+            ind = np.argwhere((vert>=0.5) & (vert<7))
             plt.plot(
-                val,
-                vert,
+                val[ind],
+                vert[ind],
                 symbol_folders[ic],
                 markersize=10,
-                markevery=10,
+                color='k',
                 linewidth=3,
+                label=case_folder
             )
             ax = plt.gca()
-            ax.set_ylim([0, 7])
+            #ax.set_ylim([0, 7])
+            prettyLabels(field_name, "z", 14)
+            plotLegend()
         plt.savefig(
             os.path.join(
                 figureFolder,
