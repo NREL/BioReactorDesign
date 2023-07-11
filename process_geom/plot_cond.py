@@ -138,16 +138,17 @@ def sequencePlotShade(seq, listShade, fieldName):
     for ic, c in enumerate(seq):
         xval = seq[c][fieldName]["val"]
         yval = seq[c][fieldName]["vert"]
+        ind = np.argwhere((yval>=0.5) & (yval<7))
         plt.plot(
-            xval,
-            yval,
+            xval[ind],
+            yval[ind],
             markersize=10,
             markevery=10,
             linewidth=3,
             color=shades[ic],
         )
         ax = plt.gca()
-        ax.set_ylim([0, 7])
+        #ax.set_ylim([0, 7])
 
 
 for field_name in field_names:
