@@ -103,6 +103,9 @@ var_names = args.var_list
 param_file = args.paramFile
 study_folder = args.studyFolder
 param_names = args.param_list
+plot_2d_param_space = False
+if len(param_names) == 2:
+    plot_2d_param_space = True
 case_folder_exclude = args.case_folders_exclude
 for param_name in param_names:
     os.makedirs(os.path.join(figure_qoi_Folder, param_name), exist_ok=True)
@@ -141,6 +144,19 @@ for var_name in var_names:
         prettyLabels(param_name, var_name, 14)
         plt.savefig(
             os.path.join(figure_qoi_Folder, param_name, f"{var_name}.png")
+        )
+        plt.close()
+
+if plot_2d_param_space:
+    for var_name in var_names:
+        fig = plt.figure()
+        var_val = [
+            qoi[case_folder][var_name] for case_folder in case_folders_final
+        ]
+        plt.scatter(params[param_names[0]][ind_keep], params[param_names[1]][ind_keep], s=20, c=var_val, cmap='viridis')
+        prettyLabels(param_names[0], param_names[1], title=var_name, fontsize=14)
+        plt.savefig(
+            os.path.join(figure_qoi_Folder, f"{var_name}_2d.png")
         )
         plt.close()
 
