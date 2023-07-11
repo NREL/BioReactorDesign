@@ -154,7 +154,18 @@ if plot_2d_param_space:
             qoi[case_folder][var_name] for case_folder in case_folders_final
         ]
         plt.scatter(params[param_names[0]][ind_keep], params[param_names[1]][ind_keep], s=20, c=var_val, cmap='viridis')
+        cbar = plt.colorbar()
         prettyLabels(param_names[0], param_names[1], title=var_name, fontsize=14)
+        for l in cbar.ax.yaxis.get_ticklabels():
+            l.set_weight("bold")
+            l.set_family("serif")
+            l.set_fontsize(12)
+        #cax = cbar.ax
+        #text = cax.yaxis.label
+        #font = matplotlib.font_manager.FontProperties(
+        #    family="times new roman", weight="bold", size=14
+        #)
+        #text.set_font_properties(font)
         plt.savefig(
             os.path.join(figure_qoi_Folder, f"{var_name}_2d.png")
         )
