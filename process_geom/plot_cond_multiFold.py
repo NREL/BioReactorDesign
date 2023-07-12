@@ -84,6 +84,7 @@ param_name = args.param_name
 param_vals = args.param_value
 study_folders = args.studyFolders
 case_folders = ["circle", "side_sparger", "multiring_4"]
+case_names = ["Circle", "Side sparger", "Multiring"]
 symbol_folders = ["-o", "-s", "-^"]
 
 for case_folder in case_folders:
@@ -111,7 +112,8 @@ def sequencePlotShade(val_list, vert_list, listShade):
     minVal = min(listShade)
     maxVal = max(listShade)
     shadeArr = (np.array(listShade) - minVal) * 0.8 / (maxVal - minVal) + 0.2
-    shades = plt.cm.Blues(shadeArr)
+    #shades = plt.cm.Blues(shadeArr)
+    shades = plt.cm.Greys(shadeArr)
 
     for ic, (val, vert) in enumerate(zip(val_list, vert_list)):
         xval = val
@@ -143,9 +145,12 @@ for case_folder in case_folders:
         sequencePlotShade(
             val_list=val_list, vert_list=vert_list, listShade=param_vals
         )
-        prettyLabels(field_name, "z", 14)
+        prettyLabels(label_conv(field_name), "y [m]", 14, title=" ")
         plt.savefig(
             os.path.join(figureFolder, case_folder, f"{field_name}.png")
+        )
+        plt.savefig(
+            os.path.join(figureFolder, case_folder, f"{field_name}.eps")
         )
         plt.close()
 
@@ -163,17 +168,24 @@ for study_folder, param_val in zip(study_folders, param_vals):
                 markersize=10,
                 color='k',
                 linewidth=3,
-                label=case_folder
+                label=case_names[ic]
             )
             ax = plt.gca()
             #ax.set_ylim([0, 7])
-            prettyLabels(field_name, "z", 14)
+            prettyLabels(label_conv(field_name), "y [m]", 14, title=" ")
             plotLegend()
         plt.savefig(
             os.path.join(
                 figureFolder,
                 f"acrossDesign_{param_val:.2g}",
                 f"{field_name}.png",
+            )
+        )
+        plt.savefig(
+            os.path.join(
+                figureFolder,
+                f"acrossDesign_{param_val:.2g}",
+                f"{field_name}.eps",
             )
         )
         plt.close()
