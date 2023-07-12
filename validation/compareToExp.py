@@ -1,7 +1,7 @@
 import numpy as np
 import argparse
 import sys
-sys.path.append('util')
+sys.path.append('../utilities')
 import os
 from ofio import *
 from plotsUtil import *
