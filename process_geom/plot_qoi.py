@@ -129,9 +129,9 @@ var_names = args.var_list
 vmin = args.vmin
 vmax = args.vmax
 
-use_auto_scale = True  
+use_auto_scale = True
 if len(vmin) == len(var_names) and len(vmax) == len(var_names):
-    use_auto_scale = False    
+    use_auto_scale = False
 
 param_file = args.paramFile
 study_folder = args.studyFolder
@@ -185,7 +185,11 @@ for ivar, var_name in enumerate(var_names):
         plt.savefig(
             os.path.join(figure_qoi_folder, param_name, f"{var_name}.eps")
         )
-        np.savez(os.path.join(figure_qoiNP_folder,param_name,f"{var_name}"), x=params[param_name][ind_keep], y=var_val)
+        np.savez(
+            os.path.join(figure_qoiNP_folder, param_name, f"{var_name}"),
+            x=params[param_name][ind_keep],
+            y=var_val,
+        )
         plt.close()
 
 if plot_2d_param_space:
@@ -195,27 +199,42 @@ if plot_2d_param_space:
             qoi[case_folder][var_name] for case_folder in case_folders_final
         ]
         # avoid white dots
-        var_val_scaled = [val*0.995 for val in var_val]
-        plt.scatter(params[param_names[0]][ind_keep], params[param_names[1]][ind_keep], s=100, c=var_val_scaled, cmap='gray', vmin=np.amin(var_val), vmax=np.amax(var_val))
+        var_val_scaled = [val * 0.995 for val in var_val]
+        plt.scatter(
+            params[param_names[0]][ind_keep],
+            params[param_names[1]][ind_keep],
+            s=100,
+            c=var_val_scaled,
+            cmap="gray",
+            vmin=np.amin(var_val),
+            vmax=np.amax(var_val),
+        )
         cbar = plt.colorbar()
-        prettyLabels(label_conv(param_names[0]), label_conv(param_names[1]), title=label_conv(var_name), fontsize=14, grid=False)
+        prettyLabels(
+            label_conv(param_names[0]),
+            label_conv(param_names[1]),
+            title=label_conv(var_name),
+            fontsize=14,
+            grid=False,
+        )
         for l in cbar.ax.yaxis.get_ticklabels():
             l.set_weight("bold")
             l.set_family("serif")
             l.set_fontsize(12)
-        #cax = cbar.ax
-        #text = cax.yaxis.label
-        #font = matplotlib.font_manager.FontProperties(
+        # cax = cbar.ax
+        # text = cax.yaxis.label
+        # font = matplotlib.font_manager.FontProperties(
         #    family="times new roman", weight="bold", size=14
-        #)
-        #text.set_font_properties(font)
-        plt.savefig(
-            os.path.join(figure_qoi_folder, f"{var_name}_2d.png")
+        # )
+        # text.set_font_properties(font)
+        plt.savefig(os.path.join(figure_qoi_folder, f"{var_name}_2d.png"))
+        plt.savefig(os.path.join(figure_qoi_folder, f"{var_name}_2d.eps"))
+        np.savez(
+            os.path.join(figure_qoiNP_folder, f"{var_name}_2d"),
+            x=params[param_names[0]][ind_keep],
+            y=params[param_names[1]][ind_keep],
+            z=var_val,
         )
-        plt.savefig(
-            os.path.join(figure_qoi_folder, f"{var_name}_2d.eps")
-        )
-        np.savez(os.path.join(figure_qoiNP_folder,f"{var_name}_2d"), x=params[param_names[0]][ind_keep], y=params[param_names[1]][ind_keep], z=var_val)
         plt.close()
 
 qoi_conv = {}

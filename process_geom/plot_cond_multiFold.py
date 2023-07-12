@@ -112,23 +112,23 @@ def sequencePlotShade(val_list, vert_list, listShade):
     minVal = min(listShade)
     maxVal = max(listShade)
     shadeArr = (np.array(listShade) - minVal) * 0.8 / (maxVal - minVal) + 0.2
-    #shades = plt.cm.Blues(shadeArr)
+    # shades = plt.cm.Blues(shadeArr)
     shades = plt.cm.Greys(shadeArr)
 
     for ic, (val, vert) in enumerate(zip(val_list, vert_list)):
         xval = val
         yval = vert
-        ind = np.argwhere((yval>=0.5) & (yval<7))
+        ind = np.argwhere((yval >= 0.5) & (yval < 7))
         plt.plot(
             xval[ind],
             yval[ind],
-            #markersize=10,
-            #markevery=10,
+            # markersize=10,
+            # markevery=10,
             linewidth=3,
             color=shades[ic],
         )
         ax = plt.gca()
-        #ax.set_ylim([0, 7])
+        # ax.set_ylim([0, 7])
 
 
 for case_folder in case_folders:
@@ -160,18 +160,18 @@ for study_folder, param_val in zip(study_folders, param_vals):
         for ic, case_folder in enumerate(case_folders):
             val = cond[study_folder][case_folder][field_name]["val"]
             vert = cond[study_folder][case_folder][field_name]["vert"]
-            ind = np.argwhere((vert>=0.5) & (vert<7))
+            ind = np.argwhere((vert >= 0.5) & (vert < 7))
             plt.plot(
                 val[ind],
                 vert[ind],
                 symbol_folders[ic],
                 markersize=10,
-                color='k',
+                color="k",
                 linewidth=3,
-                label=case_names[ic]
+                label=case_names[ic],
             )
             ax = plt.gca()
-            #ax.set_ylim([0, 7])
+            # ax.set_ylim([0, 7])
             prettyLabels(label_conv(field_name), "y [m]", 14, title=" ")
             plotLegend()
         plt.savefig(

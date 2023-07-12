@@ -91,16 +91,19 @@ data_structs = [np.load(dataFile) for dataFile in dataFiles]
 
 symbol_list = ["o", "s", "^"]
 
-if mode.lower()=="1d":
+if mode.lower() == "1d":
     fig = plt.figure()
     for istruct, data_struct in enumerate(data_structs):
-        plt.plot(data_struct['x'], data_struct['y'], symbol_list[istruct], markersize=10, color="k", label=args.labels[istruct])
+        plt.plot(
+            data_struct["x"],
+            data_struct["y"],
+            symbol_list[istruct],
+            markersize=10,
+            color="k",
+            label=args.labels[istruct],
+        )
     plotLegend()
     prettyLabels(label_conv(args.xlabel), label_conv(args.ylabel), 14)
 
-plt.savefig(
-    os.path.join(figureFolder, f"{args.filename}.png")
-)
-plt.savefig(
-    os.path.join(figureFolder, f"{args.filename}.eps")
-)
+plt.savefig(os.path.join(figureFolder, f"{args.filename}.png"))
+plt.savefig(os.path.join(figureFolder, f"{args.filename}.eps"))

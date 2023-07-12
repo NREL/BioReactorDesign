@@ -133,13 +133,13 @@ def sequencePlotShade(seq, listShade, fieldName):
     minVal = min(listShade)
     maxVal = max(listShade)
     shadeArr = (np.array(listShade) - minVal) * 0.8 / (maxVal - minVal) + 0.2
-    #shades = plt.cm.Blues(shadeArr)
+    # shades = plt.cm.Blues(shadeArr)
     shades = plt.cm.Greys(shadeArr)
 
     for ic, c in enumerate(seq):
         xval = seq[c][fieldName]["val"]
         yval = seq[c][fieldName]["vert"]
-        ind = np.argwhere((yval>=0.5) & (yval<7))
+        ind = np.argwhere((yval >= 0.5) & (yval < 7))
         plt.plot(
             xval[ind],
             yval[ind],
@@ -149,7 +149,7 @@ def sequencePlotShade(seq, listShade, fieldName):
             color=shades[ic],
         )
         ax = plt.gca()
-        #ax.set_ylim([0, 7])
+        # ax.set_ylim([0, 7])
 
 
 for field_name in field_names:
