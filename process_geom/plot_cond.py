@@ -133,7 +133,8 @@ def sequencePlotShade(seq, listShade, fieldName):
     minVal = min(listShade)
     maxVal = max(listShade)
     shadeArr = (np.array(listShade) - minVal) * 0.8 / (maxVal - minVal) + 0.2
-    shades = plt.cm.Blues(shadeArr)
+    #shades = plt.cm.Blues(shadeArr)
+    shades = plt.cm.Greys(shadeArr)
 
     for ic, c in enumerate(seq):
         xval = seq[c][fieldName]["val"]
@@ -154,6 +155,7 @@ def sequencePlotShade(seq, listShade, fieldName):
 for field_name in field_names:
     fig = plt.figure()
     sequencePlotShade(cond, params[param_name][ind_keep], field_name)
-    prettyLabels(field_name, "z", 14)
+    prettyLabels(label_conv(field_name), "y [m]", 14)
     plt.savefig(os.path.join(figureFolder, param_name, f"{field_name}.png"))
+    plt.savefig(os.path.join(figureFolder, param_name, f"{field_name}.eps"))
     plt.close()
