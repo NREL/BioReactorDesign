@@ -87,6 +87,7 @@ param_name = args.param_name
 param_vals = args.param_value
 study_folders = args.studyFolder
 case_folders = ["circle", "side_sparger", "multiring_4"]
+case_names = ["Circle", "Side sparger", "Multiring"]
 
 for case_folder in case_folders:
     os.makedirs(os.path.join(figure_qoi_Folder, case_folder), exist_ok=True)
@@ -119,9 +120,12 @@ for case_folder in case_folders:
             for study_folder in study_folders
         ]
         plt.plot(param_vals, var_val, "o", color="k")
-        prettyLabels(param_name, var_name, 14)
+        prettyLabels(label_conv(param_name), label_conv(var_name), 14)
         plt.savefig(
             os.path.join(figure_qoi_Folder, case_folder, f"{var_name}.png")
+        )
+        plt.savefig(
+            os.path.join(figure_qoi_Folder, case_folder, f"{var_name}.eps")
         )
         plt.close()
 
@@ -132,12 +136,41 @@ for study_folder, param_val in zip(study_folders, param_vals):
             qoi[study_folder][case_folder][var_name]
             for case_folder in case_folders
         ]
-        plot_bar_names(case_folders, var_val)
+        plot_bar_names(case_names, var_val, title=var_name)
         plt.savefig(
             os.path.join(
                 figure_qoi_Folder,
                 f"acrossDesign_{param_val:.2g}",
                 f"{var_name}.png",
+            )
+        )
+        plt.savefig(
+            os.path.join(
+                figure_qoi_Folder,
+                f"acrossDesign_{param_val:.2g}",
+                f"{var_name}.eps",
+            )
+        )
+        plt.close()
+
+        # rescaled version
+        fig = plt.figure()
+        plot_bar_names(case_names, var_val, title=var_name)
+        ax = plt.gca()
+        mean_val = np.mean(var_val)
+        ax.set_ylim([mean_val - mean_val * 5e-2, mean_val + mean_val * 5e-2])
+        plt.savefig(
+            os.path.join(
+                figure_qoi_Folder,
+                f"acrossDesign_{param_val:.2g}",
+                f"{var_name}_zoom.png",
+            )
+        )
+        plt.savefig(
+            os.path.join(
+                figure_qoi_Folder,
+                f"acrossDesign_{param_val:.2g}",
+                f"{var_name}_zoom.eps",
             )
         )
         plt.close()
@@ -171,8 +204,11 @@ for case_folder in case_folders:
                 markersize=15,
                 color="k",
             )
-        prettyLabels("t [s]", var_name, 14)
+        prettyLabels("t [s]", label_conv(var_name), 14)
         plt.savefig(
             os.path.join(figure_qoiConv_Folder, case_folder, f"{var_name}.png")
+        )
+        plt.savefig(
+            os.path.join(figure_qoiConv_Folder, case_folder, f"{var_name}.eps")
         )
         plt.close()
