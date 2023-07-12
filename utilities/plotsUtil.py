@@ -8,7 +8,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 # from SALib.analyze import delta
 
 
-def prettyLabels(xlabel, ylabel, fontsize, title=None):
+def prettyLabels(xlabel, ylabel, fontsize, title=None, grid=True):
     plt.xlabel(
         xlabel,
         fontsize=fontsize,
@@ -40,7 +40,8 @@ def prettyLabels(xlabel, ylabel, fontsize, title=None):
     for axis in ["top", "bottom", "left", "right"]:
         ax.spines[axis].set_linewidth(2)
         ax.spines[axis].set_color("black")
-    plt.grid(color="k", linestyle="-", linewidth=0.5)
+    if grid:
+        plt.grid(color="k", linestyle="-", linewidth=0.5)
     try:
         plt.tight_layout()
     except:
@@ -591,3 +592,82 @@ def ax_sobol_ind(ax, params, X, Y, bounds, title=None):
             fontweight="bold",
             fontname="Times New Roman",
         )
+
+def label_conv(input_string):
+    if input_string.lower() == "width":
+        return "width [mm]"
+    elif input_string.lower() == "spacing":
+        return "spacing [mm]"
+    elif input_string.lower() == "height":
+        return "height [mm]"
+    elif input_string.lower() == "co2_liq" or input_string.lower() == "co2.liquid":
+        return r"$Y_{CO_2, liq}$"
+    elif input_string.lower() == "co_liq" or input_string.lower() == "co.liquid":
+        return r"$Y_{CO, liq}$"
+    elif input_string.lower() == "h2_liq" or input_string.lower() == "h2.liquid":
+        return r"$Y_{H_2, liq}$"
+    elif input_string.lower() == "co2_gas" or input_string.lower() == "co2.gas":
+        return r"$Y_{CO_2, gas}$"
+    elif input_string.lower() == "co_gas" or input_string.lower() == "co.gas":
+        return r"$Y_{CO, gas}$"
+    elif input_string.lower() == "h2_gas" or input_string.lower() == "h2.gas":
+        return r"$Y_{H_2, gas}$"
+    elif input_string.lower() == "kla_h2":
+        return r"$KLA_{H_2}$"
+    elif input_string.lower() == "kla_co":
+        return r"$KLA_{CO}$"
+    elif input_string.lower() == "kla_co2":
+        return r"$KLA_{CO_2}$"
+    elif input_string.lower() == "alpha.gas":
+        return r"$\alpha_{gas}$"
+    elif input_string.lower() == "d.gas" or input_string.lower() == "d" or input_string.lower() == 'bubblediam':
+        return "Mean bubble diam [m]$"
+    elif input_string.lower() == "y":
+        return "y [m]"
+    elif input_string.lower() == "t":
+        return "t [s]"
+    elif input_string.lower() == "gh":
+        return "Gas holdup"
+    elif input_string.lower() == "gh_height":
+        return "Height-based gas holdup"
+    else:
+        print(input_string)
+        return input_string
+
+
+def plot_bar_names(params, val, title=None):
+    x = []
+    for i, name in enumerate(params):
+        x.append(i)
+    plt.bar(
+        x,
+        val,
+        width=0.8,
+        bottom=None,
+        align="center",
+        data=None,
+        tick_label=params,
+    )
+    fontsize = 16
+    if not title == None:
+        plt.title(
+            label_conv(title),
+            fontsize=fontsize,
+            fontweight="bold",
+            fontname="Times New Roman",
+        )
+    ax = plt.gca()
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label1.set_fontsize(fontsize)
+        tick.label1.set_fontname("Times New Roman")
+        tick.label1.set_fontweight("bold")
+    for tick in ax.yaxis.get_major_ticks():
+        tick.label1.set_fontsize(fontsize)
+        tick.label1.set_fontname("Times New Roman")
+        tick.label1.set_fontweight("bold")
+    for axis in ["top", "bottom", "left", "right"]:
+        ax.spines[axis].set_linewidth(2)
+        ax.spines[axis].set_color("black")
+        # ax.spines[axis].set_zorder(0)
+    plt.grid(color="k", linestyle="-", linewidth=0.5)
+    plt.tight_layout()

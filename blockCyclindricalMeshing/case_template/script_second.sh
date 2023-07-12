@@ -4,19 +4,18 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=36
 #SBATCH --time=23:59:00
-#SBATCH --account=gas2fuels
+#SBATCH --account=plasticpyro
 
 module purge
-source /projects/gas2fuels/load_OF9
+source /projects/gas2fuels/load_OF9_pbe
 TMPDIR=/tmp/scratch/
 
-./Allrun
-decomposePar -fileHandler collated -latestTime
+cp system/fvSchemes.second system/fvSchemes
+cp system/controlDict.second system/controlDict
 srun -n 36 multiphaseEulerFoam -parallel -fileHandler collated
 
 # post-process
 reconstructPar -newTimes
-touch sol.foam
 #module purge
 #ml paraview/5.8.1-gui
 #pvpython get_avg_conc.py

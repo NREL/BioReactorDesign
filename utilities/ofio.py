@@ -39,6 +39,51 @@ def readOFScal(file, nCells, nHeader=None):
     return Array
 
 
+def ofvec2arr(vec):
+    vec_list = vec[1:-1].split()
+    vec_float = [float(entry) for entry in vec_list]
+    return np.array(vec_float)
+
+
+def readOFVec(file, nCells, nHeader=None):
+    # Check that the field is not a uniform field
+    try:
+        f = open(file, "r")
+        for i in range(20):
+            line = f.readline()
+        f.close()
+        lineList = line.split()
+        if len(lineList) == 3 and lineList[1] == "uniform":
+            # Uniform field
+            raise NotImplementedError
+            val = ofvec2arr(lineList[2][:-1])
+            Array = val * np.ones(nCells)
+        else:
+            # Not a uniform field
+            f = open(file, "r")
+            if nHeader is None:
+                # Find header
+                lines = f.readlines()
+                for iline, line in enumerate(lines[:-2]):
+                    if str(nCells) in lines[iline] and "(" in lines[iline + 1]:
+                        break
+                nHeader = iline + 2
+                f.close()
+            Array = np.loadtxt(
+                file, dtype=tuple, skiprows=nHeader, max_rows=nCells
+            )
+            for i in range(nCells):
+                Array[i, 0] = float(Array[i, 0][1:])
+                Array[i, 1] = float(Array[i, 1])
+                Array[i, 2] = float(Array[i, 2][:-1])
+            Array = np.array(Array).astype(float)
+    except:
+        print("Issue when reading %s" % file)
+        sys.exit()
+
+    return Array
+
+
 def readSizeGroups(file):
     sizeGroup = {}
     f = open(file, "r")
@@ -107,53 +152,3 @@ def getMeshTime(casePath):
         if entry.startswith("meshFaceCentres"):
             return entry[16:-4]
 
-
-def compute_gas_holdup(caseFolder, timeFolder, nCells, firstTimeFolder):
-    alpha_gas_file = os.path.join(caseFolder, timeFolder, "alpha.gas")
-    volume_file = os.path.join(caseFolder, str(firstTimeFolder), "V")
-    alpha_gas = readOFScal(alpha_gas_file, nCells)
-    volume = readOFScal(volume_file, nCells)
-    holdup = np.sum(alpha_gas * volume) / np.sum(volume)
-    return holdup
-
-
-def conditionalAverage(x, y, nbin):
-    try:
-        assert len(x) == len(y)
-    except:
-        print("conditional average x and y have different dimension")
-        print("dim x = ", len(x))
-        print("dim y = ", len(y))
-        sys.exit()
-    # Bin conditional space
-    mag = np.amax(x) - np.amin(x)
-    x_bin = np.linspace(
-        np.amin(x) - mag / (2 * nbin), np.amax(x) + mag / (2 * nbin), nbin
-    )
-    weight = np.zeros(nbin)
-    weightVal = np.zeros(nbin)
-    asum = np.zeros(nbin)
-    bsum = np.zeros(nbin)
-    avalsum = np.zeros(nbin)
-    bvalsum = np.zeros(nbin)
-    inds = np.digitize(x, x_bin)
-
-    a = abs(y - x_bin[inds - 1])
-    b = abs(y - x_bin[inds])
-    c = a + b
-    a = a / c
-    b = b / c
-
-    for i in range(nbin):
-        asum[i] = np.sum(a[np.argwhere(inds == i)])
-        bsum[i] = np.sum(b[np.argwhere(inds == i + 1)])
-        avalsum[i] = np.sum(
-            a[np.argwhere(inds == i)] * y[np.argwhere(inds == i)]
-        )
-        bvalsum[i] = np.sum(
-            b[np.argwhere(inds == i + 1)] * y[np.argwhere(inds == i + 1)]
-        )
-    weight = asum + bsum
-    weightVal = avalsum + bvalsum
-
-    return x_bin, weightVal / (weight)

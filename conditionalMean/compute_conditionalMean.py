@@ -3,10 +3,12 @@ import sys
 
 import numpy as np
 
-sys.path.append("util")
+sys.path.append("../utilities")
 import os
 import pickle
 
+from bcr_util import *
+from mathtools import *
 from ofio import *
 
 parser = argparse.ArgumentParser(
@@ -57,6 +59,24 @@ parser.add_argument(
     ],
     required=False,
 )
+parser.add_argument(
+    "-dv",
+    "--diff_val_list",
+    nargs="+",
+    type=float,
+    help="List of diffusivities",
+    default=[],
+    required=False,
+)
+parser.add_argument(
+    "-dn",
+    "--diff_name_list",
+    nargs="+",
+    type=str,
+    help="List of diffusivities",
+    default=[],
+    required=False,
+)
 args = parser.parse_args()
 
 
@@ -69,6 +89,9 @@ cellCentres = readMesh(
     os.path.join(case_path, f"meshCellCentres_{mesh_time_str}.obj")
 )
 nCells = len(cellCentres)
+diff_val_list = args.diff_val_list
+diff_name_list = args.diff_name_list
+assert len(diff_val_list) == len(diff_name_list)
 
 window_ave = min(args.windowAve, len(time_str_sorted))
 
@@ -97,7 +120,48 @@ for i_ave in range(window_ave):
     #    has_d = False
 
     for filename, name in zip(field_file, field_name_list):
-        field_tmp = readOFScal(filename, nCells)
+        val_dict = {}
+        if name.lower() == "kla_co":
+            if "D_CO" in diff_name_list:
+                diff = diff_val_list[diff_name_list.index("D_CO")]
+            else:
+                diff = None
+            field_tmp, val_dict = computeSpec_kla_field(
+                os.path.join(case_path, time_folder),
+                nCells,
+                key_suffix="co",
+                cellCentres=cellCentres,
+                val_dict=val_dict,
+                diff=diff,
+            )
+        elif name.lower() == "kla_co2":
+            if "D_CO2" in diff_name_list:
+                diff = diff_val_list[diff_name_list.index("D_CO2")]
+            else:
+                diff = None
+            field_tmp, val_dict = computeSpec_kla_field(
+                os.path.join(case_path, time_folder),
+                nCells,
+                key_suffix="co2",
+                cellCentres=cellCentres,
+                val_dict=val_dict,
+                diff=diff,
+            )
+        elif name.lower() == "kla_h2":
+            if "D_H2" in diff_name_list:
+                diff = diff_val_list[diff_name_list.index("D_H2")]
+            else:
+                diff = None
+            field_tmp, val_dict = computeSpec_kla_field(
+                os.path.join(case_path, time_folder),
+                nCells,
+                key_suffix="h2",
+                cellCentres=cellCentres,
+                val_dict=val_dict,
+                diff=diff,
+            )
+        else:
+            field_tmp = readOFScal(filename, nCells)
         vert_axis, field_cond_tmp = conditionalAverage(
             cellCentres[:, vert_ind], field_tmp, nbin=nbins
         )

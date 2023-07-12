@@ -22,8 +22,8 @@
 			"column" : 360
 		},
 		"Longitudinal": {
-			"column_top" : 10000,
-                        "head_space" : 7200,
+			"column_top" : 12000,
+                        "head_space" : 9000,
                         "sparger_trans" : 1000,
                         "sparger_top" : 510,
                         "sparger_bottom" : 490,
