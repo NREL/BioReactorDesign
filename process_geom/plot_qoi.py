@@ -52,6 +52,27 @@ parser.add_argument(
     ],
 )
 parser.add_argument(
+    "-vmin",
+    "--vmin",
+    type=float,
+    metavar="",
+    required=False,
+    help="min to plot",
+    nargs="+",
+    default=[],
+)
+parser.add_argument(
+    "-vmax",
+    "--vmax",
+    type=float,
+    metavar="",
+    required=False,
+    help="max to plot",
+    nargs="+",
+    default=[],
+)
+
+parser.add_argument(
     "-pl",
     "--param_list",
     type=str,
@@ -93,13 +114,25 @@ parser.add_argument(
 
 args = parser.parse_args()
 figureFolder = "Figures"
-figure_qoi_Folder = os.path.join(figureFolder, args.figureFolder, "qoi")
-figure_qoiConv_Folder = os.path.join(
+npFolder = "Data"
+figure_qoi_folder = os.path.join(figureFolder, args.figureFolder, "qoi")
+figure_qoiNP_folder = os.path.join(npFolder, args.figureFolder, "qoi")
+figure_qoiConv_folder = os.path.join(
     figureFolder, args.figureFolder, "qoi_conv"
 )
-makeRecursiveFolder(figure_qoi_Folder)
-makeRecursiveFolder(figure_qoiConv_Folder)
+
+
+makeRecursiveFolder(figure_qoi_folder)
+makeRecursiveFolder(figure_qoiNP_folder)
+makeRecursiveFolder(figure_qoiConv_folder)
 var_names = args.var_list
+vmin = args.vmin
+vmax = args.vmax
+
+use_auto_scale = True  
+if len(vmin) == len(var_names) and len(vmax) == len(var_names):
+    use_auto_scale = False    
+
 param_file = args.paramFile
 study_folder = args.studyFolder
 param_names = args.param_list
@@ -108,7 +141,8 @@ if len(param_names) == 2:
     plot_2d_param_space = True
 case_folder_exclude = args.case_folders_exclude
 for param_name in param_names:
-    os.makedirs(os.path.join(figure_qoi_Folder, param_name), exist_ok=True)
+    os.makedirs(os.path.join(figure_qoi_folder, param_name), exist_ok=True)
+    os.makedirs(os.path.join(figure_qoiNP_folder, param_name), exist_ok=True)
 
 params = np.load(os.path.join(study_folder, param_file))
 case_folders = getManyFolders(study_folder, prefix=args.casePrefix)
@@ -134,17 +168,24 @@ for case_folder in case_folders_final:
     with open(os.path.join(study_folder, case_folder, "qoi.pkl"), "rb") as f:
         qoi[case_folder] = pickle.load(f)
 
-for var_name in var_names:
+for ivar, var_name in enumerate(var_names):
     for param_name in param_names:
         fig = plt.figure()
         var_val = [
             qoi[case_folder][var_name] for case_folder in case_folders_final
         ]
         plt.plot(params[param_name][ind_keep], var_val, "o", color="k")
-        prettyLabels(param_name, var_name, 14)
+        prettyLabels(label_conv(param_name), label_conv(var_name), 14)
+        if not use_auto_scale:
+            ax = plt.gca()
+            ax.set_ylim([vmin[ivar], vmax[ivar]])
         plt.savefig(
-            os.path.join(figure_qoi_Folder, param_name, f"{var_name}.png")
+            os.path.join(figure_qoi_folder, param_name, f"{var_name}.png")
         )
+        plt.savefig(
+            os.path.join(figure_qoi_folder, param_name, f"{var_name}.eps")
+        )
+        np.savez(os.path.join(figure_qoiNP_folder,param_name,f"{var_name}"), x=params[param_name][ind_keep], y=var_val)
         plt.close()
 
 if plot_2d_param_space:
@@ -153,9 +194,11 @@ if plot_2d_param_space:
         var_val = [
             qoi[case_folder][var_name] for case_folder in case_folders_final
         ]
-        plt.scatter(params[param_names[0]][ind_keep], params[param_names[1]][ind_keep], s=20, c=var_val, cmap='viridis')
+        # avoid white dots
+        var_val_scaled = [val*0.995 for val in var_val]
+        plt.scatter(params[param_names[0]][ind_keep], params[param_names[1]][ind_keep], s=100, c=var_val_scaled, cmap='gray', vmin=np.amin(var_val), vmax=np.amax(var_val))
         cbar = plt.colorbar()
-        prettyLabels(param_names[0], param_names[1], title=var_name, fontsize=14)
+        prettyLabels(label_conv(param_names[0]), label_conv(param_names[1]), title=label_conv(var_name), fontsize=14, grid=False)
         for l in cbar.ax.yaxis.get_ticklabels():
             l.set_weight("bold")
             l.set_family("serif")
@@ -167,8 +210,12 @@ if plot_2d_param_space:
         #)
         #text.set_font_properties(font)
         plt.savefig(
-            os.path.join(figure_qoi_Folder, f"{var_name}_2d.png")
+            os.path.join(figure_qoi_folder, f"{var_name}_2d.png")
         )
+        plt.savefig(
+            os.path.join(figure_qoi_folder, f"{var_name}_2d.eps")
+        )
+        np.savez(os.path.join(figure_qoiNP_folder,f"{var_name}_2d"), x=params[param_names[0]][ind_keep], y=params[param_names[1]][ind_keep], z=var_val)
         plt.close()
 
 qoi_conv = {}
@@ -198,6 +245,7 @@ for var_name in var_names:
                 markersize=15,
                 color="k",
             )
-        prettyLabels("t [s]", var_name, 14)
-        plt.savefig(os.path.join(figure_qoiConv_Folder, f"{var_name}.png"))
+        prettyLabels("t [s]", label_conv(var_name), 14)
+        plt.savefig(os.path.join(figure_qoiConv_folder, f"{var_name}.png"))
+        plt.savefig(os.path.join(figure_qoiConv_folder, f"{var_name}.eps"))
         plt.close()
