@@ -9,9 +9,9 @@ plotCond_exc () {
 
 rootFolder=/Users/mhassana/Desktop/GitHub/spargerDesign_june25/caseResults_geom/coarse
 plotCond_exc $rootFolder/study_coarse_flatDonut flat_donut width flat_donut_coarse param_flatDonut.npz "flat_donut_0 flat_donut_1 flat_donut_2 flat_donut_3 flat_donut_4"
-plotCond_exc $rootFolder/study_coarse_multiRing multiRing width multiRing_coarse param_multiRing.npz "multiRing_0 multiRing_1 multiRing_3"
-plotCond_exc $rootFolder/study_coarse_multiRing multiRing spacing multiRing_coarse param_multiRing.npz "multiRing_0 multiRing_1 multiRing_3"
-plotCond $rootFolder/study_coarse_sideSparger side_sparger height side_sparger_coarse param_sideSparger.npz
+plotCond $rootFolder/study_coarse_multiRing multiRing width multiRing_coarse param_multiRing.npz
+plotCond $rootFolder/study_coarse_multiRing multiRing spacing multiRing_coarse param_multiRing.npz
+plotCond_exc $rootFolder/study_coarse_sideSparger side_sparger height side_sparger_coarse param_sideSparger.npz "side_sparger_0"
 
 rootFolder=/Users/mhassana/Desktop/GitHub/spargerDesign_june25/caseResults_geom/fine
 plotCond_exc $rootFolder/study_fine_flatDonut flat_donut width flat_donut_fine param_flatDonut.npz "flat_donut_0 flat_donut_1 flat_donut_2 flat_donut_3 flat_donut_4"
