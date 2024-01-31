@@ -1,7 +1,11 @@
 import sys
-
+import json
 import numpy as np
 
+def parseJsonFile(input_filename):
+    with open(input_filename) as f:
+        inpt = json.load(f)
+    return inpt
 
 def make_walls_from_topo(topo):
     WallR = []

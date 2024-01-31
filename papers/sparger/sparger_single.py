@@ -3,30 +3,24 @@ import sys
 
 import numpy as np
 
-sys.path.append("util")
 from distutils.dir_util import copy_tree
 from shutil import copy, rmtree
 
-import argument
-from meshing import *
 from modifyGeom import *
-from myparser import parseJsonFile
-from writeBlockMesh import *
+from brd.meshing.block_cyl_mesh import *
 
 
-def base_mesh(argsDict):
-    geomDict = assemble_geom(argsDict)
-    meshDict = assemble_mesh(argsDict, geomDict)
-    writeBlockMeshDict(argsDict, geomDict, meshDict)
+def base_mesh(input_file, topo_file, output_folder):
+    geomDict = assemble_geom(input_file, topo_file)
+    meshDict = assemble_mesh(input_file, geomDict)
+    writeBlockMeshDict(output_folder, geomDict, meshDict)
 
 
 def generate_blockMeshDict(case_folder):
-    argsDict = {
-        "input_file": os.path.join(case_folder, "system", "input.json"),
-        "topo_file": os.path.join(case_folder, "system", "topology.json"),
-        "out_folder": os.path.join(case_folder, "system"),
-    }
-    base_mesh(argsDict)
+    input_file = os.path.join(case_folder, "system", "input.json")
+    topo_file = os.path.join(case_folder, "system", "topology.json")
+    output_folder = os.path.join(case_folder, "system")
+    base_mesh(input_file, topo_file, output_folder)
 
 
 def setupCaseFolder(

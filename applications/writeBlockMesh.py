@@ -1,8 +1,11 @@
+import os
+import sys
+import numpy as np
+from brd.meshing.block_cyl_mesh import assemble_geom, assemble_mesh, writeBlockMeshDict
+from brd import BRD_BLOCK_CYL_MESH_TEMP_DIR
 import argparse
 
-
-def initArg():
-    # CLI
+def main():
     parser = argparse.ArgumentParser(description="Block cylindrical meshing")
     parser.add_argument(
         "-i",
@@ -24,7 +27,7 @@ def initArg():
     )
     parser.add_argument(
         "-o",
-        "--out_folder",
+        "--output_folder",
         type=str,
         metavar="",
         required=True,
@@ -32,5 +35,10 @@ def initArg():
         default="system",
     )
     args = parser.parse_args()
+    geomDict = assemble_geom(args.input_file, args.topo_file)
+    meshDict = assemble_mesh(args.input_file, geomDict)
+    writeBlockMeshDict(args.output_folder, geomDict, meshDict)
 
-    return args
+
+if __name__ == "__main__":
+    main()

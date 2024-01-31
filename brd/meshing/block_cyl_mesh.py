@@ -1,17 +1,12 @@
 import os
 import sys
-
 import numpy as np
-
-sys.path.append("util")
-import argument
-from meshing import *
-from myparser import parseJsonFile
+from brd.meshing._mesh_tools import *
 
 
-def assemble_geom(argsDict):
-    inpt = parseJsonFile(argsDict["input_file"])
-    topo = parseJsonFile(argsDict["topo_file"])
+def assemble_geom(input_file, topo_file):
+    inpt = parseJsonFile(input_file)
+    topo = parseJsonFile(topo_file)
     # ~~~~ Define dimensions based on input
     r_dimensions_name = list(inpt["Geometry"]["Radial"].keys())
     r_dimensions = [
@@ -36,8 +31,8 @@ def assemble_geom(argsDict):
     return {**wallDict, **boundDict, **dimensionDict}
 
 
-def assemble_mesh(argsDict, geomDict):
-    inpt = parseJsonFile(argsDict["input_file"])
+def assemble_mesh(input_file, geomDict):
+    inpt = parseJsonFile(input_file)
     R = geomDict["R"]
     L = geomDict["L"]
     N1 = len(R)
@@ -201,8 +196,8 @@ def assemble_mesh(argsDict, geomDict):
     }
 
 
-def writeBlockMeshDict(argsDict, geomDict, meshDict):
-    outfile = os.path.join(argsDict["out_folder"], "blockMeshDict")
+def writeBlockMeshDict(out_folder, geomDict, meshDict):
+    outfile = os.path.join(out_folder, "blockMeshDict")
 
     R = geomDict["R"]
     L = geomDict["L"]
@@ -508,12 +503,10 @@ def writeBlockMeshDict(argsDict, geomDict, meshDict):
     fw.close()
 
 
-def main():
-    args = argument.initArg()
-    argsDict = vars(args)
-    geomDict = assemble_geom(argsDict)
-    meshDict = assemble_mesh(argsDict, geomDict)
-    writeBlockMeshDict(argsDict, geomDict, meshDict)
+def main(input_file, topo_file, output_folder):
+    geomDict = assemble_geom(input_file, topo_file)
+    meshDict = assemble_mesh(input_file, geomDict)
+    writeBlockMeshDict(output_folder, geomDict, meshDict)
 
 
 if __name__ == "__main__":

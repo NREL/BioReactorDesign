@@ -20,6 +20,7 @@ setup(
         "Natural Language :: English",
         "Programming Language :: Python :: 3.10",
     ],
+    package_data={"": ["*.json"]},
     include_package_data=True,
     python_requires=">=3.10",
     install_requires=install_requires,
