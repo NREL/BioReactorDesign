@@ -13,10 +13,6 @@ pip install -e .
 
 ### Generate STL mesh
 
-`python applications/write_stl_mesh.py -cr 0.25 -na 12 -aw 0.1 -al 0.5`
-
-### Execute with plotting
-
 `python applications/write_stl_mesh.py -v -cr 0.25 -na 12 -aw 0.1 -al 0.5`
 
 Generates
