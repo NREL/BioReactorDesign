@@ -1,4 +1,4 @@
 numpy
-prettyPlot
+prettyPlot>=0.0.25
 numpy-stl
 scipy<1.11

@@ -11,13 +11,40 @@ pip install -e .
 
 ## Meshing
 
-### Generate STL of spider sparger
+### Generate STL mesh
 
-`cd spiderSparger`
+`python applications/write_stl_mesh.py -cr 0.25 -na 12 -aw 0.1 -al 0.5`
 
-follow `README.md`
+### Execute with plotting
 
-### Generate 3D sparger
+`python applications/write_stl_mesh.py -v -cr 0.25 -na 12 -aw 0.1 -al 0.5`
+
+Generates
+
+<p float="left">
+  <img src="assets/simpleOutput.png" width="250"/>
+</p>
+
+
+### Manual
+
+```
+usage: write_stl_mesh.py [-h] [-cr] [-na] [-aw] [-al] [-v]
+
+Generate Spider Sparger STL
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -cr , --centerRadius
+                        Radius of the center distributor
+  -na , --nArms         Number of spider arms
+  -aw , --armsWidth     Width of spider arms
+  -al , --armsLength    Length of spider arms
+  -v, --verbose         plot on screen
+
+```
+
+### Block cyclindrical meshing
 
 Generates `blockMeshDict` in `system`
 
