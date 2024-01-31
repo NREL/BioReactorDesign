@@ -2,7 +2,7 @@ import sys
 
 import numpy as np
 
-from brd.meshing._stl_mesh_tools import makeSpider, saveSTL
+from brd.meshing.stl_mesh_tools import makeSpider, saveSTL
 import argparse
 
 if __name__ == "__main__":
