@@ -38,7 +38,7 @@ cd $root
 Will generate this
 
 <p float="left">
-  <img src="../image/3dsparger.png" width="250"/>
+  <img src="assets/3dsparger.png" width="250"/>
 </p>
 
 
@@ -53,7 +53,7 @@ The block topology is controlled by the `topology.json`
 Always work with a schematic. Here is the schematic for this case
 
 <p float="left">
-  <img src="../image/schematic.png" width="250"/>
+  <img src="assets/schematic.png" width="250"/>
 </p>
 
 The purple blocks are walls (not meshed) and the white blocks are fluid blocks (meshed). The symmetry axis is indicated as a dashed line
@@ -80,7 +80,7 @@ Boundaries are defined with three types, `top`, `bottom` and `lateral`
 
 In the case of sparger walls shown below with the red lines
 <p float="left">
-  <img src="../image/schematicSpargerWalls.png" width="250"/>
+  <img src="assets/schematicSpargerWalls.png" width="250"/>
 </p>
 
 the boundary is defined in the `topology.json` as
@@ -97,7 +97,7 @@ the boundary is defined in the `topology.json` as
 
 In the case of sparger inlet shown below with the red line
 <p float="left">
-  <img src="../image/schematicSpargerInlet.png" width="250"/>
+  <img src="assets/schematicSpargerInlet.png" width="250"/>
 </p>
 
 the boundary is defined in the `topology.json` as
