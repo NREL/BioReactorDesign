@@ -18,7 +18,7 @@ pip install -e .
 Generates
 
 <p float="left">
-  <img src="assets/simpleOutput.png" width="250"/>
+  <img src="assets/simpleOutput.png" width="350"/>
 </p>
 
 
