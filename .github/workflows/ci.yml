@@ -3,8 +3,19 @@ name: brd-CI
 on:
    push:
      branches: [main]
+     paths-ignore:
+      - '*.md'
+      - 'README*'
+      - 'LICENSE'
+      - 'assets/*'
+
    pull_request:
      branches: [main]
+     paths-ignore:
+      - '*.md'
+      - 'README*'
+      - 'LICENSE'
+      - 'assets/*'
 
 jobs:
   Lint:
