@@ -49,7 +49,7 @@ root=`pwd`
 caseFolder=brd/meshing/block_cyl_cases_templates/case
 mesh_temp=brd/meshing/block_cyl_mesh_templates/sideSparger
 
-python applications/writeBlockMesh.py -i $mesh_temp/input.json -t $mesh_temp/topology.json -o $caseFolder/system
+python applications/write_block_cyl_mesh.py -i $mesh_temp/input.json -t $mesh_temp/topology.json -o $caseFolder/system
 
 cd $caseFolder
 blockMesh
@@ -135,7 +135,7 @@ the boundary is defined in the `topology.json` as
 #### Manual
 
 ```
-usage: writeBlockMesh.py [-h] -i  -t  -o
+usage: write_block_cyl_mesh.py [-h] -i  -t  -o
 
 Block cylindrical meshing
 

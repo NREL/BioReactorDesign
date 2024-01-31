@@ -18,7 +18,7 @@ geometryFolder=flatDonut
 
 
 
-python writeBlockMesh.py -i $geometryFolder/input.json -t $geometryFolder/topology.json -o $caseFolder/system
+python write_block_cyl_mesh.py -i $geometryFolder/input.json -t $geometryFolder/topology.json -o $caseFolder/system
 
 cd $caseFolder
 blockMesh
