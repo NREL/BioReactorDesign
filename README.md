@@ -1,12 +1,12 @@
-# Sparger mesh generation for OpenFOAM [![SpargerDesign-CI](https://github.com/NREL/spargerDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NREL/spargerDesign/actions/workflows/ci.yml)
+# Bio Reactor Design Toolbox [![brd-CI](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml)
 
 
 ## Installation
 
 ```
-conda create  --name spargerDesign python=3.10
-conda activate spargerDesign
-pip install -r requirements.txt
+conda create  --name brd python=3.10
+conda activate brd
+pip install -e .
 ```
 
 ## Generate STL of spider sparger

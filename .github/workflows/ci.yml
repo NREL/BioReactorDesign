@@ -1,4 +1,4 @@
-name: SpargerDesign-CI
+name: brd-CI
 
 on:
    push:
@@ -25,15 +25,11 @@ jobs:
         run: |
           pip install black
           pip install isort
+          pip install codespell
       - name: Formatting and sorting import
         run: |
           source .github/linters/formatting.sh
-          format blockCyclindricalMeshing true
-          format inhomogeneousBC true
-          format spiderSparger true
-          format conditionalMean true
-          format computeQoI true
-          format process_geom true
+          format . true
   Test:
     runs-on: ubuntu-latest
     strategy:
@@ -50,10 +46,10 @@ jobs:
           python-version: ${{matrix.python-version}}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install pytest
-          python -m pip install -r requirements.txt
-      - name: Run pytest
+          pip install --upgrade pip
+          pip install .
+          pip install pytest
+      - name: Test mesh
         run: |
           cd blockCyclindricalMeshing/tests
           python -m pytest -v
@@ -61,3 +57,5 @@ jobs:
           cd spiderSparger/tests
           python -m pytest -v
           cd ../..
+      - name: Test inverse modeling
+      - name: Test postProcessing
