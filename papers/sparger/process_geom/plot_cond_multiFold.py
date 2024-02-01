@@ -9,7 +9,8 @@ import pickle
 
 from folderManagement import *
 from ofio import *
-from plotsUtil import *
+from prettyPlot.plotting import pretty_labels, plt
+from brd.utilities.label_plot import label_conv
 
 parser = argparse.ArgumentParser(description="Plot cond qoi")
 parser.add_argument(
@@ -145,7 +146,7 @@ for case_folder in case_folders:
         sequencePlotShade(
             val_list=val_list, vert_list=vert_list, listShade=param_vals
         )
-        prettyLabels(label_conv(field_name), "y [m]", 14, title=" ")
+        pretty_labels(label_conv(field_name), "y [m]", 14, title=" ")
         plt.savefig(
             os.path.join(figureFolder, case_folder, f"{field_name}.png")
         )
@@ -172,8 +173,8 @@ for study_folder, param_val in zip(study_folders, param_vals):
             )
             ax = plt.gca()
             # ax.set_ylim([0, 7])
-            prettyLabels(label_conv(field_name), "y [m]", 14, title=" ")
-            plotLegend()
+            pretty_labels(label_conv(field_name), "y [m]", 14, title=" ")
+            pretty_legend()
         plt.savefig(
             os.path.join(
                 figureFolder,

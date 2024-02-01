@@ -9,7 +9,8 @@ import pickle
 
 from folderManagement import *
 from ofio import *
-from plotsUtil import *
+from prettyPlot.plotting import plt, pretty_labels
+from brd.utilities.label_plot import label_conv
 
 parser = argparse.ArgumentParser(description="Plot cond qoi")
 parser.add_argument(
@@ -155,7 +156,7 @@ def sequencePlotShade(seq, listShade, fieldName):
 for field_name in field_names:
     fig = plt.figure()
     sequencePlotShade(cond, params[param_name][ind_keep], field_name)
-    prettyLabels(label_conv(field_name), "y [m]", 14)
+    pretty_labels(label_conv(field_name), "y [m]", 14)
     plt.savefig(os.path.join(figureFolder, param_name, f"{field_name}.png"))
     plt.savefig(os.path.join(figureFolder, param_name, f"{field_name}.eps"))
     plt.close()

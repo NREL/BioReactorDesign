@@ -6,7 +6,7 @@ import numpy as np
 
 sys.path.append("util")
 import matplotlib.pyplot as plt
-from plotsUtil import *
+from prettyPlot.plotting import plt, pretty_labels
 from SALib.analyze import delta
 
 root = "."
@@ -94,31 +94,31 @@ os.makedirs(figureFolder, exist_ok=True)
 for iname, name in enumerate(var_names):
     fig = plt.figure()
     plt.plot(params[:, iname], tot_accuracy, "o", color="k")
-    prettyLabels(name, "accuracy", 14)
+    pretty_labels(name, "accuracy", 14)
     plt.savefig(os.path.join(figureFolder, "acc_" + name + ".png"))
     plt.close()
 for iname, name in enumerate(var_names):
     fig = plt.figure()
     plt.plot(params[:, iname], accuracy_gh, "o", color="k")
-    prettyLabels(name, "accuracy_gh", 14)
+    pretty_labels(name, "accuracy_gh", 14)
     plt.savefig(os.path.join(figureFolder, "acc_gh_" + name + ".png"))
     plt.close()
 for iname, name in enumerate(var_names):
     fig = plt.figure()
     plt.plot(params[:, iname], accuracy_xco2, "o", color="k")
-    prettyLabels(name, "accuracy_xco2", 14)
+    pretty_labels(name, "accuracy_xco2", 14)
     plt.savefig(os.path.join(figureFolder, "acc_xco2_" + name + ".png"))
     plt.close()
 for iname, name in enumerate(var_names):
     fig = plt.figure()
     plt.plot(params[:, iname], accuracy_17, "o", color="k")
-    prettyLabels(name, "accuracy_17", 14)
+    pretty_labels(name, "accuracy_17", 14)
     plt.savefig(os.path.join(figureFolder, "acc_17_" + name + ".png"))
     plt.close()
 for iname, name in enumerate(var_names):
     fig = plt.figure()
     plt.plot(params[:, iname], accuracy_19, "o", color="k")
-    prettyLabels(name, "accuracy_19", 14)
+    pretty_labels(name, "accuracy_19", 14)
     plt.savefig(os.path.join(figureFolder, "acc_19_" + name + ".png"))
     plt.close()
 

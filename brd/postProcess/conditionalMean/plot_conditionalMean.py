@@ -9,7 +9,7 @@ import pickle
 
 from folderManagement import *
 from ofio import *
-from plotsUtil import *
+from prettyPlot.plotting import plt, pretty_labels
 
 parser = argparse.ArgumentParser(description="Plot conditional means")
 parser.add_argument(
@@ -114,6 +114,6 @@ for field_name in field_names:
         plot_name = "gasHoldup"
     else:
         plot_name = field_name
-    prettyLabels(plot_name, "y [m]", 14)
+    pretty_labels(plot_name, "y [m]", 14)
     plt.savefig(os.path.join(figureFolder, f"{plot_name}.png"))
     plt.close()

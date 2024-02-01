@@ -5,7 +5,7 @@ import numpy as np
 
 sys.path.append("util")
 import gpfit
-from plotsUtil import *
+from prettyPlot.plotting import plt, pretty_labels
 
 models = [
     {"name": "gh_17", "data": "train_data_gh_17.npz"},
@@ -51,7 +51,7 @@ for imodel, model in enumerate(models):
     for iname, name in enumerate(var_names):
         fig = plt.figure()
         plt.plot(x_call_interp[:, iname], y_std, "o", color="k")
-        prettyLabels(name, "std GP", 14)
+        pretty_labels(name, "std GP", 14)
         plt.savefig(
             os.path.join(figureFolder, model["name"], "stdGP_" + name + ".png")
         )

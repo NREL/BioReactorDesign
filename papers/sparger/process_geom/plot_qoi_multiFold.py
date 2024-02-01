@@ -9,7 +9,8 @@ import pickle
 
 from folderManagement import *
 from ofio import *
-from plotsUtil import *
+from prettyPlot.plotting import plt, pretty_labels
+from brd.utilities.label_plot import label_conv
 
 parser = argparse.ArgumentParser(description="Plot Qoi")
 parser.add_argument(
@@ -120,7 +121,7 @@ for case_folder in case_folders:
             for study_folder in study_folders
         ]
         plt.plot(param_vals, var_val, "o", color="k")
-        prettyLabels(label_conv(param_name), label_conv(var_name), 14)
+        pretty_labels(label_conv(param_name), label_conv(var_name), 14)
         plt.savefig(
             os.path.join(figure_qoi_Folder, case_folder, f"{var_name}.png")
         )
@@ -204,7 +205,7 @@ for case_folder in case_folders:
                 markersize=15,
                 color="k",
             )
-        prettyLabels("t [s]", label_conv(var_name), 14)
+        pretty_labels("t [s]", label_conv(var_name), 14)
         plt.savefig(
             os.path.join(figure_qoiConv_Folder, case_folder, f"{var_name}.png")
         )

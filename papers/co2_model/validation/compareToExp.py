@@ -8,7 +8,7 @@ import os
 
 from folderManagement import *
 from ofio import *
-from plotsUtil import *
+from prettyPlot.plotting import plt, pretty_labels, pretty_legend
 
 parser = argparse.ArgumentParser(description="Case folder")
 parser.add_argument(
@@ -70,8 +70,8 @@ def convertToMol(yCO2):
 fig = plt.figure()
 plt.plot(conv17["time"], conv17["gh"], linewidth=3, color="k", label="Sim17")
 plt.plot(conv19["time"], conv19["gh"], linewidth=3, color="b", label="Sim19")
-plotLegend()
-prettyLabels("t [s]", "Gas Holdup", 14)
+pretty_legend()
+pretty_labels("t [s]", "Gas Holdup", 14)
 plt.savefig(os.path.join(figureFolder, "conv.png"))
 plt.close()
 
@@ -116,8 +116,8 @@ plt.plot(
 )
 plt.plot(sim17["gh"], sim17["z"], linewidth=3, color="b", label="This work")
 plt.plot(sim19["gh"], sim19["z"], linewidth=3, color="r")
-# plotLegend()
-prettyLabels("Gas Holdup", "z [m]", 14)
+# pretty_legend()
+pretty_labels("Gas Holdup", "z [m]", 14)
 plt.savefig(os.path.join(figureFolder, "gh.png"))
 plt.savefig(os.path.join(figureFolder, "gh.eps"))
 plt.close()
@@ -167,8 +167,8 @@ plt.plot(
     label="This work",
 )
 plt.plot(convertToMol(sim19["co2"]), sim19["z"], linewidth=3, color="r")
-# plotLegend()
-prettyLabels(r"$X_{CO2}$", "z [m]", 14)
+# pretty_legend()
+pretty_labels(r"$X_{CO2}$", "z [m]", 14)
 plt.savefig(os.path.join(figureFolder, "co2.png"))
 plt.savefig(os.path.join(figureFolder, "co2.eps"))
 plt.close()
