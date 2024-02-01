@@ -63,5 +63,6 @@ jobs:
       - name: Test mesh
         run: |
           pytest tests/meshing
-      - name: Test inverse modeling
       - name: Test postProcessing
+        run: |
+          pytest tests/postProcess

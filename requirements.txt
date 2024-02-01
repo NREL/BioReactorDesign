@@ -3,3 +3,6 @@ prettyPlot>=0.0.25
 ruamel_yaml
 numpy-stl
 scipy<1.11
+corner
+jax
+numpyro
