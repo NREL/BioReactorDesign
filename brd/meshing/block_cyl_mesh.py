@@ -22,7 +22,6 @@ def assemble_geom(input_file, topo_file):
         raise ValueError(f"unknown topo file ({topo_file}) extension")
 
     # ~~~~ Define dimensions based on input
-    breakpoint()
     r_dimensions_name = list(inpt["Geometry"]["Radial"].keys())
     r_dimensions = [
         float(inpt["Geometry"]["Radial"][dim]) for dim in r_dimensions_name

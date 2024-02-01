@@ -205,16 +205,34 @@ options:
 ```
 
 
-`cd conditionalMean`
-
-follow `README.md`
-
 ### Plot conditional means
 
-`cd conditionalMean`
+`python applications/compute_conditional_mean.py -f brd/postProcess/data_conditional_mean -avg 2`
 
-follow `README.md`
+Generates (among others)
 
+<p float="left">
+  <img src="assets/gh_cond_mean.png" width="350"/>
+  <img src="assets/co2g_cond_mean.png" width="350"/>
+</p>
+
+
+```bash
+usage: compute_conditional_mean.py [-h] -f  [-vert] [-avg] [--fl FL [FL ...]] [-n  [...]]
+
+Compute conditional means of OpenFOAM fields
+
+options:
+  -h, --help            show this help message and exit
+  -f , --caseFolder     caseFolder to analyze
+  -vert , --verticalDirection 
+                        Index of vertical direction
+  -avg , --windowAve    Window Average
+  --fl FL [FL ...], --field_list FL [FL ...]
+                        List of fields to plot
+  -n  [ ...], --names  [ ...]
+                        names of cases
+```
 
 
 ## Preprocess

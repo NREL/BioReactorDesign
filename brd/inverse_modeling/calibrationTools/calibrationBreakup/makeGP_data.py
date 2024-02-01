@@ -6,7 +6,7 @@ import numpy as np
 
 sys.path.append("util")
 import matplotlib.pyplot as plt
-from plotsUtil import *
+from prettyPlot.plotting import plt, pretty_labels
 from SALib.analyze import delta
 
 root = "."

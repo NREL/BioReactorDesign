@@ -12,7 +12,7 @@ import jax_rbf_uq
 import numpyro
 import numpyro.distributions as dist
 from numpyro.infer import MCMC, NUTS
-from plotsUtil import *
+from prettyPlot.plotting import plt, pretty_labels
 
 root = "."
 

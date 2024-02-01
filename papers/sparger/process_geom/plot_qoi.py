@@ -9,7 +9,9 @@ import pickle
 
 from folderManagement import *
 from ofio import *
-from plotsUtil import *
+from prettyPlot.plotting import plt, pretty_labels
+
+from brd.utilities.label_plot import label_conv
 
 parser = argparse.ArgumentParser(description="Plot Qoi")
 parser.add_argument(
@@ -175,7 +177,7 @@ for ivar, var_name in enumerate(var_names):
             qoi[case_folder][var_name] for case_folder in case_folders_final
         ]
         plt.plot(params[param_name][ind_keep], var_val, "o", color="k")
-        prettyLabels(label_conv(param_name), label_conv(var_name), 14)
+        pretty_labels(label_conv(param_name), label_conv(var_name), 14)
         if not use_auto_scale:
             ax = plt.gca()
             ax.set_ylim([vmin[ivar], vmax[ivar]])
@@ -210,7 +212,7 @@ if plot_2d_param_space:
             vmax=np.amax(var_val),
         )
         cbar = plt.colorbar()
-        prettyLabels(
+        pretty_labels(
             label_conv(param_names[0]),
             label_conv(param_names[1]),
             title=label_conv(var_name),
@@ -264,7 +266,7 @@ for var_name in var_names:
                 markersize=15,
                 color="k",
             )
-        prettyLabels("t [s]", label_conv(var_name), 14)
+        pretty_labels("t [s]", label_conv(var_name), 14)
         plt.savefig(os.path.join(figure_qoiConv_folder, f"{var_name}.png"))
         plt.savefig(os.path.join(figure_qoiConv_folder, f"{var_name}.eps"))
         plt.close()

@@ -9,7 +9,9 @@ import pickle
 
 from folderManagement import *
 from ofio import *
-from plotsUtil import *
+from prettyPlot.plotting import plt, pretty_labels, pretty_legend
+
+from brd.utilities.label_plot import label_conv
 
 parser = argparse.ArgumentParser(description="Compare Qoi")
 parser.add_argument(
@@ -102,8 +104,8 @@ if mode.lower() == "1d":
             color="k",
             label=args.labels[istruct],
         )
-    plotLegend()
-    prettyLabels(label_conv(args.xlabel), label_conv(args.ylabel), 14)
+    pretty_legend()
+    pretty_labels(label_conv(args.xlabel), label_conv(args.ylabel), 14)
 
 plt.savefig(os.path.join(figureFolder, f"{args.filename}.png"))
 plt.savefig(os.path.join(figureFolder, f"{args.filename}.eps"))
