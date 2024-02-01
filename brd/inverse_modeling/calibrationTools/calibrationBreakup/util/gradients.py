@@ -17,7 +17,9 @@ def computeGrad(tree, Input, Output):
         # Compute gradient in each direction
         for jdim in range(dim):
             for idim in range(dim):
-                A[idim + 1, jdim + 1] = Input[ii[jdim + 1], idim] - Input[ii[0], idim]
+                A[idim + 1, jdim + 1] = (
+                    Input[ii[jdim + 1], idim] - Input[ii[0], idim]
+                )
         det = np.linalg.det(A)
         # print(det)
         # if abs(det)<1e-20:
@@ -34,6 +36,8 @@ def computeGrad(tree, Input, Output):
                 # print(ii[i])
                 # print(Alpha[i])
                 # print(Output[ii[i]])
-                gradient[isnap, idim] = gradient[isnap, idim] + Alpha[i] * Output[ii[i]]
+                gradient[isnap, idim] = (
+                    gradient[isnap, idim] + Alpha[i] * Output[ii[i]]
+                )
 
     return gradient

@@ -123,7 +123,9 @@ def plotHist(field, xLabel, folder, filename):
 def plotContour(x, y, z, color):
     ax = plt.gca()
     X, Y = np.meshgrid(x, y)
-    CS = ax.contour(X, Y, np.transpose(z), [0.001, 0.005, 0.01, 0.05], colors=color)
+    CS = ax.contour(
+        X, Y, np.transpose(z), [0.001, 0.005, 0.01, 0.05], colors=color
+    )
     h, _ = CS.legend_elements()
     return h[0]
 
@@ -232,7 +234,9 @@ def plotTrainingLogs(trainingLoss, validationLoss):
     plotLegend()
 
 
-def plotScatter(dataX, dataY, freq, title=None, xfeat=None, yfeat=None, fontSize=14):
+def plotScatter(
+    dataX, dataY, freq, title=None, xfeat=None, yfeat=None, fontSize=14
+):
     fig = plt.figure()
     if xfeat is None:
         xfeat = 0
@@ -278,7 +282,9 @@ def plot_probabilityMapDouble2D(
     )
     plt.gca().invert_yaxis()
     plt.colorbar()
-    prettyLabels("1st label", "2nd label", 20, title="Approximate Probability Map")
+    prettyLabels(
+        "1st label", "2nd label", 20, title="Approximate Probability Map"
+    )
 
 
 def plot_fromLatentToData(model, nSamples, xfeat=None, yfeat=None):
@@ -290,7 +296,9 @@ def plot_fromLatentToData(model, nSamples, xfeat=None, yfeat=None):
     print(samples.shape)
     x, _ = model.predict(samples)
     f, axes = plt.subplots(1, 2)
-    axes[0].plot(samples[:, xfeat], samples[:, yfeat], "o", markersize=3, color="k")
+    axes[0].plot(
+        samples[:, xfeat], samples[:, yfeat], "o", markersize=3, color="k"
+    )
     axprettyLabels(
         axes[0],
         "feature " + str(xfeat),

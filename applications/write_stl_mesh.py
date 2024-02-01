@@ -1,9 +1,9 @@
+import argparse
 import sys
 
 import numpy as np
 
 from brd.meshing.stl_mesh_tools import makeSpider, saveSTL
-import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate Spider Sparger STL")
@@ -61,7 +61,8 @@ if __name__ == "__main__":
 
     if args.verbose:
         # plot
-        from brd.utilities.stl_plotting import plotSTL, pretty_labels, plt
-        axes = plotSTL('spg.stl')
+        from brd.utilities.stl_plotting import plotSTL, plt, pretty_labels
+
+        axes = plotSTL("spg.stl")
         pretty_labels("x", "y", zlabel="z", fontsize=14, ax=axes)
         plt.show()

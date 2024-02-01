@@ -593,6 +593,7 @@ def ax_sobol_ind(ax, params, X, Y, bounds, title=None):
             fontname="Times New Roman",
         )
 
+
 def label_conv(input_string):
     if input_string.lower() == "width":
         return "width [mm]"
@@ -600,13 +601,22 @@ def label_conv(input_string):
         return "spacing [mm]"
     elif input_string.lower() == "height":
         return "height [mm]"
-    elif input_string.lower() == "co2_liq" or input_string.lower() == "co2.liquid":
+    elif (
+        input_string.lower() == "co2_liq"
+        or input_string.lower() == "co2.liquid"
+    ):
         return r"$Y_{CO_2, liq}$"
-    elif input_string.lower() == "co_liq" or input_string.lower() == "co.liquid":
+    elif (
+        input_string.lower() == "co_liq" or input_string.lower() == "co.liquid"
+    ):
         return r"$Y_{CO, liq}$"
-    elif input_string.lower() == "h2_liq" or input_string.lower() == "h2.liquid":
+    elif (
+        input_string.lower() == "h2_liq" or input_string.lower() == "h2.liquid"
+    ):
         return r"$Y_{H_2, liq}$"
-    elif input_string.lower() == "co2_gas" or input_string.lower() == "co2.gas":
+    elif (
+        input_string.lower() == "co2_gas" or input_string.lower() == "co2.gas"
+    ):
         return r"$Y_{CO_2, gas}$"
     elif input_string.lower() == "co_gas" or input_string.lower() == "co.gas":
         return r"$Y_{CO, gas}$"
@@ -620,7 +630,11 @@ def label_conv(input_string):
         return r"$KLA_{CO_2}$"
     elif input_string.lower() == "alpha.gas":
         return r"$\alpha_{gas}$"
-    elif input_string.lower() == "d.gas" or input_string.lower() == "d" or input_string.lower() == 'bubblediam':
+    elif (
+        input_string.lower() == "d.gas"
+        or input_string.lower() == "d"
+        or input_string.lower() == "bubblediam"
+    ):
         return "Mean bubble diam [m]$"
     elif input_string.lower() == "y":
         return "y [m]"

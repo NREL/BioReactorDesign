@@ -151,4 +151,3 @@ def getMeshTime(casePath):
     for entry in files_tmp:
         if entry.startswith("meshFaceCentres"):
             return entry[16:-4]
-

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def conditionalAverage(x, y, nbin):
     try:
         assert len(x) == len(y)
@@ -40,5 +41,3 @@ def conditionalAverage(x, y, nbin):
     weightVal = avalsum + bvalsum
 
     return x_bin, weightVal / (weight)
-
-

@@ -1,12 +1,11 @@
 import os
 import sys
-
-import numpy as np
-
 from distutils.dir_util import copy_tree
 from shutil import copy, rmtree
 
+import numpy as np
 from modifyGeom import *
+
 from brd.meshing.block_cyl_mesh import *
 
 

@@ -39,8 +39,12 @@ for imodel, model in enumerate(models):
     )
     y_interp, y_std = gpr.predict(x_call_interp, return_std=True)
 
-    models[imodel]["amplitude"] = gpr.kernel_.get_params()["k1__constant_value"]
-    models[imodel]["length_scale"] = gpr.kernel_.get_params()["k2__length_scale"]
+    models[imodel]["amplitude"] = gpr.kernel_.get_params()[
+        "k1__constant_value"
+    ]
+    models[imodel]["length_scale"] = gpr.kernel_.get_params()[
+        "k2__length_scale"
+    ]
     print(f"{model['name']} : {gpr.kernel_}")
     os.makedirs(os.path.join(figureFolder, model["name"]), exist_ok=True)
 
@@ -48,7 +52,9 @@ for imodel, model in enumerate(models):
         fig = plt.figure()
         plt.plot(x_call_interp[:, iname], y_std, "o", color="k")
         prettyLabels(name, "std GP", 14)
-        plt.savefig(os.path.join(figureFolder, model["name"], "stdGP_" + name + ".png"))
+        plt.savefig(
+            os.path.join(figureFolder, model["name"], "stdGP_" + name + ".png")
+        )
         plt.close()
 
 

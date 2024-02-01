@@ -55,10 +55,16 @@ for indSim in error:
 
 
 np.savez(
-    "train_data_gh_17.npz", x=params, y=sum_mse_gh_17, nobs=len(error[0]["err17_gh"])
+    "train_data_gh_17.npz",
+    x=params,
+    y=sum_mse_gh_17,
+    nobs=len(error[0]["err17_gh"]),
 )
 np.savez(
-    "train_data_gh_19.npz", x=params, y=sum_mse_gh_19, nobs=len(error[0]["err19_gh"])
+    "train_data_gh_19.npz",
+    x=params,
+    y=sum_mse_gh_19,
+    nobs=len(error[0]["err19_gh"]),
 )
 np.savez(
     "train_data_xco2_17.npz",

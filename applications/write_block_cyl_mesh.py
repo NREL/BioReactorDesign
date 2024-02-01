@@ -1,9 +1,16 @@
+import argparse
 import os
 import sys
+
 import numpy as np
-from brd.meshing.block_cyl_mesh import assemble_geom, assemble_mesh, writeBlockMeshDict
+
 from brd import BRD_BLOCK_CYL_MESH_TEMP_DIR
-import argparse
+from brd.meshing.block_cyl_mesh import (
+    assemble_geom,
+    assemble_mesh,
+    writeBlockMeshDict,
+)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Block cylindrical meshing")

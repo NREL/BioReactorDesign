@@ -52,7 +52,9 @@ for indSim in error:
     accuracy_gh_19[iSim] = np.mean(abs(err["err19_gh"]))
     accuracy_xco2_19[iSim] = np.mean(abs(err["err19_xco2"]))
     mse_gh[iSim] = np.sum(err["err17_gh"] ** 2) + np.sum(err["err19_gh"] ** 2)
-    mse_xco2[iSim] = np.sum(err["err17_xco2"] ** 2) + np.sum(err["err19_xco2"] ** 2)
+    mse_xco2[iSim] = np.sum(err["err17_xco2"] ** 2) + np.sum(
+        err["err19_xco2"] ** 2
+    )
     for iname, name in enumerate(var_names):
         params[iSim, iname] = err[name]
     iSim += 1

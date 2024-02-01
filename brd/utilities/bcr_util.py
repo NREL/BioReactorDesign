@@ -228,10 +228,13 @@ def computeSpec_kla_field(
 
     return kla, val_dict
 
+
 def computeSpec_kla(
     localFolder, nCells, key_suffix, cellCentres, val_dict={}, diff=None
 ):
-    kla, val_dict = computeSpec_kla_field(localFolder, nCells, key_suffix, cellCentres, val_dict, diff)
+    kla, val_dict = computeSpec_kla_field(
+        localFolder, nCells, key_suffix, cellCentres, val_dict, diff
+    )
 
     ind_liq, val_dict = indLiqFromDict(
         val_dict, localFolder, nCells, cellCentres

@@ -52,7 +52,9 @@ def getActiveSubspaces(Input, Output):
     InputProj = np.zeros(nSnapshots)
     for isnap in range(nSnapshots):
         for idim in range(ndim):
-            InputProj[isnap] = InputProj[isnap] + Input[isnap, idim] * maxW1[idim]
+            InputProj[isnap] = (
+                InputProj[isnap] + Input[isnap, idim] * maxW1[idim]
+            )
 
     # Rescale input
     for idim in range(ndim):
@@ -69,7 +71,9 @@ def projInput(Input, direction, rescale1, rescale2):
     nSnapshots = newInput.shape[0]
 
     for idim in range(ndim):
-        newInput[:, idim] = (newInput[:, idim] - rescale2[idim]) / rescale1[idim]
+        newInput[:, idim] = (newInput[:, idim] - rescale2[idim]) / rescale1[
+            idim
+        ]
 
     # Project on the most active subspace
     InputProj = np.zeros(nSnapshots)

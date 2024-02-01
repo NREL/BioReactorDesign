@@ -29,10 +29,14 @@ def rbf_kernel(x1, x2, length_scale, amplitude):
     return amplitude * jnp.exp(-0.5 * pairwise_sq_diff)
 
 
-def make_RBFutility_jax(x_data, y, length_scale=1.0, amplitude=1.0, obs_noise=0.01):
+def make_RBFutility_jax(
+    x_data, y, length_scale=1.0, amplitude=1.0, obs_noise=0.01
+):
     # Calculate the RBF matrix
     rbf_matrix_data = rbf_kernel(x_data, x_data, length_scale, amplitude)
-    rbf_matrix_data = rbf_matrix_data + obs_noise * jnp.eye(jnp.shape(x_data)[0])
+    rbf_matrix_data = rbf_matrix_data + obs_noise * jnp.eye(
+        jnp.shape(x_data)[0]
+    )
 
     # Solve the linear system
     weights = jnp.linalg.solve(rbf_matrix, y)
@@ -44,7 +48,9 @@ def rbf_interpolation_jax(
     x_data, y, x_interp, length_scale=1.0, amplitude=1.0, obs_noise=0.01
 ):
     rbf_matrix_data = rbf_kernel(x_data, x_data, length_scale, amplitude)
-    rbf_matrix_data = rbf_matrix_data + obs_noise * jnp.eye(jnp.shape(x_data)[0])
+    rbf_matrix_data = rbf_matrix_data + obs_noise * jnp.eye(
+        jnp.shape(x_data)[0]
+    )
 
     # Solve the linear system
     weights = jnp.linalg.solve(rbf_matrix_data, y)
@@ -54,9 +60,13 @@ def rbf_interpolation_jax(
     mean_interp = rbf_matrix_interp @ weights
 
     # Uncertainty
-    rbf_matrix_interp_interp = rbf_kernel(x_interp, x_interp, length_scale, amplitude)
-    cov_interp = rbf_matrix_interp_interp - rbf_matrix_interp @ jnp.linalg.solve(
-        rbf_matrix_data, rbf_matrix_interp.T
+    rbf_matrix_interp_interp = rbf_kernel(
+        x_interp, x_interp, length_scale, amplitude
+    )
+    cov_interp = (
+        rbf_matrix_interp_interp
+        - rbf_matrix_interp
+        @ jnp.linalg.solve(rbf_matrix_data, rbf_matrix_interp.T)
     )
     std_interp = jnp.sqrt(jnp.diag(cov_interp))
 
@@ -76,7 +86,9 @@ if __name__ == "__main__":
         )
         gpr = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=50)
         gpr.fit(X, y)
-        mean_prediction, std_prediction = gpr.predict(X_interp, return_std=True)
+        mean_prediction, std_prediction = gpr.predict(
+            X_interp, return_std=True
+        )
         std_prediction = np.reshape(std_prediction, mean_prediction.shape)
 
         gp_params = gpr.kernel_.get_params()
@@ -95,14 +107,36 @@ if __name__ == "__main__":
         fig = plt.figure()
         plt.plot(X_interp, mean_prediction, color="b", label="sklearn")
         plt.plot(
-            X_interp, mean_prediction - std_prediction, "--", color="b", linewidth=1
+            X_interp,
+            mean_prediction - std_prediction,
+            "--",
+            color="b",
+            linewidth=1,
         )
         plt.plot(
-            X_interp, mean_prediction + std_prediction, "--", color="b", linewidth=1
+            X_interp,
+            mean_prediction + std_prediction,
+            "--",
+            color="b",
+            linewidth=1,
         )
-        plt.plot(X_interp, mean_pred_jax, "s", markersize=10, color="r", label="jax")
-        plt.plot(X_interp, mean_pred_jax - std_pred_jax, "s", markersize=5, color="r")
-        plt.plot(X_interp, mean_pred_jax + std_pred_jax, "s", markersize=5, color="r")
+        plt.plot(
+            X_interp, mean_pred_jax, "s", markersize=10, color="r", label="jax"
+        )
+        plt.plot(
+            X_interp,
+            mean_pred_jax - std_pred_jax,
+            "s",
+            markersize=5,
+            color="r",
+        )
+        plt.plot(
+            X_interp,
+            mean_pred_jax + std_pred_jax,
+            "s",
+            markersize=5,
+            color="r",
+        )
         plt.plot(X, y, "o")
         plt.legend()
         plt.show()
@@ -127,7 +161,9 @@ if __name__ == "__main__":
         )
         gpr = GaussianProcessRegressor(kernel=kernel, n_restarts_optimizer=100)
         gpr.fit(xy, z)
-        mean_prediction, std_prediction = gpr.predict(xy_interp, return_std=True)
+        mean_prediction, std_prediction = gpr.predict(
+            xy_interp, return_std=True
+        )
 
         gp_params = gpr.kernel_.get_params()
         length = gp_params["k2__length_scale"]
@@ -148,8 +184,12 @@ if __name__ == "__main__":
         # Plot the original data points and interpolated surface
         fig = plt.figure()
         ax = fig.add_subplot(111, projection="3d")
-        ax.plot_surface(xx_interp, yy_interp, mean_prediction, cmap="Blues", alpha=0.8)
-        ax.plot_surface(xx_interp, yy_interp, mean_pred_jax, cmap="Reds", alpha=0.8)
+        ax.plot_surface(
+            xx_interp, yy_interp, mean_prediction, cmap="Blues", alpha=0.8
+        )
+        ax.plot_surface(
+            xx_interp, yy_interp, mean_pred_jax, cmap="Reds", alpha=0.8
+        )
         ax.scatter(x, y, z, color="r", label="Data Points")
         ax.set_xlabel("x")
         ax.set_ylabel("y")

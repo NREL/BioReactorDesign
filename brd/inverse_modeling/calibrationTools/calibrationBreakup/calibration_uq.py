@@ -60,11 +60,15 @@ for model in models:
             a_min=1e-12,
             a_max=None,
         )
-        return -mse / (2 * std_obs**2) - nobs / 2 * jnp.log(2 * jnp.pi * std_obs**2)
+        return -mse / (2 * std_obs**2) - nobs / 2 * jnp.log(
+            2 * jnp.pi * std_obs**2
+        )
 
     def bayes_step(length, amp):
         # define parameters (incl. prior ranges)
-        surfaceTension = numpyro.sample("surfaceTension", dist.Uniform(0.035, 0.14))
+        surfaceTension = numpyro.sample(
+            "surfaceTension", dist.Uniform(0.035, 0.14)
+        )
         henry = numpyro.sample("henry", dist.Uniform(0.52, 2.08))
         coal_eff = numpyro.sample("coal_eff", dist.Uniform(0.1, 10))
         breakup_eff = numpyro.sample("breakup_eff", dist.Uniform(0.1, 10))

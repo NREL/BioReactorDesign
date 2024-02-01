@@ -1,9 +1,19 @@
+import argparse
 import os
 import sys
+
 import numpy as np
-from brd.meshing.stir_tank_mesh import get_reactor_geom, write_ofoam_preamble, write_vertices, write_edges, write_blocks, write_patches
+
 from brd import BRD_STIR_TANK_MESH_TEMP_DIR
-import argparse
+from brd.meshing.stir_tank_mesh import (
+    get_reactor_geom,
+    write_blocks,
+    write_edges,
+    write_ofoam_preamble,
+    write_patches,
+    write_vertices,
+)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Stir tank meshing")
@@ -23,7 +33,9 @@ def main():
         metavar="",
         required=True,
         help="YAML file containing geometry details of reactor",
-        default=os.path.join(BRD_STIR_TANK_MESH_TEMP_DIR, "base_tank", "tank_par.yaml"),
+        default=os.path.join(
+            BRD_STIR_TANK_MESH_TEMP_DIR, "base_tank", "tank_par.yaml"
+        ),
     )
     args = parser.parse_args()
     with open(args.output_file, "w") as outfile:
