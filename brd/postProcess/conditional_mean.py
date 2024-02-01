@@ -1,14 +1,23 @@
 import os
 import pickle
 
+from prettyPlot.plotting import plt
+
 from brd.utilities.bubble_col_util import *
 from brd.utilities.mathtools import *
 from brd.utilities.ofio import *
 
-from prettyPlot.plotting import plt
 
-def compute_cond_mean(case_path, vert_ind, field_name_list, window_ave,n_bins=32, diff_val_list=[], diff_name_list=[]):
- 
+def compute_cond_mean(
+    case_path,
+    vert_ind,
+    field_name_list,
+    window_ave,
+    n_bins=32,
+    diff_val_list=[],
+    diff_name_list=[],
+):
+
     time_float_sorted, time_str_sorted = getCaseTimes(case_path)
     mesh_time_str = getMeshTime(case_path)
     cellCentres = readMesh(
@@ -23,23 +32,21 @@ def compute_cond_mean(case_path, vert_ind, field_name_list, window_ave,n_bins=32
     for name in field_name_list:
         fields_cond[name] = {}
         fields_cond_tmp[name] = {}
-    
-    
+
     print(f"Case : {case_path}")
-    
-    
+
     for i_ave in range(window_ave):
         time_folder = time_str_sorted[-i_ave - 1]
         print(f"\tReading Time : {time_folder}")
         field_file = []
         for field_name in field_name_list:
             field_file.append(os.path.join(case_path, time_folder, field_name))
-    
+
         # if os.path.isfile(d_gas_file):
         #    has_d = True
         # else:
         #    has_d = False
-    
+
         for filename, name in zip(field_file, field_name_list):
             val_dict = {}
             if name.lower() == "kla_co":
@@ -94,13 +101,21 @@ def compute_cond_mean(case_path, vert_ind, field_name_list, window_ave,n_bins=32
 
     return fields_cond
 
+
 def save_cond(filename, fields_cond):
     with open(filename, "wb") as f:
         pickle.dump(fields_cond, f)
 
-def sequencePlot(cond, folder_names, field_name, case_names=[], symbList=["-", "-d", "-^", "-.", "-s", "-o", "-+"]):
-    
-    if not len(case_names) == len(folder_names): 
+
+def sequencePlot(
+    cond,
+    folder_names,
+    field_name,
+    case_names=[],
+    symbList=["-", "-d", "-^", "-.", "-s", "-o", "-+"],
+):
+
+    if not len(case_names) == len(folder_names):
         case_names = [f"test{i}" for i in range(len(folder_names))]
     if len(case_names) > len(symbList):
         print(
@@ -127,4 +142,4 @@ def sequencePlot(cond, folder_names, field_name, case_names=[], symbList=["-", "
         plot_name = "gasHoldup"
     else:
         plot_name = field_name
-    return  plot_name
+    return plot_name

@@ -54,4 +54,3 @@ def label_conv(input_string):
     else:
         print(input_string)
         return input_string
-

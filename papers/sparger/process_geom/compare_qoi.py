@@ -9,7 +9,8 @@ import pickle
 
 from folderManagement import *
 from ofio import *
-from prettyPlot.plotting import pretty_labels, pretty_legend, plt
+from prettyPlot.plotting import plt, pretty_labels, pretty_legend
+
 from brd.utilities.label_plot import label_conv
 
 parser = argparse.ArgumentParser(description="Compare Qoi")

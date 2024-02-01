@@ -1,13 +1,20 @@
-
-from prettyPlot.plotting import pretty_labels, plt
-
-from brd.postProcess.conditional_mean import compute_cond_mean, save_cond, sequencePlot
 import argparse
+
+from prettyPlot.plotting import plt, pretty_labels
+
 from brd import BRD_COND_MEAN_DATA_DIR
+from brd.postProcess.conditional_mean import (
+    compute_cond_mean,
+    save_cond,
+    sequencePlot,
+)
+
 
 def main():
 
-    parser = argparse.ArgumentParser(description="Compute conditional means of OpenFOAM fields")
+    parser = argparse.ArgumentParser(
+        description="Compute conditional means of OpenFOAM fields"
+    )
     parser.add_argument(
         "-f",
         "--caseFolder",
@@ -17,7 +24,7 @@ def main():
         help="caseFolder to analyze",
         default=BRD_COND_MEAN_DATA_DIR,
     )
-    
+
     parser.add_argument(
         "-vert",
         "--verticalDirection",
@@ -41,7 +48,7 @@ def main():
         "--fields_list",
         nargs="+",
         help="List of fields to plot",
-        default=["CO2.gas","alpha.gas"],
+        default=["CO2.gas", "alpha.gas"],
         required=False,
     )
     parser.add_argument(
@@ -53,7 +60,7 @@ def main():
         help="names of cases",
         nargs="+",
         default=["test"],
-    )  
+    )
     parser.add_argument(
         "--diff_val_list",
         nargs="+",
@@ -72,17 +79,24 @@ def main():
     )
 
     args = parser.parse_args()
- 
-    fields_cond = compute_cond_mean(args.caseFolder, args.verticalDirection, args.fields_list, args.windowAve, n_bins=32, diff_val_list=args.diff_val_list, diff_name_list=args.diff_name_list)
-  
+
+    fields_cond = compute_cond_mean(
+        args.caseFolder,
+        args.verticalDirection,
+        args.fields_list,
+        args.windowAve,
+        n_bins=32,
+        diff_val_list=args.diff_val_list,
+        diff_name_list=args.diff_name_list,
+    )
+
     cond = {}
-    cond[args.caseFolder] = fields_cond 
+    cond[args.caseFolder] = fields_cond
     for field_name in args.fields_list:
         fig = plt.figure()
         plot_name = sequencePlot(cond, [args.caseFolder], field_name)
         pretty_labels(plot_name, "y [m]", 14)
-    
-    
+
     plt.show()
 
 
