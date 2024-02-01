@@ -7,9 +7,22 @@ from brd.meshing._mesh_tools import *
 
 
 def assemble_geom(input_file, topo_file):
-    inpt = parseJsonFile(input_file)
-    topo = parseJsonFile(topo_file)
+    #inpt = parseJsonFile(input_file)
+    if input_file.endswith(".yaml"):
+        inpt = parseYAMLFile(input_file)
+    elif input_file.endswith(".json"):
+        inpt = parseJsonFile(input_file)
+    else:
+        raise ValueError(f"unknown input file ({input_file}) extension")
+    if topo_file.endswith(".yaml"):
+        topo = parseYAMLFile(topo_file)
+    elif topo_file.endswith(".json"):    
+        topo = parseJsonFile(topo_file)
+    else:
+        raise ValueError(f"unknown topo file ({topo_file}) extension")
+
     # ~~~~ Define dimensions based on input
+    breakpoint()
     r_dimensions_name = list(inpt["Geometry"]["Radial"].keys())
     r_dimensions = [
         float(inpt["Geometry"]["Radial"][dim]) for dim in r_dimensions_name
@@ -34,7 +47,12 @@ def assemble_geom(input_file, topo_file):
 
 
 def assemble_mesh(input_file, geomDict):
-    inpt = parseJsonFile(input_file)
+    if input_file.endswith(".yaml"):
+        inpt = parseYAMLFile(input_file)
+    elif input_file.endswith(".json"):
+        inpt = parseJsonFile(input_file)
+    else:
+        raise ValueError(f"unknown input file ({input_file}) extension")
     R = geomDict["R"]
     L = geomDict["L"]
     N1 = len(R)

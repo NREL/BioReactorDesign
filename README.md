@@ -94,7 +94,8 @@ Will generate this
 #### How to change the dimensions or mesh refinement
 
 All dimensions and mesh are controlled by the input file `input.json`. 
-
+The input file can also be in `.yaml` format. The parser will decide the file format based on its extension. 
+See `brd/meshing/block_cyl_mesh_templates/baseColumn/` for an example of `.yaml`
 
 #### How to change the arrangement of concentric cylinders
 
