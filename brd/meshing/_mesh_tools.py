@@ -1,19 +1,22 @@
 import json
 import sys
+from pathlib import Path
 
 import numpy as np
-from pathlib import Path
 from ruamel.yaml import YAML
+
 
 def parseJsonFile(input_filename):
     with open(input_filename) as f:
         inpt = json.load(f)
     return inpt
 
+
 def parseYAMLFile(input_filename):
     yaml = YAML(typ="safe")
     inpt = yaml.load(Path(input_filename))
     return inpt
+
 
 def make_walls_from_topo(topo):
     WallR = []

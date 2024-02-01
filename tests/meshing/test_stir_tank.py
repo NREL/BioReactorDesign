@@ -14,10 +14,11 @@ from brd.meshing.stir_tank_mesh import (
     write_vertices,
 )
 
+
 def test_stir_tank():
     inp = os.path.join(
-            BRD_STIR_TANK_MESH_TEMP_DIR, "base_tank", "tank_par.yaml"
-    ) 
+        BRD_STIR_TANK_MESH_TEMP_DIR, "base_tank", "tank_par.yaml"
+    )
     out = "tmp_blockMeshDict"
     with open(out, "w") as outfile:
         react = get_reactor_geom(inp)
@@ -26,4 +27,3 @@ def test_stir_tank():
         write_edges(outfile, react)
         write_blocks(outfile, react)
         write_patches(outfile, react)
-

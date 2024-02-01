@@ -1,6 +1,5 @@
 import os
-from prettyPlot.plotting import *
-from scipy.optimize import curve_fit
+
 import corner
 import jax.numpy as jnp
 import jax.random as random
@@ -8,6 +7,9 @@ import numpy as np
 import numpyro
 import numpyro.distributions as dist
 from numpyro.infer import MCMC, NUTS
+from prettyPlot.plotting import *
+from scipy.optimize import curve_fit
+
 
 def plotAllEarly(data_dict, color_files=None, chop=False, extrap=False):
     fig = plt.figure()
@@ -39,6 +41,7 @@ def plotAllEarly(data_dict, color_files=None, chop=False, extrap=False):
     pretty_labels("time [s]", "yield [%]", 14)
     if extrap:
         pretty_legend(fontsize=14)
+
 
 def plotAllEarly_uq(data_dict, color_files=None):
     fig = plt.figure()
@@ -77,7 +80,9 @@ def multi_data_load(data_root, tmax=600, data_files=None, color_files=None):
     if data_files is None:
         data_files = os.listdir(data_root)
     if color_files is None:
-        color_files = [str(i*0.75/(len(data_files))) for i in range(len(data_files))]
+        color_files = [
+            str(i * 0.75 / (len(data_files))) for i in range(len(data_files))
+        ]
     data_dict = {}
     for idat, datf in enumerate(data_files):
         filename = os.path.join(data_root, datf)
@@ -90,21 +95,23 @@ def multi_data_load(data_root, tmax=600, data_files=None, color_files=None):
         increase_ind = increase_ind_arr[
             np.argwhere(data_dict[datf]["t"][increase_ind_arr] > 10)[0][0]
         ][0]
-        print(f"data {datf} first time {data_dict[datf]['t'][increase_ind]:.2f}")
+        print(
+            f"data {datf} first time {data_dict[datf]['t'][increase_ind]:.2f}"
+        )
         data_dict[datf]["lim"] = increase_ind
         y_fit = (
-            data_dict[datf]["y"][increase_ind:] - data_dict[datf]["y"][increase_ind]
+            data_dict[datf]["y"][increase_ind:]
+            - data_dict[datf]["y"][increase_ind]
         )
         t_fit = (
-            data_dict[datf]["t"][increase_ind:] - data_dict[datf]["t"][increase_ind]
+            data_dict[datf]["t"][increase_ind:]
+            - data_dict[datf]["t"][increase_ind]
         )
-        data_dict[datf]["t_fit"] = t_fit 
-        data_dict[datf]["y_fit"] = y_fit 
-        data_dict[datf]["textrap"] = np.linspace(0, tmax, min(tmax,1000))
-        
+        data_dict[datf]["t_fit"] = t_fit
+        data_dict[datf]["y_fit"] = y_fit
+        data_dict[datf]["textrap"] = np.linspace(0, tmax, min(tmax, 1000))
 
     return data_dict, color_files
-
 
 
 def sigm_fit(x, a, b, c, d, e, f):
@@ -115,22 +122,25 @@ def sigm_fit(x, a, b, c, d, e, f):
     )
 
 
-def fit_and_ext(data_dict, func=sigm_fit, bounds=([0, 0, 0, 0, 0, 0], [0.05, 1.7, np.inf, 0.015, 1.3, np.inf])):
+def fit_and_ext(
+    data_dict,
+    func=sigm_fit,
+    bounds=([0, 0, 0, 0, 0, 0], [0.05, 1.7, np.inf, 0.015, 1.3, np.inf]),
+):
     for idat, datf in enumerate(data_dict):
         popt, pcov = curve_fit(
             func,
             data_dict[datf]["t_fit"],
             data_dict[datf]["y_fit"],
-            bounds=bounds
+            bounds=bounds,
         )
         data_dict[datf]["yextrap"] = func(data_dict[datf]["textrap"], *popt)
         print(f"data {datf} coeff {popt}")
         lim_ind = data_dict[datf]["lim"]
         data_dict[datf]["textrap"] += data_dict[datf]["t"][lim_ind]
         data_dict[datf]["yextrap"] += data_dict[datf]["y"][lim_ind]
-   
+
     return data_dict
-     
 
 
 def sigm_fit_jax(theta, x):
@@ -140,8 +150,7 @@ def sigm_fit_jax(theta, x):
         * M
         * (
             0.5
-            - 1
-            / (1 + jnp.exp(jnp.clip((a * x) ** b, a_min=None, a_max=20)))
+            - 1 / (1 + jnp.exp(jnp.clip((a * x) ** b, a_min=None, a_max=20)))
         )
     )
     F += (
@@ -149,11 +158,11 @@ def sigm_fit_jax(theta, x):
         * N
         * (
             0.5
-            - 1
-            / (1 + jnp.exp(jnp.clip((c * x) ** d, a_min=None, a_max=20)))
+            - 1 / (1 + jnp.exp(jnp.clip((c * x) ** d, a_min=None, a_max=20)))
         )
     )
     return F
+
 
 def bayes_step(x, y=None, y_err=0.1):
     # define parameters (incl. prior ranges)
@@ -172,6 +181,7 @@ def bayes_step(x, y=None, y_err=0.1):
     # notice that we clamp the outcome of this sampling to the observation y
     numpyro.sample("obs", dist.Normal(y_model, sigma), obs=y)
 
+
 def bayes_fit(data_dict, num_warmup=1000, num_samples=500):
     rng_key = random.PRNGKey(0)
     rng_key, rng_key_ = random.split(rng_key)
@@ -179,7 +189,9 @@ def bayes_fit(data_dict, num_warmup=1000, num_samples=500):
         # Hamilton Markov Chain (HMC) with no u turn sampling (NUTS)
         kernel = NUTS(bayes_step, target_accept_prob=0.9)
         mcmc = MCMC(kernel, num_warmup=num_warmup, num_samples=num_samples)
-        mcmc.run(rng_key_, x=data_dict[datf]["t_fit"], y=data_dict[datf]["y_fit"])
+        mcmc.run(
+            rng_key_, x=data_dict[datf]["t_fit"], y=data_dict[datf]["y_fit"]
+        )
         mcmc.print_summary()
 
         # Draw samples
@@ -224,7 +236,9 @@ def bayes_fit(data_dict, num_warmup=1000, num_samples=500):
         nsamples = np_hmc_samples.shape[0]
         realization = []
         for i in range(nsamples):
-            yext = sigm_fit_jax(np_hmc_samples[i, :], data_dict[datf]["textrap"])
+            yext = sigm_fit_jax(
+                np_hmc_samples[i, :], data_dict[datf]["textrap"]
+            )
             yext += data_dict[datf]["y"][lim_ind]
             text = data_dict[datf]["textrap"] + data_dict[datf]["t"][lim_ind]
             if np.amax(yext) < 1:
@@ -244,9 +258,9 @@ def bayes_fit(data_dict, num_warmup=1000, num_samples=500):
     return data_dict
 
 
-
 if __name__ == "__main__":
     from brd import BRD_EARLY_PRED_DATA_DIR
+
     data_dict, color_files = multi_data_load(BRD_EARLY_PRED_DATA_DIR)
     data_dict = fit_and_ext(data_dict)
     plotAllEarly(data_dict, color_files=color_files, chop=True, extrap=True)
