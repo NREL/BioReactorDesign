@@ -172,6 +172,44 @@ options:
   -o , --output_folder 
                         Output folder for blockMeshDict
 ```
+## Postprocess
+
+### Perform early prediction
+
+`python applications/earlyPredicition.py -df brd/postProcess/data_early`
+
+Generates
+
+<p float="left">
+  <img src="assets/early_det.png" width="350"/>
+  <img src="assets/early_uq.png" width="350"/>
+</p>
+
+#### Manual
+
+```
+usage: early_prediction.py [-h] -df  [-func]
+
+Early prediction
+
+options:
+  -h, --help            show this help message and exit
+  -df , --dataFolder    Data folder containing multiple QOI time histories
+  -func , --functionalForm 
+                        functional form used to perform extrapolation
+```
+
+
+`cd conditionalMean`
+
+follow `README.md`
+
+### Plot conditional means
+
+`cd conditionalMean`
+
+follow `README.md`
+
 
 
 ## Preprocess
@@ -182,13 +220,6 @@ options:
 
 follow `README.md`
 
-## Postprocess
-
-### Plot conditional means
-
-`cd conditionalMean`
-
-follow `README.md`
 
 ## Acknowledgments
 
