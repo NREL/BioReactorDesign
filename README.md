@@ -76,7 +76,11 @@ caseFolder=brd/meshing/block_cyl_cases_templates/case
 mesh_temp=brd/meshing/block_cyl_mesh_templates/sideSparger
 
 python applications/write_block_cyl_mesh.py -i $mesh_temp/input.json -t $mesh_temp/topology.json -o $caseFolder/system
+```
 
+Then activate openFoam environement (tested with OpenFoam9) and mesh with
+
+```bash
 cd $caseFolder
 blockMesh
 transformPoints "scale=(0.001 0.001 0.001)"
