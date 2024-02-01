@@ -3,13 +3,39 @@
 
 ## Installation
 
-```
+```bash
 conda create  --name brd python=3.10
 conda activate brd
 pip install -e .
 ```
 
 ## Meshing
+
+### Generate Stir tank mesh
+
+```bash
+inp=brd/meshing/stir_tank_mesh_templates/base_tank/tank_par.yaml
+out=brd/meshing/stir_tank_case_templates/base/system/blockMeshDict
+
+python applications/write_stir_tank_mesh.py -i $inp -o $out
+```
+
+Generates a blockMeshDict
+
+Then activate openFoam environement (tested with OpenFoam9) and mesh with
+
+```bash
+blockMesh -dict system/blockMeshDict
+stitchMesh -perfect -overwrite inside_to_hub inside_to_hub_copy
+stitchMesh -perfect -overwrite hub_to_rotor hub_to_rotor_copy
+transformPoints "rotate=((0 0 1)(0 1 0))":
+```
+Mesh visualized in Paraview
+
+<p float="left">
+  <img src="assets/stir_tank.png" width="350"/>
+</p>
+
 
 ### Generate STL mesh
 

@@ -1,0 +1,37 @@
+//****** Temperature ************
+Temp   295.15; // K
+//*****Gas transport*******************
+muMixGas        1.479e-05;
+PrMixGas        0.7;
+LeGas     		1.0;
+dbubGas			0.001;
+//****Liquid transport*****************
+CpMixLiq        2359.8;
+muMixLiq        0.0029; // 1 cP at 20C, 0.467 at 60C 
+kThermLiq	0.167; // W/m-K
+RMixLiq         3000; //NOT SURE
+rho0MixLiq      810; // kg/m^3
+sigmaLiq        0.023; //surface tension N/m
+ddropLiq        0.003; // NOT SURE
+//Wilke-Chang params for diffusivity of aq. O2
+// not currently used, JJS 4/14/16
+WC_psi          2.6;
+WC_M            18; // kg/kmol
+WC_V            25.6e-3; // m3/kmol / O2=25.6e-3 / H2=14.3e-3 / CO2=34e-3
+//********************************************
+H_O2_298 0.032;
+DH_O2	1700;
+H_CO2_298 0.83;
+DH_CO2	2400;
+H_H2_298 0.019;
+DH_H2   500;
+H_CH4_298 0.032;
+DH_CH4   1900;
+// ******* Inlet conditions *********
+targetUs        0.02;
+inletArea       0.5;
+totalArea       1.0;
+inletAlphaGas   1.0;
+liqHeight       1.5;
+presfactor      1.1;  // (P1+rho*g*h)/(P1+rho*g*h/2)
+O2Liquid        0; // massFrac=C(mol/m3)*MW/rho 3.2e-6=0.1(mol/m3) 
