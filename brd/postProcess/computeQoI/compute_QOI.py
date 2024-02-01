@@ -7,7 +7,7 @@ sys.path.append("../utilities")
 import os
 import pickle
 
-from bcr_util import *
+from brd.utilities.bubble_col_util import *
 from ofio import *
 
 parser = argparse.ArgumentParser(
