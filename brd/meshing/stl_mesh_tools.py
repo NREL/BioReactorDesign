@@ -14,7 +14,7 @@ def tri_area(point1, point2, point3):
 
 
 def patch_area(tri):
-    vertices = tri.vertices
+    vertices = tri.simplices
     points = tri.points
     area = 0
     for i_triangle in range(vertices.shape[0]):
@@ -32,7 +32,7 @@ def triangulate(vertices):
     points[:, 1] = vertices[:, 2]
     tri = Delaunay(points)
     area = patch_area(tri)
-    return np.array(tri.vertices), area
+    return np.array(tri.simplices), area
 
 
 def makePolygon(rad, nvert):
