@@ -62,11 +62,6 @@ jobs:
           pip install pytest
       - name: Test mesh
         run: |
-          cd blockCyclindricalMeshing/tests
-          python -m pytest -v
-          cd ../..
-          cd spiderSparger/tests
-          python -m pytest -v
-          cd ../..
+          pytest tests/meshing
       - name: Test inverse modeling
       - name: Test postProcessing
