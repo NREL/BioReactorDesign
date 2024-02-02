@@ -20,5 +20,5 @@ BRD_STIR_TANK_CASE_TEMP_DIR = os.path.join(
     BRD_MESH_DIR, "stir_tank_case_templates"
 )
 BRD_EARLY_PRED_DATA_DIR = os.path.join(BRD_POST_DIR, "data_early")
-BRD_COND_MEAN_DATA_DIR = os.path.join(BRD_POST_DIR, "data_conditional_mean")
+# BRD_COND_MEAN_DATA_DIR = os.path.join(BRD_POST_DIR, "data_conditional_mean")
 BRD_INV_DIR = os.path.join(BRD_DIR, "inverse_modeling")

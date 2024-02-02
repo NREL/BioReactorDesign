@@ -2,7 +2,7 @@ import argparse
 
 from prettyPlot.plotting import plt, pretty_labels
 
-from brd import BRD_COND_MEAN_DATA_DIR
+# from brd import BRD_COND_MEAN_DATA_DIR
 from brd.postProcess.conditional_mean import (
     compute_cond_mean,
     save_cond,
@@ -22,7 +22,7 @@ def main():
         metavar="",
         required=True,
         help="caseFolder to analyze",
-        default=BRD_COND_MEAN_DATA_DIR,
+        default="brd/postProcess/data_conditional_mean",
     )
 
     parser.add_argument(
