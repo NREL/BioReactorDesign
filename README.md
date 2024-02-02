@@ -250,6 +250,19 @@ options:
 
 follow `README.md`
 
+## Formatting [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black) [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
+
+Code formatting and import sorting are done automatically with `black` and `isort`.
+
+Fix imports and format : `pip install black isort; bash fixFormat.sh`
+
+Spelling is checked but not automatically fixed using `codespell`
+
+
+## References
+
+Coming soon
+
 
 ## Acknowledgments
 
