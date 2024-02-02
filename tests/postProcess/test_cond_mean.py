@@ -31,7 +31,7 @@ def test_compute_cond():
     save_cond("cond.pkl", fields_cond)
 
     cond = {}
-    cond[BRD_COND_MEAN_DATA_DIR] = fields_cond
+    cond[caseFolder] = fields_cond
     for field_name in fields_list:
         fig = plt.figure()
         plot_name = sequencePlot(cond, [caseFolder], field_name)
