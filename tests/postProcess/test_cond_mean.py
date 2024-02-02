@@ -14,7 +14,9 @@ def test_compute_cond():
     caseFolder = BRD_COND_MEAN_DATA_DIR
     if not os.path.exists(caseFolder):
         # We are executing the CI
-        caseFolder = "brd/postProcess/data_conditional_mean/"
+        caseFolder = os.path.join(
+            "brd", "postProcess", "data_conditional_mean"
+        )
     fields_list = [
         "CO.gas",
         "CO.liquid",
