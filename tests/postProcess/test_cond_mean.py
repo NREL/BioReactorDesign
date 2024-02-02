@@ -1,3 +1,5 @@
+import os
+
 from prettyPlot.plotting import plt, pretty_labels
 
 from brd import BRD_COND_MEAN_DATA_DIR
@@ -10,6 +12,9 @@ from brd.postProcess.conditional_mean import (
 
 def test_compute_cond():
     caseFolder = BRD_COND_MEAN_DATA_DIR
+    if not os.path.exists(caseFolder):
+        # We are executing the CI
+        caseFolder = "brd/postProcess/data_conditional_mean/"
     fields_list = [
         "CO.gas",
         "CO.liquid",
