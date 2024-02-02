@@ -2,7 +2,7 @@ name: brd-CI
 
 on:
    push:
-     branches: [main]
+     branches: [main, reorg]
      paths-ignore:
       - '*.md'
       - 'README*'
