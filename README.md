@@ -9,6 +9,13 @@ conda activate brd
 pip install -e .
 ```
 
+## OpenFOAM solvers
+
+Place the attached models in `OFsolvers` into the same arborescence in your `$FOAM_APP` directory. These compile with `openFOAM-9`
+
+We provide a new drag model `Grace`, a new interfacial composition model `Higbie` and various other models which magnitude can be controlled via an efficiency factor `*_limited`
+
+
 ## Meshing
 
 ### Generate Stir tank mesh
