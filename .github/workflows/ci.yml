@@ -19,11 +19,13 @@ on:
 
 jobs:
   Lint:
+    name: Lint (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ['3.10']
+        os: ['ubuntu-latest']
     defaults:
       run:
         working-directory: ${{github.workspace}}
@@ -42,7 +44,7 @@ jobs:
           source .github/linters/formatting.sh
           format . true
   Test:
-    name: (${{ matrix.python-version }}, ${{ matrix.os }})
+    name: Test (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
