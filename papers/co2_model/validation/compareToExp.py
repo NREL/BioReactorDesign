@@ -1,13 +1,12 @@
 import argparse
+import os
 import sys
 
 import numpy as np
-
-import os
+from prettyPlot.plotting import plt, pretty_labels, pretty_legend
 
 from brd.utilities.folderManagement import *
 from brd.utilities.ofio import *
-from prettyPlot.plotting import plt, pretty_labels, pretty_legend
 
 parser = argparse.ArgumentParser(description="Case folder")
 parser.add_argument(
