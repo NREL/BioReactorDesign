@@ -3,11 +3,10 @@ import sys
 
 import numpy as np
 
-sys.path.append("../utilities")
 import os
 
-from folderManagement import *
-from ofio import *
+from brd.utilities.folderManagement import *
+from brd.utilities.ofio import *
 from prettyPlot.plotting import plt, pretty_labels, pretty_legend
 
 parser = argparse.ArgumentParser(description="Case folder")
