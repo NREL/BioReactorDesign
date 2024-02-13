@@ -29,7 +29,7 @@ python applications/write_stir_tank_mesh.py -i $inp -o $out
 
 Generates a blockMeshDict
 
-Then activate openFoam environement (tested with OpenFoam9) and mesh with
+Then activate openFoam environment (tested with OpenFoam9) and mesh with
 
 ```bash
 blockMesh -dict system/blockMeshDict
@@ -73,7 +73,7 @@ optional arguments:
 
 ```
 
-### Block cyclindrical meshing
+### Block cylindrical meshing
 
 Generates `blockMeshDict` in `system`
 
@@ -85,7 +85,7 @@ mesh_temp=bird/meshing/block_cyl_mesh_templates/sideSparger
 python applications/write_block_cyl_mesh.py -i $mesh_temp/input.json -t $mesh_temp/topology.json -o $caseFolder/system
 ```
 
-Then activate openFoam environement (tested with OpenFoam9) and mesh with
+Then activate openFoam environment (tested with OpenFoam9) and mesh with
 
 ```bash
 cd $caseFolder
