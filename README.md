@@ -1,11 +1,11 @@
-# Bio Reactor Design Toolbox [![brd-CI](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml)
+# <ins>Bi</ins>o <ins>R</ins>eactor <ins>D</ins>esign (BiRD) Toolbox [![bird-CI](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml)
 
 
 ## Installation
 
 ```bash
-conda create  --name brd python=3.10
-conda activate brd
+conda create  --name bird python=3.10
+conda activate bird
 pip install -e .
 ```
 
@@ -21,8 +21,8 @@ We provide a new drag model `Grace`, a new interfacial composition model `Higbie
 ### Generate Stir tank mesh
 
 ```bash
-inp=brd/meshing/stir_tank_mesh_templates/base_tank/tank_par.yaml
-out=brd/meshing/stir_tank_case_templates/base/system/blockMeshDict
+inp=bird/meshing/stir_tank_mesh_templates/base_tank/tank_par.yaml
+out=bird/meshing/stir_tank_case_templates/base/system/blockMeshDict
 
 python applications/write_stir_tank_mesh.py -i $inp -o $out
 ```
@@ -79,8 +79,8 @@ Generates `blockMeshDict` in `system`
 
 ```bash
 root=`pwd`
-caseFolder=brd/meshing/block_cyl_cases_templates/case
-mesh_temp=brd/meshing/block_cyl_mesh_templates/sideSparger
+caseFolder=bird/meshing/block_cyl_cases_templates/case
+mesh_temp=bird/meshing/block_cyl_mesh_templates/sideSparger
 
 python applications/write_block_cyl_mesh.py -i $mesh_temp/input.json -t $mesh_temp/topology.json -o $caseFolder/system
 ```
@@ -106,7 +106,7 @@ Will generate this
 
 All dimensions and mesh are controlled by the input file `input.json`. 
 The input file can also be in `.yaml` format. The parser will decide the file format based on its extension. 
-See `brd/meshing/block_cyl_mesh_templates/baseColumn/` for an example of `.yaml`
+See `bird/meshing/block_cyl_mesh_templates/baseColumn/` for an example of `.yaml`
 
 #### How to change the arrangement of concentric cylinders
 
@@ -188,7 +188,7 @@ options:
 
 ### Perform early prediction
 
-`python applications/earlyPredicition.py -df brd/postProcess/data_early`
+`python applications/earlyPredicition.py -df bird/postProcess/data_early`
 
 Generates
 
@@ -214,7 +214,7 @@ options:
 
 ### Plot conditional means
 
-`python applications/compute_conditional_mean.py -f brd/postProcess/data_conditional_mean -avg 2`
+`python applications/compute_conditional_mean.py -f bird/postProcess/data_conditional_mean -avg 2`
 
 Generates (among others)
 

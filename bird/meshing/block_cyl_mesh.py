@@ -3,7 +3,7 @@ import sys
 
 import numpy as np
 
-from brd.meshing._mesh_tools import *
+from bird.meshing._mesh_tools import *
 
 
 def assemble_geom(input_file, topo_file):

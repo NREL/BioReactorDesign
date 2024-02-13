@@ -3,9 +3,9 @@ import pickle
 
 from prettyPlot.plotting import plt
 
-from brd.utilities.bubble_col_util import *
-from brd.utilities.mathtools import *
-from brd.utilities.ofio import *
+from bird.utilities.bubble_col_util import *
+from bird.utilities.mathtools import *
+from bird.utilities.ofio import *
 
 
 def compute_cond_mean(

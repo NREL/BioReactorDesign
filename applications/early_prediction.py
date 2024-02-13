@@ -2,7 +2,7 @@ import argparse
 
 from prettyPlot.plotting import plt
 
-from brd.postProcess.early_pred import (
+from bird.postProcess.early_pred import (
     bayes_fit,
     fit_and_ext,
     multi_data_load,
@@ -12,7 +12,7 @@ from brd.postProcess.early_pred import (
 
 
 def main():
-    from brd import BRD_EARLY_PRED_DATA_DIR
+    from bird import BIRD_EARLY_PRED_DATA_DIR
 
     parser = argparse.ArgumentParser(description="Early prediction")
     parser.add_argument(
@@ -22,7 +22,7 @@ def main():
         metavar="",
         required=True,
         help="Data folder containing multiple QOI time histories",
-        default=BRD_EARLY_PRED_DATA_DIR,
+        default=BIRD_EARLY_PRED_DATA_DIR,
     )
     parser.add_argument(
         "-func",

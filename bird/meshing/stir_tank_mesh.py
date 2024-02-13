@@ -3,7 +3,7 @@ import os
 
 import numpy as np
 
-from brd.meshing._stir_tank_reactor import StirTankReactor
+from bird.meshing._stir_tank_reactor import StirTankReactor
 
 
 def get_reactor_geom(yamlfile):

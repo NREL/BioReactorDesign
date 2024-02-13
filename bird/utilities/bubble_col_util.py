@@ -1,6 +1,6 @@
 import numpy as np
 
-from brd.utilities.ofio import *
+from bird.utilities.ofio import *
 
 
 def readFromDict(val_dict, key, read_func=None, path=None, nCells=None):

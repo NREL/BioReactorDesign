@@ -1,4 +1,4 @@
-name: brd-CI
+name: bird-CI
 
 on:
    push:

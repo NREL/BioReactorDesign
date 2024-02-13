@@ -4,8 +4,8 @@ import sys
 
 import numpy as np
 
-from brd import BRD_BLOCK_CYL_MESH_TEMP_DIR
-from brd.meshing.block_cyl_mesh import (
+from bird import BIRD_BLOCK_CYL_MESH_TEMP_DIR
+from bird.meshing.block_cyl_mesh import (
     assemble_geom,
     assemble_mesh,
     writeBlockMeshDict,

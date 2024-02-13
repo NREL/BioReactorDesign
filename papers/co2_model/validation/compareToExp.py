@@ -5,8 +5,8 @@ import sys
 import numpy as np
 from prettyPlot.plotting import plt, pretty_labels, pretty_legend
 
-from brd.utilities.folderManagement import *
-from brd.utilities.ofio import *
+from bird.utilities.folderManagement import *
+from bird.utilities.ofio import *
 
 parser = argparse.ArgumentParser(description="Case folder")
 parser.add_argument(

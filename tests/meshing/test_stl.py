@@ -2,8 +2,8 @@ import sys
 
 import numpy as np
 
-from brd.meshing.stl_mesh_tools import makeSpider, saveSTL
-from brd.utilities.stl_plotting import plotSTL, plt, pretty_labels
+from bird.meshing.stl_mesh_tools import makeSpider, saveSTL
+from bird.utilities.stl_plotting import plotSTL, plt, pretty_labels
 
 
 def test_spider():
