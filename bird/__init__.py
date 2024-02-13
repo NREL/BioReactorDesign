@@ -20,5 +20,4 @@ BIRD_STIR_TANK_CASE_TEMP_DIR = os.path.join(
     BIRD_MESH_DIR, "stir_tank_case_templates"
 )
 BIRD_EARLY_PRED_DATA_DIR = os.path.join(BIRD_POST_DIR, "data_early")
-# BIRD_COND_MEAN_DATA_DIR = os.path.join(BIRD_POST_DIR, "data_conditional_mean")
 BIRD_INV_DIR = os.path.join(BIRD_DIR, "inverse_modeling")

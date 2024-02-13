@@ -2,7 +2,6 @@ import argparse
 
 from prettyPlot.plotting import plt, pretty_labels
 
-# from bird import BIRD_COND_MEAN_DATA_DIR
 from bird.postProcess.conditional_mean import (
     compute_cond_mean,
     save_cond,
