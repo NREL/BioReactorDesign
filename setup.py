@@ -9,7 +9,7 @@ with open(os.path.join(here, "requirements.txt")) as f:
 
 with open(os.path.join(here, "brd", "version.py"), encoding="utf-8") as f:
     version = f.read()
-version = version.split('=')[-1].strip().strip('"').strip("'")
+version = version.split("=")[-1].strip().strip('"').strip("'")
 
 setup(
     name="brd",
@@ -24,6 +24,8 @@ setup(
         "License :: BSD 3 License",
         "Natural Language :: English",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
     package_data={"": ["*.json", "*.yaml", "*.csv", "data_conditional_mean"]},
     include_package_data=True,
