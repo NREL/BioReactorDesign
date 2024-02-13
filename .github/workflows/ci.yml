@@ -2,7 +2,7 @@ name: brd-CI
 
 on:
    push:
-     branches: [main, reorg, pythonVersion]
+     branches: [main, reorg]
      paths-ignore:
       - '*.md'
       - 'README*'
