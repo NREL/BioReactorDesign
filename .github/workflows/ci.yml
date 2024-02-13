@@ -2,7 +2,7 @@ name: bird-CI
 
 on:
    push:
-     branches: [main, reorg, rename]
+     branches: [main, reorg]
      paths-ignore:
       - '*.md'
       - 'README*'
