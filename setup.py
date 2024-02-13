@@ -9,7 +9,7 @@ with open(os.path.join(here, "requirements.txt")) as f:
 
 with open(os.path.join(here, "brd", "version.py"), encoding="utf-8") as f:
     version = f.read()
-version = version.split('=')[-1].strip().strip('"').strip("'")
+version = version.split("=")[-1].strip().strip('"').strip("'")
 
 setup(
     name="brd",
