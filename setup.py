@@ -7,9 +7,13 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, "requirements.txt")) as f:
     install_requires = f.readlines()
 
+with open(os.path.join(here, "brd", "version.py"), encoding="utf-8") as f:
+    version = f.read()
+version = version.split('=')[-1].strip().strip('"').strip("'")
+
 setup(
     name="brd",
-    version="0.0.1",
+    version=version,
     description="Toolbox for numerical modeling of bio reactors",
     url="https://github.com/NREL/BioReactorDesign",
     author="Malik Hassanaly",
