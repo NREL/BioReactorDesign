@@ -6,7 +6,7 @@ from shutil import copy, rmtree
 import numpy as np
 from modifyGeom import *
 
-from brd.meshing.block_cyl_mesh import *
+from bird.meshing.block_cyl_mesh import *
 
 
 def base_mesh(input_file, topo_file, output_folder):

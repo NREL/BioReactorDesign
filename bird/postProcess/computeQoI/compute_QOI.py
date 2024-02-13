@@ -9,7 +9,7 @@ import pickle
 
 from ofio import *
 
-from brd.utilities.bubble_col_util import *
+from bird.utilities.bubble_col_util import *
 
 parser = argparse.ArgumentParser(
     description="Compute means QoI of OpenFOAM fields"

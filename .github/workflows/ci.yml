@@ -1,8 +1,8 @@
-name: brd-CI
+name: bird-CI
 
 on:
    push:
-     branches: [main, reorg]
+     branches: [main, reorg, rename]
      paths-ignore:
       - '*.md'
       - 'README*'

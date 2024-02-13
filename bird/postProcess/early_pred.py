@@ -259,9 +259,9 @@ def bayes_fit(data_dict, num_warmup=1000, num_samples=500):
 
 
 if __name__ == "__main__":
-    from brd import BRD_EARLY_PRED_DATA_DIR
+    from bird import BIRD_EARLY_PRED_DATA_DIR
 
-    data_dict, color_files = multi_data_load(BRD_EARLY_PRED_DATA_DIR)
+    data_dict, color_files = multi_data_load(BIRD_EARLY_PRED_DATA_DIR)
     data_dict = fit_and_ext(data_dict)
     plotAllEarly(data_dict, color_files=color_files, chop=True, extrap=True)
     bayes_fit(data_dict)

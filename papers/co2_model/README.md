@@ -2,21 +2,21 @@
 
 ## Compare PBE simulation and Experiments
 
-Assuming one already has installed `brd`
+Assuming one already has installed `bird`
 
 ```bash
-conda activate brd
+conda activate bird
 cd validation
 bash exec_comp.sh
 ```
 
 ## Calibrate models using experiments
 
-Assuming one already has installed `brd`
+Assuming one already has installed `bird`
 Extra packages are needed
 
 ```bash
-conda activate brd
+conda activate bird
 pip install -r requirements.txt
 cd calibration
 ```
