@@ -351,12 +351,12 @@ def radialCoarsening(
     #            "ERROR: cannot smooth radial transition without grading list"
     #        )
 
-    #    Length = R[lastR] - R[lastR - 1]
-    #    deltaE = ((R[lastR - 1] - R[lastR - 2])) / NR[lastR - 1]
-    #    gradR[lastR] = 1 / (
-    #        bissection(Length / deltaE, stretch_fun, NR[lastR])
+    #    Length = R[last_R] - R[last_R - 1]
+    #    deltaE = ((R[last_R - 1] - R[last_R - 2])) / NR[last_R - 1]
+    #    gradR[last_R] = 1 / (
+    #        bissection(Length / deltaE, stretch_fun, NR[last_R])
     #    )
-    #    if (gradR[lastR] > 2 or gradR[lastR] < 0.5) and abs(
+    #    if (gradR[last_R] > 2 or gradR[last_R] < 0.5) and abs(
     #        ratio - 1
     #    ) <= 1e-12:
     #        print(

@@ -1,0 +1,3 @@
+[codespell]
+skip = .git,OFsolvers,build,__pycache__,data_conditional_mean,Figures,assets
+ignore-words = .codespell-ignore-words
