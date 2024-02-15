@@ -1,7 +1,8 @@
 numpy
-matplotlib==3.2.2
+prettyPlot>=0.0.25
+ruamel_yaml
 numpy-stl
-scipy<1.11
-black
-isort
-imageio
+scipy
+corner
+jax
+numpyro

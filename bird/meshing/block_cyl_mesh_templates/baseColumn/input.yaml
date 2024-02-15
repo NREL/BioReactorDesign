@@ -1,0 +1,26 @@
+Meshing:
+  NRSmallest: 4
+  NVertSmallest: 4
+  verticalCoarsening: 
+    - {ratio: 0.5, direction: "+", directionRef: "-"}
+    - {ratio: 1.0, direction: "+", directionRef: "-"}
+    - {ratio: 1.0, direction: "+", directionRef: "-"}
+    - {ratio: 1.0}
+    - {ratio: 1.0, direction: "-", directionRef: "+"}
+  radialCoarsening: 
+    - {ratio: 1.0, direction: "+", directionRef: "-"}
+    - {ratio: 1.0, direction: "+", directionRef: "-"}
+Geometry:
+    { Radial: {
+               sparger_radius : 275, 
+               column_radius : 360
+              },
+      Longitudinal: {
+                     column_top : 12000,
+                     head_space : 9000,
+                     sparger_trans: 1000,
+                     sparger_top: 600,
+                     sparger_bottom : 400,
+                     bottom : 0
+                    }
+     }

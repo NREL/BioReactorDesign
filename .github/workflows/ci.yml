@@ -1,18 +1,31 @@
-name: SpargerDesign-CI
+name: bird-CI
 
 on:
    push:
      branches: [main]
+     paths-ignore:
+      - '*.md'
+      - 'README*'
+      - 'LICENSE'
+      - 'assets/*'
+
    pull_request:
      branches: [main]
+     paths-ignore:
+      - '*.md'
+      - 'README*'
+      - 'LICENSE'
+      - 'assets/*'
 
 jobs:
   Lint:
+    name: Lint (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ['3.10']
+        os: ['ubuntu-latest']
     defaults:
       run:
         working-directory: ${{github.workspace}}
@@ -25,21 +38,19 @@ jobs:
         run: |
           pip install black
           pip install isort
+          pip install codespell
       - name: Formatting and sorting import
         run: |
           source .github/linters/formatting.sh
-          format blockCyclindricalMeshing true
-          format inhomogeneousBC true
-          format spiderSparger true
-          format conditionalMean true
-          format computeQoI true
-          format process_geom true
+          format . true
   Test:
-    runs-on: ubuntu-latest
+    name: Test (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10']
+        python-version: ['3.10', '3.11', '3.12']
+        os: ['ubuntu-latest', 'macos-latest']
     defaults:
       run:
         working-directory: ${{github.workspace}}
@@ -50,14 +61,12 @@ jobs:
           python-version: ${{matrix.python-version}}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install pytest
-          python -m pip install -r requirements.txt
-      - name: Run pytest
+          pip install --upgrade pip
+          pip install .
+          pip install pytest
+      - name: Test mesh
         run: |
-          cd blockCyclindricalMeshing/tests
-          python -m pytest -v
-          cd ../..
-          cd spiderSparger/tests
-          python -m pytest -v
-          cd ../..
+          pytest tests/meshing
+      - name: Test postProcessing
+        run: |
+          pytest tests/postProcess
