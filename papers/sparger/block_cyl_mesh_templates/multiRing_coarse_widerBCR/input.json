@@ -1,0 +1,47 @@
+{
+	"Meshing": {
+    		"NRSmallest": 1,
+    		"NVertSmallest": 1,
+                "verticalCoarsening":[
+                                       {"ratio": 0.1, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 0.35, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 0.35, "direction": "-", "directionRef": "+"}
+                                     ],
+                "radialCoarsening":  [
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 0.3, "direction": "+", "directionRef": "-"}
+                                     ]
+	},
+	"Geometry": {
+                "Radial": {
+                        "inner_ring2" : 93,
+                        "outter_ring2" : 119,
+                        "inner_ring3" : 145,
+                        "outter_ring3" : 171,
+                        "inner_ring4" : 197,
+                        "outter_ring4" : 223,
+                        "inner_ring5" : 249,
+                        "outter_ring5" : 275,
+                        "column_radius"  : 1080
+                },
+		"Longitudinal": {
+			"column_top" : 12000,
+			"head_space" : 9000,
+                        "sparger_trans": 1000,
+                        "sparger_top": 510,
+                        "sparger_bottom": 490,
+			"bottom" : 0
+		}
+	}
+}
+
+

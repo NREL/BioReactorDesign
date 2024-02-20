@@ -27,6 +27,25 @@ def modify_multiring(width, spacing, template_folder, target_folder):
         json.dump(data_input, f, indent=4)
 
 
+
+def modify_multiring4(width, template_folder, target_folder):
+    with open(os.path.join(template_folder, "input.json"), "r+") as f:
+        data_input = json.load(f)
+    with open(os.path.join(template_folder, "topology.json"), "r+") as f:
+        data_topo = json.load(f)
+
+    os.makedirs(target_folder, exist_ok=True)
+    with open(os.path.join(target_folder, "topology.json"), "w+") as f:
+        json.dump(data_topo, f, indent=4)
+    with open(os.path.join(target_folder, "input.json"), "w+") as f:
+        ring_width = width
+        data_input["Geometry"]["Radial"]["inner_ring2"] = data_input["Geometry"]["Radial"]["outter_ring2"] - ring_width
+        data_input["Geometry"]["Radial"]["inner_ring3"] = data_input["Geometry"]["Radial"]["outter_ring3"] - ring_width
+        data_input["Geometry"]["Radial"]["inner_ring4"] = data_input["Geometry"]["Radial"]["outter_ring4"] - ring_width
+        data_input["Geometry"]["Radial"]["inner_ring5"] = data_input["Geometry"]["Radial"]["outter_ring5"] - ring_width
+        json.dump(data_input, f, indent=4)
+
+
 def modify_multiring_num(template_folder, target_folder):
     with open(os.path.join(template_folder, "input.json"), "r+") as f:
         data_input = json.load(f)
@@ -46,12 +65,16 @@ def modify_flatDonut(width, template_folder, target_folder):
     with open(os.path.join(template_folder, "topology.json"), "r+") as f:
         data_topo = json.load(f)
 
+    grad_base = data_input["Meshing"]["radialCoarsening"][-1]["ratio"]
     os.makedirs(target_folder, exist_ok=True)
     with open(os.path.join(target_folder, "topology.json"), "w+") as f:
         json.dump(data_topo, f, indent=4)
     with open(os.path.join(target_folder, "input.json"), "w+") as f:
         r_outter = data_input["Geometry"]["Radial"]["outter_sparger"]
         data_input["Geometry"]["Radial"]["inner_sparger"] = r_outter - width
+        #if width > 120:
+        #    data_input["Meshing"]["radialCoarsening"][-1]["ratio"] = grad_base * 120/(width) 
+        data_input["Meshing"]["radialCoarsening"][1]["ratio"] = 1.5*50/width
         json.dump(data_input, f, indent=4)
 
 
@@ -62,6 +85,8 @@ def modify_sideSparger(height, template_folder, target_folder):
         data_topo = json.load(f)
 
     os.makedirs(target_folder, exist_ok=True)
+    height_base = 20
+    nvert_base = 1
     with open(os.path.join(target_folder, "topology.json"), "w+") as f:
         json.dump(data_topo, f, indent=4)
     with open(os.path.join(target_folder, "input.json"), "w+") as f:
@@ -71,12 +96,12 @@ def modify_sideSparger(height, template_folder, target_folder):
         data_input["Geometry"]["Longitudinal"]["sparger_bottom"] = (
             500 - height / 2
         )
-        data_input["Meshing"]["NVertSmallest"] = max(round(1 * height / 20), 1)
-        vertCoarse = (
-            0.35 * (height / data_input["Meshing"]["NVertSmallest"]) / (20 / 2)
-        )
-        data_input["Meshing"]["verticalCoarsening"][2]["ratio"] = vertCoarse
-        data_input["Meshing"]["verticalCoarsening"][4]["ratio"] = vertCoarse
+        data_input["Meshing"]["NVertSmallest"] = max(round(nvert_base * height / height_base), 1)
+        #vertCoarse = (
+        #    0.35 * (height / data_input["Meshing"]["NVertSmallest"]) / (20 / 2)
+        #)
+        #data_input["Meshing"]["verticalCoarsening"][2]["ratio"] = vertCoarse
+        #data_input["Meshing"]["verticalCoarsening"][4]["ratio"] = vertCoarse
         json.dump(data_input, f, indent=4)
 
 

@@ -3,21 +3,19 @@ import sys
 
 import numpy as np
 
-sys.path.append("util")
+#sys.path.append("util")
 from distutils.dir_util import copy_tree
-from shutil import copy
+from shutil import copy, rmtree
 
-import argument
-from meshing import *
+#import argument
+from bird.meshing.block_cyl_mesh import *
 from modifyGeom import *
-from myparser import parseJsonFile
-from writeBlockMesh import *
 
 
 def base_mesh(argsDict):
-    geomDict = assemble_geom(argsDict)
-    meshDict = assemble_mesh(argsDict, geomDict)
-    writeBlockMeshDict(argsDict, geomDict, meshDict)
+    geomDict = assemble_geom(argsDict["input_file"], argsDict["topo_file"])
+    meshDict = assemble_mesh(argsDict["input_file"], geomDict)
+    writeBlockMeshDict(argsDict["out_folder"], geomDict, meshDict)
 
 
 def generate_blockMeshDict(case_folder):
@@ -44,9 +42,9 @@ def setupCaseFolder(target_folder, case_template_folder="case_template"):
     os.makedirs(orig_target_folder, exist_ok=True)
     copy_tree(os.path.join(case_template_folder, "0.orig"), orig_target_folder)
 
-    copy(os.path.join(case_template_folder, "script_first.sh"), target_folder)
-    copy(os.path.join(case_template_folder, "script_second.sh"), target_folder)
-    copy(os.path.join(case_template_folder, "Allrun"), target_folder)
+    files = [f for f in os.listdir(case_template_folder) if os.path.isfile(os.path.join(case_template_folder, f))]
+    for file in files:
+         copy(os.path.join(case_template_folder, file), target_folder)
 
 
 def side_sparger_variations(
@@ -57,8 +55,13 @@ def side_sparger_variations(
     coarse=False,
 ):
     print("\n\nSideSparger\n\n")
-    os.makedirs(study_folder, exist_ok=True)
-    heights = np.linspace(10, 200, nCases)
+    try:
+        os.makedirs(study_folder)
+    except FileExistsError:
+        print(f"WARNING: Removing {study_folder}")
+        rmtree(study_folder)
+        os.makedirs(study_folder)
+    heights = np.linspace(20, 200, nCases)
     np.savez(
         os.path.join(study_folder, "param_sideSparger.npz"), height=heights
     )
@@ -101,7 +104,12 @@ def flat_donut_variations(
     template_folder="template_flatDonut",
 ):
     print("\n\nFlat donut\n\n")
-    os.makedirs(study_folder, exist_ok=True)
+    try:
+        os.makedirs(study_folder)
+    except FileExistsError:
+        print(f"WARNING: Removing {study_folder}")
+        rmtree(study_folder)
+        os.makedirs(study_folder)
     widths = np.linspace(50, 200, nCases)
     np.savez(os.path.join(study_folder, "param_flatDonut.npz"), width=widths)
     for i in range(nCases):
@@ -134,7 +142,12 @@ def multi_ring_variations(
     template_folder="template_multiRing",
 ):
     print("\n\nMulti ring\n\n")
-    os.makedirs(study_folder, exist_ok=True)
+    try:
+        os.makedirs(study_folder)
+    except FileExistsError:
+        print(f"WARNING: Removing {study_folder}")
+        rmtree(study_folder)
+        os.makedirs(study_folder)
     n_1D = round(np.sqrt(nCases))
     width = np.linspace(10, 50, n_1D)
     spacing = np.linspace(20, 100, n_1D)
@@ -173,6 +186,49 @@ def multi_ring_variations(
         folder=study_folder, prefix="multiRing_", nCases=nCases
     )
 
+def multi_ring_variations4(
+    nCases,
+    study_folder,
+    case_template_folder="case",
+    template_folder="template_multiRing",
+):
+    print("\n\nMulti ring\n\n")
+    try:
+        os.makedirs(study_folder)
+    except FileExistsError:
+        print(f"WARNING: Removing {study_folder}")
+        rmtree(study_folder)
+        os.makedirs(study_folder)
+    n_1D = nCases
+    width = np.linspace(10, 40, n_1D)
+    np.savez(
+        os.path.join(study_folder, "param_multiRing.npz"),
+        width=width,
+    )
+
+    for i in range(nCases):
+        case_folder = os.path.join(study_folder, f"multiRing_{i}")
+        try:
+            os.makedirs(case_folder)
+        except OSError:
+            sys.exit(f"ERROR: folder {case_folder} exists already")
+        # Setup folder
+        setupCaseFolder(case_folder, case_template_folder=case_template_folder)
+        # Setup json files
+        modify_multiring4(
+            width[i],
+            template_folder,
+            os.path.join(case_folder, "system"),
+        )
+        # Generate blockmesh
+        generate_blockMeshDict(os.path.join(case_folder))
+
+    gen_slurm_script_first(
+        folder=study_folder, prefix="multiRing_", nCases=nCases
+    )
+    gen_slurm_script_second(
+        folder=study_folder, prefix="multiRing_", nCases=nCases
+    )
 
 def multi_ring_num_variations(
     study_folder,
@@ -180,7 +236,12 @@ def multi_ring_num_variations(
     template_root_folder=".",
 ):
     print("\n\nMultiRing num\n\n")
-    os.makedirs(study_folder, exist_ok=True)
+    try:
+        os.makedirs(study_folder)
+    except FileExistsError:
+        print(f"WARNING: Removing {study_folder}")
+        rmtree(study_folder)
+        os.makedirs(study_folder)
 
     multiRing_template_folder = [
         "multiRing_simple2",
@@ -212,16 +273,17 @@ def multi_ring_num_variations(
     gen_slurm_script_first(
         folder=study_folder, prefix="multiRing_num_", nCases=nCases
     )
-    gen_slurm_script_second(
-        folder=study_folder, prefix="multiRing_num_", nCases=nCases
-    )
+    #gen_slurm_script_second(
+    #    folder=study_folder, prefix="multiRing_num_", nCases=nCases
+    #)
 
 
 def gen_slurm_script_first(folder, prefix, nCases):
     f = open(os.path.join(folder, "exec_first.sh"), "w+")
     for i in range(nCases):
         f.write(f"cd {prefix}{i}\n")
-        f.write(f"sbatch script_first.sh\n")
+        #f.write(f"sbatch script_first.sh\n")
+        f.write(f"blockMesh\n")
         f.write(f"cd ..\n")
     f.close()
 
@@ -236,45 +298,44 @@ def gen_slurm_script_second(folder, prefix, nCases):
 
 
 if __name__ == "__main__":
-    flat_donut_variations(
-        10,
-        "study_fine_flatDonut",
-        case_template_folder="case_template",
-        template_folder="template_flatDonut",
-    )
-    side_sparger_variations(
-        10,
-        "study_fine_sideSparger",
-        case_template_folder="case_template",
-        template_folder="template_sideSparger",
-    )
-    multi_ring_variations(
-        10,
-        "study_fine_multiRing",
-        case_template_folder="case_template",
-        template_folder="template_multiRing",
-    )
-    multi_ring_num_variations(
-        "study_fine_multiRing_num",
-        case_template_folder="case_template",
-        template_root_folder=".",
-    )
+
+    from bird import BIRD_DIR
+    #case_template = os.path.join("block_cyl_cases_templates", "case_template")
+    case_template = 'case_template'
+ 
     flat_donut_variations(
         10,
         "study_coarse_flatDonut",
-        case_template_folder="case_template",
-        template_folder="template_flatDonut_coarse",
+        case_template_folder=case_template,
+        template_folder=os.path.join("block_cyl_mesh_templates", "flatDonut_coarse_widerBCR"),
     )
-    side_sparger_variations(
-        10,
-        "study_coarse_sideSparger",
-        case_template_folder="case_template",
-        template_folder="template_sideSparger_coarse",
-        coarse=True,
-    )
-    multi_ring_variations(
-        10,
-        "study_coarse_multiRing",
-        case_template_folder="case_template",
-        template_folder="template_multiRing_coarse",
-    )
+    #side_sparger_variations(
+    #    10,
+    #    "study_coarse_sideSparger",
+    #    case_template_folder=case_template,
+    #    template_folder=os.path.join("block_cyl_mesh_templates", "sideSparger_coarse_widerBCR"),
+    #)
+    #multi_ring_variations4(
+    #    10,
+    #    "study_coarse_multiRing",
+    #    case_template_folder=case_template,
+    #    template_folder=os.path.join("block_cyl_mesh_templates", "multiRing_coarse_widerBCR"),
+    #)
+    #flat_donut_variations(
+    #    10,
+    #    "study_fine_flatDonut",
+    #    case_template_folder=case_template,
+    #    template_folder=os.path.join("block_cyl_mesh_templates", "flatDonut_fine_widerBCR"),
+    #)
+    #side_sparger_variations(
+    #    10,
+    #    "study_fine_sideSparger",
+    #    case_template_folder=case_template,
+    #    template_folder=os.path.join("block_cyl_mesh_templates", "sideSparger_fine_widerBCR"),
+    #)
+    #multi_ring_variations4(
+    #    10,
+    #    "study_fine_multiRing",
+    #    case_template_folder=case_template,
+    #    template_folder=os.path.join("block_cyl_mesh_templates", "multiRing_fine_widerBCR"),
+    #)
