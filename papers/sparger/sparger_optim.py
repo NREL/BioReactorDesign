@@ -58,9 +58,10 @@ def side_sparger_variations(
     try:
         os.makedirs(study_folder)
     except FileExistsError:
-        print(f"WARNING: Removing {study_folder}")
-        rmtree(study_folder)
-        os.makedirs(study_folder)
+        print(f"ERROR: {study_folder} already exists")
+        #print(f"WARNING: Removing {study_folder}")
+        #rmtree(study_folder)
+        #os.makedirs(study_folder)
     heights = np.linspace(20, 200, nCases)
     np.savez(
         os.path.join(study_folder, "param_sideSparger.npz"), height=heights
@@ -107,9 +108,10 @@ def flat_donut_variations(
     try:
         os.makedirs(study_folder)
     except FileExistsError:
-        print(f"WARNING: Removing {study_folder}")
-        rmtree(study_folder)
-        os.makedirs(study_folder)
+        print(f"ERROR: {study_folder} already exists")
+        #print(f"WARNING: Removing {study_folder}")
+        #rmtree(study_folder)
+        #os.makedirs(study_folder)
     widths = np.linspace(50, 200, nCases)
     np.savez(os.path.join(study_folder, "param_flatDonut.npz"), width=widths)
     for i in range(nCases):
@@ -145,9 +147,10 @@ def multi_ring_variations(
     try:
         os.makedirs(study_folder)
     except FileExistsError:
-        print(f"WARNING: Removing {study_folder}")
-        rmtree(study_folder)
-        os.makedirs(study_folder)
+        print(f"ERROR: {study_folder} already exists")
+        #print(f"WARNING: Removing {study_folder}")
+        #rmtree(study_folder)
+        #os.makedirs(study_folder)
     n_1D = round(np.sqrt(nCases))
     width = np.linspace(10, 50, n_1D)
     spacing = np.linspace(20, 100, n_1D)
@@ -196,9 +199,10 @@ def multi_ring_variations4(
     try:
         os.makedirs(study_folder)
     except FileExistsError:
-        print(f"WARNING: Removing {study_folder}")
-        rmtree(study_folder)
-        os.makedirs(study_folder)
+        print(f"ERROR: {study_folder} already exists")
+        #print(f"WARNING: Removing {study_folder}")
+        #rmtree(study_folder)
+        #os.makedirs(study_folder)
     n_1D = nCases
     width = np.linspace(10, 40, n_1D)
     np.savez(
@@ -239,9 +243,10 @@ def multi_ring_num_variations(
     try:
         os.makedirs(study_folder)
     except FileExistsError:
-        print(f"WARNING: Removing {study_folder}")
-        rmtree(study_folder)
-        os.makedirs(study_folder)
+        print(f"ERROR: {study_folder} already exists")
+        #print(f"WARNING: Removing {study_folder}")
+        #rmtree(study_folder)
+        #os.makedirs(study_folder)
 
     multiRing_template_folder = [
         "multiRing_simple2",
