@@ -1,6 +1,7 @@
 {
 	"Meshing": {
-    		"NRSmallest": 1,
+                "iRSmallest": 0,
+                "NRSmallest": 4,
     		"NVertSmallest": 1,
                 "verticalCoarsening":[
                                        {"ratio": 0.1, "direction": "+", "directionRef": "-"},

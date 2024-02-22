@@ -1,6 +1,6 @@
 import json
 import os
-
+import numpy as np
 
 def modify_multiring(width, spacing, template_folder, target_folder):
     with open(os.path.join(template_folder, "input.json"), "r+") as f:
@@ -74,7 +74,7 @@ def modify_flatDonut(width, template_folder, target_folder):
         data_input["Geometry"]["Radial"]["inner_sparger"] = r_outter - width
         #if width > 120:
         #    data_input["Meshing"]["radialCoarsening"][-1]["ratio"] = grad_base * 120/(width) 
-        data_input["Meshing"]["radialCoarsening"][1]["ratio"] = 1.5*50/width
+        data_input["Meshing"]["radialCoarsening"][-1]["ratio"] = data_input["Meshing"]["radialCoarsening"][-1]["ratio"]*np.sqrt(50/width)
         json.dump(data_input, f, indent=4)
 
 
@@ -86,7 +86,7 @@ def modify_sideSparger(height, template_folder, target_folder):
 
     os.makedirs(target_folder, exist_ok=True)
     height_base = 20
-    nvert_base = 1
+    nvert_base = data_input["Meshing"]["NVertSmallest"]
     with open(os.path.join(target_folder, "topology.json"), "w+") as f:
         json.dump(data_topo, f, indent=4)
     with open(os.path.join(target_folder, "input.json"), "w+") as f:

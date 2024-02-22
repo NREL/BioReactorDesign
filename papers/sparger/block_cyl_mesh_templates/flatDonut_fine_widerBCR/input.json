@@ -1,18 +1,19 @@
 {
 	"Meshing": {
-    		"NRSmallest": 3,
-    		"NVertSmallest": 1,
+    		"iRSmallest": 0,
+    		"NRSmallest": 6,
+    		"NVertSmallest": 2,
                 "verticalCoarsening":[
-                                       {"ratio": 0.2, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 0.1, "direction": "+", "directionRef": "-"},
                                        {"ratio": 1.0, "direction": "+", "directionRef": "-"},
-                                       {"ratio": 0.7, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 0.3, "direction": "+", "directionRef": "-"},
                                        {"ratio": 1.0},
-                                       {"ratio": 0.7, "direction": "-", "directionRef": "+"}
+                                       {"ratio": 0.3, "direction": "-", "directionRef": "+"}
                                      ],
                 "radialCoarsening":  [
                                        {"ratio": 1.0, "direction": "+", "directionRef": "-"},
                                        {"ratio": 1.0, "direction": "+", "directionRef": "-"},
-                                       {"ratio": 0.6, "direction": "+", "directionRef": "-"}
+                                       {"ratio": 0.5, "direction": "+", "directionRef": "-"}
                                      ]
 	},
 	"Geometry": {

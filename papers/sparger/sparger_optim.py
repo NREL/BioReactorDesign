@@ -309,33 +309,33 @@ if __name__ == "__main__":
         case_template_folder=case_template,
         template_folder=os.path.join("block_cyl_mesh_templates", "flatDonut_coarse_widerBCR"),
     )
-    #side_sparger_variations(
-    #    10,
-    #    "study_coarse_sideSparger",
-    #    case_template_folder=case_template,
-    #    template_folder=os.path.join("block_cyl_mesh_templates", "sideSparger_coarse_widerBCR"),
-    #)
-    #multi_ring_variations4(
-    #    10,
-    #    "study_coarse_multiRing",
-    #    case_template_folder=case_template,
-    #    template_folder=os.path.join("block_cyl_mesh_templates", "multiRing_coarse_widerBCR"),
-    #)
-    #flat_donut_variations(
-    #    10,
-    #    "study_fine_flatDonut",
-    #    case_template_folder=case_template,
-    #    template_folder=os.path.join("block_cyl_mesh_templates", "flatDonut_fine_widerBCR"),
-    #)
-    #side_sparger_variations(
-    #    10,
-    #    "study_fine_sideSparger",
-    #    case_template_folder=case_template,
-    #    template_folder=os.path.join("block_cyl_mesh_templates", "sideSparger_fine_widerBCR"),
-    #)
-    #multi_ring_variations4(
-    #    10,
-    #    "study_fine_multiRing",
-    #    case_template_folder=case_template,
-    #    template_folder=os.path.join("block_cyl_mesh_templates", "multiRing_fine_widerBCR"),
-    #)
+    side_sparger_variations(
+        10,
+        "study_coarse_sideSparger",
+        case_template_folder=case_template,
+        template_folder=os.path.join("block_cyl_mesh_templates", "sideSparger_coarse_widerBCR"),
+    )
+    multi_ring_variations4(
+        10,
+        "study_coarse_multiRing",
+        case_template_folder=case_template,
+        template_folder=os.path.join("block_cyl_mesh_templates", "multiRing_coarse_widerBCR"),
+    )
+    flat_donut_variations(
+        10,
+        "study_fine_flatDonut",
+        case_template_folder=case_template,
+        template_folder=os.path.join("block_cyl_mesh_templates", "flatDonut_fine_widerBCR"),
+    )
+    side_sparger_variations(
+        10,
+        "study_fine_sideSparger",
+        case_template_folder=case_template,
+        template_folder=os.path.join("block_cyl_mesh_templates", "sideSparger_fine_widerBCR"),
+    )
+    multi_ring_variations4(
+        10,
+        "study_fine_multiRing",
+        case_template_folder=case_template,
+        template_folder=os.path.join("block_cyl_mesh_templates", "multiRing_fine_widerBCR"),
+    )
