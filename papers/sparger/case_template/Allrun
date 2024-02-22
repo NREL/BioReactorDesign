@@ -1,0 +1,13 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # Run from this directory
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+# python writeBlockMesh.py input
+cp -r 0.orig 0
+runApplication blockMesh
+transformPoints "scale=(0.001 0.001 0.001)"
+transformPoints "rotate=((0 0 1) (0 1 0))"
+#runApplication topoSet
+runApplication setFields
+touch sol.foam
+runApplication $(getApplication)
