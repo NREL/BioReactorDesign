@@ -3,7 +3,7 @@
 ## Installation for developpers
 
 ```bash
-conda create  --name bird python=3.10
+conda create --name bird python=3.10
 conda activate bird
 pip install -e .
 ```
@@ -11,6 +11,8 @@ pip install -e .
 ## Installation for users
 
 ```bash
+conda create --name bird python=3.10
+conda activate bird
 pip install nrel-bird
 ```
 
