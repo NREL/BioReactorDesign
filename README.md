@@ -1,11 +1,17 @@
 # <ins>Bi</ins>o <ins>R</ins>eactor <ins>D</ins>esign (BiRD) Toolbox [![bird-CI](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml) [![bird-pyversion](https://img.shields.io/pypi/pyversions/NREL-bird.svg)](https://pypi.org/project/NREL-bird/)  [![bird-pypi](https://badge.fury.io/py/nrel-bird.svg)](https://badge.fury.io/py/nrel-bird)
 
-## Installation
+## Installation for developpers
 
 ```bash
 conda create  --name bird python=3.10
 conda activate bird
 pip install -e .
+```
+
+## Installation for users
+
+```bash
+pip install nrel-bird
 ```
 
 ## OpenFOAM solvers
