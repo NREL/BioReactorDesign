@@ -28,7 +28,15 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
     ],
-    package_data={"": ["*requirements.txt", "*.json", "*.yaml", "*.csv", "data_conditional_mean"]},
+    package_data={
+        "": [
+            "*requirements.txt",
+            "*.json",
+            "*.yaml",
+            "*.csv",
+            "data_conditional_mean",
+        ]
+    },
     include_package_data=True,
     python_requires=">=3.10",
     install_requires=install_requires,
