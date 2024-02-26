@@ -1,0 +1,9 @@
+This solver is used for coupled CFD and microbial kinetics for 
+production of 2,3 BDO (Butanediol). It includes a 6 ODE system for 
+evolution of microbial chemistry with a subcycled CFD solve.
+
+More details are in 
+Sitaraman, Hariswaran, et al. "A reacting multiphase computational flow model for 2, 3-butanediol 
+synthesis in industrial-scale bioreactors." Chemical Engineering Research and Design 197 (2023): 38-52
+
+Currently, this solver is setup for compilation with OpenFOAM 6, soon to be upgraded.
