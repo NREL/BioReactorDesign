@@ -15,7 +15,7 @@ version = version.split("=")[-1].strip().strip('"').strip("'")
 setup(
     name="nrel-bird",
     version=version,
-    description="Toolbox for numerical modeling of bio reactors",
+    description="Bio Reactor Design (BiRD): a toolbox to simulate and analyze different designs of bioreactors in OpenFOAM",
     url="https://github.com/NREL/BioReactorDesign",
     author="Malik Hassanaly",
     license="BSD 3-Clause",
