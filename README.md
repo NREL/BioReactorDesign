@@ -5,6 +5,8 @@
 ```bash
 conda create --name bird python=3.10
 conda activate bird
+git clone https://github.com/NREL/BioReactorDesign.git
+cd BioReactorDesign
 pip install -e .
 ```
 
