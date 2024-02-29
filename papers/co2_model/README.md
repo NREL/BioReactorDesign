@@ -14,18 +14,16 @@ Generates these figures in the `Figures/` folder
 Compares simulation to experiments
 
 <p float="left">
-  <img src="assets/validation/co2.png" width="350"/>
-  <img src="assets/validation/gh.png" width="350"/>
+  <img src="../../assets/validation/co2.png" width="350"/>
+  <img src="../../assets/validation/gh.png" width="350"/>
 </p>
 
 
 Checks that simulations are converged based on the gas holdup history
 
 <p float="center">
-  <img src="assets/validation/conv.png" width="350"/>
+  <img src="../../assets/validation/conv.png" width="350"/>
 </p>
-
-
 
 
 ## Calibrate models using experiments
