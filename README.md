@@ -273,6 +273,7 @@ Spelling is checked but not automatically fixed using `codespell`
 
 Coming soon
 
+SWR-24-35 "BiRD (BioReactorDesign)"
 
 ## Acknowledgments
 
