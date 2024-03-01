@@ -14,15 +14,15 @@ Generates these figures in the `Figures/` folder
 Compares simulation to experiments
 
 <p float="left">
-  <img src="../../assets/validation/co2.png" width="350"/>
-  <img src="../../assets/validation/gh.png" width="350"/>
+  <img src="https://github.com/NREL/BioReactorDesign/tree/main/assets/validation/co2.png" width="350"/>
+  <img src="https://github.com/NREL/BioReactorDesign/tree/main/assets/validation/gh.png" width="350"/>
 </p>
 
 
 Checks that simulations are converged based on the gas holdup history
 
 <p float="center">
-  <img src="../../assets/validation/conv.png" width="350"/>
+  <img src="https://github.com/NREL/BioReactorDesign/tree/main/assets/validation/conv.png" width="350"/>
 </p>
 
 
@@ -48,8 +48,8 @@ Calibrate bubble dynamics models by also calibrating uncertainty
 Generates this corner plot in the `Figures/` folder. Left is for binary breakup and right is for breakup.
 
 <p float="left">
-  <img src="../../assets/calibration/corner_bb_calsigm.png" width="350"/>
-  <img src="../../assets/calibration/corner_b_calsigm.png" width="350"/>
+  <img src="https://github.com/NREL/BioReactorDesign/tree/main/assets/calibration/corner_bb_calsigm.png" width="350"/>
+  <img src="https://github.com/NREL/BioReactorDesign/tree/main/assets/calibration/corner_b_calsigm.png" width="350"/>
 </p>
 
 Calibrate bubble dynamics models by also optimizing uncertainty. This script will take 10 times longer than the previous script as it repeats the calculations for different uncertainty levels.
@@ -59,6 +59,6 @@ Calibrate bubble dynamics models by also optimizing uncertainty. This script wil
 Generates this corner plot in the `Figures/` folder. Left is for binary breakup and right is for breakup.
  
 <p float="left">
-  <img src="../../assets/calibration/corner_bb_optsigm.png" width="350"/>
-  <img src="../../assets/calibration/corner_b_optsigm.png" width="350"/>
+  <img src="https://github.com/NREL/BioReactorDesign/tree/main/assets/calibration/corner_bb_optsigm.png" width="350"/>
+  <img src="https://github.com/NREL/BioReactorDesign/tree/main/assets/calibration/corner_b_optsigm.png" width="350"/>
 </p>

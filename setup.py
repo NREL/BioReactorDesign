@@ -7,6 +7,8 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, "bird", "requirements.txt")) as f:
     install_requires = f.readlines()
 
+with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+    readme = f.read()
 
 with open(os.path.join(here, "bird", "version.py"), encoding="utf-8") as f:
     version = f.read()
@@ -16,6 +18,8 @@ setup(
     name="nrel-bird",
     version=version,
     description="Bio Reactor Design (BiRD): a toolbox to simulate and analyze different designs of bioreactors in OpenFOAM",
+    long_description=readme,
+    long_description_content_type="text/markdown",
     url="https://github.com/NREL/BioReactorDesign",
     author="Malik Hassanaly",
     license="BSD 3-Clause",
