@@ -9,13 +9,13 @@ computeQOI () {
     done
 }
 
-rootFolder=/projects/disrupt/mhassana/sparger_geom_coarse_june21/
+rootFolder=/Users/mhassana/Desktop/GitHub/BioReactorDesign_mar4/papers/sparger
 computeQOI $rootFolder/study_coarse_flatDonut
 computeQOI $rootFolder/study_coarse_multiRing
 computeQOI $rootFolder/study_coarse_sideSparger
 
-rootFolder=/projects/disrupt/mhassana/sparger_geom_fine_june21/
+rootFolder=/Users/mhassana/Desktop/GitHub/BioReactorDesign_mar4/papers/sparger
 computeQOI $rootFolder/study_fine_flatDonut
-#computeQOI $rootFolder/study_fine_multiRing
-#computeQOI $rootFolder/study_fine_multiRing_num
-#computeQOI $rootFolder/study_fine_sideSparger
+computeQOI $rootFolder/study_fine_multiRing
+computeQOI $rootFolder/study_fine_multiRing_num
+computeQOI $rootFolder/study_fine_sideSparger

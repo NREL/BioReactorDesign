@@ -3,13 +3,12 @@ import sys
 
 import numpy as np
 
-sys.path.append("../utilities")
 import os
 import pickle
 
-from folderManagement import *
-from ofio import *
-from prettyPlot.plotting import plt, pretty_labels
+from bird.utilities.folderManagement import *
+from bird.utilities.ofio import *
+from prettyPlot.plotting import *
 
 from bird.utilities.label_plot import label_conv
 
@@ -115,7 +114,9 @@ ind_exclude = []
 for folder in case_folder_exclude:
     if folder in case_folders:
         ind_exclude.append(case_folders.index(folder))
+
 ind_keep = list(set(list(range(len(case_folders)))).difference(ind_exclude))
+
 case_folders_final = []
 for folder in case_folders:
     if folder not in case_folder_exclude:

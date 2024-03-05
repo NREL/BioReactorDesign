@@ -3,11 +3,10 @@ import sys
 
 import numpy as np
 
-sys.path.append("../utilities")
 import os
 import pickle
 
-from ofio import *
+from bird.utilities.ofio import *
 
 from bird.utilities.bubble_col_util import *
 

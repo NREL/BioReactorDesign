@@ -42,7 +42,7 @@ def label_conv(input_string):
         or input_string.lower() == "d"
         or input_string.lower() == "bubblediam"
     ):
-        return "Mean bubble diam [m]$"
+        return "Mean bubble diam [m]"
     elif input_string.lower() == "y":
         return "y [m]"
     elif input_string.lower() == "t":

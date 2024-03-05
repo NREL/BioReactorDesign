@@ -3,12 +3,11 @@ import sys
 
 import numpy as np
 
-sys.path.append("../utilities")
 import os
 import pickle
 
-from folderManagement import *
-from ofio import *
+from bird.utilities.folderManagement import *
+from bird.utilities.ofio import *
 from prettyPlot.plotting import plt, pretty_labels, pretty_legend
 
 from bird.utilities.label_plot import label_conv
