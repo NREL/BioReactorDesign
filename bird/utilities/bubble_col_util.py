@@ -19,6 +19,8 @@ def check_indLiq(ind_liq, cellCentres):
         ind_liq_copy = ind_liq.copy()
         n_remove = len(ind_to_remove)
         print(f"ind liq found to be at high heights {n_remove} times")
+        if len(ind_liq.shape) == 1:
+            ind_liq = np.reshape(ind_liq, (-1, 1))
         ind_to_remove = list(ind_liq[ind_to_remove[:, 0]][:, 0])
         ind_liq_copy = list(set(list(ind_liq[:, 0])) - set(ind_to_remove))
         assert len(ind_liq_copy) == len(ind_liq) - n_remove
