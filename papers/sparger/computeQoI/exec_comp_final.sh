@@ -8,14 +8,28 @@ computeQOI () {
         python compute_QOI.py -f $dir -avg 5 -conv 100 -vl $fields -dn $diff_name -dv $diff_val
     done
 }
+computeCond () {
+    fields="alpha.gas CO.gas CO.liquid CO2.gas CO2.liquid H2.gas H2.liquid d.gas"
+    for dir in $1/*/; do
+        python compute_conditionalMean.py -f $dir -avg 5 -fl $fields
+    done
+}
+
 
 rootFolder=/Users/mhassana/Desktop/GitHub/BioReactorDesign_mar4/papers/sparger
-computeQOI $rootFolder/study_coarse_flatDonut
-computeQOI $rootFolder/study_coarse_multiRing
+#computeQOI $rootFolder/study_coarse_flatDonut
+#computeQOI $rootFolder/study_coarse_multiRing
 computeQOI $rootFolder/study_coarse_sideSparger
 
-rootFolder=/Users/mhassana/Desktop/GitHub/BioReactorDesign_mar4/papers/sparger
-computeQOI $rootFolder/study_fine_flatDonut
-computeQOI $rootFolder/study_fine_multiRing
-computeQOI $rootFolder/study_fine_multiRing_num
-computeQOI $rootFolder/study_fine_sideSparger
+#computeCond $rootFolder/study_coarse_flatDonut
+#computeCond $rootFolder/study_coarse_multiRing
+computeCond $rootFolder/study_coarse_sideSparger
+
+
+#rootFolder=/Users/mhassana/Desktop/GitHub/BioReactorDesign_mar4/papers/sparger
+#computeQOI $rootFolder/study_fine_flatDonut
+#computeQOI $rootFolder/study_fine_multiRing
+#computeQOI $rootFolder/study_fine_sideSparger
+#computeCond $rootFolder/study_fine_flatDonut
+#computeCond $rootFolder/study_fine_multiRing
+#computeCond $rootFolder/study_fine_sideSparger
