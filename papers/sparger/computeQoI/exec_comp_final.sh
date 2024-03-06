@@ -17,19 +17,20 @@ computeCond () {
 
 
 rootFolder=/Users/mhassana/Desktop/GitHub/BioReactorDesign_mar4/papers/sparger
-#computeQOI $rootFolder/study_coarse_flatDonut
-#computeQOI $rootFolder/study_coarse_multiRing
+computeQOI $rootFolder/study_coarse_flatDonut
+computeQOI $rootFolder/study_coarse_multiRing
 computeQOI $rootFolder/study_coarse_sideSparger
 
-#computeCond $rootFolder/study_coarse_flatDonut
-#computeCond $rootFolder/study_coarse_multiRing
+computeCond $rootFolder/study_coarse_flatDonut
+computeCond $rootFolder/study_coarse_multiRing
 computeCond $rootFolder/study_coarse_sideSparger
 
 
-#rootFolder=/Users/mhassana/Desktop/GitHub/BioReactorDesign_mar4/papers/sparger
-#computeQOI $rootFolder/study_fine_flatDonut
-#computeQOI $rootFolder/study_fine_multiRing
-#computeQOI $rootFolder/study_fine_sideSparger
-#computeCond $rootFolder/study_fine_flatDonut
-#computeCond $rootFolder/study_fine_multiRing
-#computeCond $rootFolder/study_fine_sideSparger
+rootFolder=/Users/mhassana/Desktop/GitHub/BioReactorDesign_mar4/papers/sparger
+
+computeQOI $rootFolder/study_fine_flatDonut
+computeQOI $rootFolder/study_fine_multiRing
+computeQOI $rootFolder/study_fine_sideSparger
+computeCond $rootFolder/study_fine_flatDonut
+computeCond $rootFolder/study_fine_multiRing
+computeCond $rootFolder/study_fine_sideSparger

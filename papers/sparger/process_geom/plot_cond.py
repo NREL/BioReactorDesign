@@ -110,12 +110,15 @@ for folder in case_folders:
     if not os.path.isfile(os.path.join(study_folder, folder, "cond.pkl")):
         if folder not in case_folder_exclude:
             case_folder_exclude += [folder]
+            print("WARNING: excluding {folder} since cond.pkl not available")
 ind_exclude = []
 for folder in case_folder_exclude:
     if folder in case_folders:
         ind_exclude.append(case_folders.index(folder))
 
 ind_keep = list(set(list(range(len(case_folders)))).difference(ind_exclude))
+if len(ind_keep) == 0:
+    sys.exit("ERROR: no file analyze.\n\tOriginal case folders {case_folders}.\n\tExcluded {case_folder_exclude}")
 
 case_folders_final = []
 for folder in case_folders:
@@ -133,9 +136,14 @@ for case_folder in case_folders_final:
 
 def sequencePlotShade(seq, listShade, fieldName):
     color = "b"
+    assert len(listShade) > 0
     minVal = min(listShade)
     maxVal = max(listShade)
-    shadeArr = (np.array(listShade) - minVal) * 0.8 / (maxVal - minVal) + 0.2
+    if len(listShade) == 1:
+        shadeArr = np.array([1.0])
+    else: 
+        shadeArr = (np.array(listShade) - minVal) * 0.8 / (maxVal - minVal) + 0.2
+    assert np.amin(shadeArr) >= 0.19
     # shades = plt.cm.Blues(shadeArr)
     shades = plt.cm.Greys(shadeArr)
 
