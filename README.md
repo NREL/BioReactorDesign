@@ -271,13 +271,33 @@ Spelling is checked but not automatically fixed using `codespell`
 
 ## References
 
-Coming soon
+To cite BioReactorDesign use these articles on [aerobic bioreactors](https://www.sciencedirect.com/science/article/pii/S0263876218304337) 
+and on [butanediol synthesis](https://www.sciencedirect.com/science/article/pii/S0263876223004689)
+```
+@article{rahimi2018computational,
+  title={Computational fluid dynamics study of full-scale aerobic bioreactors: Evaluation of gas--liquid mass transfer, oxygen uptake, and dynamic oxygen distribution},
+  author={Rahimi, Mohammad J and Sitaraman, Hariswaran and Humbird, David and Stickel, Jonathan J},
+  journal={Chemical Engineering Research and Design},
+  volume={139},
+  pages={283--295},
+  year={2018},
+  publisher={Elsevier}
+}
 
-SWR-24-35 "BiRD (BioReactorDesign)"
+@article{sitaraman2023reacting,
+  title={A reacting multiphase computational flow model for 2, 3-butanediol synthesis in industrial-scale bioreactors},
+  author={Sitaraman, Hariswaran and Lischeske, James and Lu, Yimin and Stickel, Jonathan},
+  journal={Chemical Engineering Research and Design},
+  volume={197},
+  pages={38--52},
+  year={2023},
+  publisher={Elsevier}
+}
+```
 
 ## Acknowledgments
 
-This work was authored by the National Renewable Energy Laboratory (NREL), operated by Alliance for Sustainable Energy, LLC, for the U.S. Department of Energy (DOE) under Contract No. DE-AC36-08GO28308. This work was supported by funding from DOE's Bioenergy Technologies Office (BETO) program. The research was performed using computational resources sponsored by the Department of Energy's Office of Energy Efficiency and Renewable Energy and located at the National Renewable Energy Laboratory. The views expressed in the article do not necessarily represent the views of the DOE or the U.S. Government. The U.S. Government retains and the publisher, by accepting the article for publication, acknowledges that the U.S. Government retains a nonexclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this work, or allow others to do so, for U.S. Government purposes.
+This work was authored by the National Renewable Energy Laboratory (NREL), operated by Alliance for Sustainable Energy, LLC, for the U.S. Department of Energy (DOE) under Contract No. DE-AC36-08GO28308. This work was supported by funding from DOE Bioenergy Technologies Office (BETO) [CO2RUe consortium](https://www.energy.gov/eere/co2rue). The research was performed using computational resources sponsored by the Department of Energy's Office of Energy Efficiency and Renewable Energy and located at the National Renewable Energy Laboratory. The views expressed in the article do not necessarily represent the views of the DOE or the U.S. Government. The U.S. Government retains and the publisher, by accepting the article for publication, acknowledges that the U.S. Government retains a nonexclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this work, or allow others to do so, for U.S. Government purposes.
 
 
 
