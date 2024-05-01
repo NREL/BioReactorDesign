@@ -271,9 +271,9 @@ Spelling is checked but not automatically fixed using `codespell`
 
 ## References
 
-SWR 24-35
+Software record [SWR 24-35](https://www.osti.gov/biblio/2319227)
 
-To cite BioReactorDesign use these articles on [CO2 interphase mass transfer](https://arxiv.org/pdf/2404.19636) on [aerobic bioreactors](https://www.sciencedirect.com/science/article/pii/S0263876218304337) 
+To cite BioReactorDesign use these articles on [CO2 interphase mass transfer (open access)](https://arxiv.org/pdf/2404.19636) on [aerobic bioreactors](https://www.sciencedirect.com/science/article/pii/S0263876218304337) 
 and on [butanediol synthesis](https://www.sciencedirect.com/science/article/pii/S0263876223004689)
 ```
 @article{hassanaly2024inverse,
