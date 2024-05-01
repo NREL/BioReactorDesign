@@ -271,9 +271,19 @@ Spelling is checked but not automatically fixed using `codespell`
 
 ## References
 
-To cite BioReactorDesign use these articles on [aerobic bioreactors](https://www.sciencedirect.com/science/article/pii/S0263876218304337) 
+SWR 24-35
+
+To cite BioReactorDesign use these articles on [CO2 interphase mass transfer](https://arxiv.org/pdf/2404.19636) on [aerobic bioreactors](https://www.sciencedirect.com/science/article/pii/S0263876218304337) 
 and on [butanediol synthesis](https://www.sciencedirect.com/science/article/pii/S0263876223004689)
 ```
+@article{hassanaly2024inverse,
+  title={Inverse modeling of bubble size dynamics for interphase mass transfer and gas holdup in CO2 bubble column reactors},
+  author={Hassanaly, Malik and Parra-Alvarez, John M. and Rahimi, Mohammad J. and Sitaraman, Hariswaran},
+  journal={Under Review},
+  year={2024},
+}
+
+
 @article{rahimi2018computational,
   title={Computational fluid dynamics study of full-scale aerobic bioreactors: Evaluation of gas--liquid mass transfer, oxygen uptake, and dynamic oxygen distribution},
   author={Rahimi, Mohammad J and Sitaraman, Hariswaran and Humbird, David and Stickel, Jonathan J},
