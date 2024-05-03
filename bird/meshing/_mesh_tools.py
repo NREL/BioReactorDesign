@@ -38,9 +38,11 @@ def make_fluid_blocks_from_corner(corners):
     for multi_block in corners:
         n_end_block = len(multi_block)
         for iend, end_block in enumerate(multi_block):
-
+            # Add blocks that connect end points
             if iend == 0:
-                fluid_blocks.append(list(end_block))
+                # Make sure to not add endPoint if already there
+                if list(end_block) not in fluid_blocks:
+                    fluid_blocks.append(list(end_block))
             else:
                 # Find direction to previous end point
                 prev_block=multi_block[iend-1]
@@ -51,6 +53,7 @@ def make_fluid_blocks_from_corner(corners):
                 blocks_line = []
                 found_next = False
                 count = 0
+                # Add blocks until next end point is found
                 while not found_next:
                     count += int(1)
                     new_block = np.array(prev_block, dtype=int) + count*direction
