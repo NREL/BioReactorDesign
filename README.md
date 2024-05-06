@@ -193,6 +193,55 @@ options:
   -o , --output_folder 
                         Output folder for blockMeshDict
 ```
+
+
+### Block rectangular meshing
+
+Generates `blockMeshDict` in `system`
+
+```bash
+root=`pwd`
+caseFolder=bird/meshing/block_rect_cases_templates/case
+mesh_temp=bird/meshing/block_rect_mesh_templates/loopReactor
+
+python applications/write_block_rect_mesh.py -i $mesh_temp/input.json -o $caseFolder/system
+```
+
+Then activate openFoam environment (tested with OpenFoam9) and mesh with
+
+```bash
+cd $caseFolder
+blockMesh
+cd $root
+```
+
+Will generate this
+
+<p float="left">
+  <img src="https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/loop_react.png" width="250"/>
+</p>
+
+
+#### How to change the block rectangular geometry
+
+The geometry of the block cylindrical mesh is defined within a 3D domain (X,Y,Z). The blocks that represent the fluid domain are a subset of a block rectangular background domain. The fluid blocks are defined using the geometry corners. For the mesh shown above, the geometry corners are the red blocks shown below 
+
+<p float="left">
+  <img src="https://raw.githubusercontent.com/NREL/BioReactorDesign/main/bird/meshing/block_rect_mesh_templates/loop_schematic.png" width="250"/>
+</p>
+ 
+The corners are defined in the `input.json`
+```
+"Geometry": {
+        "Fluids": [
+                [ [0,0,0], [9,0,0], [9,0,4], [0,0,4] ],
+                [ [0,1,4], [0,4,4], [0,4,0], [0,1,0] ]
+        ]
+}
+...
+```
+
+
 ## Postprocess
 
 ### Perform early prediction

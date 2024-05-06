@@ -1,0 +1,149 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  5                                     |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+ddtSchemes
+{
+    default         Euler;
+}
+
+gradSchemes
+{
+    default         Gauss linear;
+}
+
+divSchemes
+{
+    default         none;
+    div(phi,U)      Gauss localBlended upwind linear;
+    div(phi,H2)    Gauss localBlended upwind limitedLinear01 1 ;
+    div(phi,AsH3)   Gauss localBlended upwind limitedLinear01 1 ;
+    div(phi,As4)   Gauss localBlended upwind limitedLinear01 1 ;
+    div(phi,HCl)    Gauss localBlended upwind limitedLinear01 1 ;
+    div(phi,GaCl)    Gauss localBlended upwind limitedLinear01 1 ;
+    div(phi,N2)   Gauss localBlended upwind limitedLinear01 1 ;
+    div(phi,midH2)    Gauss localBlended upwind limitedLinear01 1 ;
+    div(phi,midAsH3)   Gauss localBlended upwind limitedLinear01 1 ;
+    div(phi,midAs4)   Gauss localBlended upwind limitedLinear01 1 ;
+    div(phi,midHCl)    Gauss localBlended upwind limitedLinear01 1 ;
+    div(phi,midGaCl)    Gauss localBlended upwind limitedLinear01 1 ;
+    div(phi,midN2)   Gauss localBlended upwind limitedLinear01 1 ;
+    div(phiMid,U)      Gauss localBlended upwind linear;
+    div(phiMid,midH2)    Gauss localBlended upwind limitedLinear01 1 ;
+    div(phiMid,midAsH3)   Gauss localBlended upwind limitedLinear01 1 ;
+    div(phiMid,midAs4)   Gauss localBlended upwind limitedLinear01 1 ;
+    div(phiMid,midHCl)    Gauss localBlended upwind limitedLinear01 1 ;
+    div(phiMid,midGaCl)    Gauss localBlended upwind limitedLinear01 1 ;
+    div(phiMid,midN2)   Gauss localBlended upwind limitedLinear01 1 ;
+    div(phi,Hs)   Gauss localBlended upwind limitedLinear 1;
+    div((nuEff*dev2(T(grad(U))))) Gauss linear;
+    div((((nu_0+nuSgs_0)*0.5)*dev2(T(grad(U_0))))) Gauss linear;
+    div((((nu+nuSgs)*0.5)*dev2(T(grad(U))))) Gauss linear;
+    div((((nu+nuSgs)*0.5)*dev2(T(grad(U))))) Gauss linear;
+    div((((nu+nuSgs)*0.5)*dev2(T(grad(U_0))))) Gauss linear;
+    div((((mu_0+muSgs_0)*0.5)*dev2(T(grad(U_0))))) Gauss linear;
+    div((((mu+muSgs)*0.5)*dev2(T(grad(U))))) Gauss linear;
+    div(((mu_0+muSgs)*dev2(T(grad(U))))) Gauss linear;
+    div((((mu+muSgs)*0.5)*dev2(T(grad(U))))) Gauss linear;
+    div((((mu+muSgs)*0.5)*dev2(T(grad(U_0))))) Gauss linear;
+    div(((phi+phi_0)|4),U_0) Gauss localBlended upwind linear;
+    div(((phi+phi_0)|4),U) Gauss localBlended upwind linear;
+    //div((phi|2),T_0) Gauss localBlended upwind limitedLinear 1 ;
+    //div((phi|2),T)  Gauss localBlended upwind limitedLinear 1 ;
+    div((phi|2),T_0) Gauss localBlended upwind limitedLinear 1 ;
+    div((phi|2),T)  Gauss localBlended upwind limitedLinear 1   ;
+    div(phi,TMid)  Gauss localBlended upwind limitedLinear 1   ;
+    div((phi|2),N2_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),N2)    Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),H2_0)   Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),H2)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),AsH3_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),AsH3)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),As4_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),As4)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),GaCl_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),GaCl) Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),HCl_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),HCl)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid|2),TMid_0) Gauss localBlended upwind limitedLinear 1 ;
+    div((phi|2),TMid) Gauss localBlended upwind limitedLinear 1 ;
+    div((phiMid_0|2),TMid_0) Gauss localBlended upwind limitedLinear 1 ;
+    div((phi|2),TMid_0) Gauss localBlended upwind limitedLinear 1 ;
+    div((phiMid_0|2),T_0) Gauss localBlended upwind limitedLinear 1 ;
+    div((phiMid|2),T)  Gauss localBlended upwind limitedLinear 1 ;
+    div((phiMid|2),TMid)  Gauss localBlended upwind limitedLinear 1 ;
+    div((phiMid|2),midN2_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid_0|2),midN2_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid|2),midN2)    Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid|2),midH2_0)   Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid_0|2),midH2_0)   Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid|2),midH2)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid|2),midAsH3_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid_0|2),midAsH3_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid|2),midAsH3)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid|2),midAs4_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid_0|2),midAs4_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid|2),midAs4)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid|2),midGaCl_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid_0|2),midGaCl_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid|2),midGaCl) Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid|2),midHCl_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid_0|2),midHCl_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phiMid|2),midHCl)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midN2_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midN2_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midN2)    Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midH2_0)   Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midH2_0)   Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midH2)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midAsH3_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midAsH3_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midAsH3)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midAs4_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midAs4_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midAs4)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midGaCl_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midGaCl_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midGaCl) Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midHCl_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midHCl_0)  Gauss localBlended upwind limitedLinear01 1 ;
+    div((phi|2),midHCl)  Gauss localBlended upwind limitedLinear01 1 ;
+}
+
+laplacianSchemes
+{
+    default         Gauss linear corrected;
+    //default         Gauss linear uncorrected;
+}
+
+interpolationSchemes
+{
+    default         linear; 
+}
+
+snGradSchemes
+{
+    default         corrected;
+}
+
+fluxRequired
+{
+    default no;
+    p               ;
+    p_init          ;
+}
+
+// ************************************************************************* //
