@@ -24,3 +24,11 @@ def test_loop_reactor():
     )
     output_folder = "system_tmp"
     base_mesh(input_file, output_folder)
+
+
+def test_subblock_reactor():
+    input_file = os.path.join(
+        BIRD_BLOCK_RECT_MESH_TEMP_DIR, "sub_blocks/input.json"
+    )
+    output_folder = "system_tmp"
+    base_mesh(input_file, output_folder)
