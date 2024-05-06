@@ -13,6 +13,12 @@ BIRD_BLOCK_CYL_MESH_TEMP_DIR = os.path.join(
 BIRD_BLOCK_CYL_CASE_TEMP_DIR = os.path.join(
     BIRD_MESH_DIR, "block_cyl_case_templates"
 )
+BIRD_BLOCK_RECT_MESH_TEMP_DIR = os.path.join(
+    BIRD_MESH_DIR, "block_rect_mesh_templates"
+)
+BIRD_BLOCK_RECT_CASE_TEMP_DIR = os.path.join(
+    BIRD_MESH_DIR, "block_rect_case_templates"
+)
 BIRD_STIR_TANK_MESH_TEMP_DIR = os.path.join(
     BIRD_MESH_DIR, "stir_tank_mesh_templates"
 )
