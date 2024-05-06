@@ -227,7 +227,7 @@ Will generate this
 The geometry of the block cylindrical mesh is defined within a 3D domain (X,Y,Z). The blocks that represent the fluid domain are a subset of a block rectangular background domain. The fluid blocks are defined using the geometry corners. For the mesh shown above, the geometry corners are the red blocks shown below 
 
 <p float="left">
-  <img src="https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/loop_corners.png" width="250"/>
+  <img src="https://raw.githubusercontent.com/NREL/BioReactorDesign/main/bird/meshing/block_rect_mesh_templates/loop_schematic.png" width="250"/>
 </p>
  
 The corners are defined in the `input.json`
