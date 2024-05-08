@@ -143,6 +143,8 @@ def create_boundary_patch_list(input_dict, boundary_name):
             patch_mesh = make_polygon(
                 rad=patch["radius"],
                 nvert=patch["npts"],
+                center=(patch["centx"], patch["centy"], patch["centz"]),
+                normal_dir=patch["normal_dir"],
             )
         elif patch["type"].lower() == "rectangle":
             patch_mesh = make_rectangle(
