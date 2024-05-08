@@ -3,7 +3,8 @@ import sys
 
 import numpy as np
 
-from bird.meshing.stl_mesh_tools import makeSpider, saveSTL
+from bird.meshing.stl_shapes import make_spider, from_dict_to_stl
+from bird.meshing.stl_mesh_tools import saveSTL
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate Spider Sparger STL")
@@ -49,15 +50,17 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     # Spider
-    combined, globalArea = makeSpider(
+    spider_mesh, spider_area = make_spider(
         centerRad=args.centerRadius,
         nArms=args.nArms,
         widthArms=args.armsWidth,
         lengthArms=args.armsLength,
+        center=(0,0,0),
+        normal_dir=1
     )
-    print(f"\tglobalArea = {globalArea}")
-
-    saveSTL(combined, filename="spg.stl")
+    print(f"\tglobalArea = {spider_area}")
+    spider_stl = from_dict_to_stl(spider_mesh)
+    saveSTL(spider_stl, filename="spg.stl")
 
     if args.verbose:
         # plot

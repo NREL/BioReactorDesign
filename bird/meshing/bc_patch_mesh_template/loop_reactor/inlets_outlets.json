@@ -1,0 +1,13 @@
+{
+    "inlets": [
+        {"type": "circle", "centx": 5.0, "centy": 0.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50},
+        {"type": "circle", "centx": 2.5, "centy": 0.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50},
+        {"type": "circle", "centx": 7.5, "centy": 0.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50},
+        {"type": "rectangle", "centx": 10, "centy": 0.0, "centz": 0.5, "width": 0.1, "height": 0.2, "normal_dir": 1},
+        {"type": "spider", "centerRad": 0.2, "nArms": 6, "widthArms": 0.1, "lengthArms": 0.5, "centx": 1, "centy": 0.0, "centz": 0, "normal_dir": 1}
+    ],
+    "outlets": [
+        {"type": "circle", "centx": 0.5, "centy": 5.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50},
+        {"type": "circle", "centx": 0.5, "centy": 5.0, "centz": 4.5, "radius": 0.4, "normal_dir": 1,"nelements": 50}
+    ]
+}
