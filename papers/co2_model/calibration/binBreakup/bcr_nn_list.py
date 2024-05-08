@@ -129,14 +129,19 @@ class BCR_NN(keras.Model):
         joblib.dump(scaler_y, os.path.join(scaler_folder, "scaler_y.mod"))
 
         # Split and shuffle
-        z_train, z_test, par_train, par_test, y_train, y_test = (
-            train_test_split(
-                scaler_z.transform(z_dat),
-                scaler_par.transform(par_dat),
-                scaler_y.transform(y_dat),
-                test_size=0.01,
-                random_state=42,
-            )
+        (
+            z_train,
+            z_test,
+            par_train,
+            par_test,
+            y_train,
+            y_test,
+        ) = train_test_split(
+            scaler_z.transform(z_dat),
+            scaler_par.transform(par_dat),
+            scaler_y.transform(y_dat),
+            test_size=0.01,
+            random_state=42,
         )
 
         return {

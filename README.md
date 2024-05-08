@@ -55,7 +55,7 @@ Mesh visualized in Paraview
 
 ### Generate STL mesh
 
-`python applications/write_stl_mesh.py -v -cr 0.25 -na 12 -aw 0.1 -al 0.5`
+`python applications/write_stl_patch.py -v -cr 0.25 -na 12 -aw 0.1 -al 0.5`
 
 Generates
 
@@ -67,7 +67,7 @@ Generates
 ### Manual
 
 ```
-usage: write_stl_mesh.py [-h] [-cr] [-na] [-aw] [-al] [-v]
+usage: write_stl_patch.py [-h] [-cr] [-na] [-aw] [-al] [-v]
 
 Generate Spider Sparger STL
 

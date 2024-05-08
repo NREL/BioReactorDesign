@@ -1,12 +1,12 @@
-import argparse
-import sys
-
 import numpy as np
+import stl
 
-from bird.meshing.stl_shapes import make_spider, from_dict_to_stl
-from bird.meshing.stl_mesh_tools import saveSTL
+from bird.preProcess.stl_patch.stl_bc import write_boundaries
+from bird.preProcess.stl_patch.stl_shapes import *
 
 if __name__ == "__main__":
+    import argparse
+
     parser = argparse.ArgumentParser(description="Generate Spider Sparger STL")
     parser.add_argument(
         "-cr",
@@ -47,20 +47,23 @@ if __name__ == "__main__":
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="plot on screen"
     )
-
     args = parser.parse_args()
-    # Spider
-    spider_mesh, spider_area = make_spider(
-        centerRad=args.centerRadius,
-        nArms=args.nArms,
-        widthArms=args.armsWidth,
-        lengthArms=args.armsLength,
-        center=(0,0,0),
-        normal_dir=1
-    )
-    print(f"\tglobalArea = {spider_area}")
-    spider_stl = from_dict_to_stl(spider_mesh)
-    saveSTL(spider_stl, filename="spg.stl")
+
+    bc_patch_dict = {}
+    bc_patch_dict["spg"] = [
+        {
+            "type": "spider",
+            "centerRad": args.centerRadius,
+            "nArms": args.nArms,
+            "widthArms": args.armsWidth,
+            "lengthArms": args.armsLength,
+            "centx": 0.0,
+            "centy": 0.0,
+            "centz": 0,
+            "normal_dir": 1,
+        }
+    ]
+    write_boundaries(bc_patch_dict)
 
     if args.verbose:
         # plot

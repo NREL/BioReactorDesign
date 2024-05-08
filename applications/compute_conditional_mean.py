@@ -10,7 +10,6 @@ from bird.postProcess.conditional_mean import (
 
 
 def main():
-
     parser = argparse.ArgumentParser(
         description="Compute conditional means of OpenFOAM fields"
     )

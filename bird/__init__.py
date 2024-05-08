@@ -7,6 +7,7 @@ from bird.version import __version__
 BIRD_DIR = os.path.dirname(os.path.realpath(__file__))
 BIRD_MESH_DIR = os.path.join(BIRD_DIR, "meshing")
 BIRD_POST_DIR = os.path.join(BIRD_DIR, "postProcess")
+BIRD_PRE_DIR = os.path.join(BIRD_DIR, "preProcess")
 BIRD_BLOCK_CYL_MESH_TEMP_DIR = os.path.join(
     BIRD_MESH_DIR, "block_cyl_mesh_templates"
 )
@@ -24,6 +25,9 @@ BIRD_STIR_TANK_MESH_TEMP_DIR = os.path.join(
 )
 BIRD_STIR_TANK_CASE_TEMP_DIR = os.path.join(
     BIRD_MESH_DIR, "stir_tank_case_templates"
+)
+BIRD_PRE_PATCH_TEMP_DIR = os.path.join(
+    BIRD_PRE_DIR, "stl_patch", "bc_patch_mesh_template"
 )
 BIRD_EARLY_PRED_DATA_DIR = os.path.join(BIRD_POST_DIR, "data_early")
 BIRD_INV_DIR = os.path.join(BIRD_DIR, "inverse_modeling")

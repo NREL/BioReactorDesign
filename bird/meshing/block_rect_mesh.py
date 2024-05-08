@@ -42,7 +42,6 @@ def write_vertices(outfile, lengths, nboxes):
 
 
 def write_this_block(outfile, comment, ids, mesh, zonename="none"):
-
     outfile.write("\n //" + comment + "\n")
     outfile.write("hex (")
     for i in range(len(ids)):
@@ -57,7 +56,6 @@ def write_this_block(outfile, comment, ids, mesh, zonename="none"):
 
 
 def write_blocks(outfile, blockids, lengths, nboxes, points_per_len):
-
     nx = nboxes[0]
     ny = nboxes[1]
     nz = nboxes[2]
@@ -74,7 +72,6 @@ def write_blocks(outfile, blockids, lengths, nboxes, points_per_len):
     outfile.write("blocks\n(\n")
 
     for bl in range(nblocks):
-
         i = blockids[bl][0]
         j = blockids[bl][1]
         k = blockids[bl][2]
@@ -98,7 +95,6 @@ def write_blocks(outfile, blockids, lengths, nboxes, points_per_len):
 
 
 def write_patches(outfile):
-
     outfile.write(
         "\n// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
     )
@@ -212,7 +208,6 @@ def assemble_mesh(input_file):
 
 
 def writeBlockMeshDict(out_folder, geomDict, meshDict):
-
     n_blocks = len(geomDict["fluid_blocks"])
     blockids = np.array(geomDict["fluid_blocks"]).reshape(n_blocks, 3)
 

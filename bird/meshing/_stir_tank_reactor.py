@@ -6,7 +6,6 @@ from ruamel.yaml import YAML
 
 
 class StirTankReactor:
-
     def __init__(
         self,
         Dt,
