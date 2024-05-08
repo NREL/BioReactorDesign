@@ -53,35 +53,6 @@ Mesh visualized in Paraview
 </p>
 
 
-### Generate STL mesh
-
-`python applications/write_stl_patch.py -v -cr 0.25 -na 12 -aw 0.1 -al 0.5`
-
-Generates
-
-<p float="left">
-  <img src="https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/simpleOutput.png" width="350"/>
-</p>
-
-
-### Manual
-
-```
-usage: write_stl_patch.py [-h] [-cr] [-na] [-aw] [-al] [-v]
-
-Generate Spider Sparger STL
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -cr , --centerRadius
-                        Radius of the center distributor
-  -na , --nArms         Number of spider arms
-  -aw , --armsWidth     Width of spider arms
-  -al , --armsLength    Length of spider arms
-  -v, --verbose         plot on screen
-
-```
-
 ### Block cylindrical meshing
 
 Generates `blockMeshDict` in `system`
@@ -239,6 +210,38 @@ The corners are defined in the `input.json`
         ]
 }
 ...
+```
+
+## Preprocess
+### Generate STL mesh
+
+Boundaries may be specified with `surfaceToPatch` utility in OpenFOAM, based on STL files that can be generated with 
+
+`python applications/write_stl_patch.py -v -cr 0.25 -na 12 -aw 0.1 -al 0.5`
+
+Generates
+
+<p float="left">
+  <img src="https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/simpleOutput.png" width="350"/>
+</p>
+
+
+### Manual
+
+```
+usage: write_stl_patch.py [-h] [-cr] [-na] [-aw] [-al] [-v]
+
+Generate Spider Sparger STL
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -cr , --centerRadius
+                        Radius of the center distributor
+  -na , --nArms         Number of spider arms
+  -aw , --armsWidth     Width of spider arms
+  -al , --armsLength    Length of spider arms
+  -v, --verbose         plot on screen
+
 ```
 
 
