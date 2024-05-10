@@ -4,13 +4,8 @@ import sys
 import numpy as np
 import stl
 
+from bird.meshing._mesh_tools import parseJsonFile
 from bird.preProcess.stl_patch.stl_shapes import *
-
-
-def parseJsonFile(input_filename):
-    with open(input_filename) as f:
-        inpt = json.load(f)
-    return inpt
 
 
 def check_input(input_dict):

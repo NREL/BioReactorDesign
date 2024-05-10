@@ -211,13 +211,14 @@ The corners are defined in the `input.json`
 }
 ...
 ```
+To see how to use this on an actual case see `OFsolvers/tutorial_cases/loop_reactor`
 
 ## Preprocess
 ### Generate STL mesh
 
 Boundaries may be specified with `surfaceToPatch` utility in OpenFOAM, based on STL files that can be generated with 
 
-`python applications/write_stl_patch.py -v -cr 0.25 -na 12 -aw 0.1 -al 0.5`
+`python applications/write_stl_patch.py -v`
 
 Generates
 
@@ -226,22 +227,19 @@ Generates
 </p>
 
 
+To see how to use this on an actual case see `OFsolvers/tutorial_cases/loop_reactor`
+
 ### Manual
 
 ```
-usage: write_stl_patch.py [-h] [-cr] [-na] [-aw] [-al] [-v]
+usage: write_stl_patch.py [-h] [-i] [-v]
 
-Generate Spider Sparger STL
+Generate boundary patch
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -cr , --centerRadius
-                        Radius of the center distributor
-  -na , --nArms         Number of spider arms
-  -aw , --armsWidth     Width of spider arms
-  -al , --armsLength    Length of spider arms
-  -v, --verbose         plot on screen
-
+options:
+  -h, --help     show this help message and exit
+  -i , --input   Boundary patch Json input
+  -v, --verbose  plot on screen
 ```
 
 
@@ -249,7 +247,7 @@ optional arguments:
 
 ### Perform early prediction
 
-`python applications/earlyPredicition.py -df bird/postProcess/data_early`
+`python applications/early_prediction.py -df bird/postProcess/data_early`
 
 Generates
 
