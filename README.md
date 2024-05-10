@@ -242,6 +242,20 @@ options:
   -v, --verbose  plot on screen
 ```
 
+### How to change the set of shapes in the boundary patch
+
+Edit the json files read when generating the mesh. In the case below, the boundary condition `inlets` consists of 3 discs 
+
+```
+{
+    "inlets": [
+        {"type": "circle", "centx": 5.0, "centy": 0.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50},
+        {"type": "circle", "centx": 2.5, "centy": 0.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50},
+        {"type": "circle", "centx": 7.5, "centy": 0.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50}
+    ],
+}
+...
+```
 
 ## Postprocess
 
