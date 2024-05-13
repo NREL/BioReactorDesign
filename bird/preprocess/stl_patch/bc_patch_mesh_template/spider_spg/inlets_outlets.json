@@ -1,0 +1,8 @@
+{
+    "inlets": [
+        {"type": "spider", "centerRad": 0.25, "nArms": 12, "widthArms": 0.1, "lengthArms": 0.5, "centx": 1, "centy": 0.0, "centz": 0, "normal_dir": 1}
+    ],
+    "outlets": [
+        {"type": "circle", "centx": 0, "centy": 5.0, "centz": 0, "radius": 1, "normal_dir": 1,"nelements": 50}
+    ]
+}

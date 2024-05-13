@@ -17,7 +17,6 @@ def compute_cond_mean(
     diff_val_list=[],
     diff_name_list=[],
 ):
-
     time_float_sorted, time_str_sorted = getCaseTimes(case_path)
     mesh_time_str = getMeshTime(case_path)
     cellCentres = readMesh(
@@ -114,7 +113,6 @@ def sequencePlot(
     case_names=[],
     symbList=["-", "-d", "-^", "-.", "-s", "-o", "-+"],
 ):
-
     if not len(case_names) == len(folder_names):
         case_names = [f"test{i}" for i in range(len(folder_names))]
     if len(case_names) > len(symbList):

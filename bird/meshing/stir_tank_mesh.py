@@ -11,7 +11,6 @@ def get_reactor_geom(yamlfile):
 
 
 def write_ofoam_preamble(outfile, react):
-
     outfile.write(
         "/*--------------------------------*- C++ -*----------------------------------*\\\n"
     )
@@ -50,7 +49,6 @@ def write_ofoam_preamble(outfile, react):
 
 
 def write_vertices(outfile, react):
-
     outfile.write(
         "\n// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
     )
@@ -67,7 +65,6 @@ def write_vertices(outfile, react):
     counter = 0
     for repeat in range(2):
         for zi in range(nsections):
-
             outfile.write("\n//section " + str(zi) + "\n")
             outfile.write("\n//center\n")
             outfile.write(
@@ -120,7 +117,6 @@ def write_vertices(outfile, react):
 
 
 def get_globalindex_of(splti, ci, zi, react):
-
     npts_per_section = react.npts_per_section
     centeroffset = react.centeroffset
     polyoffset = react.polyoffset
@@ -140,7 +136,6 @@ def get_globalindex_of(splti, ci, zi, react):
 
 
 def get_baffle_point_of(splti, ci, zi, react):
-
     baff_sections = react.baff_sections
     nsections = react.nsections
     npts_per_section = react.npts_per_section
@@ -150,14 +145,11 @@ def get_baffle_point_of(splti, ci, zi, react):
     baffle_id = get_globalindex_of(splti, ci, zi, react)
 
     if zi in baff_sections:
-
         if ci == hub_circ:
-
             if splti % 2 == 0:  # even number for impeller
                 baffle_id += nsections * npts_per_section
 
         if ci == tank_circ:
-
             if splti % 2 == 1:  # odd number for baffle
                 baffle_id += nsections * npts_per_section
 
@@ -165,7 +157,6 @@ def get_baffle_point_of(splti, ci, zi, react):
 
 
 def write_edges(outfile, react):
-
     nsections = react.nsections
     nsplits = react.nsplits
     dangle = react.dangle
@@ -179,7 +170,6 @@ def write_edges(outfile, react):
     outfile.write("edges\n(\n")
 
     for zi in range(nsections):
-
         outfile.write("\n//section " + str(zi) + "\n")
 
         offset = 1 + nsplits  # one for center and nsplits for polygon
@@ -212,7 +202,6 @@ def write_edges(outfile, react):
 
 
 def write_this_block(outfile, comment, ids, mesh, zonename="none"):
-
     outfile.write("\n //" + comment + "\n")
     outfile.write("hex (")
     for i in range(len(ids)):
@@ -227,7 +216,6 @@ def write_this_block(outfile, comment, ids, mesh, zonename="none"):
 
 
 def write_blocks(outfile, react):
-
     outfile.write(
         "\n// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
     )
@@ -253,7 +241,6 @@ def write_blocks(outfile, react):
     hub_volumes = react.hub_volumes
 
     for zi in range(nvolumes):
-
         outfile.write("\n//section " + str(zi) + "-" + str(zi + 1) + "\n")
 
         offset0 = zi * npts_per_section
@@ -266,7 +253,6 @@ def write_blocks(outfile, react):
         # skip polygon blocks in stem sections
         if zi in nonstem_volumes:
             for i in range(nsplits):
-
                 localind1 = centeroffset + i % nsplits
                 localind2 = centeroffset + (i + 1) % nsplits
 
@@ -296,7 +282,6 @@ def write_blocks(outfile, react):
         outfile.write("\n//circles\n")
 
         for ci in range(ncirc):
-
             zonename = "none"
 
             # skip blocks inside hub
@@ -311,7 +296,6 @@ def write_blocks(outfile, react):
                 zonename = "rotor"
 
             for i in range(nsplits):
-
                 idarray[0] = get_baffle_point_of(i, ci, zi, react)
                 idarray[1] = get_baffle_point_of(i, ci, zi + 1, react)
                 idarray[2] = get_globalindex_of(i + 1, ci, zi + 1, react)
@@ -335,7 +319,6 @@ def write_blocks(outfile, react):
 
 
 def write_patches(outfile, react):
-
     inhub_ci = react.inhub_circ
     hub_ci = react.hub_circ
     rot_ci = react.rot_circ
@@ -454,7 +437,6 @@ def write_patches(outfile, react):
         zi_top = zi_bottom + 1  # bottom of impeller section
 
         for zi in [zi_bottom, zi_top]:
-
             outfile.write("\n\t\t//hub to blade circle\n")
             for i in range(nsplits):
                 outfile.write("\t\t( ")
@@ -544,7 +526,6 @@ def write_patches(outfile, react):
         zi_pairs = [[hub_vol - 1, hub_vol], [hub_vol + 1, hub_vol + 2]]
 
         for zi_pair in zi_pairs:
-
             zi_below = zi_pair[0]
             zi_above = zi_pair[1]
 
@@ -685,7 +666,6 @@ def write_patches(outfile, react):
         zi_pairs.append([vols, vols + 1])
 
     for zi_pair in zi_pairs:
-
         zi_below = zi_pair[0]
         zi_above = zi_pair[1]
         outfile.write(
@@ -712,7 +692,6 @@ def write_patches(outfile, react):
     outfile.write("\n\tempty inside_to_hub_copy\n\t(\n")
 
     for zi_pair in zi_pairs:
-
         zi_below = zi_pair[0]
         zi_above = zi_pair[1]
         outfile.write(
@@ -740,7 +719,6 @@ def write_patches(outfile, react):
     outfile.write("\n\tempty hub_to_rotor\n\t(\n")
 
     for zi_pair in zi_pairs:
-
         zi_below = zi_pair[0]
         zi_above = zi_pair[1]
         outfile.write(
@@ -766,7 +744,6 @@ def write_patches(outfile, react):
     outfile.write("\n\tempty hub_to_rotor_copy\n\t(\n")
 
     for zi_pair in zi_pairs:
-
         zi_below = zi_pair[0]
         zi_above = zi_pair[1]
         outfile.write(

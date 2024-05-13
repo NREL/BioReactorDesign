@@ -53,35 +53,6 @@ Mesh visualized in Paraview
 </p>
 
 
-### Generate STL mesh
-
-`python applications/write_stl_mesh.py -v -cr 0.25 -na 12 -aw 0.1 -al 0.5`
-
-Generates
-
-<p float="left">
-  <img src="https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/simpleOutput.png" width="350"/>
-</p>
-
-
-### Manual
-
-```
-usage: write_stl_mesh.py [-h] [-cr] [-na] [-aw] [-al] [-v]
-
-Generate Spider Sparger STL
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -cr , --centerRadius
-                        Radius of the center distributor
-  -na , --nArms         Number of spider arms
-  -aw , --armsWidth     Width of spider arms
-  -al , --armsLength    Length of spider arms
-  -v, --verbose         plot on screen
-
-```
-
 ### Block cylindrical meshing
 
 Generates `blockMeshDict` in `system`
@@ -240,13 +211,57 @@ The corners are defined in the `input.json`
 }
 ...
 ```
+To see how to use this on an actual case see `OFsolvers/tutorial_cases/loop_reactor`
 
+## Preprocess
+### Generate STL mesh
+
+Boundaries may be specified with `surfaceToPatch` utility in OpenFOAM, based on STL files that can be generated with 
+
+`python applications/write_stl_patch.py -v`
+
+Generates
+
+<p float="left">
+  <img src="https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/simpleOutput.png" width="350"/>
+</p>
+
+
+To see how to use this on an actual case see `OFsolvers/tutorial_cases/loop_reactor`
+
+### Manual
+
+```
+usage: write_stl_patch.py [-h] [-i] [-v]
+
+Generate boundary patch
+
+options:
+  -h, --help     show this help message and exit
+  -i , --input   Boundary patch Json input
+  -v, --verbose  plot on screen
+```
+
+### How to change the set of shapes in the boundary patch
+
+Edit the json files read when generating the mesh. In the case below, the boundary condition `inlets` consists of 3 discs 
+
+```
+{
+    "inlets": [
+        {"type": "circle", "centx": 5.0, "centy": 0.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50},
+        {"type": "circle", "centx": 2.5, "centy": 0.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50},
+        {"type": "circle", "centx": 7.5, "centy": 0.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50}
+    ],
+}
+...
+```
 
 ## Postprocess
 
 ### Perform early prediction
 
-`python applications/earlyPredicition.py -df bird/postProcess/data_early`
+`python applications/early_prediction.py -df bird/postProcess/data_early`
 
 Generates
 
