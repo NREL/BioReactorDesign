@@ -1,5 +1,5 @@
 from bird import BIRD_EARLY_PRED_DATA_DIR
-from bird.postProcess.early_pred import (
+from bird.postprocess.early_pred import (
     bayes_fit,
     fit_and_ext,
     multi_data_load,

@@ -2,7 +2,7 @@
 python ../../../applications/write_block_rect_mesh.py -i ../../../bird/meshing/block_rect_mesh_templates/loopReactor/input.json -o system
 
 # Generate boundary stl
-python ../../../applications/write_stl_patch.py -i ../../../bird/preProcess/stl_patch/bc_patch_mesh_template/loop_reactor/inlets_outlets.json
+python ../../../applications/write_stl_patch.py -i ../../../bird/preprocess/stl_patch/bc_patch_mesh_template/loop_reactor/inlets_outlets.json
 
 # Clean case
 ./Allclean

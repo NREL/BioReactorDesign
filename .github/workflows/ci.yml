@@ -64,9 +64,12 @@ jobs:
           pip install --upgrade pip
           pip install .
           pip install pytest
+      - name: Test preprocess
+        run: |
+          pytest tests/preprocess
       - name: Test mesh
         run: |
           pytest tests/meshing
-      - name: Test postProcessing
+      - name: Test postprocessing
         run: |
-          pytest tests/postProcess
+          pytest tests/postprocess

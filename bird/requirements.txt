@@ -1,5 +1,5 @@
 numpy
-prettyPlot>=0.0.27
+prettyPlot
 ruamel_yaml
 numpy-stl
 scipy

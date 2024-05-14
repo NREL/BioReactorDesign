@@ -3,7 +3,7 @@ import sys
 
 import numpy as np
 
-from bird.preProcess.stl_patch.stl_mesh import STLMesh
+from bird.preprocess.stl_patch.stl_mesh import STLMesh
 
 
 def make_polygon(rad, nvert, center, normal_dir):

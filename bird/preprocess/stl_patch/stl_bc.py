@@ -5,7 +5,7 @@ import numpy as np
 import stl
 
 from bird.meshing._mesh_tools import parseJsonFile
-from bird.preProcess.stl_patch.stl_shapes import *
+from bird.preprocess.stl_patch.stl_shapes import *
 
 
 def check_input(input_dict):
