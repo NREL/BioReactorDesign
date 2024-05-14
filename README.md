@@ -261,7 +261,7 @@ Edit the json files read when generating the mesh. In the case below, the bounda
 
 ### Perform early prediction
 
-`python applications/early_prediction.py -df bird/postProcess/data_early`
+`python applications/early_prediction.py -df bird/postprocess/data_early`
 
 Generates
 
@@ -287,7 +287,7 @@ options:
 
 ### Plot conditional means
 
-`python applications/compute_conditional_mean.py -f bird/postProcess/data_conditional_mean -avg 2`
+`python applications/compute_conditional_mean.py -f bird/postprocess/data_conditional_mean -avg 2`
 
 Generates (among others)
 

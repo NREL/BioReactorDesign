@@ -2,7 +2,7 @@ import argparse
 
 from prettyPlot.plotting import plt
 
-from bird.postProcess.early_pred import (
+from bird.postprocess.early_pred import (
     bayes_fit,
     fit_and_ext,
     multi_data_load,

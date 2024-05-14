@@ -5,8 +5,8 @@ import stl
 
 from bird import BIRD_PRE_PATCH_TEMP_DIR
 from bird.meshing._mesh_tools import parseJsonFile
-from bird.preProcess.stl_patch.stl_bc import write_boundaries
-from bird.preProcess.stl_patch.stl_shapes import *
+from bird.preprocess.stl_patch.stl_bc import write_boundaries
+from bird.preprocess.stl_patch.stl_shapes import *
 
 if __name__ == "__main__":
     import argparse

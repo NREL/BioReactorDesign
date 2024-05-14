@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 from bird import BIRD_PRE_PATCH_TEMP_DIR
-from bird.preProcess.stl_patch.stl_bc import parseJsonFile, write_boundaries
+from bird.preprocess.stl_patch.stl_bc import parseJsonFile, write_boundaries
 from bird.utilities.stl_plotting import plotSTL, pretty_labels
 
 

@@ -2,7 +2,7 @@ import argparse
 
 from prettyPlot.plotting import plt, pretty_labels
 
-from bird.postProcess.conditional_mean import (
+from bird.postprocess.conditional_mean import (
     compute_cond_mean,
     save_cond,
     sequencePlot,
@@ -20,7 +20,7 @@ def main():
         metavar="",
         required=True,
         help="caseFolder to analyze",
-        default="bird/postProcess/data_conditional_mean",
+        default="bird/postprocess/data_conditional_mean",
     )
 
     parser.add_argument(
