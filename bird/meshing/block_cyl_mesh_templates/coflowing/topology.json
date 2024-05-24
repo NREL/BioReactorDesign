@@ -1,0 +1,19 @@
+{
+        "Boundary": {
+                "outlet":[
+                           {"type": "top", "Rmin": 0, "Rmax": 0, "Lmin": 1, "Lmax": 2},
+                           {"type": "top", "Rmin": 1, "Rmax": 1, "Lmin": 1, "Lmax": 2}
+                         ],
+                "inlet":[
+                           {"type": "bottom", "Rmin": 0, "Rmax": 0, "Lmin": 0, "Lmax": 1},
+                           {"type": "bottom", "Rmin": 1, "Rmax": 1, "Lmin": 0, "Lmax": 1}
+                         ],
+                "walls": [
+                           {"type": "lateral", "Rmin": 1, "Rmax": 2, "Lmin": 1, "Lmax": 1}
+                         ]
+        }
+}
+
+
+
+
