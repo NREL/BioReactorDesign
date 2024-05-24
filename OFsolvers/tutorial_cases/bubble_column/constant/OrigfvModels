@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvModels;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+massSource
+{
+    type            massSource;
+
+    selectionMode   cellZone;
+    cellZone        injection;
+
+    massFlowRate    6e-4;
+
+    phase           gas;
+    rho             thermo:rho.gas;
+
+    fieldValues
+    {
+        f1.gas     0;
+        f2.gas     0;
+        f3.gas     1;
+        f4.gas     0;
+        f5.gas     0;
+        U.gas      (0 0 0);
+	water.gas  0;
+	e.gas      0;
+    }
+}
+
+// ************************************************************************* //
