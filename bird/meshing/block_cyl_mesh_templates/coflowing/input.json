@@ -1,0 +1,24 @@
+{
+	"Meshing": {
+    		"NRSmallest": 6,
+    		"NVertSmallest": 100,
+                "verticalCoarsening":[
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"}
+                                     ],
+                "radialCoarsening":  [
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"}
+                                     ]
+	},
+	"Geometry": {
+                "Radial": {
+                        "column_radius"  : 75
+                },
+		"Longitudinal": {
+			"column_top" : 4400,
+			"bottom" : 0
+		}
+	}
+}
+
+
