@@ -13,7 +13,7 @@ Use the run_react.sh script with any of your modifications to run the reacting c
 Change final time based on how many fluid updates you will do in a 12 hour reaction 
 period. 
 
-2. In microbe update properties:  
+2. In react/constant/microbeUpdateProperties:  
 Set fluid update time - this is the fluid solver is run between 2 reaction updates.
 set reaction update time - I am using 2 hours. But need to play with this to get an 
 optimal update time that is computational efficient and yields convergent results when 
