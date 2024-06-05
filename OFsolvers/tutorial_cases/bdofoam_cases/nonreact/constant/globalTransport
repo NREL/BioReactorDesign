@@ -1,0 +1,43 @@
+//****** Temperature ************
+Temp			308; // K
+//*****Gas transport*******************
+muMixGas        1.88e-05;
+PrMixGas        0.7;
+LeGas     		1.0;
+dbubGas			0.006;
+//****Liquid transport*****************
+CpMixLiq        4181;
+muMixLiq        0.001; // 1 cP  
+kThermLiq		0.62; // W/m-K
+RMixLiq         3000;
+rho0MixLiq      1000; // kg/m^3
+sigmaLiq        0.07; //surface tension N/m
+ddropLiq        0.003;
+//Wilke-Chang params for diffusivity of aq. O2
+// not currently used, JJS 4/14/16
+WC_psi          2.6;
+WC_M            18;
+WC_V            25.6e-3; // m3/kmol
+//********************************************
+H_O2_298 0.032;
+DH_O2	1700;
+H_CO2_298 0.83;
+DH_CO2	2400;
+//*********************************
+HtBcol  35.0;
+DiaBcol #calc "sqrt(875.0 / $HtBcol)";
+SpgDia   3.0;
+LiqHt   #calc "0.7428*$HtBcol";
+NPS 7;
+NPD 7;
+NPY 100;
+// ******* Inlet conditions *********
+targetUs        0.002;
+inletArea       #calc "$SpgDia*$SpgDia";
+totalArea       #calc "$DiaBcol*$DiaBcol";
+inletAlphaGas   1.0;
+Pbot #calc "101325.0+1000.0*$LiqHt*9.8";
+Pmid #calc "101325.0+1000.0*0.5*$LiqHt*9.8";
+presfactor      #calc "$Pbot / $Pmid";  // (P1+rho*g*h)/(P1+rho*g*h/2)
+O2Liquid        4e-6;
+//*********************************

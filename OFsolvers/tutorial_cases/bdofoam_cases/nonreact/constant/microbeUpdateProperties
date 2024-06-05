@@ -1,0 +1,22 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      microbeUpdateProperties;
+}
+
+reaction_update_time [ 0 0 1 0 0 0 0 ] 0.75; //in hours
+fluid_update_time    [ 0 0 1 0 0 0 0 ] 7000;  //in seconds
+initial_microbe_conc [ 0 -3 0 0 1 0 0] 0.5; //mol/m3 
+initial_glucose      [ 0 -3 0 0 1 0 0] 500.0; //mol/m3 
+initial_xylose       [ 0 -3 0 0 1 0 0] 250.0; //mol/m3 
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

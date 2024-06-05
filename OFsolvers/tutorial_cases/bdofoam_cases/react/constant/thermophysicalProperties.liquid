@@ -1,0 +1,144 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      thermophysicalProperties.liquid;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "globalTransport"
+
+PrMixLiq  #codeStream 
+{ 
+    code 
+    #{ 
+        os  << $CpMixLiq * $muMixLiq / $kThermLiq; 
+    #}; 
+}; 
+
+thermoType
+{
+    type            heRhoThermo;
+    mixture         multiComponentMixture;
+    transport       const;
+    thermo          hConst;
+    equationOfState perfectFluid;
+    specie          specie;
+    energy          sensibleInternalEnergy;
+}
+
+species
+(
+    water
+    //N2
+    O2
+    CO2
+);
+
+inertSpecie water;
+
+"(mixture|water)"
+{
+    specie
+    {
+        nMoles      1;
+        molWeight   18;
+    }
+    equationOfState
+    {
+        R           $RMixLiq;
+        rho0        $rho0MixLiq;
+    }
+    thermodynamics
+    {
+        Hf          -15857343;
+        Cp          $CpMixLiq;
+    }
+    transport
+    {
+        mu          $muMixLiq;
+        Pr          $PrMixLiq;
+    }
+}
+
+CO2
+{
+    specie
+    {
+        nMoles      1;
+        molWeight   44;
+    }
+    equationOfState
+    {
+        R           $RMixLiq;
+        rho0        $rho0MixLiq;
+    }
+    thermodynamics
+    {
+        Hf          -9402451;
+        Cp          $CpMixLiq;
+    }
+    transport
+    {
+        mu          $muMixLiq;
+        Pr          $PrMixLiq;
+    }
+}
+
+// N2
+// {
+//     specie
+//     {
+//         nMoles      1;
+//         molWeight   28;
+//     }
+//     equationOfState
+//     {
+//         R           $RMixLiq;
+//         rho0        $rho0MixLiq;
+//     }
+//     thermodynamics
+//     {
+//         Hf          0;
+//         Cp          $CpMixLiq;
+//     }
+//     transport
+//     {
+//         mu          $muMixLiq;
+//         Pr          $PrMixLiq;
+//     }
+// }
+
+O2
+{
+    specie
+    {
+        nMoles      1;
+        molWeight   32;
+    }
+    equationOfState
+    {
+        R           $RMixLiq;
+        rho0        $rho0MixLiq;
+    }
+    thermodynamics
+    {
+        Hf          -365639;
+        Cp          $CpMixLiq;
+    }
+    transport
+    {
+        mu          $muMixLiq;
+        Pr          $PrMixLiq;
+    }
+}
+// ************************************************************************* //

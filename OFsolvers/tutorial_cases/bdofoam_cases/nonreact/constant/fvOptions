@@ -1,0 +1,96 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     5.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+    O2sink
+    {
+        type            scalarCodedSource;
+
+        active          yes;
+
+        name    sourceTime;
+
+        scalarCodedSourceCoeffs
+        {
+            selectionMode   all;
+
+            fields          (O2.liquid);
+
+            codeInclude
+            #{
+            #};
+            codeOptions
+            #{
+            #};
+
+            codeCorrect
+            #{
+                Pout<< "**codeCorrect**" << endl;
+            #};
+
+            codeAddSup
+            #{
+		const vectorField& C = mesh_.C();
+		const scalarField& V = mesh_.V();
+
+		const volScalarField& alphaL = mesh().lookupObject<volScalarField>("alpha.liquid");
+		const volScalarField& rhoL = mesh().lookupObject<volScalarField>("thermo:rho.liquid");
+                const volScalarField& y_O2 = mesh().lookupObject<volScalarField>("O2.liquid");      
+                const volScalarField& our_O2 = mesh().lookupObject<volScalarField>("our");      
+
+	        scalarField& O2src = eqn.source();
+
+		double ko = 0.01; //mol/m3
+		double mw_O2  = 32.0; //gm/mol
+		double kg_to_g = 1000.0; 
+		double hr_to_sec = 3600.0;
+		double time = mesh().time().value();
+
+		double kg_m3_to_mol_m3 = kg_to_g/mw_O2;
+		double mol_m3_to_kg_m3 = mw_O2/kg_to_g;
+
+		double our_src;
+
+		forAll(C,i)
+		{
+		  our_src = our_O2[i]/hr_to_sec;
+		  O2src[i] += alphaL[i]*our_src*mol_m3_to_kg_m3*V[i];
+		}
+
+		//Pout << "***Added o2 sink***\t" << our_src << endl;
+            #};
+
+            codeSetValue
+            #{
+                Pout<< "**codeSetValue**" << endl;
+            #};
+        
+
+            // Dummy entry. Make dependent on above to trigger recompilation
+            code
+            #{
+                $codeInclude
+                $codeCorrect
+                $codeAddSup
+                $codeSetValue
+            #};
+        }
+
+        sourceTimeCoeffs
+        {
+            $scalarCodedSourceCoeffs;
+        }
+    }
+// ************************************************************************* //

@@ -1,0 +1,222 @@
+//--------------------------------*- C++ -*----------------------------------
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+FoamFile
+{
+  version  2.0;
+  format   ascii;
+  class dictionary;
+  object blockMeshDict;
+}
+// ************************************
+#include "${FOAM_CASE}/constant/globalTransport"
+
+convertToMeters 1;
+
+L1 #calc "$HtBcol";
+D1 #calc "$DiaBcol";
+D2 #calc "$SpgDia";
+PI 3.14159265;
+
+R1 #calc "$D1*0.5";
+mR1 #calc "-$R1";
+R2 #calc "$D2*0.5";
+mR2 #calc "-$R2";
+CW #calc "$D2*0.25";
+mCW #calc "-$CW";
+
+CX1 #calc "$R1*cos($PI*0.25)";
+mCX1 #calc "-$CX1";
+CZ1 #calc "$R1*sin($PI*0.25)";
+mCZ1 #calc "-$CZ1";
+
+CX2 #calc "$R2*cos($PI*0.25)";
+mCX2 #calc "-$CX2";
+CZ2 #calc "$R2*sin($PI*0.25)";
+mCZ2 #calc "-$CZ2";
+
+vertices
+(
+    //Bottom surface
+    //==========
+
+    //square
+    ( $CW 0.0    $CW)
+    ( $mCW 0.0   $CW) 
+    ( $mCW 0.0  $mCW) 
+    ( $CW 0.0   $mCW) 
+
+    //outer circle
+    ( $CX1 0.0   $CZ1) 
+    ( $mCX1 0.0  $CZ1) 
+    ( $mCX1 0.0 $mCZ1) 
+    ( $CX1 0.0  $mCZ1) 
+
+    //inner circle
+    ( $CX2   0.0   $CZ2) 
+    ( $mCX2  0.0   $CZ2) 
+    ( $mCX2  0.0  $mCZ2)
+    ( $CX2   0.0  $mCZ2) 
+    
+    //square
+    ( $CW $L1    $CW)
+    ( $mCW $L1   $CW) 
+    ( $mCW $L1  $mCW) 
+    ( $CW $L1   $mCW) 
+
+    //outer circle
+    ( $CX1 $L1   $CZ1) 
+    ( $mCX1 $L1  $CZ1) 
+    ( $mCX1 $L1 $mCZ1) 
+    ( $CX1 $L1  $mCZ1) 
+
+    //inner circle
+    ( $CX2   $L1   $CZ2) 
+    ( $mCX2  $L1   $CZ2) 
+    ( $mCX2  $L1  $mCZ2)
+    ( $CX2   $L1  $mCZ2) 
+);				
+   
+blocks
+(
+    //square block
+    hex (
+        1 0 3 2
+        13 12 15 14
+        )
+    ($NPS $NPD $NPY)
+    simpleGrading (1 1 1)
+
+    //slice1
+    hex (
+        9 8 0 1
+        21 20 12 13
+        )
+    ($NPS $NPD $NPY)
+    simpleGrading (1 1 1)
+
+    //slice2
+    hex (
+        10 9 1 2
+        22 21 13 14
+        )
+($NPS $NPD $NPY)
+simpleGrading (1 1 1)
+
+    //slice3
+    hex (
+        11 10 2 3
+        23 22 14 15
+        )
+($NPS $NPD $NPY)
+simpleGrading (1 1 1)
+
+    //slice4
+    hex (
+        8 11 3 0
+        20 23 15 12
+        )
+($NPS $NPD  $NPY)
+simpleGrading (1 1 1)
+
+    //slice1
+    hex (
+        4 8 9 5
+        16 20 21 17
+        )
+($NPS $NPD $NPY)
+simpleGrading (1 1 1)
+
+    //slice2
+    hex (
+        5 9 10 6
+        17 21 22 18
+        )
+($NPS $NPD $NPY)
+simpleGrading (1 1 1)
+
+    //slice3
+    hex (
+        6 10 11  7
+        18 22 23  19
+        )
+($NPS $NPD $NPY)
+simpleGrading (1 1 1)
+
+    //slice4
+    hex (
+        7 11 8  4
+        19 23 20  16
+        )
+($NPS $NPD $NPY)
+simpleGrading (1 1 1)
+
+    );
+
+edges
+(
+    arc 4 5   (0.0 0.0 $R1)
+    arc 5 6   ($mR1 0.0 0.0)
+    arc 6 7   (0.0 0.0 $mR1)
+    arc 7 4   ($R1 0.0 0.0)
+
+    arc 16 17   (0.0  $L1 $R1)
+    arc 17 18   ($mR1 $L1 0.0)
+    arc 18 19   (0.0  $L1 $mR1)
+    arc 19 16   ($R1  $L1 0.0)
+
+    arc 8 9   (0.0 0.0 $R2)
+    arc 9 10  ($mR2 0.0 0.0)
+    arc 10 11 (0.0 0.0 $mR2)
+    arc 11 8  ($R2 0.0 0.0)
+
+    arc 20 21   (0.0  $L1 $R2)
+    arc 21 22   ($mR2 $L1 0.0)
+    arc 22 23   (0.0  $L1 $mR2)
+    arc 23 20   ($R2  $L1 0.0)
+    );
+
+    patches
+    (
+        patch inlet
+        (
+            (0 3 2 1)
+            (0 8 9 1)
+            (1 9 10 2)
+            (2 10 11 3)
+            (3 11 8 0)
+        )
+
+        patch outlet
+        (
+            (12 15 14 13)
+            (12 20 21 13)
+            (13 21 22 14)
+            (14 22 23 15)
+            (15 23 20 12)
+
+            (20 16 17 21)
+            (21 17 18 22)
+            (22 18 19 23)
+            (23 19 16 20)
+
+        )
+
+wall walls
+(
+    (8 4 5 9)
+    (9 5 6 10)
+    (10 6 7 11)
+    (11 7 4 8)
+
+    (4 16 17 5)
+    (5 17 18 6)
+    (6 18 19 7)
+    (7 19 16 4)
+    )
+
+);
+
+mergePatchPairs
+(
+);
+
