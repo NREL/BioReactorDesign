@@ -36,7 +36,8 @@ boundaryField
     {
         type            pressureInletOutletVelocity;
         phi             phi.liquid;
-        value           $internalField;
+        value           uniform (0 0 0);
+        //value           $internalField;
     }
     defaultFaces
     {
