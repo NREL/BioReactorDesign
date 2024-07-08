@@ -1,0 +1,72 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      alphat.gas;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [1 -1 -1 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
+    cyl2
+    {
+        type            calculated;
+        value           $internalField;
+    }
+    cyl4
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    outlet
+    {
+        type            calculated;
+        value           $internalField;
+    }
+
+    cyl1
+    {
+        type            compressible::alphatWallFunction;
+        Prt             0.85;
+        value           $internalField;
+    }
+    cyl3
+    {
+        type            compressible::alphatWallFunction;
+        Prt             0.85;
+        value           $internalField;
+    }
+
+    walls
+    {
+        type            compressible::alphatWallFunction;
+        Prt             0.85;
+        value           $internalField;
+    }
+    pipes
+    {
+        type            compressible::alphatWallFunction;
+        Prt             0.85;
+        value           $internalField;
+    }
+
+    defaultFaces
+    {
+        type            empty;
+    }
+}
+
+// ************************************************************************* //

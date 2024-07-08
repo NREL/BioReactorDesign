@@ -1,0 +1,69 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      water.liquid;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 0 0 0 0];
+
+#include "../constant/globalTransport"
+
+waterLiquid #codeStream
+{
+    code
+    #{
+        os << 1.0 - $O2Liquid; 
+    #};
+};
+
+internalField   uniform $waterLiquid;
+
+boundaryField
+{
+    cyl2
+    {
+        type            fixedValue;
+        value           $internalField;
+    }
+    cyl4
+    {
+        type            fixedValue;
+        value           $internalField;
+    }
+    outlet
+    {
+        type            inletOutlet;
+        phi             phi.liquid;
+        inletValue      $internalField;
+        value           $internalField;
+    }
+    walls
+    {
+        type            zeroGradient;
+    }
+    pipes
+    {
+        type            zeroGradient;
+    }
+    cyl1
+    {
+        type            zeroGradient;
+    }
+    cyl3
+    {
+        type            zeroGradient;
+    }
+}
+
+// ************************************************************************* //

@@ -1,0 +1,17 @@
+#!/bin/bash
+#SBATCH --job-name=loopr
+#SBATCH --partition=short
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=36
+#SBATCH --time=04:00:00
+#SBATCH --account=novonutr
+#SBATCH --output=loopr.out
+#SBATCH --error=loopr.err
+
+module purge
+module use /nopt/nrel/apps/modules/centos74/modulefiles
+module load openmpi/1.10.7/gcc-7.3.0
+module load gcc/7.3.0
+source /projects/bpms/openfoam/OpenFOAM-dev/etc/bashrc
+. ./presteps.sh
+srun -n 32 reactingTwoPhaseEulerFoam -parallel
