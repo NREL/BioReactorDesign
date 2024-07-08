@@ -27,3 +27,7 @@ def test_loop_reactor():
     # plot
     axes = plotSTL("inlets.stl")
     pretty_labels("x", "y", zlabel="z", fontsize=14, ax=axes)
+
+
+if __name__ == "__main__":
+    test_spider_sparger()

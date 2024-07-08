@@ -1,7 +1,7 @@
 numpy
 prettyPlot
 ruamel_yaml
-numpy-stl
+numpy-stl==2.17.0
 scipy
 corner
 jax
