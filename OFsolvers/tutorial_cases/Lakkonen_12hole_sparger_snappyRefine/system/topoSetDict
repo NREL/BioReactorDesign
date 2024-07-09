@@ -1,0 +1,173 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2306                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+X_hole  0.035;
+Xm_hole  -0.035;
+Y_hole  0.022;
+Ym_hole  -0.022;
+R_hole  0.0005;
+
+actions
+(
+    {
+        name    faceSidePipe1;
+        type    faceSet;
+        action  new;
+        source  cylinderToFace;
+        p1       ($X_hole -0.001 0);
+        p2       ($X_hole  0.001 0);
+        radius     $R_hole;
+    }
+    {
+        name    faceSidePipe1;
+        type    faceSet;
+        action  add;
+        source  cylinderToFace;
+        p1       ($Xm_hole -0.001 0);
+        p2       ($Xm_hole  0.001 0);
+        radius     $R_hole;
+    }
+    {
+        name    faceSidePipe1;
+        type    faceSet;
+        action  add;
+        source  cylinderToFace;
+        p1       (0 -0.001 $X_hole);
+        p2       (0  0.001 $X_hole);
+        radius     $R_hole;
+    }
+    {
+        name    faceSidePipe1;
+        type    faceSet;
+        action  add;
+        source  cylinderToFace;
+        p1       (0 -0.001 $Xm_hole);
+        p2       (0  0.001 $Xm_hole);
+        radius     $R_hole;
+    }
+    {
+        name    faceSidePipe1;
+        type    faceSet;
+        action  add;
+        source  cylinderToFace;
+        p1       ($Y_hole -0.001 0);
+        p2       ($Y_hole  0.001 0);
+        radius     $R_hole;
+    }
+    {
+        name    faceSidePipe1;
+        type    faceSet;
+        action  add;
+        source  cylinderToFace;
+        p1       ($Ym_hole -0.001 0);
+        p2       ($Ym_hole  0.001 0);
+        radius     $R_hole;
+    }
+    {
+        name    faceSidePipe1;
+        type    faceSet;
+        action  add;
+        source  cylinderToFace;
+        p1       (0 -0.001 $Y_hole);
+        p2       (0  0.001 $Y_hole);
+        radius     $R_hole;
+    }
+    {
+        name    faceSidePipe1;
+        type    faceSet;
+        action  add;
+        source  cylinderToFace;
+        p1       (0 -0.001 $Ym_hole);
+        p2       (0  0.001 $Ym_hole);
+        radius     $R_hole;
+    }
+// diagonal holes
+    {
+        name    faceSidePipe1;
+        type    faceSet;
+        action  add;
+        source  cylinderToFace;
+        p1       ($Y_hole -0.001 $Y_hole);
+        p2       ($Y_hole  0.001 $Y_hole);
+        radius     $R_hole;
+    }
+    {
+        name    faceSidePipe1;
+        type    faceSet;
+        action  add;
+        source  cylinderToFace;
+        p1       ($Y_hole -0.001 $Ym_hole);
+        p2       ($Y_hole  0.001 $Ym_hole);
+        radius     $R_hole;
+    }
+    {
+        name    faceSidePipe1;
+        type    faceSet;
+        action  add;
+        source  cylinderToFace;
+        p1       ($Ym_hole -0.001 $Y_hole);
+        p2       ($Ym_hole  0.001 $Y_hole);
+        radius     $R_hole;
+    }
+    {
+        name    faceSidePipe1;
+        type    faceSet;
+        action  add;
+        source  cylinderToFace;
+        p1       ($Ym_hole -0.001 $Ym_hole);
+        p2       ($Ym_hole  0.001 $Ym_hole);
+        radius     $R_hole;
+    }
+//
+
+    {
+        name    faceSidePipe;
+        type    faceSet;
+        action  new;
+        source  faceToFace;
+        set faceSidePipe1;
+    }
+    {   
+        name    faceBoundary;
+        type    faceSet;
+        action  new;
+        source  boundaryToFace;
+    }
+    {
+        name    faceSidePipe1;
+        type    faceSet;
+        action  delete;
+        source  faceToFace;
+        sourceInfo
+        {
+        set faceBoundary;
+        }
+    }
+    {
+        name    faceSidePipe;
+        type    faceSet;
+        action  delete;
+        source  faceToFace;
+        sourceInfo
+        {
+        set faceSidePipe1;
+        }
+    }
+);
+
+
+// ************************************************************************* //

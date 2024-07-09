@@ -1,0 +1,110 @@
+T0    295.15;  // initial T(K) which stays constant 
+// water thermophysical properties
+// https://www.iea-amf.org/content/fuel_information/butanol/properties
+//*****Gas transport*******************
+muMixGas        1.479e-05;
+PrMixGas        0.7;
+LeGas                   1.0;
+dbubGas                 0.001;
+
+muMixLiq 0.0029; // Pa.s
+CpMixLiq        2359.8; // J/kg-K https://webbook.nist.gov/cgi/cbook.cgi?ID=C71363&Mask=2
+kThermLiq       0.167; // W/m-K // https://www.engineeringtoolbox.com/thermal-conductivity-liquids-d_1260.html
+rho0MixLiq      810; // kg/m^3
+RMixLiq         3000; //NOT SURE
+sigmaLiq        0.023; //surface tension N/m (laakkonen)
+//Wilke-Chang params for diffusion coefficient of a given solute in water (solvent)
+WC_psi          1.5; //https://www.egichem.com/tools/calculators/wilke-chang/
+WC_M            74.1; // kg/kmol
+WC_V_O2         25.6e-3; // m3/kmol molar volume at normal boiling temperature (Treybal 1968) 
+WC_V_H2         14.3e-3; 
+WC_V_CO2        34e-3;
+WC_V_CO         30.7e-3;
+WC_V_CH4        35e-3; // V_b[cm3/mol]=0.285*V_critical^1.048 (Tyn and Calus; ESTIMATING LIQUID MOLAL VOLUME; Processing, Volume 21, Issue 4, Pages 16 - 17)
+//****** diffusion coeff ***********
+D_H2 #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_H2,0.6)"; 
+D_CO2 #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_CO2,0.6)"; 
+D_CO #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_CO,0.6)";
+D_CH4 #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_CH4,0.6)";
+// D_H2=3.4e-9, D_CO2=2e-9, D_CO=2.16e-9 at 25C
+// Looks like the H2 diffusion is less than litr reported values ~ 4.5e-9 
+// Scale down by a factor 10 
+//****** Henry coeff ***************
+H_O2_298 0.0032;
+DH_O2   1700;
+H_CO2_298 0.006916666666666667;//https://www.pure.ed.ac.uk/ws/portalfiles/portal/84258037/Kvam_Sarkisov_Solubility_v12.pdf
+DH_CO2  2400;
+H_CO_298 0.0023;
+DH_CO  1300;
+H_H2_298 0.0019;
+DH_H2   500;
+H_CH4_298 0.0009600960096009601;//https://www.pure.ed.ac.uk/ws/portalfiles/portal/84258037/Kvam_Sarkisov_Solubility_v12.pdf
+DH_CH4   1900;
+
+He_H2  #calc "$H_H2_298 * exp($DH_H2 *(1. / $T0 - 1./298.15))";
+He_CO  #calc "$H_CO_298 * exp($DH_CO *(1. / $T0 - 1./298.15))";
+He_CO2 #calc "$H_CO2_298 * exp($DH_CO2 *(1. / $T0 - 1./298.15))";
+He_CH4 #calc "$H_CH4_298 * exp($DH_CH4 *(1. / $T0 - 1./298.15))";
+//*******inlet gas frac*************
+f_H2    0.0;
+f_CO2   1.0;
+f_CO    0.0;
+//*********************************
+LeLiqH2 #calc "$kThermLiq / $rho0MixLiq / $D_H2 / $CpMixLiq";
+LeLiqCO #calc "$kThermLiq / $rho0MixLiq / $D_CO / $CpMixLiq";
+LeLiqCO2 #calc "$kThermLiq / $rho0MixLiq / $D_CO2 / $CpMixLiq"; // = 74
+LeLiqCH4 #calc "$kThermLiq / $rho0MixLiq / $D_CH4 / $CpMixLiq";
+
+LeLiqMix #calc "$f_H2*$LeLiqH2+$f_CO2*$LeLiqCO2+$f_CO*$LeLiqCO";
+PrMixLiq #calc "$CpMixLiq * $muMixLiq / $kThermLiq";
+// Pr number is ~ 7 for water and ~ 0.7 for air
+//*********************************
+kH2 #calc "$D_H2*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrH2 #calc "$muMixLiq*$CpMixLiq / $kH2";
+
+kCO #calc "$D_CO*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrCO #calc "$muMixLiq*$CpMixLiq / $kCO";
+
+kCO2 #calc "$D_CO2*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrCO2 #calc "$muMixLiq*$CpMixLiq / $kCO2";
+
+kCH4 #calc "$D_CH4*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrCH4 #calc "$muMixLiq*$CpMixLiq / $kCH4";
+//*****Gas transport*******************
+muMixGas        1.88e-05;
+PrMixGas        0.7;
+LeGas           1.0;
+//dbubGas         0.001;
+//*********************************
+HtBcol  0.260;
+DiaBcol 0.260;
+LiqHt   0.260;
+LiqHt_limit #calc "1.0*$HtBcol";
+//*********************************
+P0 1.01325E5;
+Pbot #calc "$P0+1000.0*$LiqHt*9.8";
+Pmid #calc "$P0+1000.0*0.5*$LiqHt*9.8";
+
+//bubble column cross-section divided by sparger area
+
+NHoles 12;
+dHoles 0.001;
+S_col #calc "$DiaBcol * $DiaBcol * 3.14159 / 4.0";
+V_col #calc "$S_col * $HtBcol";
+S_sparg #calc "$NHoles * $dHoles * $dHoles * 3.14159 / 4.0";
+uGas #calc "0.0001 * $V_col * 0.7 / ($S_sparg * 60)";
+
+V_flowRate #calc "0.7 * $V_col / 60";
+
+ArbyAs #calc "$S_col / $S_sparg";
+uSupVel #calc "$uGas * $S_sparg / $S_col";
+A_Bcol #calc "3.14159 * $DiaBcol * $DiaBcol / 4.0";
+rho_gas #calc "$Pmid / 287.0 / $T0";
+mflowRate #calc "$uSupVel * $A_Bcol * $rho_gas";
+
+//*********************************
+intensity 0.01;
+k_inlet #calc "1.5 * pow($uSupVel * $intensity, 2)";
+eps_gas_inlet #calc "pow(0.09,0.75) * pow($k_inlet,1.5) / ($DiaBcol / $ArbyAs * 0.07)";
+eps_liq_inlet #calc "pow(0.09,0.75) * pow($k_inlet,1.5) / ($DiaBcol / $ArbyAs * 0.07)";
+omega_liq_inlet #calc "pow(0.09,-0.25) * pow($k_inlet,0.5) / ($DiaBcol / $ArbyAs * 0.07)";
