@@ -21,7 +21,7 @@ codedSource
     field           U.liquid;
     name            sourceTime;
 
-    codeAddSup
+    codeAddAlphaRhoSup
     #{
         const Time& time = mesh().time();
         const scalarField& V = mesh().V();
