@@ -1,0 +1,5 @@
+{
+    "mixers": [
+        {"x": 0.025, "y": 0.07, "z": 0.025, "start_time": 1, "power": 300, "normal_dir": 1}
+    ]
+}
