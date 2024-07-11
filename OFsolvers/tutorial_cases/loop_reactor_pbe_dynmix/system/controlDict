@@ -20,7 +20,7 @@ startFrom       startTime;
 
 startTime       0;
 
-stopAt          writeNow;//endTime;
+stopAt          endTime;
 
 endTime         100;
 
