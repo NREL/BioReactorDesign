@@ -37,13 +37,13 @@ def proc_geom(input_geom_dict):
         * input_geom_dict["OverallDomain"]["z"]["rescale"]
     )
     segments = {}
-    isegment = 0
+    iseg = 0
     for fluid_list in input_geom_dict["Fluids"]:
         nblock = len(fluid_list)
         for i in range(nblock - 1):
-            segments[isegment] = {}
-            segments[isegment]["blocks"] = [fluid_list[i], fluid_list[i + 1]]
-            isegment += 1
+            segments[iseg] = {}
+            segments[iseg]["blocks"] = [fluid_list[i], fluid_list[i + 1]]
+            iseg += 1
     for iseg in segments:
         segments[iseg]["start"] = np.array(
             [

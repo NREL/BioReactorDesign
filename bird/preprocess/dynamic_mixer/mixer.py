@@ -46,9 +46,9 @@ class Mixer:
             self.start_time = mixer_dict["start_time"]
         if "normal_dir" in mixer_dict:
             self.normal_dir = mixer_dict["normal_dir"]
-        self.check_status()
+        self.check_status(blocks=segment["blocks"])
 
-    def check_status(self):
+    def check_status(self, blocks=None):
         if (
             self.x is None
             or self.y is None
@@ -58,7 +58,13 @@ class Mixer:
             self.ready = False
         else:
             print(
-                f"\n\tpos({self.x:.2g}, {self.y:.2g}, {self.z:.2g})\n\tnormal_dir {self.normal_dir}\n\trad {self.rad:.2g}\n\tpower {self.power:.2g}\n\tstart_time {self.start_time:.2g}"
+                f"\n\tpos({self.x:.2g}, {self.y:.2g}, {self.z:.2g})"
+                + f"\n\tnormal_dir {self.normal_dir}"
+                + f"\n\trad {self.rad:.2g}"
+                + f"\n\tpower {self.power:.2g}"
+                + f"\n\tstart_time {self.start_time:.2g}"
             )
+            if blocks is not None:
+                print(f"\tbranch = {blocks}")
 
             self.ready = True
