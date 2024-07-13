@@ -25,4 +25,4 @@ def test_loop_list():
 
 if __name__ == "__main__":
     test_expl_list()
-    test_loop_list
+    test_loop_list()
