@@ -12,7 +12,7 @@ class Mixer:
         self.normal_dir = None
         self.ready = False
 
-    def update_from_dict(self, mixer_dict):
+    def update_from_expl_dict(self, mixer_dict):
         if "x" in mixer_dict:
             self.x = mixer_dict["x"]
         if "y" in mixer_dict:
@@ -21,6 +21,25 @@ class Mixer:
             self.z = mixer_dict["z"]
         if "rad" in mixer_dict:
             self.rad = mixer_dict["rad"]
+        if "power" in mixer_dict:
+            self.power = mixer_dict["power"]
+        if "start_time" in mixer_dict:
+            self.start_time = mixer_dict["start_time"]
+        if "normal_dir" in mixer_dict:
+            self.normal_dir = mixer_dict["normal_dir"]
+        self.check_status()
+
+    def update_from_loop_dict(self, mixer_dict, geom_dict):
+        segment = geom_dict["segments"][mixer_dict["branch_id"]]
+        pos = segment["start"] + mixer_dict["frac_space"] * segment["conn"]
+        self.x = pos[0]
+        self.y = pos[1]
+        self.z = pos[2]
+        self.normal_dir = segment["normal_dir"]
+        if "rad" in mixer_dict:
+            self.rad = min(mixer_dict["rad"], segment["max_rad"])
+        else:
+            self.rad = segment["max_rad"] * 0.7
         if "power" in mixer_dict:
             self.power = mixer_dict["power"]
         if "start_time" in mixer_dict:
@@ -38,4 +57,8 @@ class Mixer:
         ):
             self.ready = False
         else:
+            print(
+                f"\n\tpos({self.x:.2g}, {self.y:.2g}, {self.z:.2g})\n\tnormal_dir {self.normal_dir}\n\trad {self.rad:.2g}\n\tpower {self.power:.2g}\n\tstart_time {self.start_time:.2g}"
+            )
+
             self.ready = True
