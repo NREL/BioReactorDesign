@@ -1,8 +1,4 @@
-import json
-import sys
-
 import numpy as np
-import stl
 
 from bird.meshing._mesh_tools import parseJsonFile
 from bird.preprocess.dynamic_mixer.io_fvModels import *
