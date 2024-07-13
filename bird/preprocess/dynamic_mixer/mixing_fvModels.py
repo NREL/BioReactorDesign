@@ -20,6 +20,15 @@ def check_input(input_dict):
             mix_type.append("loop")
     if "loop" in mix_type:
         assert "Geometry" in input_dict
+        assert "OverallDomain" in input_dict["Geometry"]
+        assert "x" in input_dict["Geometry"]["OverallDomain"]
+        assert "y" in input_dict["Geometry"]["OverallDomain"]
+        assert "z" in input_dict["Geometry"]["OverallDomain"]
+        assert "size_per_block" in input_dict["Geometry"]["OverallDomain"]["x"]
+        assert "Fluids" in input_dict["Geometry"]
+        assert isinstance(input_dict["Geometry"]["Fluids"], list)
+        assert isinstance(input_dict["Geometry"]["Fluids"][0], list)
+
     return mix_type
 
 
