@@ -1,0 +1,448 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      phaseProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "$FOAM_CASE/constant/globalVars"
+
+type    interfaceCompositionPhaseChangePopulationBalanceMultiphaseSystem;
+
+phases (gas liquid);
+
+populationBalances (bubbles);
+
+D_O2 #codeStream 
+{ 
+    code 
+    #{ 
+        os<<1.173e-16*pow($WC_psi * $WC_M,0.5)* $T0 / $muMixLiq /pow($WC_V_O2,0.6);
+    #}; 
+}; 
+
+LeLiq #codeStream
+{
+    code
+    #{
+        os<<$kThermLiq / $rho0MixLiq / $D_O2 / $CpMixLiq;
+    #}; 
+};
+
+H_H2 #codeStream
+{
+    code
+    #{
+        os<<$H_H2_298 * exp($DH_H2 *(1. / $T0 - 1./298.));
+    #};
+};
+
+
+H_CO2 #codeStream 
+{ 
+    code 
+    #{ 
+        os<<$H_CO2_298 * exp($DH_CO2 * (1. / $T0 - 1./298.));
+    #}; 
+};
+
+H_CH4 #codeStream
+{
+    code
+    #{
+        os<<$H_CH4_298 * exp($DH_CH4 * (1. / $T0 - 1./298.));
+    #};
+};
+
+gas
+{
+    type            multiComponentPhaseModel;//pureIsothermalPhaseModel;
+    diameterModel   velocityGroup;
+    velocityGroupCoeffs
+    {
+        populationBalance    bubbles;
+
+        shapeModel           spherical;
+
+        sizeGroups
+        (
+            f1 {dSph  0.1e-3; value 0.0;}
+            f2 {dSph  0.4e-3; value 0.0;}
+            f3 {dSph  0.7e-3; value 0.0;}
+            f4 {dSph  1.0e-3; value 0.0;}
+            f5 {dSph  1.3e-3; value 1.0;}
+            f6 {dSph  1.6e-3; value 0.0;}
+            f7 {dSph  1.9e-3; value 0.0;}
+            f8 {dSph  2.2e-3; value 0.0;}
+            f9 {dSph  2.5e-3; value 0.0;}
+            f10 {dSph 2.8e-3; value 0.0;}
+            f11 {dSph 3.1e-3; value 0.0;}
+            f12 {dSph 3.4e-3; value 0.0;}
+            f13 {dSph 3.7e-3; value 0.0;}
+            f14 {dSph 4.0e-3; value 0.0;}
+        );
+    }
+
+    residualAlpha   1e-6;
+
+    Sc              0.7;
+
+}
+
+liquid
+{
+    type            multiComponentPhaseModel;//pureIsothermalPhaseModel;
+    diameterModel constant;
+    constantCoeffs
+    {
+        d               1e-3; //1e-4; helps prevent liquid drops in head space, JJS 4/14/16
+    }
+    Sc   #codeStream 
+    { 
+        code 
+        #{ 
+            os  << ($LeLiq * $CpMixLiq * $muMixLiq / $kThermLiq); 
+        #}; 
+    }; 
+
+    residualAlpha   1e-6;
+}
+
+
+populationBalanceCoeffs
+{
+    bubbles
+    {
+        continuousPhase liquid;
+
+        coalescenceModels
+        (
+            LehrMilliesMewes{
+               efficiency 1.0;
+               uCrit 0.08;
+               alphaMax 0.6;
+            }
+        );
+
+        binaryBreakupModels
+        ();
+
+        breakupModels
+        (
+            Laakkonen {
+                efficiency 1.0;
+                daughterSizeDistributionModel Laakkonen;
+            }
+
+        );
+
+        driftModels
+        (
+            densityChange{}
+        );
+
+        nucleationModels
+        ();
+    }
+}
+
+
+blending
+{
+    default
+    {
+        type            linear;
+        minFullyContinuousAlpha.gas 0.7;
+        minPartlyContinuousAlpha.gas 0.3;
+        minFullyContinuousAlpha.liquid 0.7;
+        minPartlyContinuousAlpha.liquid 0.3;
+    }
+    
+    heatTransfer
+    {
+        type            linear;
+        minFullyContinuousAlpha.gas 1;
+        minPartlyContinuousAlpha.gas 0;
+        minFullyContinuousAlpha.liquid 1;
+        minPartlyContinuousAlpha.liquid 0;
+    }
+    
+    massTransfer
+    {
+        $heatTransfer;
+    }
+
+}
+
+surfaceTension
+(
+    (gas and liquid)
+    {
+        type            constant;
+        sigma           $sigmaLiq;
+    }
+);
+
+aspectRatio
+(
+    (gas in liquid)
+    {
+        type            constant;
+        E0              1.0;
+    }
+
+    (liquid in gas)
+    {
+        type            constant;
+        E0              1.0;
+    }
+);
+
+drag
+(
+    (gas in liquid)
+    {
+        type            Grace;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    (liquid in gas)
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+);
+
+
+
+virtualMass
+(
+    (gas in liquid)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+
+    (liquid in gas)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+);
+
+/*
+From docs: These models describe the composition in phase 1 of the supplied pair 
+at the interface with phase 2.
+DWH: I verified which Le goes where by determining the corresponding rho called by
+each model.
+*/
+//interfaceComposition
+//(
+//    (gas in liquid)
+//    {
+//        type saturated;
+//        species ( nbut );
+//        Le $LeGas;
+//        saturationPressure
+//        {
+//            type ArdenBuck;
+//        }
+//    }
+//    (liquid in gas)
+//    {
+//        type Henry;
+//        species (CO2);
+//        k ($H_CO2); 
+//        Le $LeLiq;
+//    }
+//);
+
+interfaceComposition.gas
+();
+
+interfaceComposition.liquid
+(
+    (liquid and gas)
+    {
+        type Henry;
+        species ( CO2 );
+        k ( $H_CO2 );
+        Le $LeLiqMix;
+    }
+);
+
+/*
+DWH: As far as I can tell, the Le defined here are whatever shows up in the K/D eqn 
+in the mass transfer model. (I.e. Le_liq shows up in Frossling and Higbie. 
+Le does not appear in spherical at all, but the constructor still expects Le 
+in the input dict.)
+When K/D is returned and multiplied by D to compute mass transfer, that D is 
+obtained from the InterfaceCompositionModel and not this Le.
+*/
+
+diffusiveMassTransfer.gas
+();
+
+diffusiveMassTransfer.liquid
+(
+    (gas in liquid)
+    {
+        type Higbie;
+        //type Frossling;
+        Le $LeLiqMix;
+    }
+
+    (liquid in gas)
+    {
+        type spherical;
+        Le 1.0; //not used for spherical
+    }
+);
+
+massTransfer.gas
+(
+    (gas in liquid)
+    {
+        type spherical;
+        Le 1.0;
+    }
+
+    (liquid in gas)
+    {
+        type Higbie;
+        //type Frossling;
+        Le $LeLiq;
+    }
+);
+
+massTransfer.liquid
+(
+    (gas in liquid)
+    {
+        type Higbie;
+        //type Frossling;
+        Le $LeLiq;
+    }
+
+    (liquid in gas)
+    {
+        type spherical;
+        Le 1.0;
+    }
+);
+
+heatTransfer.gas
+(
+    (gas in liquid)
+    {
+        type spherical;
+        residualAlpha 1e-4;
+    }
+
+    (liquid in gas)
+    {
+        type RanzMarshall;
+        residualAlpha 1e-4;
+    }
+);
+
+
+heatTransfer.liquid
+(
+    (gas in liquid)
+    {
+        type RanzMarshall;
+        residualAlpha 1e-4;
+    }
+
+    (liquid in gas)
+    {
+        type spherical;
+        residualAlpha 1e-4;
+    }
+);
+
+
+lift
+(
+    (gas in liquid)
+    {
+        type            wallDamped;
+
+        wallDamping
+        {
+            type        cosine;
+            Cd          3.0;
+        }
+
+        lift
+        {
+            type        Tomiyama;
+
+            swarmCorrection
+            {
+                type    none;
+            }
+        }
+    }
+
+);
+
+wallLubrication
+(
+    (gas in liquid)
+    {
+        type            Antal;
+        Cw1             -0.01;
+        Cw2             -0.05;
+    }
+
+    (liquid in gas)
+    {
+        type            Antal;
+        Cw1             -0.01;
+        Cw2             -0.05;
+    }
+);
+
+turbulentDispersion
+(
+    (gas in liquid)
+    {
+        type            LopezDeBertodano;
+        Ctd             0.5;
+    }
+
+    (liquid in gas)
+    {
+        type            LopezDeBertodano;
+        Ctd             0.5;
+    }
+);
+
+phaseTransfer
+(
+);
+
+// Minimum allowable pressure
+pMin            10000;
+
+// ************************************************************************* //
