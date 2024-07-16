@@ -10,10 +10,24 @@ from bird.preprocess.stl_patch.stl_shapes import *
 
 def check_input(input_dict):
     assert isinstance(input_dict, dict)
+    need_geom = False
     for bound in input_dict:
-        assert isinstance(input_dict[bound], list)
-        for patch in input_dict[bound]:
-            assert isinstance(patch, dict)
+        if not bound == "Geometry":
+            assert isinstance(input_dict[bound], list)
+            for patch in input_dict[bound]:
+                assert isinstance(patch, dict)
+                if "branch_id" in patch:
+                    need_geom = True
+    if need_geom:
+        assert "Geometry" in input_dict
+        assert "OverallDomain" in input_dict["Geometry"]
+        assert "x" in input_dict["Geometry"]["OverallDomain"]
+        assert "y" in input_dict["Geometry"]["OverallDomain"]
+        assert "z" in input_dict["Geometry"]["OverallDomain"]
+        assert "size_per_block" in input_dict["Geometry"]["OverallDomain"]["x"]
+        assert "Fluids" in input_dict["Geometry"]
+        assert isinstance(input_dict["Geometry"]["Fluids"], list)
+        assert isinstance(input_dict["Geometry"]["Fluids"][0], list)
 
 
 def get_all_vert_faces(input_dict, boundary_name):
@@ -26,14 +40,19 @@ def get_all_vert_faces(input_dict, boundary_name):
 def write_boundaries(input_dict):
     check_input(input_dict)
     for boundary_name in input_dict.keys():
-        print(f"Making {boundary_name}")
-        boundary_mesh = get_all_vert_faces(input_dict, boundary_name)
-        print(f"\tArea {boundary_mesh.area} m2")
-        boundary_mesh.save(f"{boundary_name}.stl")
+        if not boundary_name == "Geometry":
+            print(f"Making {boundary_name}")
+            boundary_mesh = get_all_vert_faces(input_dict, boundary_name)
+            print(f"\tArea {boundary_mesh.area} m2")
+            boundary_mesh.save(f"{boundary_name}.stl")
 
 
 if __name__ == "__main__":
     input_dict = parseJsonFile(
-        "bc_patch_mesh_template/loop_reactor/inlets_outlets.json"
+        "bc_patch_mesh_template/loop_reactor_expl/inlets_outlets.json"
+    )
+    write_boundaries(input_dict)
+    input_dict = parseJsonFile(
+        "bc_patch_mesh_template/loop_reactor_branch/inlets_outlets.json"
     )
     write_boundaries(input_dict)
