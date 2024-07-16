@@ -35,4 +35,4 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     dynMix_dict = parseJsonFile(args.input)
-    write_fvModel(input_dict, output_folder=args.output_folder)
+    write_fvModel(dynMix_dict, output_folder=args.output_folder)
