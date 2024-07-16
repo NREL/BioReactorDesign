@@ -188,6 +188,62 @@ def assemble_geom(input_file):
     }
 
 
+def from_block_rect_to_seg(input_geom_dict):
+    blocksize_x = (
+        input_geom_dict["OverallDomain"]["x"]["size_per_block"]
+        * input_geom_dict["OverallDomain"]["x"]["rescale"]
+    )
+    blocksize_y = (
+        input_geom_dict["OverallDomain"]["y"]["size_per_block"]
+        * input_geom_dict["OverallDomain"]["y"]["rescale"]
+    )
+    blocksize_z = (
+        input_geom_dict["OverallDomain"]["z"]["size_per_block"]
+        * input_geom_dict["OverallDomain"]["z"]["rescale"]
+    )
+    segments = {}
+    iseg = 0
+    for fluid_list in input_geom_dict["Fluids"]:
+        nblock = len(fluid_list)
+        for i in range(nblock - 1):
+            segments[iseg] = {}
+            segments[iseg]["blocks"] = [fluid_list[i], fluid_list[i + 1]]
+            iseg += 1
+    for iseg in segments:
+        segments[iseg]["start"] = np.array(
+            [
+                blocksize_x * segments[iseg]["blocks"][0][0]
+                + blocksize_x * 0.5,
+                blocksize_y * segments[iseg]["blocks"][0][1]
+                + blocksize_y * 0.5,
+                blocksize_z * segments[iseg]["blocks"][0][2]
+                + blocksize_z * 0.5,
+            ]
+        )
+        segments[iseg]["end"] = np.array(
+            [
+                blocksize_x * segments[iseg]["blocks"][1][0]
+                + blocksize_x * 0.5,
+                blocksize_y * segments[iseg]["blocks"][1][1]
+                + blocksize_y * 0.5,
+                blocksize_z * segments[iseg]["blocks"][1][2]
+                + blocksize_z * 0.5,
+            ]
+        )
+        vec_conn = segments[iseg]["end"] - segments[iseg]["start"]
+        segments[iseg]["conn"] = vec_conn
+        norm_vec_conn = np.linalg.norm(vec_conn)
+        segments[iseg]["normal_dir"] = int(np.nonzero(vec_conn)[0][0])
+        if segments[iseg]["normal_dir"] == 0:
+            segments[iseg]["max_rad"] = (blocksize_y + blocksize_z) / 4
+        if segments[iseg]["normal_dir"] == 1:
+            segments[iseg]["max_rad"] = (blocksize_x + blocksize_z) / 4
+        if segments[iseg]["normal_dir"] == 2:
+            segments[iseg]["max_rad"] = (blocksize_x + blocksize_y) / 4
+
+    return {"segments": segments}
+
+
 def assemble_mesh(input_file):
     if input_file.endswith(".yaml"):
         inpt = parseYAMLFile(input_file)
