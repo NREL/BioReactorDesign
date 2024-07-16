@@ -1,0 +1,25 @@
+{
+    
+     "Geometry": {
+                "OverallDomain": {
+                        "x" : {"nblocks": 10, "size_per_block": 1.0},
+                        "y" : {"nblocks": 5, "size_per_block": 1.0},
+                        "z" : {"nblocks": 5, "size_per_block": 1.0}
+                },
+                "Fluids": [
+                        [ [0,0,0], [9,0,0], [9,0,4], [0,0,4] ],
+                        [ [0,1,4], [0,4,4], [0,4,0], [0,1,0] ]
+                ]
+
+    },
+
+    "inlets": [
+        {"type": "circle", "block_pos": "bottom", "branch_id": 0, "frac_space": 0.222222, "radius": 0.4,"nelements": 50, "normal_dir":1},
+        {"type": "circle", "block_pos": "bottom", "branch_id": 0, "frac_space": 0.5, "radius": 0.4,"nelements": 50, "normal_dir":1},
+        {"type": "circle", "block_pos": "bottom", "branch_id": 0, "frac_space": 0.777778, "radius": 0.4,"nelements": 50, "normal_dir":1}
+    ],
+    "outlets": [
+        {"type": "circle", "block_pos": "top", "branch_id": 5, "frac_space": 0, "radius": 0.4, "normal_dir": 1,"nelements": 50},
+        {"type": "circle", "block_pos": "top", "branch_id": 5, "frac_space": 1, "radius": 0.4, "normal_dir": 1,"nelements": 50}
+    ]
+}
