@@ -127,55 +127,55 @@ def make_spider(centerRad, nArms, widthArms, lengthArms, center, normal_dir):
     return spider_mesh
 
 
+def get_cent_from_branch(patch, input_dict):
+    geom_dict = from_block_rect_to_seg(input_dict["Geometry"], rescale=False)
+    segment = geom_dict["segments"][patch["branch_id"]]
+    cent = segment["start"] + patch["frac_space"] * segment["conn"]
+    ndir = patch["normal_dir"]
+    if patch["block_pos"].lower() == "bottom":
+        cent[ndir] -= geom_dict["blocksize"][ndir] / 2
+    elif patch["block_pos"].lower() == "top":
+        cent[ndir] += geom_dict["blocksize"][ndir] / 2
+    return cent
+
+
 def create_boundary_patch_list(input_dict, boundary_name):
     patch_mesh_list = []
     for patch in input_dict[boundary_name]:
+        if "centx" in patch and "centy" in patch and "centz" in patch:
+            cent = [patch["centx"], patch["centy"], patch["centz"]]
+        elif "branch_id" in patch:
+            cent = get_cent_from_branch(patch, input_dict)
+        else:
+            raise NotImplementedError
         if patch["type"].lower() == "circle":
-            if "centx" in patch and "centy" in patch and "centz" in patch:
-                patch_mesh = make_circle(
-                    radius=patch["radius"],
-                    center=(patch["centx"], patch["centy"], patch["centz"]),
-                    normal_dir=patch["normal_dir"],
-                    npts=patch["nelements"],
-                )
-            elif "branch_id" in patch:
-                geom_dict = from_block_rect_to_seg(
-                    input_dict["Geometry"], rescale=False
-                )
-                segment = geom_dict["segments"][patch["branch_id"]]
-                cent = segment["start"] + patch["frac_space"] * segment["conn"]
-                ndir = patch["normal_dir"]
-                if patch["block_pos"].lower() == "bottom":
-                    cent[ndir] -= geom_dict["blocksize"][ndir] / 2
-                elif patch["block_pos"].lower() == "top":
-                    cent[ndir] += geom_dict["blocksize"][ndir] / 2
-                patch_mesh = make_circle(
-                    radius=patch["radius"],
-                    center=(cent[0], cent[1], cent[2]),
-                    normal_dir=patch["normal_dir"],
-                    npts=patch["nelements"],
-                )
+            patch_mesh = make_circle(
+                radius=patch["radius"],
+                center=(cent[0], cent[1], cent[2]),
+                normal_dir=patch["normal_dir"],
+                npts=patch["nelements"],
+            )
         elif patch["type"].lower() == "spider":
             patch_mesh = make_spider(
                 centerRad=patch["centerRad"],
                 nArms=patch["nArms"],
                 widthArms=patch["widthArms"],
                 lengthArms=patch["lengthArms"],
-                center=(patch["centx"], patch["centy"], patch["centz"]),
+                center=(cent[0], cent[1], cent[2]),
                 normal_dir=patch["normal_dir"],
             )
         elif patch["type"].lower() == "polygon":
             patch_mesh = make_polygon(
                 rad=patch["radius"],
                 nvert=patch["npts"],
-                center=(patch["centx"], patch["centy"], patch["centz"]),
+                center=(cent[0], cent[1], cent[2]),
                 normal_dir=patch["normal_dir"],
             )
         elif patch["type"].lower() == "rectangle":
             patch_mesh = make_rectangle(
                 w=patch["width"],
                 h=patch["height"],
-                center=(patch["centx"], patch["centy"], patch["centz"]),
+                center=(cent[0], cent[1], cent[2]),
                 normal_dir=patch["normal_dir"],
             )
         else:
