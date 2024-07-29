@@ -68,7 +68,7 @@ def write_mixer(mixer, output_folder):
         f.write("\t\t\t\t\texp(-dist2/(epsilon*epsilon));\n")
 
         f.write(
-            f"\t\t\t\tUsource[i][{int(mixer.normal_dir)}] +=  sourceterm*V[i];\n"
+            f"\t\t\t\tUsource[i][{int(mixer.normal_dir)}] {mixer.sign}=  sourceterm*V[i];\n"
         )
 
         f.write("\t\t\t}\n")

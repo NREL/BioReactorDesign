@@ -9,6 +9,7 @@ class Mixer:
         self.rad = 0.015
         self.power = 300
         self.start_time = 1.0
+        self.sign = None
         self.normal_dir = None
         self.ready = False
 
@@ -23,6 +24,8 @@ class Mixer:
             self.rad = mixer_dict["rad"]
         if "power" in mixer_dict:
             self.power = mixer_dict["power"]
+        if "sign" in mixer_dict:
+            self.sign = mixer_dict["sign"]
         if "start_time" in mixer_dict:
             self.start_time = mixer_dict["start_time"]
         if "normal_dir" in mixer_dict:
@@ -42,6 +45,8 @@ class Mixer:
             self.rad = segment["max_rad"] * 0.7
         if "power" in mixer_dict:
             self.power = mixer_dict["power"]
+        if "sign" in mixer_dict:
+            self.sign = mixer_dict["sign"]
         if "start_time" in mixer_dict:
             self.start_time = mixer_dict["start_time"]
         if "normal_dir" in mixer_dict:
@@ -54,6 +59,7 @@ class Mixer:
             or self.y is None
             or self.z is None
             or self.normal_dir is None
+            or ((not self.sign == "+") and (not self.sign == "-"))
         ):
             self.ready = False
         else:
@@ -62,6 +68,7 @@ class Mixer:
                 + f"\n\tnormal_dir {self.normal_dir}"
                 + f"\n\trad {self.rad:.2g}"
                 + f"\n\tpower {self.power:.2g}"
+                + f"\n\tsign {self.sign}"
                 + f"\n\tstart_time {self.start_time:.2g}"
             )
             if blocks is not None:
