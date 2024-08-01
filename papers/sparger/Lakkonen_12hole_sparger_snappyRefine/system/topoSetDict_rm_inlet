@@ -24,22 +24,31 @@ actions
         type    faceSet;
         action  new;
         source  cylinderToFace;
+        sourceInfo
+        {
         p1       (0 -0.001 0);
         p2       (0  0.001 0);
-        radius     $R_hole;
+        radius   $R_hole;
+        }
     }
     {
         name    inlet2;
         type    faceSet;
         action  new;
         source  faceToFace;
+        sourceInfo
+        {
         set inlet1;
+        }
     }
     {   
         name    faceBoundary;
         type    faceSet;
         action  new;
         source  boundaryToFace;
+        sourceInfo
+        {
+        }
     }
     {
         name    inlet1;
