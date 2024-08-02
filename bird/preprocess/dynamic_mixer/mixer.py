@@ -56,12 +56,18 @@ class Mixer:
             self.normal_dir = mixer_dict["normal_dir"]
         if mesh_dict is not None:
             if self.normal_dir == 0:
-                min_mesh_transv = min(mesh_dict['Blockwise']['y'], mesh_dict['Blockwise']['z'])
+                min_mesh_transv = min(
+                    mesh_dict["Blockwise"]["y"], mesh_dict["Blockwise"]["z"]
+                )
             elif self.normal_dir == 1:
-                min_mesh_transv = min(mesh_dict['Blockwise']['x'], mesh_dict['Blockwise']['z'])
+                min_mesh_transv = min(
+                    mesh_dict["Blockwise"]["x"], mesh_dict["Blockwise"]["z"]
+                )
             elif self.normal_dir == 2:
-                min_mesh_transv = min(mesh_dict['Blockwise']['x'], mesh_dict['Blockwise']['y'])
-            self.smear = min_mesh_transv//3
+                min_mesh_transv = min(
+                    mesh_dict["Blockwise"]["x"], mesh_dict["Blockwise"]["y"]
+                )
+            self.smear = min_mesh_transv // 3
         self.check_status(blocks=segment["blocks"])
 
     def check_status(self, blocks=None):
