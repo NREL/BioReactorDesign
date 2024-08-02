@@ -14,7 +14,7 @@ double findV2(double P, double rhoL, double A, double V1) {
     double V2_old;
     double V2_new;
     if (std::abs(V1) < 1e-12) {
-            V2=std::pow((4.0*P/rhoL/disk_area),0.333333);
+            V2=std::pow((4.0*P/rhoL/A),0.333333);
             V2_new = V2;
             V2_old = V2;
     } else { 
