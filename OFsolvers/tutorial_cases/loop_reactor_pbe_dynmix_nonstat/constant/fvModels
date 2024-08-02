@@ -23,7 +23,7 @@ codedSource
 
     codeInclude
     #{
-	#include "findV2.H"
+	#include "dynamicMix_util.H"
     #};
      
     codeOptions
@@ -31,7 +31,6 @@ codedSource
     -I${FOAM_CASE}/constant
     #};
 
-    //codeAddSup
     codeAddAlphaRhoSup
     #{
         const Time& time = mesh().time();
@@ -55,59 +54,77 @@ codedSource
         double power=2.5;
         double smear_factor=3.0;
         const scalar startTime = 1.0;
-        double source_sign_factor = 1.0;
      
-
-        // Get V1
-        double dist_tol = 0.1;
-        double dist_n;
-        double upV = 0;
-        double uprhoV = 0;
-        double upVvol = 0;
-        double downV = 0;
-        double downrhoV = 0;
-        double downVvol = 0;
-        double V1 = 0;
-        double rhoV;
-        forAll(C,i)
-        {
-            double dist2=(C[i].x()-source_pt_x)*(C[i].x()-source_pt_x);
-            dist2 += (C[i].y()-source_pt_y)*(C[i].y()-source_pt_y);
-            dist2 += (C[i].z()-source_pt_z)*(C[i].z()-source_pt_z);
-            dist_n = (C[i].x()-source_pt_x);
-            if (dist2 < dist_tol*dist_tol && dist_n < -dist_tol/2) {
-		
-                upVvol += V[i] * alphaL[i]; 
-                upV += V[i] * alphaL[i] * UL[i][0];
-                uprhoV += V[i] * alphaL[i] * rhoL[i];
-            }
-            if (dist2 < dist_tol*dist_tol && dist_n > dist_tol/2) {
-                downVvol += V[i] * alphaL[i]; 
-                downV += V[i] * alphaL[i] * UL[i][0];
-                downrhoV += V[i] * alphaL[i] * rhoL[i];
-            }
-        }
-        downV /= downVvol;
-        upV /= upVvol;
-        downrhoV /= downVvol;
-        uprhoV /= upVvol;
-        if (upV <= 0 && downV <= 0) {
-           source_sign_factor = -1.0;
-           V1 = std::abs(upV);
-           rhoV = uprhoV;
-        } else if (upV >= 0 && downV >= 0) {
-           source_sign_factor = 1.0;
-           V1 = std::abs(downV);
-           rhoV = downrhoV;
-        } else {
-           Info << "     " << "################# upV = " << upV << " downV = " << downV << " for x y z dynamic mixer " << source_pt_x << " " << source_pt_y << " " << source_pt_z <<  endl;
-        }
-
-        // Get V2
-        double V2 = findV2(power, rhoV, disk_area, V1);
-
         if (time.value() > startTime)
         {
+
+            // Get V1
+            double source_sign_factor = 1.0;
+            double V1 = 0;
+            double rhoV;
+            double dist_tol = 0.1;
+       
+            double dist_n;
+            double upV = 0;
+            double uprhoV = 0;
+            double upVvol = 0;
+            double downV = 0;
+            double downrhoV = 0;
+            double downVvol = 0;
+            double dist2;
+ 
+ 
+            forAll(C,i)
+            {
+                dist2 = (C[i].x()-source_pt_x)*(C[i].x()-source_pt_x);
+                dist2 += (C[i].y()-source_pt_y)*(C[i].y()-source_pt_y);
+                dist2 += (C[i].z()-source_pt_z)*(C[i].z()-source_pt_z);
+
+                dist_n = (C[i].x()-source_pt_x);
+
+                if (dist2 < dist_tol*dist_tol && dist_n < -dist_tol/2) {
+                    upVvol += V[i] * alphaL[i]; 
+                    upV += V[i] * alphaL[i] * UL[i][0];
+                    uprhoV += V[i] * alphaL[i] * rhoL[i];
+                }
+                if (dist2 < dist_tol*dist_tol && dist_n > dist_tol/2) {
+                    downVvol += V[i] * alphaL[i]; 
+                    downV += V[i] * alphaL[i] * UL[i][0];
+                    downrhoV += V[i] * alphaL[i] * rhoL[i];
+                }
+            }
+           
+	    reduce(uprhoV, sumOp<scalar>());
+	    reduce(downrhoV, sumOp<scalar>());
+	    reduce(upV, sumOp<scalar>());
+	    reduce(downV, sumOp<scalar>());
+	    reduce(downVvol, sumOp<scalar>());
+	    reduce(upVvol, sumOp<scalar>());
+
+            downV /= downVvol;
+            upV /= upVvol;
+            downrhoV /= downVvol;
+            uprhoV /= upVvol;
+
+            if (upV <= 0 && downV <= 0) {
+               source_sign_factor = -1.0;
+               V1 = std::abs(upV);
+               rhoV = uprhoV;
+            } else if (upV >= 0 && downV >= 0) {
+               source_sign_factor = 1.0;
+               V1 = std::abs(downV);
+               rhoV = downrhoV;
+            } else {
+               source_sign_factor = -1.0;
+               V1 = 0.0;
+               rhoV = uprhoV;
+	       Foam::Info << "[BIRD:DYNMIX WARN] " << "upV = " << upV << " downV = " << downV << " for source at " << source_pt_x << ", " << source_pt_y << ", " << source_pt_z <<  endl;
+            }
+	    Foam::Info << "[BIRD:DYNMIX INFO] V1 = " << V1 << endl;
+
+            // Get V2
+            double V2 = findV2(power, rhoV, disk_area, V1);
+
             forAll(C,i)
             {
                 double Thrust=0.5*rhoL[i]*(V2*V2 - V1*V1)*disk_area;

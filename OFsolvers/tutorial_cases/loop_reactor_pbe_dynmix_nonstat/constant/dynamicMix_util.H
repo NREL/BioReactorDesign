@@ -1,6 +1,9 @@
+#include <string>
+
 double gradfunMix(double V1, double V2){
     return 3.0*V2*V2 + 2.0*V1*V2 - V1*V1;
 }
+
 double funMix(double V1, double V2, double P, double rhoL, double A){
     return V2*V2*V2 + V1*V2*V2 - V2*V1*V1 - V1*V1*V1 - 4.0*P/(rhoL * A);
 }
@@ -21,7 +24,8 @@ double findV2(double P, double rhoL, double A, double V1) {
             break;
         }
     }
-    std::cout << "V2 = " << V2 << "\n";
-    std::cout << "V1 = " << V1 << "\n";
+    Foam::Info << "[BIRD:DYNMIX INFO] V2 = " << V2 << " residual = " << std::abs(V2_new - V2_old) << "\n";
     return V2;
 }
+
+
