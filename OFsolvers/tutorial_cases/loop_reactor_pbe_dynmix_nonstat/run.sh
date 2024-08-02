@@ -3,10 +3,14 @@ if ! type "python" &> /dev/null; then
     echo "Skipping Mesh generation"
 else
     # Generate blockmeshDict
-    python ../../../applications/write_block_rect_mesh.py -i ../../../bird/meshing/block_rect_mesh_templates/loopReactor/input.json -o system
+    python ../../../applications/write_block_rect_mesh.py -i system/mesh.json -o system
     
     # Generate boundary stl
-    python ../../../applications/write_stl_patch.py -i ../../../bird/preprocess/stl_patch/bc_patch_mesh_template/loop_reactor_expl/inlets_outlets.json
+    python ../../../applications/write_stl_patch.py -i system/inlets_outlets.json
+
+    # Generate mixers
+    python ../../../applications/write_dynMix_fvModels.py -i system/mixers.json -o constant
+
 fi
 
 
