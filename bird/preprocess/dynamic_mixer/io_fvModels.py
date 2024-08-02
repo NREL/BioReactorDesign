@@ -35,12 +35,12 @@ def write_preamble(output_folder):
         f.write("\t\tconst vectorField& C = mesh().C();\n")
         f.write("\t\tconst volScalarField& rhoL =\n")
         f.write(
-            '\t\tmesh().lookupObject<volScalarField>("thermo:rho.liquid");\n'
+            '\t\t\tmesh().lookupObject<volScalarField>("thermo:rho.liquid");\n'
         )
         f.write("\t\tconst volScalarField& alphaL =\n")
-        f.write('\t\tmesh().lookupObject<volScalarField>("alpha.liquid");\n')
-        f.write("\t\tconst volScalarField& UL =\n")
-        f.write('\t\tmesh().lookupObject<volVectorField>("U.liquid");\n')
+        f.write('\t\t\tmesh().lookupObject<volScalarField>("alpha.liquid");\n')
+        f.write("\t\tconst volVectorField& UL =\n")
+        f.write('\t\t\tmesh().lookupObject<volVectorField>("U.liquid");\n')
         f.write("\t\tdouble pi=3.141592654;\n")
 
 
@@ -145,11 +145,11 @@ def write_mixer(mixer, output_folder):
                 f"ERROR: mixer.sign = {mixer.sign} but should be '+' or '-'"
             )
         f.write(
-            "\t\t\t\tFoam::Info << '[BIRD:DYNMIX WARN] ' << 'upV = ' << upV << ' downV = ' << downV << ' for source at ' << source_pt_x << ', ' << source_pt_y << ', ' << source_pt_z <<  endl;\n"
+            '\t\t\t\tFoam::Info << "[BIRD:DYNMIX WARN] " << "upV = " << upV << " downV = " << downV << " for source at " << source_pt_x << ", " << source_pt_y << ", " << source_pt_z <<  endl;\n'
         )
         f.write("\t\t\t}\n")
         f.write(
-            "\t\t\tFoam::Info << '[BIRD:DYNMIX INFO] V1 = ' << V1 << endl;\n"
+            '\t\t\tFoam::Info << "[BIRD:DYNMIX INFO] V1 = " << V1 << endl;\n'
         )
         f.write("\t\t\t\n")
         f.write("\t\t\t// Get V2\n")
