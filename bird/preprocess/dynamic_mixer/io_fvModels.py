@@ -19,7 +19,7 @@ def write_preamble(output_folder):
         f.write("\tname\tsourceTime;\n\n")
         f.write("\tcodeInclude\n")
         f.write("\t#{\n")
-        f.write('\t\t#include "dynamicMix_util.H"')
+        f.write('\t\t#include "dynamicMix_util.H"\n')
         f.write("\t#};\n")
         f.write("\n")
         f.write("\tcodeOptions\n")
