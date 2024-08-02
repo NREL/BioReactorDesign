@@ -97,7 +97,7 @@ def write_mixer(mixer, output_folder):
         )
         f.write("\t\t\t\t\tupVvol += V[i] * alphaL[i];\n")
         f.write(
-            f"\t\t\t\t\tupV += V[i] * alphaL[i] * UL[i][{mixer.normal_dir}];\n"
+            f"\t\t\t\t\tupV += V[i] * alphaL[i] * UL[i][{int(mixer.normal_dir)}];\n"
         )
         f.write("\t\t\t\t\tuprhoV += V[i] * alphaL[i] * rhoL[i];\n")
         f.write("\t\t\t\t}\n")
@@ -106,7 +106,7 @@ def write_mixer(mixer, output_folder):
         )
         f.write("\t\t\t\t\tdownVvol += V[i] * alphaL[i];\n")
         f.write(
-            "\t\t\t\t\tdownV += V[i] * alphaL[i] * UL[i][{mixer.normal_dir}];\n"
+            f"\t\t\t\t\tdownV += V[i] * alphaL[i] * UL[i][{int(mixer.normal_dir)}];\n"
         )
         f.write("\t\t\t\t\tdownrhoV += V[i] * alphaL[i] * rhoL[i];\n")
         f.write("\t\t\t\t}\n")
