@@ -24,7 +24,7 @@ def write_preamble(output_folder):
         f.write("\n")
         f.write("\tcodeOptions\n")
         f.write("\t#{\n")
-        f.write("\t-I${FOAM_CASE}/constant\n")
+        f.write("\t\t-I${FOAM_CASE}/constant\n")
         f.write("\t#};\n")
 
         f.write("\tcodeAddAlphaRhoSup\n")
