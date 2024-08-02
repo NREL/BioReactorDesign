@@ -1,4 +1,11 @@
 {
+    "Meshing": {
+                "Blockwise": {
+                        "x" : 10,
+                        "y" : 10,
+                        "z" : 10
+                }
+    },
     "Geometry": {
                 "OverallDomain": {
                         "x" : {"nblocks": 10, "size_per_block": 1.0, "rescale": 0.05},
@@ -13,6 +20,6 @@
     },
     "mixers": [
         {"branch_id": 0, "frac_space": 0.5, "start_time": 1, "power": 300, "sign": "+"},
-        {"x": 0.025, "y": 0.07, "z": 0.025, "start_time": 1, "power": 300, "normal_dir": 1, "sign": "+"}
+        {"x": 0.025, "y": 0.07, "z": 0.025, "start_time": 1, "power": 300, "normal_dir": 1, "sign": "+", "smear":3}
     ]
 }
