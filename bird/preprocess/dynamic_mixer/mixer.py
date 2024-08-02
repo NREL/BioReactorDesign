@@ -9,6 +9,7 @@ class Mixer:
         self.rad = 0.015
         self.power = 300
         self.start_time = 1.0
+        self.smear = 3
         self.sign = None
         self.normal_dir = None
         self.ready = False
@@ -26,13 +27,15 @@ class Mixer:
             self.power = mixer_dict["power"]
         if "sign" in mixer_dict:
             self.sign = mixer_dict["sign"]
+        if "smear" in mixer_dict:
+            self.smear = mixer_dict["smear"]
         if "start_time" in mixer_dict:
             self.start_time = mixer_dict["start_time"]
         if "normal_dir" in mixer_dict:
             self.normal_dir = mixer_dict["normal_dir"]
         self.check_status()
 
-    def update_from_loop_dict(self, mixer_dict, geom_dict):
+    def update_from_loop_dict(self, mixer_dict, geom_dict, mesh_dict=None):
         segment = geom_dict["segments"][mixer_dict["branch_id"]]
         pos = segment["start"] + mixer_dict["frac_space"] * segment["conn"]
         self.x = pos[0]
@@ -51,6 +54,14 @@ class Mixer:
             self.start_time = mixer_dict["start_time"]
         if "normal_dir" in mixer_dict:
             self.normal_dir = mixer_dict["normal_dir"]
+        if mesh_dict is not None:
+            if self.normal_dir == 0:
+                min_mesh_transv = min(mesh_dict['Blockwise']['y'], mesh_dict['Blockwise']['z'])
+            elif self.normal_dir == 1:
+                min_mesh_transv = min(mesh_dict['Blockwise']['x'], mesh_dict['Blockwise']['z'])
+            elif self.normal_dir == 2:
+                min_mesh_transv = min(mesh_dict['Blockwise']['x'], mesh_dict['Blockwise']['y'])
+            self.smear = min_mesh_transv//3
         self.check_status(blocks=segment["blocks"])
 
     def check_status(self, blocks=None):
@@ -69,6 +80,7 @@ class Mixer:
                 + f"\n\trad {self.rad:.2g}"
                 + f"\n\tpower {self.power:.2g}"
                 + f"\n\tsign {self.sign}"
+                + f"\n\tsmear {self.smear}"
                 + f"\n\tstart_time {self.start_time:.2g}"
             )
             if blocks is not None:

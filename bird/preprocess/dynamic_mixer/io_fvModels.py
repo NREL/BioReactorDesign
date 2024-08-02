@@ -52,7 +52,7 @@ def write_mixer(mixer, output_folder):
         f.write(f"\t\tdouble disk_rad={mixer.rad};\n")
         f.write("\t\tdouble disk_area=pi*disk_rad*disk_rad;\n")
         f.write(f"\t\tdouble power={mixer.power};\n")
-        f.write("\t\tdouble smear_factor=3.0;\n")
+        f.write(f"\t\tdouble smear_factor={float(mixer.smear)};\n")
         f.write(f"\t\tconst scalar startTime = {mixer.start_time};\n")
         f.write("\t\tif (time.value() > startTime)\n")
         f.write("\t\t{\n")

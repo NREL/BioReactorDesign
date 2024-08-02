@@ -34,6 +34,7 @@ def write_fvModel(input_dict, output_folder="."):
     write_preamble(output_folder)
     if "loop" in mix_type:
         geom_dict = from_block_rect_to_seg(input_dict["Geometry"])
+        mesh_dict = input_dict["Meshing"]
     for imix, mtype in enumerate(mix_type):
         mixer = Mixer()
         if mtype == "expl":
@@ -41,7 +42,7 @@ def write_fvModel(input_dict, output_folder="."):
             if mixer.ready:
                 write_mixer(mixer, output_folder)
         elif mtype == "loop":
-            mixer.update_from_loop_dict(input_dict["mixers"][imix], geom_dict)
+            mixer.update_from_loop_dict(input_dict["mixers"][imix], geom_dict, mesh_dict)
             if mixer.ready:
                 write_mixer(mixer, output_folder)
 
