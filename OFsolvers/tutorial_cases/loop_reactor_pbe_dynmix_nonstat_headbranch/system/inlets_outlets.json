@@ -1,0 +1,11 @@
+{
+    "inlets": [
+        {"type": "circle", "centx": 5.0, "centy": 0.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50},
+        {"type": "circle", "centx": 2.5, "centy": 0.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50},
+        {"type": "circle", "centx": 7.5, "centy": 0.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50}
+    ],
+    "outlets": [
+        {"type": "circle", "centx": 0.5, "centy": 7.0, "centz": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50},
+        {"type": "circle", "centx": 0.5, "centy": 7.0, "centz": 4.5, "radius": 0.4, "normal_dir": 1,"nelements": 50}
+    ]
+}
