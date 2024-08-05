@@ -37,6 +37,6 @@ setFields
 # Get inlet area
 postProcess -func 'patchIntegrate(patch="inlet", field="alpha.gas")'
 postProcess -func writeCellVolumes
-
+writeMeshObj
 
 
