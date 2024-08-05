@@ -45,8 +45,8 @@ x_CO2   0.478;
 f_N2 #calc "$x_N2*0.028 / ($x_CO2*0.044 + $x_N2*0.028)";
 f_CO2 #calc "$x_CO2*0.044 / ($x_CO2*0.044 + $x_N2*0.028)";
 //*******inlet gas frac*************
-inletA	0.0039;
-liqVol	0.0045;
+inletA ;
+liqVol ;
 alphaGas 1;
 alphaLiq 0;
 uGasPhase #calc "$liqVol * $VVM / (60 * $inletA * $alphaGas)";
