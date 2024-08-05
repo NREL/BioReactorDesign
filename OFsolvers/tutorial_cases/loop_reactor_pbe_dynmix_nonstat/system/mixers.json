@@ -15,11 +15,10 @@
                 "Fluids": [
                         [ [0,0,0], [9,0,0], [9,0,4], [0,0,4] ],
                         [ [0,1,4], [0,4,4], [0,4,0], [0,1,0] ]
-                ]
-                
-    },
-    "mixers": [
-        {"branch_id": 0, "frac_space": 0.5, "start_time": 1, "power": 300, "sign": "+"},
-        {"x": 0.025, "y": 0.07, "z": 0.025, "start_time": 1, "power": 300, "normal_dir": 1, "sign": "+", "smear":3}
-    ]
-}
+                ]       
+                        
+    },                  
+    "mixers": [ 
+        {"branch_id": 2, "frac_space": 0.5, "start_time": 1, "power": 2.5,  "sign": "+"}
+    ]                   
+} 
