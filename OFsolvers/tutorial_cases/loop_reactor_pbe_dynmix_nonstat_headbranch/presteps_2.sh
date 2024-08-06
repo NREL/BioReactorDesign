@@ -1,5 +1,5 @@
 # Clean case
-./Allclean
+#./Allclean
 
 # Mesh gen
 blockMesh -dict system/blockMeshDict
