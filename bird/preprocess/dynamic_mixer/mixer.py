@@ -83,13 +83,13 @@ class Mixer:
             self.ready = False
         else:
             print(
-                f"\tpos({self.x:.2g}, {self.y:.2g}, {self.z:.2g})"
+                f"\tpos({self.x:.2g}, {self.y:.2g}, {self.z:.2g})m"
                 + f"\n\tnormal_dir {self.normal_dir}"
-                + f"\n\trad {self.rad:.2g}"
-                + f"\n\tpower {self.power:.2g}"
+                + f"\n\trad {self.rad:.2g}m"
+                + f"\n\tpower {self.power:.2g}W"
                 + f"\n\tsign {self.sign}"
-                + f"\n\tsmear {self.smear}"
-                + f"\n\tstart_time {self.start_time:.2g}"
+                + f"\n\tsmear {self.smear} grid points"
+                + f"\n\tstart_time {self.start_time:.2g}s"
             )
             if blocks is not None:
                 print(f"\tbranch = {blocks}")
