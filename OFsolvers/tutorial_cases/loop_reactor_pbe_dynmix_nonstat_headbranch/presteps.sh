@@ -7,12 +7,15 @@ source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
 echo PRESTEP 1
 # Generate blockmeshDict
 python /projects/gas2fuels/BioReactorDesign/applications/write_block_rect_mesh.py -i system/mesh.json -o system
+#python ../../../applications/write_block_rect_mesh.py -i system/mesh.json -o system
 
 # Generate boundary stl
 python /projects/gas2fuels/BioReactorDesign/applications/write_stl_patch.py -i system/inlets_outlets.json
+#python ../../../applications/write_stl_patch.py -i system/inlets_outlets.json
 
 # Generate mixers
 python /projects/gas2fuels/BioReactorDesign/applications/write_dynMix_fvModels.py -i system/mixers.json -o constant
+#python ../../../applications/write_dynMix_fvModels.py -i system/mixers.json -o constant
 
 echo PRESTEP 2
 # Mesh gen
@@ -55,6 +58,6 @@ writeMeshObj
 
 echo PRESTEP 3
 python writeGlobalVars.py
-cp constant/phaseProperties_constantd constant/phaseProperties
+cp constant/phaseProperties_pbe constant/phaseProperties
 
 conda deactivate

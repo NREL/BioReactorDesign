@@ -40,10 +40,9 @@ He_CO2 #calc "$H_CO2_298 * exp($DH_CO2 *(1. / $T0 - 1./298.15))";
 He_CH4 #calc "$H_CH4_298 * exp($DH_CH4 *(1. / $T0 - 1./298.15))";
 He_N2 #calc "$H_N2_298 * exp($DH_N2 *(1. / $T0 - 1./298.15))";
 //*******inlet gas frac*************
-x_N2   0.522;
-x_CO2   0.478;
-f_N2 #calc "$x_N2*0.028 / ($x_CO2*0.044 + $x_N2*0.028)";
-f_CO2 #calc "$x_CO2*0.044 / ($x_CO2*0.044 + $x_N2*0.028)";
+f_H2 0.1;
+f_CO2 0.9;
+f_N2 0.0;
 //*******inlet gas frac*************
 inletA	0.0039;
 liqVol	0.003625;
@@ -56,7 +55,7 @@ LeLiqCO #calc "$kThermLiq / $rho0MixLiq / $D_CO / $CpMixLiq";
 LeLiqCO2 #calc "$kThermLiq / $rho0MixLiq / $D_CO2 / $CpMixLiq"; // = 74
 LeLiqCH4 #calc "$kThermLiq / $rho0MixLiq / $D_CH4 / $CpMixLiq";
 LeLiqN2 #calc "$kThermLiq / $rho0MixLiq / $D_N2 / $CpMixLiq";
-LeLiqMix #calc "$f_CO2*$LeLiqCO2+$f_N2*$LeLiqN2";
+LeLiqMix #calc "$f_CO2*$LeLiqCO2+$f_H2*$LeLiqH2";
 PrMixLiq #calc "$CpMixLiq * $muMixLiq / $kThermLiq";
 //*********************************
 kH2 #calc "$D_H2*$rho0MixLiq*$CpMixLiq*$LeLiqMix";

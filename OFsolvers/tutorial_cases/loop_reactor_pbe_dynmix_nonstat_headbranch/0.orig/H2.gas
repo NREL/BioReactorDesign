@@ -9,14 +9,14 @@ FoamFile
 {
     format      ascii;
     class       volScalarField;
-    object      N2.gas;
+    object      H2.gas;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 dimensions      [0 0 0 0 0 0 0];
 
 #include "${FOAM_CASE}/constant/globalVars"
 
-internalField   uniform 1;
+internalField   uniform 0;
 
 
 boundaryField
@@ -26,15 +26,15 @@ boundaryField
     inlet
     {
         type            fixedValue;
-        value           uniform $f_N2;
+        value           uniform $f_H2;
     }
 
     outlet
     {
         //type            inletOutlet;
         //phi             phi.gas;
-        //inletValue      $f_N2;
-        //value           $f_N2;
+        //inletValue      $f_H2;
+        //value           $f_H2;
         type            zeroGradient;
     }
 

@@ -21,7 +21,7 @@ thermoType
     type            heRhoThermo;
     mixture         multiComponentMixture;
     transport       const;
-    thermo          eConst;
+    thermo          hConst;
     equationOfState rhoConst;//rPolynomial;
     specie          specie;
     energy          sensibleInternalEnergy;
@@ -32,11 +32,12 @@ species
 (
     CO2
     water
+    H2
 );
 
 inertSpecie water;
 
-"(mixture|water)"
+water
 {
     specie
     {
@@ -48,35 +49,57 @@ inertSpecie water;
     }
     thermodynamics
     {
-        Cv          $CpMixLiq;
+        Cp          $CpMixLiq;
         Hf          -1.5879e+07;
     }
     transport
     {
         mu          $muMixLiq;
-        Pr          2.289;
+        Pr          $PrMixLiq;
     }
 }
 
-CO2
-{
+CO2 
+{   
     specie
-    {
+    {   
         molWeight   44.00995;
     }
     equationOfState
     {
-        rho     997;
+        rho     $rho0MixLiq;
+    }
+    thermodynamics
+    {   
+        Cp          $CpMixLiq;
+        Hf         -1.5879e+07;
+    }
+    transport           
+    {   
+        mu          $muMixLiq;
+        Pr          $PrCO2;
+    }   
+} 
+
+H2
+{
+    specie
+    {
+        molWeight   2.01594;
+    }
+    equationOfState
+    {
+        rho     $rho0MixLiq;
     }
     thermodynamics
     {
-        Cv          $CpMixLiq;
-        Hf         -1.5879e+07;
+        Cp          $CpMixLiq;
+        Hf         -1.5879e+07;//-9402451;
     }
     transport
     {
         mu          $muMixLiq;
-        Pr          $PrCO2;
+        Pr          $PrH2;
     }
 }
 

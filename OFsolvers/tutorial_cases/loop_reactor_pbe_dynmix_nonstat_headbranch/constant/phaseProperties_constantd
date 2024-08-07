@@ -186,8 +186,8 @@ interfaceComposition.liquid
     (liquid and gas)
     {
         type Henry;
-        species ( CO2 );
-        k ( 1.04 );
+        species ( CO2 H2 );
+        k ( $He_CO2 $He_H2 );
         Le $LeLiqMix;
     }
 );

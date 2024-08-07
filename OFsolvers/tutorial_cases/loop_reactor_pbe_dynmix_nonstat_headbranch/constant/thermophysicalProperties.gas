@@ -29,11 +29,12 @@ thermoType
 
 species
 (
+    H2
     CO2
     N2
 );
 
-defaultSpecie CO2;
+defaultSpecie N2;
 
 CO2
 {
@@ -109,6 +110,31 @@ N2
     elements
     {
         N               2;
+    }
+}
+
+H2
+{
+    specie
+    {
+        molWeight       2.01594;
+    }
+    thermodynamics
+    {
+        Tlow            200;
+        Thigh           3500;
+        Tcommon         1000;
+        highCpCoeffs    ( 3.3372792 -4.94024731e-05 4.99456778e-07 -1.79566394e-10 2.00255376e-14 -950.158922 -3.20502331 );
+        lowCpCoeffs     ( 2.34433112 0.00798052075 -1.9478151e-05 2.01572094e-08 -7.37611761e-12 -917.935173 0.683010238 );
+    }
+    transport
+    {
+        As              6.362e-07;
+        Ts              72;
+    }
+    elements
+    {
+        H               2;
     }
 }
 
