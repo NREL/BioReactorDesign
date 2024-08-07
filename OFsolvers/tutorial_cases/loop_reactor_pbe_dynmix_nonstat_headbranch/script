@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH --qos=high
+#SBATCH --job-name=val2
+##SBATCH --partition=debug
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=16
+#SBATCH --time=23:59:00
+#SBATCH --account=fcicfppm
+
+bash presteps.sh
+source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
+decomposePar -fileHandler collated
+srun -n 16 multiphaseEulerFoam -parallel -fileHandler collated
+reconstructPar -newTimes

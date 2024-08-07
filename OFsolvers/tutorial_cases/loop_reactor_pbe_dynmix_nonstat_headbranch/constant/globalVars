@@ -1,5 +1,5 @@
 T0	300; //initial T(K) which stays constant
-VVM	0.4;
+VVM	1.6;
 //****water Liquid properties**************
 CpMixLiq        4181;
 muMixLiq #calc "2.414e-5 * pow(10,247.8/($T0 - 140.0))"; //viscosity (Pa.s) of water as a function of T(K)  
@@ -46,7 +46,7 @@ f_N2 #calc "$x_N2*0.028 / ($x_CO2*0.044 + $x_N2*0.028)";
 f_CO2 #calc "$x_CO2*0.044 / ($x_CO2*0.044 + $x_N2*0.028)";
 //*******inlet gas frac*************
 inletA	0.0039;
-liqVol	0.0045;
+liqVol	0.003625;
 alphaGas 1;
 alphaLiq 0;
 uGasPhase #calc "$liqVol * $VVM / (60 * $inletA * $alphaGas)";

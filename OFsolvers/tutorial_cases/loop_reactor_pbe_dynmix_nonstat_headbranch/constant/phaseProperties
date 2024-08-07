@@ -15,21 +15,41 @@ FoamFile
 
 #include "$FOAM_CASE/constant/globalVars"
 
-type interfaceCompositionPhaseChangeMultiphaseSystem;
+type interfaceCompositionPhaseChangePopulationBalanceMultiphaseSystem;
 
 phases (gas liquid);
+
+populationBalances (bubbles);
 
 gas
 {
     type            multiComponentPhaseModel;//pureIsothermalPhaseModel;
    
-    diameterModel   constant;
+    diameterModel   velocityGroup;
 
-    constantCoeffs
+    velocityGroupCoeffs
     {
-        d	3e-3;
+        populationBalance    bubbles;
+
+        shapeModel           spherical;
+
+        sizeGroups
+        (
+            f1 {dSph  1.4e-3; value 0.0;}
+            f2 {dSph  1.8e-3; value 0.0;}
+            f3 {dSph  2.2e-3; value 0.0;}
+            f4 {dSph  2.6e-3; value 0.0;}
+            f5 {dSph  3e-3; value 1.0;}
+            f6 {dSph  3.4e-3; value 0.0;}
+            f7 {dSph  3.8e-3; value 0.0;}
+            f8 {dSph  4.2e-3; value 0.0;}
+            f9 {dSph  4.6e-3; value 0.0;}
+            f10 {dSph 5.0e-3; value 0.0;}
+        );
     }
+
     residualAlpha   1e-6;
+
     Sc              0.7;
 }
 
@@ -61,16 +81,30 @@ populationBalanceCoeffs
         continuousPhase liquid;
 
         coalescenceModels
-        ();
+        (
+            LehrMilliesMewes{
+               efficiency 4.695;
+               uCrit 0.08;
+               alphaMax 0.6;
+            }
+        );
 
         binaryBreakupModels
         ();
 
         breakupModels
-        ();
+        (
+            Laakkonen {
+                efficiency 13.83;
+                daughterSizeDistributionModel Laakkonen;
+            }
+
+        );
 
         driftModels
-        ();
+        (
+            densityChange{}
+        );
 
         nucleationModels
         ();
