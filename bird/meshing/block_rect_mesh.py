@@ -202,13 +202,13 @@ def from_block_rect_to_seg(input_geom_dict, rescale=True):
     iseg = 0
     for ifl, fluid_list in enumerate(input_geom_dict["Fluids"]):
         nblock = len(fluid_list)
-        if ifl > 0:
-            segments[iseg] = {}
-            segments[iseg]["blocks"] = [
-                segments[iseg - 1]["blocks"][-1],
-                fluid_list[i],
-            ]
-            iseg += 1
+        # if ifl > 0:
+        #    segments[iseg] = {}
+        #    segments[iseg]["blocks"] = [
+        #        segments[iseg - 1]["blocks"][-1],
+        #        fluid_list[i],
+        #    ]
+        #    iseg += 1
         for i in range(nblock - 1):
             segments[iseg] = {}
             segments[iseg]["blocks"] = [fluid_list[i], fluid_list[i + 1]]
@@ -240,9 +240,9 @@ def from_block_rect_to_seg(input_geom_dict, rescale=True):
         segments[iseg]["normal_dir"] = int(np.nonzero(vec_conn)[0][0])
         if segments[iseg]["normal_dir"] == 0:
             segments[iseg]["max_rad"] = (blocksize_y + blocksize_z) / 4
-        if segments[iseg]["normal_dir"] == 1:
+        elif segments[iseg]["normal_dir"] == 1:
             segments[iseg]["max_rad"] = (blocksize_x + blocksize_z) / 4
-        if segments[iseg]["normal_dir"] == 2:
+        elif segments[iseg]["normal_dir"] == 2:
             segments[iseg]["max_rad"] = (blocksize_x + blocksize_y) / 4
 
     return {
