@@ -1,5 +1,5 @@
 T0	300; //initial T(K) which stays constant
-VVM	1.6;
+VVM	0.4;
 //****water Liquid properties**************
 CpMixLiq        4181;
 muMixLiq #calc "2.414e-5 * pow(10,247.8/($T0 - 140.0))"; //viscosity (Pa.s) of water as a function of T(K)  
