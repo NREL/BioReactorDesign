@@ -1,0 +1,28 @@
+{
+    "Geometry": {
+            "OverallDomain": {
+                    "x" : {"nblocks": 10, "size_per_block": 1.0},
+                    "y" : {"nblocks": 7, "size_per_block": 1.0},
+                    "z" : {"nblocks": 5, "size_per_block": 1.0}
+            },
+            "Fluids": [
+                    [ [0,0,0], [9,0,0] ],
+                    [ [9,0,0], [9,0,4] ],
+                    [ [9,0,4], [0,0,4] ],
+                    [ [0,1,4], [0,4,4] ],
+                    [ [0,4,4], [0,6,4] ],
+                    [ [0,4,4], [0,4,0] ],
+                    [ [0,4,0], [0,6,0] ],
+                    [ [0,4,0], [0,1,0] ]
+            ]
+    },
+    "inlets": [
+        {"branch_id": 0, "type": "circle", "frac_space": 0.2222222222222222, "normal_dir": 1, "radius": 0.4, "nelements": 50, "block_pos": "bottom"},
+        {"branch_id": 0, "type": "circle", "frac_space": 0.5, "radius": 0.4, "normal_dir": 1,"nelements": 50, "block_pos": "bottom"},
+        {"branch_id": 0, "type": "circle", "frac_space": 0.7777777777777778, "radius": 0.4, "normal_dir": 1,"nelements": 50, "block_pos": "bottom"}
+    ],
+    "outlets": [
+        {"branch_id": 6, "type": "circle", "frac_space": 1, "normal_dir": 1, "radius": 0.4, "nelements": 50, "block_pos": "top"},
+        {"branch_id": 4, "type": "circle", "frac_space": 1, "normal_dir": 1, "radius": 0.4, "nelements": 50, "block_pos": "top"}
+    ]
+}
