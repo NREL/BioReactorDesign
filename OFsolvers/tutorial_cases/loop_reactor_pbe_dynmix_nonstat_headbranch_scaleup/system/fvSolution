@@ -18,8 +18,8 @@ solvers
 {
     "alpha.*"
     {
-        nAlphaCorr      1;
-        nAlphaSubCycles 4;
+        nAlphaCorr      2;
+        nAlphaSubCycles 5;
     }
 
     bubbles
@@ -35,7 +35,7 @@ solvers
     {
         solver          GAMG;
         smoother        DIC;
-        tolerance       1e-8;
+        tolerance       1e-7;
         relTol          0;
     }
 
@@ -60,7 +60,8 @@ solvers
         smoother        symGaussSeidel;
         tolerance       1e-8;
         relTol          0;
-        minIter         1;
+        minIter         0;
+        maxIter         3;
     }
 
     "f.*"

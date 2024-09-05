@@ -14,7 +14,7 @@ python /projects/gas2fuels/BioReactorDesign/applications/write_stl_patch.py -i s
 #python ../../../applications/write_stl_patch.py -i system/inlets_outlets.json
 
 # Generate mixers
-python /projects/gas2fuels/BioReactorDesign/applications/write_dynMix_fvModels.py -i system/mixers.json -o constant
+python /projects/gas2fuels/BioReactorDesign/applications/write_dynMix_fvModels_force_sign.py -i system/mixers.json -o constant
 #python ../../../applications/write_dynMix_fvModels.py -i system/mixers.json -o constant
 
 echo PRESTEP 2
@@ -58,6 +58,6 @@ writeMeshObj
 
 echo PRESTEP 3
 python writeGlobalVars.py
-cp constant/phaseProperties_pbe constant/phaseProperties
+cp constant/phaseProperties_constantd constant/phaseProperties
 
 conda deactivate

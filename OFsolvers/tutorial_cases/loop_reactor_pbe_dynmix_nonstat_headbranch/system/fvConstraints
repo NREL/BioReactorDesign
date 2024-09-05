@@ -19,5 +19,38 @@ limitp
 
     min        1e4;
 }
+limitUliq
+{
+    type       limitVelocity;
+    active yes;
+    U          U.liquid;
+    selectionMode all;
+    max        1e1;
+}
+limitUgas
+{
+    type       limitVelocity;
+    active yes;
+    U          U.gas;
+    selectionMode all;
+    max        2e1;
+}
+limitTgas
+{
+    type            limitTemperature;
+    selectionMode   all;
+    min             290;
+    max             310;
+    phase           gas;
+}
+limitTliq
+{
+    type            limitTemperature;
+    selectionMode   all;
+    min             290;
+    max             310;
+    phase           liquid;
+}
+
 
 // ************************************************************************* //
