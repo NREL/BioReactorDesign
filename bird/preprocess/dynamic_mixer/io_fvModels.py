@@ -191,6 +191,7 @@ def write_mixer(mixer, output_folder):
         f.write("\t\t\t}\n")
         f.write("\t\t}\n")
 
+
 def write_mixer_force_sign(mixer, output_folder):
     with open(os.path.join(output_folder, "fvModels"), "a+") as f:
         f.write(f"\t\tsource_pt_x={mixer.x};\n")
@@ -287,7 +288,7 @@ def write_mixer_force_sign(mixer, output_folder):
             f.write("\t\t\t\tV1 = std::abs(downV);\n")
             f.write("\t\t\t}\n")
             f.write("\t\t\trhoV = downrhoV;\n")
-        #f.write("\t\t\t}\n")
+        # f.write("\t\t\t}\n")
         f.write(
             '\t\t\tFoam::Info << "[BIRD:DYNMIX INFO] V1 = " << V1 << endl;\n'
         )
