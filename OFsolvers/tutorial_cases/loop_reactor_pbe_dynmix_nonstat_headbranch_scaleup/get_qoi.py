@@ -118,7 +118,7 @@ def get_qoi(kla_co2, cs_co2, kla_h2, cs_h2, verb=False):
 
     qoi_co2 = kla_co2 * cs_co2 * V_l * 0.04401 / (P_mix / 3600 + P_inj / 3600)
     qoi_h2 = kla_h2 * cs_h2 * V_l * 0.002016 / (P_mix / 3600 + P_inj / 3600)
-    return qoi_co2 + qoi_h2
+    return qoi_co2 * qoi_h2
 
 
 def get_qoi_uq(kla_co2, cs_co2, kla_h2, cs_h2):
