@@ -60,4 +60,9 @@ echo PRESTEP 3
 python writeGlobalVars.py
 cp constant/phaseProperties_constantd constant/phaseProperties
 
+
+if [ -f qoi.txt ]; then
+    rm qoi.txt
+fi
+
 conda deactivate
