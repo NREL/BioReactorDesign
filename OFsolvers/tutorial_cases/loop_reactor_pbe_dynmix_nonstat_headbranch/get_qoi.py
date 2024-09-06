@@ -24,54 +24,68 @@ def func(t, cstar, kla):
     return (cstar - c0) * (1 - np.exp(-kla * (t - t0))) + c0
 
 
-def get_vl():
+def get_vl(verb=False):
     filename = os.path.join("constant", "globalVars")
     with open(filename, "r+") as f:
         lines = f.readlines()
     for line in lines:
         if line.startswith("liqVol"):
             vol = float(line.split()[-1][:-1])
-            return vol
+            break
+    if verb:
+        print(f"Read liqVol = {vol}m3")
+    return vol
 
 
-def get_vvm():
+def get_vvm(verb=False):
     filename = os.path.join("constant", "globalVars")
     with open(filename, "r+") as f:
         lines = f.readlines()
     for line in lines:
         if line.startswith("VVM"):
             vvm = float(line.split()[-1][:-1])
-            return vvm
+            break
+    if verb:
+        print(f"Read VVM = {vvm} [-]")
+    return vvm
 
 
-def get_As():
+def get_As(verb=False):
     filename = os.path.join("constant", "globalVars")
     with open(filename, "r+") as f:
         lines = f.readlines()
     for line in lines:
         if line.startswith("inletA"):
             As = float(line.split()[-1][:-1])
-            return As
+            break
+    if verb:
+        print(f"Read As = {As}m2")
+    return As
 
 
-def get_pmix():
+def get_pmix(verb=False):
     with open("system/mixers.json", "r+") as f:
         data = json.load(f)
     mixer_list = data["mixers"]
     pmix = 0
     for mix in mixer_list:
-        pmix += mix["power"]
+        pmix += mix["power"] / 1000
+    if verb:
+        print(f"Read Mixing power = {pmix}kW")
     return pmix
 
 
-def get_lh():
+def get_lh(verb=False):
     filename = os.path.join("system", "setFieldsDict")
     with open(filename, "r+") as f:
         lines = f.readlines()
     for line in lines:
         if "box (-1.0 -1.0 -1.0)" in line:
-            height = float(line.split("(").split()[1])
-            return height
+            height = float(line.split("(")[2].split()[1])
+            break
+    if verb:
+        print(f"Read Height = {height}m")
+    return height
 
 
 def get_pinj(vvm, Vl, As, lh):
@@ -94,13 +108,13 @@ def get_pinj(vvm, Vl, As, lh):
     return (P1 + P2) * 1e-3
 
 
-def get_qoi(kla_co2, cs_co2, kla_h2, cs_h2):
-    vvm = get_vvm()
-    As = get_As()
-    V_l = get_vl()
-    liqh = get_lh()
+def get_qoi(kla_co2, cs_co2, kla_h2, cs_h2, verb=False):
+    vvm = get_vvm(verb)
+    As = get_As(verb)
+    V_l = get_vl(verb)
+    liqh = get_lh(verb)
     P_inj = get_pinj(vvm, V_l, As, liqh)
-    P_mix = get_pmix()
+    P_mix = get_pmix(verb)
 
     qoi_co2 = kla_co2 * cs_co2 * V_l * 0.04401 / (P_mix / 3600 + P_inj / 3600)
     qoi_h2 = kla_h2 * cs_h2 * V_l * 0.002016 / (P_mix / 3600 + P_inj / 3600)
@@ -110,7 +124,11 @@ def get_qoi(kla_co2, cs_co2, kla_h2, cs_h2):
 def get_qoi_uq(kla_co2, cs_co2, kla_h2, cs_h2):
     qoi = []
     for i in range(len(kla_co2)):
-        qoi.append(get_qoi(kla_co2[i], cs_co2[i], kla_h2[i], cs_h2[i]))
+        if i == 0:
+            verb = True
+        else:
+            verb = False
+        qoi.append(get_qoi(kla_co2[i], cs_co2[i], kla_h2[i], cs_h2[i], verb))
     qoi = np.array(qoi)
     return np.mean(qoi), np.std(qoi)
 
@@ -132,7 +150,7 @@ tmp_kla_co2 = []
 cs_co2 = mean_cstar_co2
 cs_h2 = mean_cstar_h2
 
-a = np.load(os.path.join(dataFold, fold, "conv.npz"))
+a = np.load(os.path.join(dataFolder, fold, "conv.npz"))
 endindex = -1
 if (
     "c_h2" in a

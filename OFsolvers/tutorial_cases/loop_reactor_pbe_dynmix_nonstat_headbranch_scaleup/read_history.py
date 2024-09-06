@@ -159,14 +159,6 @@ def vol_liq(caseFolder, timeFolder, nCells, field_dict={}):
 
 parser = argparse.ArgumentParser(description="Convergence of GH")
 parser.add_argument(
-    "-cr",
-    "--case_root",
-    type=str,
-    metavar="",
-    required=True,
-    help="Case root",
-)
-parser.add_argument(
     "-cn",
     "--case_name",
     type=str,
@@ -187,9 +179,14 @@ parser.add_argument(
 args, unknown = parser.parse_known_args()
 
 
-case_root = args.case_root  # "../"
+case_root = "."  # "../"
 case_name = args.case_name  # "12_hole_sparger_snappyRefine_700rpm_opt_coeff"
-case_path = os.path.join(case_root, case_name)
+case_path = "."
+dataFolder = args.data_folder
+
+if os.path.isfile(os.path.join(dataFolder, case_name, "conv.npz")):
+    sys.exit("WARNING: History already created, Skipping")
+
 time_float_sorted, time_str_sorted = getCaseTimes(case_path, remove_zero=True)
 cellCentres = readMesh(os.path.join(case_path, f"meshCellCentres_0.obj"))
 nCells = len(cellCentres)
@@ -228,7 +225,6 @@ for itime, time in enumerate(time_float_sorted):
     )
 
 
-dataFolder = args.data_folder
 os.makedirs(dataFolder, exist_ok=True)
 os.makedirs(os.path.join(dataFolder, case_name), exist_ok=True)
 np.savez(

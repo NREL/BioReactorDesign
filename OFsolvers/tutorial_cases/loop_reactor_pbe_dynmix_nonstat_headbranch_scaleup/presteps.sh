@@ -65,4 +65,7 @@ conda deactivate
 if [ -f qoi.txt ]; then
     rm qoi.txt
 fi
+if [ -f data/local/conv.npz ]; then
+    rm data/local/conv.npz
+fi
 

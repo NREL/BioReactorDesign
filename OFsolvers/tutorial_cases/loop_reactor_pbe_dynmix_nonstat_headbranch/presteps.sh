@@ -64,5 +64,8 @@ cp constant/phaseProperties_constantd constant/phaseProperties
 if [ -f qoi.txt ]; then
     rm qoi.txt
 fi
+if [ -f data/local/conv.npz ]; then
+    rm data/local/conv.npz
+fi
 
 conda deactivate

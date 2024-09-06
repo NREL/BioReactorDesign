@@ -127,13 +127,16 @@ def readSizeGroups(file):
     return sizeGroup, binGroup
 
 
-def getCaseTimes(casePath):
+def getCaseTimes(casePath, remove_zero=False):
     # Read Time
     times_tmp = os.listdir(casePath)
     # remove non floats
     for i, entry in reversed(list(enumerate(times_tmp))):
         try:
             a = float(entry)
+            if remove_zero:
+                if abs(a) < 1e-12:
+                    _ = times_tmp.pop(i)
         except ValueError:
             a = times_tmp.pop(i)
             # print('removed ', a)

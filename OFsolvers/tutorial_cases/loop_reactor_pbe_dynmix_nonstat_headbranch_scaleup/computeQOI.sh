@@ -7,5 +7,7 @@ if [ ! -f qoi.txt ]; then
     python read_history.py -cr .. -cn local -df data
     python get_qoi.py
     conda deactivate
+else
+   echo "WARNING: QOI already computed"
 fi
 
