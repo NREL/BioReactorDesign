@@ -5,6 +5,7 @@ import os
 from bird.version import __version__
 
 BIRD_DIR = os.path.dirname(os.path.realpath(__file__))
+BIRD_CASE_DIR = os.path.join(BIRD_DIR, "../OFsolvers/tutorial_cases")
 BIRD_MESH_DIR = os.path.join(BIRD_DIR, "meshing")
 BIRD_POST_DIR = os.path.join(BIRD_DIR, "postprocess")
 BIRD_PRE_DIR = os.path.join(BIRD_DIR, "preprocess")
