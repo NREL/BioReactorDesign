@@ -1,6 +1,6 @@
 # Clean case
-module load anaconda3/2022.05
-conda activate /projects/gas2fuels/conda_env/spargerDesign
+module load anaconda3/2023
+conda activate /projects/gas2fuels/conda_env/bird
 source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
 ./Allclean
 
