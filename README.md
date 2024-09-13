@@ -341,7 +341,7 @@ To cite BioReactorDesign use these articles on [CO2 interphase mass transfer (op
 and on [butanediol synthesis](https://www.sciencedirect.com/science/article/pii/S0263876223004689)
 ```
 @article{hassanaly2024inverse,
-  title={Inverse modeling of bubble size dynamics for interphase mass transfer and gas holdup in CO2 bubble column reactors},
+  title={Bayesian calibration of bubble size dynamics applied to \ce{CO2} gas fermenters},
   author={Hassanaly, Malik and Parra-Alvarez, John M. and Rahimi, Mohammad J. and Sitaraman, Hariswaran},
   journal={Under Review},
   year={2024},
