@@ -11,7 +11,10 @@ from bird.postprocess.conditional_mean import (
 
 
 def test_compute_cond():
-    caseFolder = os.path.join(BIRD_POST_DIR, "data_conditional_mean")
+    if os.path.exists(BIRD_POST_DIR, "data_conditional_mean"):
+        caseFolder = os.path.exists(BIRD_POST_DIR, "data_conditional_mean")
+    else:
+        caseFolder = os.path.exists("bird", "postprocess", "data_conditional_mean")
     fields_list = [
         "CO.gas",
         "CO.liquid",
