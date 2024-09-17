@@ -2,7 +2,7 @@ name: bird-CI
 
 on:
    push:
-     branches: [main]
+     branches: [main, sampleDS]
      paths-ignore:
       - '*.md'
       - 'README*'
