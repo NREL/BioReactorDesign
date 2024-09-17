@@ -2,6 +2,7 @@ import os
 
 from prettyPlot.plotting import plt, pretty_labels
 
+from bird import BIRD_POST_DIR
 from bird.postprocess.conditional_mean import (
     compute_cond_mean,
     save_cond,
@@ -10,7 +11,7 @@ from bird.postprocess.conditional_mean import (
 
 
 def test_compute_cond():
-    caseFolder = os.path.join("bird", "postprocess", "data_conditional_mean")
+    caseFolder = os.path.join(BIRD_POST_DIR, "data_conditional_mean")
     fields_list = [
         "CO.gas",
         "CO.liquid",
