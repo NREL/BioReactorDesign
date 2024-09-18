@@ -91,8 +91,8 @@ if __name__ == "__main__":
                 constantD=True,
                 study_folder=study_folder,
             )
-            write_script_start(f"{study_folder}/many_scripts", n_sim)
-            write_script_post(f"{study_folder}/many_scripts", n_sim)
+            write_script_start(f"{study_folder}/many_scripts_start", n_sim)
+            write_script_post(f"{study_folder}/many_scripts_post", n_sim)
             write_prep(f"{study_folder}/prep.sh", n_sim)
             save_config_dict(f"{study_folder}/configs.pkl", config_dict)
             save_config_dict(
