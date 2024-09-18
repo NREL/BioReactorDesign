@@ -3,7 +3,7 @@ import pickle
 import shutil
 
 import numpy as np
-from design_io import *
+from bird.preprocess.json_gen.design_io import *
 
 from bird import BIRD_CASE_DIR
 
@@ -42,35 +42,18 @@ def load_config_dict(filename):
     return config_dict
 
 
-def sample(branches_com, branchcom_spots, config_dict={}):
-    config = {}
-    # choices = ["mix", "sparger", "none"]
-    choices_com = [0, 1, 2]
-    for branch in branches_com:
-        config[branch] = np.random.choice(
-            choices_com, size=len(branchcom_spots[branch])
-        )
-
-    existing = False
-    new_config_key = 0
-    for old_key_conf in config_dict:
-        if compare_config(config_dict[old_key_conf], config):
-            existing = True
-            print("FOUND SAME CONFIG")
-            return config_dict
-        new_config_key = old_key_conf + 1
-
-    if check_config(config):
-        config_dict[new_config_key] = config
-
-    return config_dict
-
-
-def write_script(filename, n):
+def write_script_start(filename, n):
     with open(filename, "w+") as f:
         for i in range(n):
             f.write(f"cd Sim_{i}\n")
             f.write(f"sbatch script\n")
+            f.write(f"cd ..\n")
+
+def write_script_post(filename, n):
+    with open(filename, "w+") as f:
+        for i in range(n):
+            f.write(f"cd Sim_{i}\n")
+            f.write(f"sbatch script_post\n")
             f.write(f"cd ..\n")
 
 
