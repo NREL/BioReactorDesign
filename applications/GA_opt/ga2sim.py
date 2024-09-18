@@ -44,18 +44,16 @@ def ga2sim(ga_samples):
     return config_dict
 
 
-if __name__ == "__main__":
-
+def setup_sim_batch(
+    ga_samples, vvm_v=0.4, pow_v=6000, study_folder="GA_batch"
+):
     # GA_batch
-    n_batch = 3
-    ga_samples = np.random.choice([0, 1, 2], size=(n_batch, 11))
-    vvm_v = 0.4
-    pow_v = 6000
+    check_ga_samples(ga_samples)
+    n_batch = ga_samples.shape[0]
     branchcom_spots, branches_com = optimization_setup()
 
     # Generate cases
     config_dict = ga2sim(ga_samples)
-    study_folder = f"GAbatch_{str(vvm_v)}vvm_{pow_v/1000}kW"
     generate_scaledup_reactor_cases(
         config_dict,
         branchcom_spots=branchcom_spots,
@@ -64,7 +62,63 @@ if __name__ == "__main__":
         constantD=True,
         study_folder=study_folder,
     )
-    write_script(f"{study_folder}/many_scripts", n_batch)
+    write_script_start(f"{study_folder}/many_scripts_start", n_batch)
+    write_script_post(f"{study_folder}/many_scripts_post", n_batch)
     write_prep(f"{study_folder}/prep.sh", n_batch)
     save_config_dict(f"{study_folder}/configs.pkl", config_dict)
     save_config_dict(f"{study_folder}/branchcom_spots.pkl", branchcom_spots)
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="GA setup")
+    parser.add_argument(
+        "-bf",
+        "--batch_folder",
+        type=str,
+        metavar="",
+        required=False,
+        help="Folder that contains the batch of sims",
+        default="GAbatch_0.4vvm_6kW",
+    )
+    parser.add_argument(
+        "-vvm",
+        "--vvm",
+        type=float,
+        metavar="",
+        required=False,
+        help="Volume flow rate",
+        default=0.4,
+    )
+    parser.add_argument(
+        "-pow",
+        "--power",
+        type=float,
+        metavar="",
+        required=False,
+        help="mixer power",
+        default=6000,
+    )
+    parser.add_argument(
+        "-gas",
+        "--ga_sample_file",
+        type=str,
+        metavar="",
+        required=False,
+        help="file containing the ga samples to execute",
+        default=None,
+    )
+    args, unknown = parser.parse_known_args()
+
+    if args.ga_sample_file is None:
+        n_batch = 3
+        ga_samples = np.random.choice([0, 1, 2], size=(n_batch, 11))
+    else:
+        ga_samples = np.load(args.ga_sample_file)
+    vvm_v = args.vvm
+    pow_v = args.power
+    study_folder = args.batch_folder
+    setup_sim_batch(
+        ga_samples, vvm_v=vvm_v, pow_v=pow_v, study_folder=study_folder
+    )
