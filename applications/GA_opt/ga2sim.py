@@ -43,7 +43,10 @@ def ga2sim(ga_samples):
 
     return config_dict
 
-def setup_sim_batch(ga_samples, vvm_v=0.4, pow_v=6000, study_folder='GA_batch'):
+
+def setup_sim_batch(
+    ga_samples, vvm_v=0.4, pow_v=6000, study_folder="GA_batch"
+):
     # GA_batch
     check_ga_samples(ga_samples)
     n_batch = ga_samples.shape[0]
@@ -68,6 +71,7 @@ def setup_sim_batch(ga_samples, vvm_v=0.4, pow_v=6000, study_folder='GA_batch'):
 
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser(description="GA setup")
     parser.add_argument(
         "-bf",
@@ -76,7 +80,7 @@ if __name__ == "__main__":
         metavar="",
         required=False,
         help="Folder that contains the batch of sims",
-        default="GAbatch_0.4vvm_6kW"
+        default="GAbatch_0.4vvm_6kW",
     )
     parser.add_argument(
         "-vvm",
@@ -85,28 +89,28 @@ if __name__ == "__main__":
         metavar="",
         required=False,
         help="Volume flow rate",
-        default=0.4
-    )    
+        default=0.4,
+    )
     parser.add_argument(
         "-pow",
         "--power",
         type=float,
-        metavar="", 
+        metavar="",
         required=False,
         help="mixer power",
-        default=6000
+        default=6000,
     )
     parser.add_argument(
         "-gas",
         "--ga_sample_file",
         type=str,
-        metavar="", 
+        metavar="",
         required=False,
         help="file containing the ga samples to execute",
-        default=None
-    )   
-    args, unknown = parser.parse_known_args()     
-   
+        default=None,
+    )
+    args, unknown = parser.parse_known_args()
+
     if args.ga_sample_file is None:
         n_batch = 3
         ga_samples = np.random.choice([0, 1, 2], size=(n_batch, 11))
@@ -115,4 +119,6 @@ if __name__ == "__main__":
     vvm_v = args.vvm
     pow_v = args.power
     study_folder = args.batch_folder
-    setup_sim_batch(ga_samples, vvm_v=vvm_v, pow_v=pow_v, study_folder=study_folder)
+    setup_sim_batch(
+        ga_samples, vvm_v=vvm_v, pow_v=pow_v, study_folder=study_folder
+    )

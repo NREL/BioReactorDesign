@@ -3,9 +3,9 @@ import pickle
 import shutil
 
 import numpy as np
-from bird.preprocess.json_gen.design_io import *
 
 from bird import BIRD_CASE_DIR
+from bird.preprocess.json_gen.design_io import *
 
 
 def compare_config(config1, config2):
@@ -48,6 +48,7 @@ def write_script_start(filename, n):
             f.write(f"cd Sim_{i}\n")
             f.write(f"sbatch script\n")
             f.write(f"cd ..\n")
+
 
 def write_script_post(filename, n):
     with open(filename, "w+") as f:

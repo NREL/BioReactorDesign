@@ -8,6 +8,7 @@ from bird import BIRD_CASE_DIR
 from bird.preprocess.json_gen.design_io import *
 from bird.preprocess.json_gen.generate_designs import *
 
+
 def optimization_setup():
     # spots on the branches where we can place sparger or mixers
     branchcom_spots = {}
@@ -17,6 +18,7 @@ def optimization_setup():
     # branches where the sparger and mixers are placed
     branches_com = [0, 1, 2]
     return branchcom_spots, branches_com
+
 
 def random_sample(branches_com, branchcom_spots, config_dict={}):
     config = {}
@@ -40,6 +42,7 @@ def random_sample(branches_com, branchcom_spots, config_dict={}):
         config_dict[new_config_key] = config
 
     return config_dict
+
 
 if __name__ == "__main__":
     branchcom_spots, branches_com = optimization_setup()
