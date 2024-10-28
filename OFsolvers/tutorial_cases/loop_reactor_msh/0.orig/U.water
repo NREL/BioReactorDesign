@@ -19,18 +19,18 @@ internalField   uniform (0 0 0);
 
 boundaryField
 {
-    inlet
+    inlets
     {
         type            fixedValue;
         value           $internalField;
     }
-    outlet
+    outlets
     {
         type            pressureInletOutletVelocity;
         phi             phi.water;
         value           $internalField;
     }
-    defaultFaces
+    walls
     {
         type            fixedValue;
         value           uniform (0 0 0);

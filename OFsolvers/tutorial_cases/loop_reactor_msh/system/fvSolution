@@ -28,38 +28,42 @@ solvers
         smoother        DIC;
         tolerance       1e-8;
         relTol          0;
+	maxIter		10;
     }
 
     p_rghFinal
     {
         $p_rgh;
         relTol          0;
+	maxIter		50;
     }
 
     "U.*"
     {
-        solver          smoothSolver;
+        solver          GAMG;
         smoother        symGaussSeidel;
         tolerance       1e-5;
         relTol          0;
         minIter         1;
+	maxIter		50;
     }
 
     "e.*"
     {
-        solver          smoothSolver;
+        solver          GAMG;
         smoother        symGaussSeidel;
         tolerance       1e-8;
         relTol          0;
         minIter         1;
+	maxIter		50;
     }
 }
 
 PIMPLE
 {
-    nOuterCorrectors 3;
-    nCorrectors      1;
-    nNonOrthogonalCorrectors 0;
+    nOuterCorrectors 1;
+    nCorrectors      2;
+    nNonOrthogonalCorrectors 3;
 
 }
 

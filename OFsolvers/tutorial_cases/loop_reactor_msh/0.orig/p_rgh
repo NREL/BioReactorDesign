@@ -19,12 +19,12 @@ internalField       uniform 1e5;
 
 boundaryField
 {
-    inlet
+    inlets
     {
         type            fixedFluxPressure;
         value           $internalField;
     }
-    outlet
+    outlets
     {
         type            prghTotalPressure;
         p0              $internalField;
@@ -33,7 +33,7 @@ boundaryField
         rho             thermo:rho.air;
         value           $internalField;
     }
-    defaultFaces
+    walls
     {
         type            fixedFluxPressure;
         value           $internalField;

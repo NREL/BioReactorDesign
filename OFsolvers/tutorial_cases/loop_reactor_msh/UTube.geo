@@ -69,11 +69,30 @@ Symmetry {0, 0, 1, 0} {
         Volume{1};
     }
 }
-// Perform a Boolean union of the original and mirrored volumes
-mergedVolume() = BooleanUnion{ Volume{1}; Delete; }{ Volume{2}; Delete; };
+
+
+
+//+ Inlets
+Cylinder(10) = {lx/2.0, -rad - 0.2, lz  , 0, rad, 0, 0.2, 2*Pi};
+Cylinder(11) = {lx/2.0, -rad - 0.2, -lz , 0, rad, 0, 0.2, 2*Pi};
+Cylinder(12) = {lx + 2*brad, -rad - 0.2, 0 , 0, rad, 0, 0.2, 2*Pi};
+
+//+ Outlets
+Cylinder(100) = {0, ly + 2*brad,  lz/2.0, 0, 2*rad, 0, 0.2, 2*Pi};
+Cylinder(101) = {0, ly + 2*brad,  -lz/2.0, 0, 2*rad, 0, 0.2, 2*Pi};
+
+//+
+mergedVolume() = BooleanUnion{ Volume{100}; Volume{101}; Volume{1}; Volume{10}; Volume{11}; Volume{12}; Delete; }{ Volume{2}; Delete; };
 
 // Assign a physical group to the target volume
 Physical Volume("fluid") = {mergedVolume()};
+//+
+Physical Surface("inlets", 102) = {18, 24, 25};
+//+
+Physical Surface("outlets", 103) = {5, 12};
+//+
+Physical Surface("walls", 104) = {6, 3, 4, 2, 7, 13, 9, 10, 16, 19, 23, 15, 8, 11, 14, 17, 20, 22, 21};
+
 
 //Mesh.FromPhysicalGroups = 1;
 
@@ -96,7 +115,8 @@ Mesh 3;
 Mesh.MshFileVersion = 2.2;
 
 // Save the mesh
-Mesh.SaveAll = 0;
+//Mesh.SaveAll = 0;
 Save "UTube.msh";
-#Save "UTube.stl";
+//Save "UTube.stl"; */
+
 

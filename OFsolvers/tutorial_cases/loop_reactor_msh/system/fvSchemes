@@ -21,16 +21,16 @@ ddtSchemes
 
 gradSchemes
 {
-    default         Gauss linear;
+    default         cellLimited leastSquares 1;
 }
 
 divSchemes
 {
     default                     none;
 
-    "div\(phi,alpha.*\)"              Gauss vanLeer;
+    "div\(phi,alpha.*\)"                Gauss vanLeer01;
 
-    "div\(phir,alpha.*,alpha.*\)"       Gauss vanLeer;
+    "div\(phir,alpha.*,alpha.*\)"       Gauss vanLeer01;
 
     "div\(alphaRhoPhi.*,U.*\)"          Gauss limitedLinearV 1;
     "div\(phi.*,U.*\)"                  Gauss limitedLinearV 1;
@@ -46,7 +46,7 @@ divSchemes
 
 laplacianSchemes
 {
-    default         Gauss linear uncorrected;
+    default         Gauss linear corrected;
 }
 
 interpolationSchemes
@@ -56,7 +56,7 @@ interpolationSchemes
 
 snGradSchemes
 {
-    default         uncorrected;
+    default         corrected;
 }
 
 

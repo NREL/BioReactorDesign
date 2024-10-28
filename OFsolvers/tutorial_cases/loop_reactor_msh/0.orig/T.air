@@ -19,19 +19,19 @@ internalField       uniform 300;
 
 boundaryField
 {
-    outlet
+    outlets
     {
         type            inletOutlet;
         phi             phi.air;
         inletValue      $internalField;
         value           $internalField;
     }
-    inlet
+    inlets
     {
         type            fixedValue;
         value           $internalField;
     }
-    defaultFaces
+    walls
     {
         type            zeroGradient;
     }

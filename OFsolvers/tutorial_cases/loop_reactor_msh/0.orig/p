@@ -19,17 +19,17 @@ internalField       uniform 1e5;
 
 boundaryField
 {
-    inlet
+    inlets
     {
         type            calculated;
         value           $internalField;
     }
-    outlet
+    outlets
     {
         type            calculated;
         value           $internalField;
     }
-    defaultFaces
+    walls
     {
         type            calculated;
         value           $internalField;
