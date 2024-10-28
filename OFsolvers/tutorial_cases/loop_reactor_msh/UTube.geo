@@ -98,5 +98,5 @@ Mesh.MshFileVersion = 2.2;
 // Save the mesh
 Mesh.SaveAll = 0;
 Save "UTube.msh";
-Save "UTube.stl";
+#Save "UTube.stl";
 
