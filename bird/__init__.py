@@ -33,5 +33,6 @@ BIRD_PRE_PATCH_TEMP_DIR = os.path.join(
 BIRD_PRE_DYNMIX_TEMP_DIR = os.path.join(
     BIRD_PRE_DIR, "dynamic_mixer", "mixing_template"
 )
+BIRD_PRE_DATA_DIR = os.path.join(BIRD_PRE_DIR, "data_preprocess")
 BIRD_EARLY_PRED_DATA_DIR = os.path.join(BIRD_POST_DIR, "data_early")
 BIRD_INV_DIR = os.path.join(BIRD_DIR, "inverse_modeling")
