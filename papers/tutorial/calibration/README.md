@@ -31,8 +31,8 @@ Constructing such a surrogate is not computationally useful here since the forwa
 Generate dataset and train neural net surrogate with `python tut_surrogate.py` 
 
 <p align="center">
-<img src="/papers/tutorial/calibration/assets/Loss_surr.png" width="150" height="125"/>
-<img src="/papers/tutorial/calibration/assets/test_surr.png" width="625" height="125"/>
+<img src="/papers/tutorial/calibration/assets/Loss_surr.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/test_surr.png" width="937.5" height="187.5"/>
 </p>
 
 
@@ -43,8 +43,8 @@ For the calibration, we can use the true function or the surrogate model. The ob
 Calibrate without a surrogate for `alpha=5, beta=5`: `python tut_calibration_all.py --alpha 5 --beta 5`
 
 <p align="center">
-<img src="/papers/tutorial/calibration/assets/True_a_5_b_5_prop.png" width="150" height="125"/>
-<img src="/papers/tutorial/calibration/assets/True_a_5_b_5_corner.png" width="150" height="125"/>
+<img src="/papers/tutorial/calibration/assets/True_a_5_b_5_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/True_a_5_b_5_corner.png" width="225" height="187.5"/>
 </p>
 
 
@@ -52,8 +52,8 @@ Calibrate without a surrogate for `alpha=2, beta=5`: `python tut_calibration_all
 
 
 <p align="center">
-<img src="/papers/tutorial/calibration/assets/True_a_2_b_5_prop.png" width="150" height="125"/>
-<img src="/papers/tutorial/calibration/assets/True_a_2_b_5_corner.png" width="150" height="125"/>
+<img src="/papers/tutorial/calibration/assets/True_a_2_b_5_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/True_a_2_b_5_corner.png" width="225" height="187.5"/>
 </p>
 
 Clearly, the amount of missing physics vary depending on the observations.
@@ -63,17 +63,17 @@ Then the same exercise can be done when using a neural net surrogate
 Calibrate with a surrogate for `alpha=5, beta=5`: `python tut_calibration_all.py --useNN --alpha 5 --beta 5`
 
 <p align="center">
-<img src="/papers/tutorial/calibration/assets/Surr_a_5_b_5_prop.png" width="150" height="125"/>
-<img src="/papers/tutorial/calibration/assets/Surr_a_5_b_5_corner.png" width="150" height="125"/>
+<img src="/papers/tutorial/calibration/assets/Surr_a_5_b_5_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_a_5_b_5_corner.png" width="225" height="187.5"/>
 </p>
 
 
-Calibrate without a surrogate for `alpha=2, beta=5`: `python tut_calibration_all.py --useNN --alpha 2 --beta 5`
+Calibrate with a surrogate for `alpha=2, beta=5`: `python tut_calibration_all.py --useNN --alpha 2 --beta 5`
 
 
 <p align="center">
-<img src="/papers/tutorial/calibration/assets/Surr_a_2_b_5_prop.png" width="150" height="125"/>
-<img src="/papers/tutorial/calibration/assets/Surr_a_2_b_5_corner.png" width="150" height="125"/>
+<img src="/papers/tutorial/calibration/assets/Surr_a_2_b_5_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_a_2_b_5_corner.png" width="225" height="187.5"/>
 </p>
 
 Using surrogate gives similar predictions as when not using a surrogate. But the surrogate was constructed with 200 forward simulations.
