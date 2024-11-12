@@ -28,7 +28,8 @@ The class `Param_NN` available in BiRD allows to create a parametric surrogate. 
 
 Constructing such a surrogate is not computationally useful here since the forward simulation is cheap. This is only for illustrative purposes!
 
-Generate dataset and train neural net surrogate with `python tut_surrogate.py` 
+Generate dataset and train neural net surrogate with `python tut_surrogate.py`.
+The following plots should be generated. The first one shows the training and testing loss convergence. The second one shows examples of the surrogate accuracy on unseen data.
 
 <p align="center">
 <img src="/papers/tutorial/calibration/assets/Loss_surr.png" width="300" height="187.5"/>
@@ -58,7 +59,7 @@ Calibrate without a surrogate for `alpha=2, beta=5`: `python tut_calibration_all
 
 Clearly, the amount of missing physics vary depending on the observations.
 
-Then the same exercise can be done when using a neural net surrogate
+Then the same exercise can be done when using a neural net surrogate. Note that this step will not run if the `Building the surrogate` step was not done first
 
 Calibrate with a surrogate for `alpha=5, beta=5`: `python tut_calibration_all.py --useNN --alpha 5 --beta 5`
 
