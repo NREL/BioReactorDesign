@@ -31,7 +31,7 @@ Constructing such a surrogate is not computationally useful here since the forwa
 Generate dataset and train neural net surrogate with `python tut_surrogate.py` 
 
 <p align="center">
-<img src="/papers/tutorial/calibration/assets/Loss_surr.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Loss_surr.png" width="300" height="187.5"/>
 <img src="/papers/tutorial/calibration/assets/test_surr.png" width="937.5" height="187.5"/>
 </p>
 
