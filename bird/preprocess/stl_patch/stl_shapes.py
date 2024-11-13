@@ -9,7 +9,7 @@ from bird.preprocess.stl_patch.stl_mesh import STLMesh
 
 def make_polygon(rad, nvert, center, normal_dir):
     print(
-        f"\tMaking polygon at ({center[0]:.4g}, {center[1]:.4g}, {center[2]:.4g})"
+        f"\tMaking polygon at ({center[0]:.4g}, {center[1]:.4g}, {center[2]:.4g})m"
     )
     theta = 2 * np.pi / nvert
     vertices = np.zeros((nvert, 3))
@@ -27,7 +27,7 @@ def make_polygon(rad, nvert, center, normal_dir):
 
 def make_rectangle(w, h, center, normal_dir):
     print(
-        f"\tMaking rectangle at ({center[0]:.4g}, {center[1]:.4g}, {center[2]:.4g})"
+        f"\tMaking rectangle at ({center[0]:.4g}, {center[1]:.4g}, {center[2]:.4g})m"
     )
     # Define vertices
     t1dir = (normal_dir + 1) % 3
@@ -50,7 +50,7 @@ def make_rectangle(w, h, center, normal_dir):
 
 def make_circle(radius, center, normal_dir, npts=3):
     print(
-        f"\tMaking circle at ({center[0]:.4g}, {center[1]:.4g}, {center[2]:.4g})"
+        f"\tMaking circle at ({center[0]:.4g}, {center[1]:.4g}, {center[2]:.4g})m"
     )
     vertices = np.zeros((npts + 1, 3))
     t1dir = (normal_dir + 1) % 3

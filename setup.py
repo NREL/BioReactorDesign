@@ -39,6 +39,7 @@ setup(
             "*.yaml",
             "*.csv",
             "data_conditional_mean",
+            "data_preprocess",
         ]
     },
     include_package_data=True,

@@ -12,7 +12,7 @@ def check_input(input_dict):
     assert isinstance(input_dict, dict)
     need_geom = False
     for bound in input_dict:
-        if not bound == "Geometry":
+        if not bound == "Geometry" and not bound == "Meshing":
             assert isinstance(input_dict[bound], list)
             for patch in input_dict[bound]:
                 assert isinstance(patch, dict)
@@ -41,7 +41,7 @@ def write_boundaries(input_dict):
     check_input(input_dict)
     for boundary_name in input_dict.keys():
         if not boundary_name == "Geometry":
-            print(f"Making {boundary_name}")
+            print(f"\nMaking {boundary_name}")
             boundary_mesh = get_all_vert_faces(input_dict, boundary_name)
             print(f"\tArea {boundary_mesh.area} m2")
             boundary_mesh.save(f"{boundary_name}.stl")
