@@ -46,8 +46,8 @@ Calibrate without a surrogate for `alpha=5, beta=5`: `python tut_calibration.py 
 Calibrate with a surrogate for `alpha=5, beta=5`: `python tut_calibration.py -useNN --alpha 5 --beta 5`
 
 <p align="center">
-<img src="/papers/tutorial/calibration/assets/True_opt_a_5.0_b_5.0_prop.png" width="225" height="187.5"/>
-<img src="/papers/tutorial/calibration/assets/Surr_opt_a_5.0_b_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/True_opt_5.0_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_opt_5.0_5.0_prop.png" width="225" height="187.5"/>
 </p>
 
 
@@ -56,8 +56,8 @@ Calibrate with a surrogate for `alpha=2, beta=5`: `python tut_calibration.py -us
 
 
 <p align="center">
-<img src="/papers/tutorial/calibration/assets/True_opt_a_2.0_b_5.0_prop.png" width="225" height="187.5"/>
-<img src="/papers/tutorial/calibration/assets/Surr_opt_a_2.0_b_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/True_opt_2.0_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_opt_2.0_5.0_prop.png" width="225" height="187.5"/>
 </p>
 
 Clearly, the amount of missing physics vary depending on the observations.
@@ -72,8 +72,8 @@ Calibrate without a surrogate for `alpha=5, beta=5`: `python tut_calibration.py 
 Calibrate with a surrogate for `alpha=5, beta=5`: `python tut_calibration.py -useNN -cal_err --alpha 5 --beta 5`
 
 <p align="center">
-<img src="/papers/tutorial/calibration/assets/True_cal_a_5.0_b_5.0_prop.png" width="225" height="187.5"/>
-<img src="/papers/tutorial/calibration/assets/Surr_cal_a_5.0_b_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/True_cal_5.0_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_cal_5.0_5.0_prop.png" width="225" height="187.5"/>
 </p>
 
 
@@ -82,7 +82,7 @@ Calibrate with a surrogate for `alpha=2, beta=5`: `python tut_calibration.py -us
 
 
 <p align="center">
-<img src="/papers/tutorial/calibration/assets/True_cal_a_2.0_b_5.0_prop.png" width="225" height="187.5"/>
-<img src="/papers/tutorial/calibration/assets/Surr_cal_a_2.0_b_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/True_cal_2.0_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_cal_2.0_5.0_prop.png" width="225" height="187.5"/>
 </p>
 
