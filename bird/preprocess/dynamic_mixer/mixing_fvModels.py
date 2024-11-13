@@ -10,7 +10,6 @@ def check_input(input_dict):
     assert isinstance(input_dict, dict)
     mix_type = []
     for mix in input_dict["mixers"]:
-
         if "x" in mix:
             mix_type.append("expl")
         else:
