@@ -15,7 +15,6 @@ class Mixer:
         self.ready = False
 
     def update_from_expl_dict(self, mixer_dict):
-        print("\nMaking dynamic mixer with explicit input")
         if "x" in mixer_dict:
             self.x = mixer_dict["x"]
         if "y" in mixer_dict:
@@ -37,7 +36,6 @@ class Mixer:
         self.check_status()
 
     def update_from_loop_dict(self, mixer_dict, geom_dict, mesh_dict=None):
-        print("\nMaking dynamic mixer from loop specific input")
         segment = geom_dict["segments"][mixer_dict["branch_id"]]
         pos = segment["start"] + mixer_dict["frac_space"] * segment["conn"]
         self.x = pos[0]
@@ -83,13 +81,13 @@ class Mixer:
             self.ready = False
         else:
             print(
-                f"\tpos({self.x:.2g}, {self.y:.2g}, {self.z:.2g})m"
+                f"\n\tpos({self.x:.2g}, {self.y:.2g}, {self.z:.2g})"
                 + f"\n\tnormal_dir {self.normal_dir}"
-                + f"\n\trad {self.rad:.2g}m"
-                + f"\n\tpower {self.power:.2g}W"
+                + f"\n\trad {self.rad:.2g}"
+                + f"\n\tpower {self.power:.2g}"
                 + f"\n\tsign {self.sign}"
-                + f"\n\tsmear {self.smear} grid points"
-                + f"\n\tstart_time {self.start_time:.2g}s"
+                + f"\n\tsmear {self.smear}"
+                + f"\n\tstart_time {self.start_time:.2g}"
             )
             if blocks is not None:
                 print(f"\tbranch = {blocks}")
