@@ -28,7 +28,7 @@ def check_input(input_dict):
     return mix_type
 
 
-def write_fvModel(input_dict, output_folder=".", force_sign=False):
+def write_fvModel(input_dict, output_folder="."):
     mix_type = check_input(input_dict)
     write_preamble(output_folder)
     if "loop" in mix_type:
@@ -39,19 +39,13 @@ def write_fvModel(input_dict, output_folder=".", force_sign=False):
         if mtype == "expl":
             mixer.update_from_expl_dict(input_dict["mixers"][imix])
             if mixer.ready:
-                if force_sign:
-                    write_mixer_force_sign(mixer, output_folder)
-                else:
-                    write_mixer(mixer, output_folder)
+                write_mixer(mixer, output_folder)
         elif mtype == "loop":
             mixer.update_from_loop_dict(
                 input_dict["mixers"][imix], geom_dict, mesh_dict
             )
             if mixer.ready:
-                if force_sign:
-                    write_mixer_force_sign(mixer, output_folder)
-                else:
-                    write_mixer(mixer, output_folder)
+                write_mixer(mixer, output_folder)
 
     write_end(output_folder)
 

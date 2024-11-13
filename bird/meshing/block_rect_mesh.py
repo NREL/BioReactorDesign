@@ -240,9 +240,9 @@ def from_block_rect_to_seg(input_geom_dict, rescale=True):
         segments[iseg]["normal_dir"] = int(np.nonzero(vec_conn)[0][0])
         if segments[iseg]["normal_dir"] == 0:
             segments[iseg]["max_rad"] = (blocksize_y + blocksize_z) / 4
-        elif segments[iseg]["normal_dir"] == 1:
+        if segments[iseg]["normal_dir"] == 1:
             segments[iseg]["max_rad"] = (blocksize_x + blocksize_z) / 4
-        elif segments[iseg]["normal_dir"] == 2:
+        if segments[iseg]["normal_dir"] == 2:
             segments[iseg]["max_rad"] = (blocksize_x + blocksize_y) / 4
 
     return {
