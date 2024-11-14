@@ -12,7 +12,7 @@ def post_process_cal(
     data_x,
     data_y,
     sigma,
-    args
+    args,
 ):
     # Post process
     ranges = []
@@ -45,8 +45,8 @@ def post_process_cal(
     else:
         filename += "_opt"
     filename += f"_{args.alpha}_{args.beta}_corner"
-    plt.savefig(filename+".png")
-    plt.savefig(filename+".eps")
+    plt.savefig(filename + ".png")
+    plt.savefig(filename + ".eps")
 
     for ax in fig.get_axes():
         ax.tick_params(
@@ -113,7 +113,7 @@ def post_process_cal(
         label="95% Model confidence interval",
     )
     plt.plot(rangex, std2_5_real, "--", color="k", linewidth=3)
-    pretty_labels("", "", 20, title=f"Missing phys. unc. = {sigma:.2g}") 
+    pretty_labels("", "", 20, title=f"Missing phys. unc. = {sigma:.2g}")
     filename = ""
     if args.useNN:
         filename += "Surr"
@@ -124,6 +124,6 @@ def post_process_cal(
     else:
         filename += "_opt"
     filename += f"_{args.alpha}_{args.beta}_prop"
-    plt.savefig(filename+".png")
-    plt.savefig(filename+".eps")
+    plt.savefig(filename + ".png")
+    plt.savefig(filename + ".eps")
     plt.show()

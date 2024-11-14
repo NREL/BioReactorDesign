@@ -155,6 +155,7 @@ def bayes_step_opt_err(y=None, y_err=0.1):
     std_obs = jnp.ones(y_model.shape[0]) * y_err
     numpyro.sample("obs", dist.Normal(y_model, std_obs), obs=y)
 
+
 def bayes_step_cal_err(y=None):
     mu_d = numpyro.sample("mu_d", dist.Uniform(0.01, 0.9))
     sigma_d = numpyro.sample("sigma_d", dist.Uniform(0.01, 0.9))
@@ -162,6 +163,7 @@ def bayes_step_cal_err(y=None):
     y_model = forward(jnp.array([mu_d, sigma_d]))
     std_obs = jnp.ones(y_model.shape[0]) * err
     numpyro.sample("obs", dist.Normal(y_model, std_obs), obs=y)
+
 
 def mcmc_iter(y_err=0.1, mcmc_method="HMC", cal_err=False):
     rng_key = random.PRNGKey(0)
@@ -176,7 +178,6 @@ def mcmc_iter(y_err=0.1, mcmc_method="HMC", cal_err=False):
         bayes_step = bayes_step_cal_err
     else:
         bayes_step = bayes_step_opt_err
-    
 
     # Hamiltonian Monte Carlo (HMC) with no u turn sampling (NUTS)
     if mcmc_method.lower() == "hmc":
@@ -195,9 +196,9 @@ def mcmc_iter(y_err=0.1, mcmc_method="HMC", cal_err=False):
         jit_model_args=True,
     )
     if cal_err:
-       mcmc.run(rng_key_, y=data_y)
+        mcmc.run(rng_key_, y=data_y)
     else:
-       mcmc.run(rng_key_, y=data_y, y_err=y_err)
+        mcmc.run(rng_key_, y=data_y, y_err=y_err)
     mcmc.print_summary()
 
     # Draw samples
@@ -246,7 +247,7 @@ def mcmc_iter(y_err=0.1, mcmc_method="HMC", cal_err=False):
     }
 
     if cal_err:
-        err = np.mean(np_mcmc_samples[:,-1])
+        err = np.mean(np_mcmc_samples[:, -1])
     else:
         err = y_err
     true_m95 = data_y - 2 * y_err
@@ -260,24 +261,29 @@ def mcmc_iter(y_err=0.1, mcmc_method="HMC", cal_err=False):
     else:
         return True, results
 
+
 if not args.cal_err:
     min_sigma = 1e-4
     max_sigma = 1
     guess_sigma = 0.07
     sigma = guess_sigma
-    
+
     for iteration_sigma in range(10):
         print(f"Doing sigma = {sigma:.3g}")
-        reduce_sigma, results = mcmc_iter(y_err=sigma, mcmc_method="hmc", cal_err=args.cal_err)
+        reduce_sigma, results = mcmc_iter(
+            y_err=sigma, mcmc_method="hmc", cal_err=args.cal_err
+        )
         if reduce_sigma:
             max_sigma = sigma
             sigma = sigma - (sigma - min_sigma) / 2
         else:
             min_sigma = sigma
             sigma = sigma + (max_sigma - sigma) / 2
-    
+
     if not reduce_sigma:
-        reduce_sigma, results = mcmc_iter(y_err=max_sigma, mcmc_method="hmc", cal_err=args.cal_err)
+        reduce_sigma, results = mcmc_iter(
+            y_err=max_sigma, mcmc_method="hmc", cal_err=args.cal_err
+        )
 else:
     _, results = mcmc_iter(mcmc_method="hmc", cal_err=args.cal_err)
 
@@ -293,7 +299,7 @@ np.savez(
 )
 
 if args.cal_err:
-    sigma = np.mean(np_mcmc_samples[:,-1])
+    sigma = np.mean(np_mcmc_samples[:, -1])
 
 
 post_process_cal(
@@ -305,5 +311,5 @@ post_process_cal(
     data_x,
     data_y,
     sigma,
-    args
+    args,
 )
