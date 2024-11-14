@@ -87,6 +87,7 @@ Calibrate with a surrogate for `alpha=5, beta=5`: `python tut_calibration.py -us
 
 
 Calibrate without a surrogate for `alpha=2, beta=5`: `python tut_calibration.py -cal_err --alpha 2 --beta 5` (Left two plots)
+
 Calibrate with a surrogate for `alpha=2, beta=5`: `python tut_calibration.py -useNN -cal_err --alpha 2 --beta 5` (Right two plots)
 
 
