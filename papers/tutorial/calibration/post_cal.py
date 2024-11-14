@@ -12,11 +12,14 @@ def post_process_cal(
     data_x,
     data_y,
     sigma,
+    args,
 ):
     # Post process
     ranges = []
     ranges.append((0.01, 0.9))
     ranges.append((0.01, 0.9))
+    if len(labels_np) == 3:
+        ranges.append((0.001, 1))
     truths = None
 
     labels_np_disp = labels_np.copy()
@@ -32,6 +35,19 @@ def post_process_cal(
         bins=50,
         range=ranges,
     )
+    filename = ""
+    if args.useNN:
+        filename += "Surr"
+    else:
+        filename += "True"
+    if args.cal_err:
+        filename += "_cal"
+    else:
+        filename += "_opt"
+    filename += f"_{args.alpha}_{args.beta}_corner"
+    plt.savefig(filename + ".png")
+    plt.savefig(filename + ".eps")
+
     for ax in fig.get_axes():
         ax.tick_params(
             axis="both", labelsize=20
@@ -64,7 +80,7 @@ def post_process_cal(
     print("Num samples = ", nsamples)
     realization = []
     for i in range(nsamples):
-        y = forward_range(np_mcmc_samples[i, :].astype("float32"))
+        y = forward_range(np_mcmc_samples[i, :2].astype("float32"))
         realization.append(y)
     realization = np.array(realization)
 
@@ -98,5 +114,16 @@ def post_process_cal(
     )
     plt.plot(rangex, std2_5_real, "--", color="k", linewidth=3)
     pretty_labels("", "", 20, title=f"Missing phys. unc. = {sigma:.2g}")
-
+    filename = ""
+    if args.useNN:
+        filename += "Surr"
+    else:
+        filename += "True"
+    if args.cal_err:
+        filename += "_cal"
+    else:
+        filename += "_opt"
+    filename += f"_{args.alpha}_{args.beta}_prop"
+    plt.savefig(filename + ".png")
+    plt.savefig(filename + ".eps")
     plt.show()
