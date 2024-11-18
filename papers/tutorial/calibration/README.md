@@ -37,44 +37,64 @@ The following plots should be generated. The first one shows the training and te
 </p>
 
 
-## Calibration
+## Calibration with optimized likelihood uncertainty
 
 For the calibration, we can use the true function or the surrogate model. The objective PDF is assumed to be noiseless. Even though the observation is noiseless, an uncertainty is computed to account for the missing physics.
+The likelihood uncertainty that represents the missing physics is optimized to ensure an uncertainty band overlap
 
-Calibrate without a surrogate for `alpha=5, beta=5`: `python tut_calibration_all.py --alpha 5 --beta 5`
+Calibrate without a surrogate for `alpha=5, beta=5`: `python tut_calibration.py --alpha 5 --beta 5` (Left two plots)
+
+Calibrate with a surrogate for `alpha=5, beta=5`: `python tut_calibration.py -useNN --alpha 5 --beta 5` (Right two plots)
 
 <p align="center">
-<img src="/papers/tutorial/calibration/assets/True_a_5_b_5_prop.png" width="225" height="187.5"/>
-<img src="/papers/tutorial/calibration/assets/True_a_5_b_5_corner.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/True_opt_5.0_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/True_opt_5.0_5.0_corner.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_opt_5.0_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_opt_5.0_5.0_corner.png" width="225" height="187.5"/>
 </p>
 
 
-Calibrate without a surrogate for `alpha=2, beta=5`: `python tut_calibration_all.py --alpha 2 --beta 5`
+Calibrate without a surrogate for `alpha=2, beta=5`: `python tut_calibration.py --alpha 2 --beta 5` (Left two plots)
+
+Calibrate with a surrogate for `alpha=2, beta=5`: `python tut_calibration.py -useNN --alpha 2 --beta 5` (Right two plots)
 
 
 <p align="center">
-<img src="/papers/tutorial/calibration/assets/True_a_2_b_5_prop.png" width="225" height="187.5"/>
-<img src="/papers/tutorial/calibration/assets/True_a_2_b_5_corner.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/True_opt_2.0_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/True_opt_2.0_5.0_corner.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_opt_2.0_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_opt_2.0_5.0_corner.png" width="225" height="187.5"/>
 </p>
 
 Clearly, the amount of missing physics vary depending on the observations.
 
-Then the same exercise can be done when using a neural net surrogate. Note that this step will not run if the `Building the surrogate` step was not done first
-
-Calibrate with a surrogate for `alpha=5, beta=5`: `python tut_calibration_all.py --useNN --alpha 5 --beta 5`
-
-<p align="center">
-<img src="/papers/tutorial/calibration/assets/Surr_a_5_b_5_prop.png" width="225" height="187.5"/>
-<img src="/papers/tutorial/calibration/assets/Surr_a_5_b_5_corner.png" width="225" height="187.5"/>
-</p>
-
-
-Calibrate with a surrogate for `alpha=2, beta=5`: `python tut_calibration_all.py --useNN --alpha 2 --beta 5`
-
-
-<p align="center">
-<img src="/papers/tutorial/calibration/assets/Surr_a_2_b_5_prop.png" width="225" height="187.5"/>
-<img src="/papers/tutorial/calibration/assets/Surr_a_2_b_5_corner.png" width="225" height="187.5"/>
-</p>
-
 Using surrogate gives similar predictions as when not using a surrogate. But the surrogate was constructed with 200 forward simulations.
+
+## Calibration with calibrated likelihood uncertainty
+
+The same suite can be done by calibrating the likelihood uncertainty in lieu of optimizing it (with a bissection search). This has the advantage of rapid calibration since only one calibration is needed. Here the uncertainty minimizes the negative log likelihood.
+
+Calibrate without a surrogate for `alpha=5, beta=5`: `python tut_calibration.py -cal_err --alpha 5 --beta 5` (Left two plots)
+
+Calibrate with a surrogate for `alpha=5, beta=5`: `python tut_calibration.py -useNN -cal_err --alpha 5 --beta 5` (Right two plots)
+
+<p align="center">
+<img src="/papers/tutorial/calibration/assets/True_cal_5.0_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/True_cal_5.0_5.0_corner.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_cal_5.0_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_cal_5.0_5.0_corner.png" width="225" height="187.5"/>
+</p>
+
+
+Calibrate without a surrogate for `alpha=2, beta=5`: `python tut_calibration.py -cal_err --alpha 2 --beta 5` (Left two plots)
+
+Calibrate with a surrogate for `alpha=2, beta=5`: `python tut_calibration.py -useNN -cal_err --alpha 2 --beta 5` (Right two plots)
+
+
+<p align="center">
+<img src="/papers/tutorial/calibration/assets/True_cal_2.0_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/True_cal_2.0_5.0_corner.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_cal_2.0_5.0_prop.png" width="225" height="187.5"/>
+<img src="/papers/tutorial/calibration/assets/Surr_cal_2.0_5.0_corner.png" width="225" height="187.5"/>
+</p>
+
