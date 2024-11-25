@@ -33,8 +33,9 @@ def readOFScal(file, nCells, nHeader=None):
                 nHeader = iline + 2
                 f.close()
             Array = np.loadtxt(file, skiprows=nHeader, max_rows=nCells)
-    except:
+    except Exception as err:
         print("Issue when reading %s" % file)
+        print(err)
         sys.exit()
     return Array
 
