@@ -53,7 +53,7 @@ else
     setFields
     
     # Run
-    multiphaseEulerFoam
+    biomultiphaseEulerFoam
 fi
 
 

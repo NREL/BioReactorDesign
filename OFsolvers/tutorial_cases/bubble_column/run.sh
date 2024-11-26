@@ -35,7 +35,7 @@ else
     writeMeshObj
     
     # Run
-    multiphaseEulerFoam
+   biomultiphaseEulerFoam
 fi
 
 

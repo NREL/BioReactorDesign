@@ -31,7 +31,7 @@ else
     rm -rf 0/meshPhi
     
     # Run
-    multiphaseEulerFoam
+    biomultiphaseEulerFoam
 
 fi
 
