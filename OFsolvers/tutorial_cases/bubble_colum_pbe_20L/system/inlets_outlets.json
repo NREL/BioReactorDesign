@@ -1,6 +1,0 @@
-{
-    "inlets": [
-        {"type": "circle", "radius": 0.2, "centx": 0.0, "centy": 0.0, "centz": 0.0, "normal_dir": 1, "nelements": 50}
-    ]
-}
-
