@@ -24,7 +24,7 @@ else
     cp -r IC/0 0
     
     # Run
-    biomultiphaseEulerFoam
+    birdmultiphaseEulerFoam
 fi
 
 

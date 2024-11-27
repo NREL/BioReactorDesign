@@ -10,4 +10,4 @@
 module purge
 module load openfoam/9-craympich
 source ~/.bashrc
-srun -n 16 biomultiphaseEulerFoam -parallel
+srun -n 16 birdmultiphaseEulerFoam -parallel

@@ -1,3 +1,0 @@
-SOURCE += phaseSurfaceArrheniusReactionRate/makephaseSurfaceArrheniusReactions.C
-
-LIB = $(FOAM_USER_LIBBIN)/libbiomultiphaseReactions

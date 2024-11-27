@@ -11,5 +11,5 @@ bash presteps.sh
 #source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
 module load openfoam/9-craympich
 decomposePar -fileHandler collated
-srun -n 16 biomultiphaseEulerFoam -parallel -fileHandler collated
+srun -n 16 birdmultiphaseEulerFoam -parallel -fileHandler collated
 reconstructPar -newTimes
