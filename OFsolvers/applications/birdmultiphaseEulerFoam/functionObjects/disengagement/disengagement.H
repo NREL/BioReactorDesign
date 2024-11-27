@@ -91,6 +91,9 @@ protected:
         //- Check if disengaged
         bool disengaged_;
 
+        //- Book-keeping for writing array
+        label writtenAt_;
+
         //- Output file header information
         virtual void writeFileHeader(const label i);
 

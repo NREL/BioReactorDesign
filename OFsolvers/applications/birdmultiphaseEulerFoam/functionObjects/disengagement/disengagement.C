@@ -57,7 +57,8 @@ Foam::functionObjects::disengagement::disengagement
     holdup_(),
     tolerance_(dict.lookup<scalar>("tolerance")),
     nsamples_(dict.lookup<label>("nsamples")),
-    disengaged_(false)
+    disengaged_(false),
+    writtenAt_(0)
 {
     //- Check that U has fixedValue
     volVectorField& U = const_cast<volVectorField&>(mesh_.lookupObject<volVectorField>("U." + phaseName_));
@@ -175,12 +176,17 @@ bool Foam::functionObjects::disengagement::write()
 
     if (Pstream::master())
     {
-        writeTime(file());
-
-        file() << holdup_.last().second();
+        for (label i = writtenAt_; i < holdup_.size(); i++)
+        {
+            file() << holdup_.last().first();
+            file() << tab;
+            file() << holdup_.last().second();
+        }
 
         file() << endl;
     }
+
+    writtenAt_ = holdup_.size() - 1;
 
     return true;
 }
