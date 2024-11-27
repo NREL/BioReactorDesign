@@ -54,58 +54,22 @@ maxDeltaT       0.0005;
 functions
 {
 
-    #includeFunc    writeObjects(d.gas)
-    #includeFunc    writeObjects(thermo:rho.gas)
-    #includeFunc    writeObjects(thermo:rho.liquid)
+//    #includeFunc    writeObjects(d.gas)
+//    #includeFunc    writeObjects(thermo:rho.gas)
+//    #includeFunc    writeObjects(thermo:rho.liquid)
 
-    fieldAverage
+    disengagement
     {
-        type            fieldAverage;
-        writeControl    writeTime;
-        libs                ("libfieldFunctionObjects.so");
-    	timeStart       0;
-        base                time;
-        window              2.0;
-        windowName          w1;
-
-        mean                yes;
-        prime2Mean          no;
-
-        fields              (alpha.gas);
-    };
-
-    writeHoldup
-    {
-        type coded;
-        libs ("libtilityFunctionObjects,so");
-        active true;
+    	type disengagement;
+    	libs ("libbirdmultiphaseEulerFoamFunctionObjects.so");
+    	writeControl   timeStep;
+        writeInterval  100;
+        phase gas;
+        inlet inlet;
+        tolerance 1e-2;
+        nsamples 100;
         
-        // Name of on-the-fly generated functionObject
-        name writeHoldup;
-        codeWrite
-        #{
-            if(!mesh().foundObject<volScalarField>("alpha.gasMean"))
-            {
-                return true;
-            }
-
-    		const volScalarField& alpha_mean = mesh().lookupObject<volScalarField>("alpha.gasMean");
-    		const volScalarField& alpha = mesh().lookupObject<volScalarField>("alpha.gas");
-				
-    		scalar volume = gSum(mesh().V());
-    		scalar gas_holdup_mean     = gSum(fvc::volumeIntegrate(alpha_mean))/volume;
-     		scalar gas_holdup          = gSum(fvc::volumeIntegrate(alpha))/volume;
-     		   		
-            if (Pstream::master()){
-               std::ofstream file;
-               file.open ("holdup.csv", std::ofstream::out | std::ofstream::app);
-               file << mesh().time().value() << " , " << gas_holdup
-               << " , " << gas_holdup_mean <<  std::endl;
-               file.close();
-            }    		
-        #};
-
-    };
+    }
 }
 //functions
 //{
