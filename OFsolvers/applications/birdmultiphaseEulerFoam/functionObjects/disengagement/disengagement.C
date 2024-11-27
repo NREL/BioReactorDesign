@@ -178,9 +178,9 @@ bool Foam::functionObjects::disengagement::write()
     {
         for (label i = writtenAt_; i < holdup_.size(); i++)
         {
-            file() << holdup_.last().first();
+            file() << holdup_[i].first();
             file() << tab;
-            file() << holdup_.last().second();
+            file() << holdup_[i].second();
         }
 
         file() << endl;
