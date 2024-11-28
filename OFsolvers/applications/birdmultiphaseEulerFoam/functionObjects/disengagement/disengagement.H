@@ -79,20 +79,20 @@ protected:
         //- Name of inlet patch
         word inletPatch_;
 
-        //- Vector with holdups and times
-        List<Pair<scalar>> holdup_;
-
         //- Tolerance for disengaging
         scalar tolerance_;
 
         //- Number of samples for averaging
         label nsamples_;
 
+        //- Optional for not disengaging
+        bool disengage_;
+
+        //- Vector with holdups and times
+        List<Pair<scalar>> holdup_;
+
         //- Check if disengaged
         bool disengaged_;
-
-        //- Book-keeping for writing array
-        label writtenAt_;
 
         //- Output file header information
         virtual void writeFileHeader(const label i);

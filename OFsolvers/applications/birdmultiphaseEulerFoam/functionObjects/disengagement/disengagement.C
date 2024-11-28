@@ -39,6 +39,22 @@ namespace functionObjects
 }
 }
 
+//- Add an element to the back of a list and shift all elements left.
+//  Removes first element. This allows to only keep the information needed.
+template<class Type>
+void add_to_list_like_static_queue(List<Type>& list, const Type& value)
+{
+    for (label i = 0; i < list.size() - 1; i++)
+    {
+        //- Movel all elements
+        list[i] = list[i+1];
+    }
+
+    //- emplace last element
+    list[list.size()-1] = value;
+    
+}
+
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -54,11 +70,11 @@ Foam::functionObjects::disengagement::disengagement
     phases_(mesh_.lookupObject<phaseSystem>("phaseProperties").phases()),
     phaseName_(dict.lookup<word>("phase")),
     inletPatch_(dict.lookup<word>("inlet")),
-    holdup_(),
     tolerance_(dict.lookup<scalar>("tolerance")),
     nsamples_(dict.lookup<label>("nsamples")),
-    disengaged_(false),
-    writtenAt_(0)
+    disengage_(dict.lookup("disengage")),
+    holdup_(2*nsamples_,{0.,-1.}),
+    disengaged_(false)
 {
     //- Check that U has fixedValue
     volVectorField& U = const_cast<volVectorField&>(mesh_.lookupObject<volVectorField>("U." + phaseName_));
@@ -93,6 +109,7 @@ void Foam::functionObjects::disengagement::writeFileHeader(const label i)
         writeHeader(file(), "holdup");
         writeCommented(file(), "time");
         writeTabbed(file(), "holdup");
+        writeTabbed(file(), "disengaged");
 
         file() << endl;
     }
@@ -107,31 +124,34 @@ bool Foam::functionObjects::disengagement::execute()
     scalar holdup = gSum(fvc::volumeIntegrate(alpha))/volume;
     Pair<scalar> holddata(mesh_.time().value(), holdup);
 
-    holdup_.append(holddata);
+    //- See function at the beginning of file
+    add_to_list_like_static_queue(holdup_,holddata);
+
+    //- Skip rest if no disengagement is required
+    if (!disengage_) return true;
 
     //- Stop if already disengaged
-    if(disengaged_) return true;
+    if (disengaged_ ) return true;
 
-    //- Check if the average over the last  samples
-    if (holdup_.size() > 2*nsamples_ + 1)
+    //- Do the check only if the list is complete
+    if (holdup_[0].second() > 0.)
     {
         scalar holdup_mean_long(0.);
         scalar holdup_mean_short(0.);
-        scalar t0_long(holdup_[holdup_.size() - 2*nsamples_].first());
+        scalar t0_long(holdup_[0].first());
         scalar deltat_long(0.);
         scalar deltat_short(0.);
 
-        t0_long = holdup_[holdup_.size() - 2*nsamples_ -1].first();
-
-
-        for (int i = holdup_.size() - 2*nsamples_; i < holdup_.size(); i++)
+        //- The first (oldest) sample is skipped to have a well-defined dt
+        for (int i = 1; i < 2*nsamples_; i++)
         {
             scalar dt = holdup_[i].first() - t0_long;
             t0_long = holdup_[i].first();
             holdup_mean_long += dt*holdup_[i].second();
             deltat_long += dt;
 
-            if (i >= holdup_.size() - nsamples_)
+            //- Compute average on the most recent samples
+            if (i >= nsamples_)
             {
                 holdup_mean_short +=  dt*holdup_[i].second();
                 deltat_short += dt;
@@ -174,20 +194,19 @@ bool Foam::functionObjects::disengagement::write()
     Info << logFiles::names();
     logFiles::write();
 
+    label dis = 0;
+    if(disengaged_) dis = 1;
+
     if (Pstream::master())
     {
-        for (label i = writtenAt_; i < holdup_.size(); i++)
-        {
-            file() << holdup_[i].first();
+            file() << holdup_[2*nsamples_ -1].first();
             file() << tab;
-            file() << holdup_[i].second();
+            file() << holdup_[2*nsamples_ -1].second();
+            file() << tab;
+            file() << dis;
             file() << endl;
-        }
-
-
+     
     }
-
-    writtenAt_ = holdup_.size() - 1;
 
     return true;
 }
