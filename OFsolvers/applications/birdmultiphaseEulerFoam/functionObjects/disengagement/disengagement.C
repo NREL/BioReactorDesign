@@ -181,9 +181,10 @@ bool Foam::functionObjects::disengagement::write()
             file() << holdup_[i].first();
             file() << tab;
             file() << holdup_[i].second();
+            file() << endl;
         }
 
-        file() << endl;
+
     }
 
     writtenAt_ = holdup_.size() - 1;
