@@ -164,8 +164,10 @@ bool Foam::functionObjects::disengagement::execute()
 
         phase_com_mean_long /= deltat_long;
         phase_com_mean_short /= deltat_short;
+        
+        if (phase_com_mean_long < 1e-16) return true;
 
-        if (mag(phase_com_mean_long - phase_com_mean_short) < tolerance_)
+        if (mag(phase_com_mean_long - phase_com_mean_short)/phase_com_mean_long < tolerance_)
         {
             if(!disengaged_)
             {
@@ -179,10 +181,10 @@ bool Foam::functionObjects::disengagement::execute()
 
             label patchI = mesh_.boundaryMesh().findPatchID(inletPatch_);
 
-            volVectorField::Boundary& UBf = const_cast<volVectorField::Boundary&>(U.boundaryFieldRef());
+            fvPatchVectorField& UBf = const_cast<fvPatchVectorField&>(U.boundaryFieldRef()[patchI]);
 
             //- Stop the flow from entering
-            UBf[patchI] = vector(0,0,0);
+            UBf[patchI] == vector(0,0,0);
         
         }
                    

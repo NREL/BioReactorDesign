@@ -26,12 +26,48 @@ Class
 
 Description
     This functionObject disengages (i.e., sets the inlet velocity to zero)
-    upon reaching a steady holdup.
+    upon reaching a steady value for the phase center of mass.
+
+    Steady state is computed by comparing the average center of mass from
+    the previous "2*nsamples" samples against the previous "samples" samples
+    (see input below). If the relative difference falls below a user-defined 
+    tolerance, steady stated is decleared. 
+
+    Example of function object specification:
+    \verbatim
+    disengagement
+    {
+        type            disengagement;
+        libs            ("libbirdmultiphaseEulerFoamFunctionObjects.so");
+
+        //- Properties common to all functionObjects
+        executeControl  runTime;
+        executeInterval 0.01;
+        writeControl    runTime;
+        writeInterval   0.1; 
+
+        //- Properties specific of this functionobject
+        phase           liquid;
+        inletPhase      gas;
+        inlet           inlet;
+        tolerance       1e-2;
+        direction       (0 1 0);
+        nsamples        50;
+        disengage       true;   
+    }
+    \endverbatim
 
 Usage
     \table
         Property     | Description             | Required    | Default value
         type         | type name: disengagement     | yes         |
+        phase        | name of the phase for computing the center of mass     | yes         |
+        inletPhase   | name of the phase you want to disengage | yes |
+        inlet        | name of the inlet patch | yes |
+        tolerance    | relative difference to declare disengagement | yes |
+        direction    | normally the direction of gravity | yes |
+        nsamples     | number of samples for averaging | yes |
+        disengage    | set false for disabling disengaging | yes |
     \endtable
 
 See also

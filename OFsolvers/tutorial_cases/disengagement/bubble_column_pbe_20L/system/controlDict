@@ -53,28 +53,27 @@ maxDeltaT       0.0005;
 
 functions
 {
-
-//    #includeFunc    writeObjects(d.gas)
-//    #includeFunc    writeObjects(thermo:rho.gas)
-//    #includeFunc    writeObjects(thermo:rho.liquid)
-
     disengagement
     {
-    	type disengagement;
-    	libs ("libbirdmultiphaseEulerFoamFunctionObjects.so");
-    	writeControl   timeStep;
-        writeInterval  100;
-        phase gas;
-        inlet inlet;
-        tolerance 1e-2;
-        nsamples 100;
-        
+        type            disengagement;
+        libs            ("libbirdmultiphaseEulerFoamFunctionObjects.so");
+
+        //- Properties common to all functionObjects
+        executeControl  runTime;
+        executeInterval 0.01;
+        writeControl    runTime;
+        writeInterval   0.1; 
+
+        //- Properties specific of this functionobject
+        phase           liquid;
+        inletPhase      gas;
+        inlet           inlet;
+        tolerance       1e-2;
+        direction       (0 1 0);
+        nsamples        50;
+        disengage       true;   
     }
 }
-//functions
-//{
-//    #includeFunc fieldAverage(U.air, U.water, alpha.air, p)
-//}
 
 
 // ************************************************************************* //
