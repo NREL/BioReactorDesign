@@ -76,6 +76,9 @@ protected:
         //- Name of phase
         word phaseName_;
 
+        //- Name of phase
+        word inletPhaseName_;
+
         //- Name of inlet patch
         word inletPatch_;
 
@@ -85,11 +88,14 @@ protected:
         //- Number of samples for averaging
         label nsamples_;
 
+        //- Direction for computing the holdup
+        vector direction_;
+
         //- Optional for not disengaging
         bool disengage_;
 
-        //- Vector with holdups and times
-        List<Pair<scalar>> holdup_;
+        //- Vector with phase ceneter of mass and times
+        List<Pair<scalar>> phase_com_;
 
         //- Check if disengaged
         bool disengaged_;
