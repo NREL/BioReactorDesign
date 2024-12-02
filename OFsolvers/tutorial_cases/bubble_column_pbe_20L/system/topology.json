@@ -1,0 +1,13 @@
+{
+	"Boundary": {
+		"outlet":[
+			   {"type": "top", "Rmin": 0, "Rmax": 0, "Lmin": 0, "Lmax": 1},
+			   {"type": "top", "Rmin": 1, "Rmax": 1, "Lmin": 0, "Lmax": 1},
+			   {"type": "top", "Rmin": 2, "Rmax": 2, "Lmin": 0, "Lmax": 1}
+			 ]
+	}
+}
+
+
+
+

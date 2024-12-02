@@ -49,7 +49,7 @@ else
     setFields
     
     # Run
-    multiphaseEulerFoam
+    birdmultiphaseEulerFoam
 fi
 
 

@@ -1,0 +1,108 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2312                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      foamyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#includeEtc "caseDicts/foamyHexMeshDict"
+
+geometry
+{
+    #include "meshDict.geometry"
+}
+
+
+surfaceConformation
+{
+    locationInMesh (9 0 0.0);
+
+    featurePointControls
+    {
+        specialiseFeaturePoints         on;
+        edgeAiming                      on;
+        guardFeaturePoints              off;
+        snapFeaturePoints               off;
+        circulateEdges                  off;
+    }
+
+
+    geometryToConformTo
+    {
+        #include "meshDict.conformationSurfaces"
+    }
+/*
+    additionalFeatures
+    {
+        boundaryAndFaceZones
+        {
+            featureMethod           extendedFeatureEdgeMesh;
+            extendedFeatureEdgeMesh "boundaryAndFaceZones.extendedFeatureEdgeMesh";
+        }
+    } */
+}
+
+
+motionControl
+{
+    defaultCellSize         0.1;
+
+    minimumCellSizeCoeff    0;
+
+    maxRefinementIterations 0;
+
+    maxSmoothingIterations  100;
+
+    shapeControlFunctions
+    {
+	UTube
+	{
+	    type                        searchableSurfaceControl;
+	    forceInitialPointInsertion  on;
+	    priority                    1;
+	    mode                        inside;
+	    surfaceCellSizeFunction     uniformValue;
+	    uniformValueCoeffs
+	    {
+		surfaceCellSizeCoeff    1;
+	    }
+	    cellSizeFunction            uniform;
+	    uniformCoeffs
+	    {}
+	}
+    }
+
+    objOutput                   off;
+
+    timeChecks                  off;
+
+    printVertexInfo             off;
+}
+
+
+polyMeshFiltering
+{
+    filterEdges                         false;
+    filterFaces                         off;
+    writeTetDualMesh                    true;
+    writeCellShapeControlMesh           false;
+    writeBackgroundMeshDecomposition    false;
+}
+
+
+meshQualityControls
+{
+    #include "meshQualityDict"
+}
+
+
+// ************************************************************************* //

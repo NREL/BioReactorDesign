@@ -1,0 +1,29 @@
+EXE_INC = \
+    -I../include \
+    -I../phaseSystems/lnInclude \
+    -I../interfacialModels/lnInclude \
+    -I../interfacialCompositionModels/lnInclude \
+    -I$(LIB_SRC)/transportModels/lnInclude \
+    -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+    -I$(LIB_SRC)/MomentumTransportModels/momentumTransportModels/lnInclude \
+    -I$(LIB_SRC)/MomentumTransportModels/compressible/lnInclude \
+    -I$(LIB_SRC)/MomentumTransportModels/phaseCompressible/lnInclude \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/dynamicFvMesh/lnInclude
+
+EXE_LIBS = \
+    -L$(FOAM_USER_LIBBIN) \
+    -lbirdphaseSystem \
+    -lbirdmultiphaseSystems \
+    -lbirdeulerianInterfacialModels \
+    -lbirdeulerianInterfacialCompositionModels \
+    -lbirdmultiphaseMomentumTransportModels \
+    -lbirdmultiphaseReactions \
+    -lphaseFluidThermophysicalTransportModels \
+    -lphaseFluidReactionThermophysicalTransportModels \
+    -lfiniteVolume \
+    -lfvModels \
+    -lfvConstraints \
+    -lmeshTools \
+    -ldynamicFvMesh

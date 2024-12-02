@@ -35,7 +35,7 @@ else
     writeMeshObj
     
     # Run
-    multiphaseEulerFoam
+   birdmultiphaseEulerFoam
 fi
 
 
