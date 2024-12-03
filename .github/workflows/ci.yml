@@ -30,7 +30,7 @@ jobs:
       run:
         working-directory: ${{github.workspace}}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: ${{matrix.python-version}}
@@ -43,19 +43,19 @@ jobs:
         run: |
           source .github/linters/formatting.sh
           format . true
-  Test:
-    name: Test (${{ matrix.python-version }}, ${{ matrix.os }})
+  Test BiRD:
+    name: Test BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
         os: ['ubuntu-latest', 'macos-latest']
     defaults:
       run:
         working-directory: ${{github.workspace}}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: ${{matrix.python-version}}
