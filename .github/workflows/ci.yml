@@ -43,8 +43,8 @@ jobs:
         run: |
           source .github/linters/formatting.sh
           format . true
-  Test BiRD:
-    name: Test BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
+  Test-BiRD:
+    name: Test-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
