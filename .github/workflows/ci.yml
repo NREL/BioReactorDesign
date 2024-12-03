@@ -73,3 +73,28 @@ jobs:
       - name: Test postprocessing
         run: |
           pytest tests/postprocess
+  Test-OF:
+    name: Test-OF (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10']
+        os: ['ubuntu-22.04']
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+      - uses: gerlero/setup-openfoam@v1
+        with:
+          python-version: ${{matrix.python-version}}
+          openfoam-version: 9
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install .
+      - name: Test OF
+        run: |
+          icoFoam
