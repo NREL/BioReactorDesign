@@ -184,7 +184,7 @@ bool Foam::functionObjects::disengagement::execute()
             fvPatchVectorField& UBf = const_cast<fvPatchVectorField&>(U.boundaryFieldRef()[patchI]);
 
             //- Stop the flow from entering
-            UBf[patchI] == vector(0,0,0);
+            UBf == vector(0,0,0);
         
         }
                    
