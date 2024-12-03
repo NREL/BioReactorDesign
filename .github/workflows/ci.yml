@@ -87,9 +87,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
-      - uses: gerlero/setup-openfoam@v1
         with:
           python-version: ${{matrix.python-version}}
+      - uses: gerlero/setup-openfoam@v1
+        with:
           openfoam-version: 9
       - name: Install dependencies
         run: |
