@@ -33,7 +33,7 @@ boundaryField
         type            inletOutlet;
         phi             phi.gas;
         inletValue      uniform 0;
-        value           uniform 0;
+        value           uniform $f_CO2;
     }
 
     walls
