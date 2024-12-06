@@ -3,11 +3,11 @@ import os
 
 import numpy as np
 
-from bird.meshing._stir_tank_reactor import StirTankReactor
+from bird.meshing._stirred_tank_reactor import StirredTankReactor
 
 
 def get_reactor_geom(yamlfile):
-    return StirTankReactor.from_file(yamlfile)
+    return StirredTankReactor.from_file(yamlfile)
 
 
 def write_ofoam_preamble(outfile, react):
@@ -772,7 +772,7 @@ def write_patches(outfile, react):
 
 if __name__ == "__main__":
     react = get_reactor_geom(
-        "stir_tank_mesh_templates/base_tank/tank_par.yaml"
+        "stirred_tank_mesh_templates/base_tank/tank_par.yaml"
     )
     with open("tmp", "w") as outfile:
         write_ofoam_preamble(outfile, react)

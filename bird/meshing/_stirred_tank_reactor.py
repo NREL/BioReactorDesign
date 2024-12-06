@@ -5,7 +5,7 @@ import numpy as np
 from ruamel.yaml import YAML
 
 
-class StirTankReactor:
+class StirredTankReactor:
     def __init__(
         self,
         Dt,

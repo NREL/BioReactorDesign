@@ -11,7 +11,7 @@ if ! type "python" &> /dev/null; then
     echo "Skipping Mesh generation"
 else
     # Generate blockmeshDict
-    python ../../../applications/write_stir_tank_mesh.py -i ../../../bird/meshing/stir_tank_mesh_templates/base_tank/tank_par.yaml -o system/blockMeshDict
+    python ../../../applications/write_stirred_tank_mesh.py -i ../../../bird/meshing/stirred_tank_mesh_templates/base_tank/tank_par.yaml -o system/blockMeshDict
 fi
 
 

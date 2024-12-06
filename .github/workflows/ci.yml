@@ -104,7 +104,16 @@ jobs:
           cd ../../../
       - name: Run bubble column tutorial
         run: |
-          pwd
-          cd OFsolvers/tutorial_cases
-          cd bubble_column
+          cd OFsolvers/tutorial_cases/bubble_column
           bash run.sh 
+          cd ../../../
+      - name: Run coflowing column tutorial
+        run: |
+          cd OFsolvers/tutorial_cases/coflowing_column
+          bash run.sh 
+          cd ../../../
+      - name: Run stirred-tank tutorial
+        run: |
+          cd OFsolvers/tutorial_cases/stirred_tank
+          bash run.sh 
+          cd ../../../

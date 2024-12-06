@@ -4,8 +4,8 @@ import sys
 
 import numpy as np
 
-from bird import BIRD_STIR_TANK_MESH_TEMP_DIR
-from bird.meshing.stir_tank_mesh import (
+from bird import BIRD_STIRRED_TANK_MESH_TEMP_DIR
+from bird.meshing.stirred_tank_mesh import (
     get_reactor_geom,
     write_blocks,
     write_edges,
@@ -15,9 +15,9 @@ from bird.meshing.stir_tank_mesh import (
 )
 
 
-def test_stir_tank():
+def test_stirred_tank():
     inp = os.path.join(
-        BIRD_STIR_TANK_MESH_TEMP_DIR, "base_tank", "tank_par.yaml"
+        BIRD_STIRRED_TANK_MESH_TEMP_DIR, "base_tank", "tank_par.yaml"
     )
     out = "tmp_blockMeshDict"
     with open(out, "w") as outfile:
