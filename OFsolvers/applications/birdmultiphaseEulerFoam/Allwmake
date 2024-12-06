@@ -4,7 +4,7 @@ cd ${0%/*} || exit 1    # Run from this directory
 # Parse arguments for library compilation
 . $WM_PROJECT_DIR/wmake/scripts/AllwmakeParseArguments
 
-numcores=20
+numcores=4
 wmake -j $numcores $targetType functionObjects
 wmake -j $numcores $targetType interfacialCompositionModels
 wmake -j $numcores $targetType interfacialModels
