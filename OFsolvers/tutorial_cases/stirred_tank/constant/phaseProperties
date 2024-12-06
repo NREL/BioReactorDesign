@@ -212,8 +212,8 @@ drag
 (
     (gas in liquid)
     {
-        //type            Grace;// Need to install the model available at https://github.com/NREL/BioReactorDesign
-        type            IshiiZuber;
+        type            Grace;
+        //type            IshiiZuber;
         residualRe      1e-3;
         swarmCorrection
         {
@@ -306,8 +306,8 @@ diffusiveMassTransfer.liquid
 (
     (gas in liquid)
     {
-        //type Higbie; // Need to install the model available at https://github.com/NREL/BioReactorDesign
-        type Frossling;
+        type Higbie;
+        //type Frossling;
         Le $LeLiqMix;
     }
 
@@ -328,8 +328,8 @@ massTransfer.gas
 
     (liquid in gas)
     {
-        //type Higbie; // Need to install the model available at https://github.com/NREL/BioReactorDesign
-        type Frossling;
+        type Higbie;
+        //type Frossling;
         Le $LeLiq;
     }
 );
@@ -338,8 +338,8 @@ massTransfer.liquid
 (
     (gas in liquid)
     {
-        //type Higbie; // Need to install the model available at https://github.com/NREL/BioReactorDesign
-        type Frossling;
+        type Higbie;
+        //type Frossling;
         Le $LeLiq;
     }
 
