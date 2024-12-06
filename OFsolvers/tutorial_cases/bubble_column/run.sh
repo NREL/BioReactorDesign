@@ -10,8 +10,9 @@ if ! type "python" &> /dev/null; then
     echo "<python> could not be found"
     echo "Skipping Mesh generation"
 else
+    BIRD_DIR=`python -c "import bird; print(bird.BIRD_DIR)"`
     # Generate blockmeshDict
-    python ../../../applications/write_block_cyl_mesh.py -i ../../../bird/meshing/block_cyl_mesh_templates/sideSparger/input.json  -t ../../../bird/meshing/block_cyl_mesh_templates/sideSparger/topology.json -o system
+    python ${BIRD_DIR}/../applications/write_block_cyl_mesh.py -i ${BIRD_DIR}/meshing/block_cyl_mesh_templates/sideSparger/input.json  -t ${BIRD_DIR}/meshing/block_cyl_mesh_templates/sideSparger/topology.json -o system
 fi
 
 
@@ -35,7 +36,8 @@ else
     writeMeshObj
     
     # Run
-   birdmultiphaseEulerFoam
+    birdmultiphaseEulerFoam
+ 
 fi
 
 

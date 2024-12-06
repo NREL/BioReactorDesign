@@ -96,6 +96,13 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install .
-      - name: Test OF
+      - name: Compile solver
         run: |
-          icoFoam
+          cd OFsolvers/applications/birdmultiphaseEulerFoam
+          ./Allwmake
+          cd ../../../
+      - name: Run bubble column tutorial
+        run: |
+          cd OFsolvers/tutorials
+          cd bubble_column
+          bash run.sh 
