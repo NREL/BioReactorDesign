@@ -93,27 +93,25 @@ populationBalanceCoeffs
 
         coalescenceModels
         (
-            //LehrMilliesMewes_limited{ // Need to install the model available at https://github.com/NREL/BioReactorDesign
-            LehrMilliesMewes{
+            LehrMilliesMewes_limited{ 
+            //LehrMilliesMewes{
                uCrit 0.08;
                alphaMax 0.6;
-               //height_lim $LiqHt_limit;
-               //height_dir 1;
+               height_lim $LiqHt_limit;
+               height_dir 1;
             }
         );
 
         binaryBreakupModels
-        (
-        //    LehrMilliesMewes{}
-        );
+        ();
 
         breakupModels
         (
-            //Laakkonen_limited{ // Need to install the model available at https://github.com/NREL/BioReactorDesign
-            Laakkonen{
+            Laakkonen_limited{ 
+            //Laakkonen{
                 daughterSizeDistributionModel Laakkonen;
-                //height_lim $LiqHt_limit;
-                //height_dir 1;
+                height_lim $LiqHt_limit;
+                height_dir 1;
             }
         );
 
@@ -175,8 +173,8 @@ drag
 (
     (gas in liquid)
     {
-        //type           Grace_limited; // Need to install the model available at https://github.com/NREL/BioReactorDesign
-        type           IshiiZuber;
+        type           Grace_limited;
+        //type           IshiiZuber;
         residualRe 1e-3;
         //height_lim $LiqHt_limit;
         //height_dir 1;
@@ -236,13 +234,13 @@ interfaceComposition.liquid
 (
     (liquid and gas)
     {
-        //type Henry_limited; // Need to install the model available at https://github.com/NREL/BioReactorDesign
-        type Henry;
+        type Henry_limited;
+        //type Henry;
         species ( CO2 CO H2);
         k ( $He_CO2 $He_CO $He_H2);
         Le $LeLiqMix;
-        //height_lim $LiqHt_limit;
-        //height_dir 1;
+        height_lim $LiqHt_limit;
+        height_dir 1;
     }
 );
 
@@ -253,20 +251,20 @@ diffusiveMassTransfer.liquid
 (
     (gas in liquid)
     {
-        //type Higbie_limited; // Need to install the model available at https://github.com/NREL/BioReactorDesign
-        type Frossling;
+        type Higbie;
+        //type Frossling;
         Le $LeLiqMix;
-        //height_lim $LiqHt_limit;
-        //height_dir 1;
+        height_lim $LiqHt_limit;
+        height_dir 1;
     }
 
     (liquid in gas)
     {
-        //type spherical_limited; // Need to install the model available at https://github.com/NREL/BioReactorDesign
-        type spherical;
+        type spherical_limited;
+        //type spherical;
         Le 1.0; //not used for spherical
-        //height_lim $LiqHt_limit;
-        //height_dir 1;
+        height_lim $LiqHt_limit;
+        height_dir 1;
     }
 );
 
@@ -287,10 +285,10 @@ lift
 
         lift
         {
-            //type        Tomiyama_limited; // Need to install the model available at https://github.com/NREL/BioReactorDesign
-            type        Tomiyama;
-            //height_lim $LiqHt_limit;
-            //height_dir 1;
+            type        Tomiyama_limited;
+            //type        Tomiyama;
+            height_lim $LiqHt_limit;
+            height_dir 1;
 
             swarmCorrection
             {
@@ -305,12 +303,12 @@ wallLubrication
 (
     (gas in liquid)
     {
-        //type            Antal_limited; // Need to install the model available at https://github.com/NREL/BioReactorDesign
-        type            Antal;
+        type            Antal_limited; 
+        //type            Antal;
         Cw1             -0.01;
         Cw2             0.05;
-        //height_lim $LiqHt_limit;
-        //height_dir 1;
+        height_lim $LiqHt_limit;
+        height_dir 1;
     }
 );
 
@@ -318,11 +316,11 @@ turbulentDispersion
 (
     (gas in liquid)
     {
-        //type            Burns_limited; // Need to install the model available at https://github.com/NREL/BioReactorDesign
-        type            Burns;
+        type            Burns_limited;
+        //type            Burns;
         sigma           0.9;
-        //height_lim $LiqHt_limit;
-        //height_dir 1;
+        height_lim $LiqHt_limit;
+        height_dir 1;
     }
 );
 

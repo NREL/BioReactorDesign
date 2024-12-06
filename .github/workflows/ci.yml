@@ -99,10 +99,12 @@ jobs:
       - name: Compile solver
         run: |
           cd OFsolvers/applications/birdmultiphaseEulerFoam
+          export WM_COMPILE_OPTION=Debug
           ./Allwmake
           cd ../../../
       - name: Run bubble column tutorial
         run: |
-          cd OFsolvers/tutorials
+          pwd
+          cd OFsolvers/tutorial_cases
           cd bubble_column
           bash run.sh 
