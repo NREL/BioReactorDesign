@@ -116,9 +116,9 @@ def multi_data_load(data_root, tmax=600, data_files=None, color_files=None):
 
 def sigm_fit(x, a, b, c, d, e, f):
     return 2 * c * (
-        0.5 - 1 / (1 + np.exp(np.clip((a * x) ** b, min=None, max=20)))
+        0.5 - 1 / (1 + np.exp(np.clip((a * x) ** b, a_min=None, a_max=20)))
     ) + 2 * f * (
-        0.5 - 1 / (1 + np.exp(np.clip((d * x) ** e, min=None, max=20)))
+        0.5 - 1 / (1 + np.exp(np.clip((d * x) ** e, a_min=None, a_max=20)))
     )
 
 
