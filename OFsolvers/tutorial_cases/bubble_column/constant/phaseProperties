@@ -176,8 +176,8 @@ drag
         type           Grace_limited;
         //type           IshiiZuber;
         residualRe 1e-3;
-        //height_lim $LiqHt_limit;
-        //height_dir 1;
+        height_lim $LiqHt_limit;
+        height_dir 1;
         swarmCorrection
         {
             type        none;
@@ -251,7 +251,7 @@ diffusiveMassTransfer.liquid
 (
     (gas in liquid)
     {
-        type Higbie;
+        type Higbie_limited;
         //type Frossling;
         Le $LeLiqMix;
         height_lim $LiqHt_limit;
