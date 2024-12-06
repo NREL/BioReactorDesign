@@ -98,10 +98,10 @@ jobs:
           pip install .
       - name: Compile solver
         run: |
-          cd OFsolvers/applications/birdmultiphaseEulerFoam
+          cd OFsolvers/birdmultiphaseEulerFoam
           export WM_COMPILE_OPTION=Debug
           ./Allwmake
-          cd ../../../
+          cd ../../
       - name: Run deckwer17 PBE
         run: |
           cd experimental_cases/deckwer17
