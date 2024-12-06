@@ -106,7 +106,7 @@ def assemble_mesh(input_file, geomDict):
                 ),
                 1,
             )
-    print(NR)
+    # print(NR)
     NS = [NR[0] * 2]
     # Now figure out grading of each block
     for ir in range(len(R)):
