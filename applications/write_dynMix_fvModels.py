@@ -33,6 +33,16 @@ if __name__ == "__main__":
         help="fvModels folder output",
         default=".",
     )
+    parser.add_argument(
+        "-fs",
+        "--force_sign",
+        action="store_true",
+        help="Force mixing source sign",
+    )
     args = parser.parse_args()
     dynMix_dict = parseJsonFile(args.input)
-    write_fvModel(dynMix_dict, output_folder=args.output_folder)
+    write_fvModel(
+        dynMix_dict,
+        output_folder=args.output_folder,
+        force_sign=args.force_sign,
+    )

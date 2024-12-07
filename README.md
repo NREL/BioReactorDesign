@@ -30,10 +30,10 @@ We provide a new drag model `Grace`, a new interfacial composition model `Higbie
 ### Generate Stir tank mesh
 
 ```bash
-inp=bird/meshing/stir_tank_mesh_templates/base_tank/tank_par.yaml
-out=bird/meshing/stir_tank_case_templates/base/system/blockMeshDict
+inp=bird/meshing/stirred_tank_mesh_templates/base_tank/tank_par.yaml
+out=bird/meshing/stirred_tank_case_templates/base/system/blockMeshDict
 
-python applications/write_stir_tank_mesh.py -i $inp -o $out
+python applications/write_stirred_tank_mesh.py -i $inp -o $out
 ```
 
 Generates a blockMeshDict
@@ -49,7 +49,7 @@ transformPoints "rotate=((0 0 1)(0 1 0))":
 Mesh visualized in Paraview
 
 <p float="left">
-  <img src="https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/stir_tank.png" width="350"/>
+  <img src="https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/stirred_tank.png" width="350"/>
 </p>
 
 

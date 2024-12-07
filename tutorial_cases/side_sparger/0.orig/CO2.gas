@@ -1,0 +1,45 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volScalarField;
+    object      CO2.gas;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+dimensions      [0 0 0 0 0 0 0];
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+internalField   uniform $f_CO2;
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+
+    inlet
+    {
+        type            fixedValue;
+        value           uniform $f_CO2;
+    }
+
+    outlet
+    {
+        type            inletOutlet;
+        phi             phi.gas;
+        inletValue      uniform 0;
+        value           uniform $f_CO2;
+    }
+
+    walls
+    {
+        type            zeroGradient;
+    }
+}
+
+// ************************************************************************* //
