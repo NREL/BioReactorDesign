@@ -61,7 +61,7 @@ functions
     fieldAverage
     {
         type            fieldAverage;
-        libs            (fieldFunctionObjects);
+        libs            ("libfieldFunctionObjects.so");
         writeControl    writeTime;
     	timeStart       0;
         fields
@@ -75,33 +75,6 @@ functions
         );
     };
 
-    writeHoldup
-    {
-        type coded;
-        libs (utilityFunctionObjects);
-        active true;
-        
-        // Name of on-the-fly generated functionObject
-        name writeHoldup;
-        codeWrite
-        #{
-    		const volScalarField& alpha_mean = db().lookupObject<volScalarField>("alpha.gasMean");
-    		const volScalarField& alpha = db().lookupObject<volScalarField>("alpha.gas");
-				
-    		scalar volume = gSum(mesh().V());
-    		scalar gas_holdup_mean     = gSum(fvc::volumeIntegrate(alpha_mean))/volume;
-     		scalar gas_holdup          = gSum(fvc::volumeIntegrate(alpha))/volume;
-     		   		
-            if (Pstream::master()){
-               std::ofstream file;
-               file.open ("holdup.csv", std::ofstream::out | std::ofstream::app);
-               file << mesh().time().value() << " , " << gas_holdup
-               << " , " << gas_holdup_mean <<  std::endl;
-               file.close();
-            }    		
-        #};
-
-    };
 }
 //functions
 //{
