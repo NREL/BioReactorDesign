@@ -12,7 +12,7 @@ python ../../applications/write_block_rect_mesh.py -i system/mesh.json -o system
 python ../../applications/write_stl_patch.py -i system/inlets_outlets.json
 
 # Generate mixers
-python ../../applications/write_dynMix_fvModels_force_sign.py -i system/mixers.json -o constant
+python ../../applications/write_dynMix_fvModels.py -fs -i system/mixers.json -o constant
 
 echo PRESTEP 2
 # Mesh gen
