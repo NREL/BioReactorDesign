@@ -1,51 +1,4 @@
-"""
-extract data, using Paraview-python modules, to numpy arrays
-
-This script will focus on getting volume-average data for scalar parameters in
-the liquid phase
-
-"""
-
-# H Sitaraman, 2017
-
-
-import sys
-
-import numpy as np
-import vtk.numpy_interface.dataset_adapter as dsa
-from paraview import simple as pv
-
-ofreader = pv.OpenFOAMReader(
-    FileName="./soln.foam"
-)  # just need to provide folder
-ofreader.CaseType = "Reconstructed Case"
-ofreader.MeshRegions = ["internalMesh"]
-ofreader.SkipZeroTime = 0  # dont know why this is not working
-
-t = np.array(ofreader.TimestepValues)
-N = t.size
-tt = int(N / 2)
-print(t)
-
-# threshold filter to get only the "aerated liquid"; specify cell data or point
-# data in first element of Scalars by CELLS or POINTS
-liquidthreshold = pv.Threshold(
-    Input=ofreader, Scalars=["CELLS", "alpha.gas"], ThresholdRange=[0.0, 0.6]
-)
-
-mwO2 = 32.0  # g/mol
-rhol = 1000.0  # kg/m^3 -- could get an average value from data...
-
-# threshold filter to find cells with O2 concentration below a certain value
-cO2cut = 0.045  # mol/m^3
-yO2cut = cO2cut * mwO2 / rhol / 1000  # kg/kg
-lowO2threshold = pv.Threshold(
-    Input=liquidthreshold,
-    Scalars=["CELLS", "O2.liquid"],
-    ThresholdRange=[0.0, yO2cut],
-)
-
-# use calculator filter to compute O2 concentration as mass per total unit
+# compute O2 concentration as mass per total unit
 # volume
 calcfilt = pv.Calculator(
     Input=liquidthreshold,
@@ -64,7 +17,7 @@ calcfilt_fullvolume = pv.Calculator(
 integrate_fullvolume = pv.IntegrateVariables(Input=calcfilt_fullvolume)
 integrateliq = pv.IntegrateVariables(Input=calcfilt)
 # integrate variables in O2-limited region (only need volume -- is there a way
-# to limit integration to save compuation? JJS 4/7/16)
+# to limit integration to save computation? JJS 4/7/16)
 integrateO2lim = pv.IntegrateVariables(Input=lowO2threshold)
 
 # get volume-averaged values (in the liquid) as a function of time

@@ -117,11 +117,11 @@ def get_qoi(kla_co2, cs_co2, kla_h2, cs_h2, verb=False):
     P_mix = get_pmix(verb)
 
     qoi_kla_co2 = kla_co2 * cs_co2 * V_l * 0.04401
-    qoi_kla_h2 = kla_h2 * cs_h2 * V_l * 0.002016 
+    qoi_kla_h2 = kla_h2 * cs_h2 * V_l * 0.002016
 
     qoi_co2 = qoi_kla_co2 / (P_mix / 3600 + P_inj / 3600)
     qoi_h2 = qoi_kla_h2 / (P_mix / 3600 + P_inj / 3600)
-    return qoi_co2 * qoi_h2, qoi_kla_co2*qoi_kla_h2
+    return qoi_co2 * qoi_h2, qoi_kla_co2 * qoi_kla_h2
 
 
 def get_qoi_uq(kla_co2, cs_co2, kla_h2, cs_h2):
@@ -132,7 +132,9 @@ def get_qoi_uq(kla_co2, cs_co2, kla_h2, cs_h2):
             verb = True
         else:
             verb = False
-        qoi_tmp, qoi_kla_tmp = get_qoi(kla_co2[i], cs_co2[i], kla_h2[i], cs_h2[i], verb)
+        qoi_tmp, qoi_kla_tmp = get_qoi(
+            kla_co2[i], cs_co2[i], kla_h2[i], cs_h2[i], verb
+        )
         qoi.append(qoi_tmp)
         qoi_kla.append(qoi_kla_tmp)
     qoi = np.array(qoi)
@@ -146,8 +148,8 @@ dataFolder = "data"
 fold = "local"
 
 nuq = 100
-#mean_cstar_co2 = np.random.uniform(12.6, 13.3, nuq)
-#mean_cstar_h2 = np.random.uniform(0.902, 0.96, nuq)
+# mean_cstar_co2 = np.random.uniform(12.6, 13.3, nuq)
+# mean_cstar_h2 = np.random.uniform(0.902, 0.96, nuq)
 mean_cstar_co2 = np.random.uniform(11.9, 13.4, nuq)
 mean_cstar_h2 = np.random.uniform(0.884, 0.943, nuq)
 
@@ -185,7 +187,9 @@ if (
         tmp_cs_h2.append(cs_h2[i])
         tmp_cs_co2.append(cs_co2[i])
 
-qoi_m, qoi_s, qoi_kla_m, qoi_kla_s = get_qoi_uq(tmp_kla_co2, tmp_cs_co2, tmp_kla_h2, tmp_cs_h2)
+qoi_m, qoi_s, qoi_kla_m, qoi_kla_s = get_qoi_uq(
+    tmp_kla_co2, tmp_cs_co2, tmp_kla_h2, tmp_cs_h2
+)
 
 
 with open("qoi.txt", "w+") as f:

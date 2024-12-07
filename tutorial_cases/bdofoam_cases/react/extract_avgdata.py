@@ -64,7 +64,7 @@ calcfilt_fullvolume = pv.Calculator(
 integrate_fullvolume = pv.IntegrateVariables(Input=calcfilt_fullvolume)
 integrateliq = pv.IntegrateVariables(Input=calcfilt)
 # integrate variables in O2-limited region (only need volume -- is there a way
-# to limit integration to save compuation? JJS 4/7/16)
+# to limit integration to save computation? JJS 4/7/16)
 integrateO2lim = pv.IntegrateVariables(Input=lowO2threshold)
 
 # get volume-averaged values (in the liquid) as a function of time
