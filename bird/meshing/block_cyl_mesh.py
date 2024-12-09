@@ -106,7 +106,7 @@ def assemble_mesh(input_file, geomDict):
                 ),
                 1,
             )
-    print(NR)
+    # print(NR)
     NS = [NR[0] * 2]
     # Now figure out grading of each block
     for ir in range(len(R)):
@@ -518,6 +518,11 @@ def writeBlockMeshDict(out_folder, geomDict, meshDict):
     fw.write("mergePatchPairs\n")
     fw.write("(\n")
     fw.write(");\n")
+
+    fw.write(
+        "\n// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
+    )
+    fw.write("defaultPatch\n{type wall;}\n\n")
 
     fw.close()
 
