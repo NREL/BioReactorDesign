@@ -58,7 +58,7 @@ writeMeshObj
 
 echo PRESTEP 3
 python writeGlobalVars.py
-cp constant/phaseProperties_constantd constant/phaseProperties
+cp constant/phaseProperties_pbe constant/phaseProperties
 
 conda deactivate
 

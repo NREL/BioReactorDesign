@@ -4,7 +4,7 @@ import numpy as np
 def conditionalAverage(x, y, nbin):
     try:
         assert len(x) == len(y)
-    except:
+    except AssertionError:
         print("conditional average x and y have different dimension")
         print("dim x = ", len(x))
         print("dim y = ", len(y))
