@@ -167,7 +167,8 @@ if __name__ == "__main__":
 
     try:
         shutil.rmtree("IC_inhomo")
-    except FileNotFoundError:
+    except FileNotFoundError as err:
+        print(err)
         pass
     shutil.copytree("IC", "IC_inhomo")
 
