@@ -18,11 +18,15 @@ conda activate bird
 pip install nrel-bird
 ```
 
-## OpenFOAM solvers
+## Install BiRD solver
 
-Place the attached models in `OFsolvers` into the same arborescence in your `$FOAM_APP` directory. These compile with `openFOAM-9`
+1. Activate your OpenFOAM-9 environment (`source ${FOAM_ETC}/{YOURSHELL}rc`)
+2. cd `OFsolvers/birdmultiphaseEulerFoam/`
+3. ./Allwmake
+The same steps are done in the `ci.yml` which can be used as a reference. 
+However, note that `ci.yml` compiles the solver in debug mode which is not suitable for production.
 
-We provide a new drag model `Grace`, a new interfacial composition model `Higbie` and various other models which magnitude can be controlled via an efficiency factor `*_limited`
+We provide a new drag model `Grace`, a new interfacial composition model `Higbie` and various other models which magnitude can be controlled via an efficiency factor (see [this paper](https://arxiv.org/pdf/2404.19636) for why efficiency factor are useful).
 
 
 ## Meshing
@@ -51,6 +55,10 @@ Mesh visualized in Paraview
 <p float="left">
   <img src="https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/stirred_tank.png" width="350"/>
 </p>
+
+#### Related tutorial
+
+`tutorial_cases/stirred_tank`
 
 
 ### Block cylindrical meshing
@@ -165,6 +173,11 @@ options:
                         Output folder for blockMeshDict
 ```
 
+#### Related tutorials
+
+- `tutorial_cases/side_sparger`
+- `tutorial_cases/bubble_column_20L` 
+
 
 ### Block rectangular meshing
 
@@ -211,7 +224,12 @@ The corners are defined in the `input.json`
 }
 ...
 ```
-To see how to use this on an actual case see `OFsolvers/tutorial_cases/loop_reactor`
+To see how to use this on an actual case see `tutorial_cases/loop_reactor`
+
+#### Related tutorials
+
+- `tutorial_cases/loop_reactor_mixing`
+- `tutorial_cases/loop_reactor_reacting` 
 
 ## Preprocess
 ### Generate STL mesh
@@ -227,7 +245,7 @@ Generates
 </p>
 
 
-To see how to use this on an actual case see `OFsolvers/tutorial_cases/loop_reactor`
+To see how to use this on an actual case see `tutorial_cases/loop_reactor_mixing` and `tutorial_cases/loop_reactor_reacting` 
 
 ### Manual
 
@@ -241,6 +259,11 @@ options:
   -i , --input   Boundary patch Json input
   -v, --verbose  plot on screen
 ```
+### Related tutorials
+
+- `tutorial_cases/bubble_column_20L`
+- `tutorial_cases/loop_reactor_mixing`
+- `tutorial_cases/loop_reactor_reacting` 
 
 ### How to change the set of shapes in the boundary patch
 
