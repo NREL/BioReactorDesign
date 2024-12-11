@@ -27,7 +27,7 @@ pip install nrel-bird
 The same steps are done in the `ci.yml` (under `Test-OF - Compile solver`) which can be used as a reference. 
 However, note that `ci.yml` compiles the solver in debug mode which is not suitable for production.
 
-We provide a new drag model `Grace`, a new interfacial composition model `Higbie` and various other models which magnitude can be controlled via an efficiency factors (see [this paper](https://arxiv.org/pdf/2404.19636) for why efficiency factor are useful).
+We provide a new drag model `Grace`, a new interfacial composition model `Higbie` and various other models which magnitude can be controlled via an efficiency factor (see [this paper](https://arxiv.org/pdf/2404.19636) for why efficiency factors are useful).
 
 
 ## Meshing
