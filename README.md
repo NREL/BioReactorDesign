@@ -258,12 +258,6 @@ options:
   -i , --input   Boundary patch Json input
   -v, --verbose  plot on screen
 ```
-### Related tutorials
-
-- `tutorial_cases/bubble_column_20L`
-- `tutorial_cases/loop_reactor_mixing`
-- `tutorial_cases/loop_reactor_reacting` 
-
 ### How to change the set of shapes in the boundary patch
 
 Edit the json files read when generating the mesh. In the case below, the boundary condition `inlets` consists of 3 discs 
@@ -278,6 +272,12 @@ Edit the json files read when generating the mesh. In the case below, the bounda
 }
 ...
 ```
+### Related tutorials
+
+- `tutorial_cases/bubble_column_20L`
+- `tutorial_cases/loop_reactor_mixing`
+- `tutorial_cases/loop_reactor_reacting` 
+
 
 ## Postprocess
 
