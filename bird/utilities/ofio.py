@@ -33,8 +33,9 @@ def readOFScal(file, nCells, nHeader=None):
                 nHeader = iline + 2
                 f.close()
             Array = np.loadtxt(file, skiprows=nHeader, max_rows=nCells)
-    except:
+    except Exception as err:
         print("Issue when reading %s" % file)
+        print(err)
         sys.exit()
     return Array
 
@@ -77,8 +78,9 @@ def readOFVec(file, nCells, nHeader=None):
                 Array[i, 1] = float(Array[i, 1])
                 Array[i, 2] = float(Array[i, 2][:-1])
             Array = np.array(Array).astype(float)
-    except:
+    except Exception as err:
         print("Issue when reading %s" % file)
+        print(err)
         sys.exit()
 
     return Array
@@ -135,6 +137,7 @@ def getCaseTimes(casePath):
         try:
             a = float(entry)
         except ValueError:
+            print(f"{entry} not a time folder, removing")
             a = times_tmp.pop(i)
             # print('removed ', a)
     time_float = [float(entry) for entry in times_tmp]
