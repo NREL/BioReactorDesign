@@ -1,6 +1,16 @@
 # <ins>Bi</ins>o <ins>R</ins>eactor <ins>D</ins>esign (BiRD) Toolbox [![bird-CI](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml) [![bird-pyversion](https://img.shields.io/pypi/pyversions/NREL-bird.svg)](https://pypi.org/project/NREL-bird/)  [![bird-pypi](https://badge.fury.io/py/nrel-bird.svg)](https://badge.fury.io/py/nrel-bird)
 
-## Installation for developers
+## Quick start
+1. Follow the steps to install the python package (see `Installation of python package for developers` or `Installation of python package for users` below)
+2. Follow the steps to install the BiRD OpenFOAM solver (see `Installation of BiRD OpenFOAM solver (for developers and users)` below)
+3. Check that you can run any of the tutorial cases, for ex:
+
+```bash
+cd tutorial_cases/bubble_column_20L
+bash run.sh
+``` 
+
+## Installation of python package for developers
 
 ```bash
 conda create --name bird python=3.10
@@ -10,7 +20,7 @@ cd BioReactorDesign
 pip install -e .
 ```
 
-## Installation for users
+## Installation of python package for users
 
 ```bash
 conda create --name bird python=3.10
@@ -18,7 +28,7 @@ conda activate bird
 pip install nrel-bird
 ```
 
-## Install BiRD solver
+## Installation of BiRD OpenFOAM solver (for developers and users)
 
 1. Activate your OpenFOAM-9 environment (`source <OpenFOAM-9 installation directory>/etc/<your-shell>rc`)
 2. cd `OFsolvers/birdmultiphaseEulerFoam/`
