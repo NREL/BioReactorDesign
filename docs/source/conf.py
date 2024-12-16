@@ -28,10 +28,11 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
+#    'sphinxcontrib.bibtex',
 #    'autoapi.extension',
 #    'sphinxcontrib.apidoc',
 ]
-
+#bibtex_bibfiles = ["references.bib"]
 #autoapi_type = 'python'
 #autoapi_dirs = ['../../bird']
 

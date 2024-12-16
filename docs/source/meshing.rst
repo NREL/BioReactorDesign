@@ -51,6 +51,7 @@ Block cylindrical meshing
 Generates ``system/blockMeshDict``
 
 .. code-block:: console
+
    root=`pwd`
    caseFolder=bird/meshing/block_cyl_cases_templates/case
    mesh_temp=bird/meshing/block_cyl_mesh_templates/sideSparger
@@ -211,11 +212,11 @@ The geometry of the block cylindrical mesh is defined within a 3D domain (X,Y,Z)
 
 .. _fig:loop_reactor_schematic:
 
-.. figure:: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/loop_schematic.png
+.. figure:: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/bird/meshing/block_rect_mesh_templates/loopReactor/loop_schematic.png
      :width: 80%
      :align: center
      :name: fig-loopreactor-schematic
-     :target: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/loop_react_schematic.png
+     :target: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/bird/meshing/block_rect_mesh_templates/loopReactor/loop_schematic.png
      :alt: Loop reactor schematic
 
 
