@@ -36,7 +36,7 @@ pip install nrel-bird
 
 ## Documentation
 
-See the [github-pages website](https://nrel.github.io/BioReactorDesign).
+See the [nrel.github.io/BioReactorDesign](https://nrel.github.io/BioReactorDesign).
 
 
 ## References
