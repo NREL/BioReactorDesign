@@ -48,11 +48,7 @@ setup(
             "tensorflow",
             "scikit-learn",
             "tf2jax",
-        ]
-        "doc": [
-            "sphinx",
-            "sphinx_rtd_theme",
-        ]
+        ],
     },
     project_urls={
         "Documentation": "https://nrel.github.io/BioReactorDesign/",
