@@ -2,7 +2,7 @@ name: BiRD-documentation
  
 on:
   push:
-    branches: [ sphinx ]
+    branches: [ main ]
     paths:
       - 'docs/**'
       - '.github/workflows/docs_pages.yml'
