@@ -1,0 +1,31 @@
+{% extends "!layout.html" %}
+
+{% block menu %}
+    {{ super() }}
+        <p class="caption">
+            <span class="caption-text">Indices</span>
+        </p>
+        <ul>
+    <li class="toctree-l1"><a href= "{{pathto('genindex.html', 1)}}">Everything</a></li>
+    <li class="toctree-l1"><a href= "{{pathto('py-modindex.html', 1)}}">Module Index</a></li>
+    </ul>
+
+    {% if menu_links %}
+        <p class="caption">
+            <span class="caption-text">External links</span>
+        </p>
+        <ul>
+            {% for text, link in menu_links %}
+                <li class="toctree-l1"><a href="{{ link }}">{{ text }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block htmltitle %}
+    {% if title == '' or title == 'Home' %}
+        <title>{{ docstitle|e }}</title>
+    {% else %}
+        <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+    {% endif %}
+{% endblock %}
