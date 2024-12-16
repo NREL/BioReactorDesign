@@ -42,6 +42,14 @@ setup(
             "data_conditional_mean",
         ]
     },
+    extras_require={
+        "calibration": [
+            "joblib",
+            "tensorflow",
+            "scikit-learn",
+            "tf2jax",
+        ],
+    },
     project_urls={
         "Documentation": "https://nrel.github.io/BioReactorDesign/",
         "Repository": "https://github.com/NREL/BioReactorDesign",

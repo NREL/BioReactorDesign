@@ -26,6 +26,7 @@ We also provide a solver ``birdmultiphaseEulerFoam`` that contains custom models
    meshing
    preprocess
    postprocess
+   tutorials
    contribute
    references
    acknowledgments
