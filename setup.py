@@ -42,6 +42,10 @@ setup(
             "data_conditional_mean",
         ]
     },
+    project_urls={
+        "Documentation": "https://nrel.github.io/BioReactorDesign/",
+        "Repository": "https://github.com/NREL/BioReactorDesign",
+    },
     include_package_data=True,
     python_requires=">=3.9",
     install_requires=install_requires,

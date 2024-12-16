@@ -31,7 +31,7 @@ jobs:
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
       - name: Install dependencies
@@ -56,7 +56,7 @@ jobs:
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
       - name: Install dependencies
@@ -86,7 +86,7 @@ jobs:
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
       - uses: gerlero/setup-openfoam@v1
