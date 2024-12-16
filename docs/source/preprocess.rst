@@ -18,11 +18,11 @@ The verbose flag (``-v``) generates a plot of the stl mesh
 
 .. _fig:stl_patch:
 
-.. figure:: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/simpleOutput.png
+.. figure:: ../assets/simpleOutput.png
      :width: 70%
      :align: center
      :name: fig-stl-patch
-     :target: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/simpleOutput.png
+     :target: ../assets/simpleOutput.png
      :alt: STL patch
 
 How to change the set of shapes in the boundary patch?
