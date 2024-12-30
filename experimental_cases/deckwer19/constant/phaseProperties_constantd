@@ -1,0 +1,268 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      phaseProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "$FOAM_CASE/constant/globalVars"
+
+type interfaceCompositionPhaseChangeMultiphaseSystem;
+
+phases (gas liquid);
+
+gas
+{
+    type            multiComponentPhaseModel;//pureIsothermalPhaseModel;
+
+    diameterModel   constant;
+
+    constantCoeffs
+    {
+        d               2.86e-3;
+    }
+    Sc              0.7;
+
+
+    residualAlpha   1e-6;
+}
+
+liquid
+{
+    type            multiComponentPhaseModel;//pureIsothermalPhaseModel;
+
+    diameterModel   constant;
+
+    constantCoeffs
+    {
+        d               1e-4;
+    }
+    Sc   #codeStream
+    {
+        code
+        #{
+            os  << ($LeLiqMix * $CpMixLiq * $muMixLiq / $kThermLiq);
+        #};
+    };
+
+    residualAlpha   1e-6;
+}
+
+populationBalanceCoeffs
+{
+    bubbles
+    {
+        continuousPhase liquid;
+
+         coalescenceModels
+        (
+            LehrMilliesMewes{}
+        );
+
+        binaryBreakupModels
+        (
+            LehrMilliesMewes{}
+        );
+
+        breakupModels
+        (
+        );
+
+        driftModels
+        (
+            densityChange{}
+        );
+
+        nucleationModels
+        ();
+    }
+}
+
+blending
+{
+    default
+    {   
+        type            linear;
+        minFullyContinuousAlpha.gas 0.7;
+        minPartlyContinuousAlpha.gas 0.3;
+        minFullyContinuousAlpha.liquid 0.7;
+        minPartlyContinuousAlpha.liquid 0.3;
+    }
+    heatTransfer
+    {   
+        type            linear;
+        minFullyContinuousAlpha.gas 1;
+        minPartlyContinuousAlpha.gas 0;
+        minFullyContinuousAlpha.liquid 1;
+        minPartlyContinuousAlpha.liquid 0;
+    }
+    massTransfer
+    {
+        $heatTransfer;
+    }
+}
+
+surfaceTension
+(
+    (gas and liquid)
+    {
+        type            constant;
+        sigma           $sigmaLiq;
+    }
+);
+
+interfaceCompression
+();
+
+aspectRatio
+(
+    (gas in liquid)
+    {
+        type            Wellek;
+    }
+);
+
+
+drag
+(
+    (gas in liquid)
+    {
+        type           Grace;
+        residualRe 1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+);
+
+virtualMass
+(
+    (gas in liquid)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+);
+
+// heatTransfer
+// ();
+
+heatTransfer.gas
+(
+    (gas in liquid)
+    {
+        type spherical;
+        residualAlpha 1e-4;
+    }
+
+    (liquid in gas)
+    {
+        type RanzMarshall;
+        residualAlpha 1e-4;
+    }
+);
+
+heatTransfer.liquid
+(
+    (gas in liquid)
+    {
+        type RanzMarshall;
+        residualAlpha 1e-4;
+    }
+
+    (liquid in gas)
+    {
+        type spherical;
+        residualAlpha 1e-4;
+    }
+);
+
+interfaceComposition.gas
+();
+
+interfaceComposition.liquid
+(
+    (liquid and gas)
+    {
+        type Henry;
+        species ( CO2 );
+        k ( 1.04 );
+        Le $LeLiqMix;
+    }
+);
+
+diffusiveMassTransfer.gas
+();
+
+diffusiveMassTransfer.liquid
+(
+    (gas in liquid)
+    {
+        type Higbie;
+        Le $LeLiqMix;
+    }
+
+    (liquid in gas)
+    {
+        type spherical;
+        Le 1.0; //not used for spherical
+    }
+);
+
+phaseTransfer
+();
+
+lift
+(
+    (gas in liquid)
+    {
+        type            wallDamped;
+
+        wallDamping
+        {
+            type        cosine;
+            Cd          3.0;
+        }
+
+        lift
+        {
+            type        Tomiyama;
+
+            swarmCorrection
+            {
+                type    none;
+            }
+        }
+    }
+
+);
+
+wallLubrication
+(
+    (gas in liquid)
+    {
+        type            Antal;
+        Cw1             -0.01;
+        Cw2             0.05;
+    }
+);
+
+turbulentDispersion
+(
+    (gas in liquid)
+    {
+        type            Burns;
+        sigma           0.9;
+    }
+);
+
+// ************************************************************************* //

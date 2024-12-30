@@ -1,0 +1,177 @@
+{
+  "Geometry": {
+    "OverallDomain": {
+      "x": {
+        "nblocks": 10,
+        "size_per_block": 1.0,
+        "rescale": 2.7615275385627096
+      },
+      "y": {
+        "nblocks": 11,
+        "size_per_block": 1.0,
+        "rescale": 2.7615275385627096
+      },
+      "z": {
+        "nblocks": 5,
+        "size_per_block": 1.0,
+        "rescale": 2.7615275385627096
+      }
+    },
+    "Fluids": [
+      [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          9,
+          0,
+          0
+        ]
+      ],
+      [
+        [
+          9,
+          0,
+          0
+        ],
+        [
+          9,
+          0,
+          4
+        ]
+      ],
+      [
+        [
+          9,
+          0,
+          4
+        ],
+        [
+          0,
+          0,
+          4
+        ]
+      ],
+      [
+        [
+          0,
+          1,
+          4
+        ],
+        [
+          0,
+          4,
+          4
+        ]
+      ],
+      [
+        [
+          0,
+          4,
+          4
+        ],
+        [
+          0,
+          10,
+          4
+        ]
+      ],
+      [
+        [
+          0,
+          4,
+          4
+        ],
+        [
+          0,
+          4,
+          0
+        ]
+      ],
+      [
+        [
+          0,
+          4,
+          0
+        ],
+        [
+          0,
+          10,
+          0
+        ]
+      ],
+      [
+        [
+          0,
+          4,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ]
+      ]
+    ]
+  },
+  "inlets": [
+    {
+      "branch_id": 0,
+      "type": "circle",
+      "frac_space": 0.2,
+      "normal_dir": 1,
+      "radius": 0.4,
+      "nelements": 50,
+      "block_pos": "bottom"
+    },
+    {
+      "branch_id": 1,
+      "type": "circle",
+      "frac_space": 0.2,
+      "normal_dir": 1,
+      "radius": 0.4,
+      "nelements": 50,
+      "block_pos": "bottom"
+    },
+    {
+      "branch_id": 1,
+      "type": "circle",
+      "frac_space": 0.8,
+      "normal_dir": 1,
+      "radius": 0.4,
+      "nelements": 50,
+      "block_pos": "bottom"
+    },
+    {
+      "branch_id": 2,
+      "type": "circle",
+      "frac_space": 0.8,
+      "normal_dir": 1,
+      "radius": 0.4,
+      "nelements": 50,
+      "block_pos": "bottom"
+    }
+  ],
+  "outlets": [
+    {
+      "branch_id": 6,
+      "type": "circle",
+      "frac_space": 1,
+      "normal_dir": 1,
+      "radius": 0.4,
+      "nelements": 50,
+      "block_pos": "top"
+    },
+    {
+      "branch_id": 4,
+      "type": "circle",
+      "frac_space": 1,
+      "normal_dir": 1,
+      "radius": 0.4,
+      "nelements": 50,
+      "block_pos": "top"
+    }
+  ]
+}

@@ -309,7 +309,8 @@ class Param_NN(keras.Model):
         os.makedirs(self.log_loss_folder, exist_ok=True)
         try:
             os.remove(os.path.join(self.log_loss_folder, "log.csv"))
-        except:
+        except FileNotFoundError as err:
+            print(err)
             pass
         # Make log headers
         f = open(os.path.join(self.log_loss_folder, "log.csv"), "a+")

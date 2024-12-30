@@ -148,18 +148,12 @@ def sigm_fit_jax(theta, x):
     F = (
         2
         * M
-        * (
-            0.5
-            - 1 / (1 + jnp.exp(jnp.clip((a * x) ** b, a_min=None, a_max=20)))
-        )
+        * (0.5 - 1 / (1 + jnp.exp(jnp.clip((a * x) ** b, min=None, max=20))))
     )
     F += (
         2
         * N
-        * (
-            0.5
-            - 1 / (1 + jnp.exp(jnp.clip((c * x) ** d, a_min=None, a_max=20)))
-        )
+        * (0.5 - 1 / (1 + jnp.exp(jnp.clip((c * x) ** d, min=None, max=20))))
     )
     return F
 

@@ -27,7 +27,8 @@ def setupCaseFolder(
 ):
     try:
         rmtree(target_folder)
-    except:
+    except FileNotFoundError as err:
+        print(err)
         pass
     os.makedirs(target_folder)
 

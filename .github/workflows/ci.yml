@@ -30,8 +30,8 @@ jobs:
       run:
         working-directory: ${{github.workspace}}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
       - name: Install dependencies
@@ -43,20 +43,20 @@ jobs:
         run: |
           source .github/linters/formatting.sh
           format . true
-  Test:
-    name: Test (${{ matrix.python-version }}, ${{ matrix.os }})
+  Test-BiRD:
+    name: Test-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
         os: ['ubuntu-latest', 'macos-latest']
     defaults:
       run:
         working-directory: ${{github.workspace}}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
       - name: Install dependencies
@@ -73,3 +73,73 @@ jobs:
       - name: Test postprocessing
         run: |
           pytest tests/postprocess
+  Test-OF:
+    name: Test-OF (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10']
+        os: ['ubuntu-22.04']
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+      - uses: gerlero/setup-openfoam@v1
+        with:
+          openfoam-version: 9
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install .
+      - name: Compile solver
+        run: |
+          cd OFsolvers/birdmultiphaseEulerFoam
+          export WM_COMPILE_OPTION=Debug
+          ./Allwmake
+          cd ../../
+      - name: Run deckwer17 PBE
+        run: |
+          cd experimental_cases/deckwer17
+          bash run.sh 
+          cd ../../
+      - name: Run deckwer17 constantD
+        run: |
+          cd experimental_cases/deckwer17
+          cp constant/phaseProperties_constantd constant/phaseProperties
+          bash run.sh 
+          cd ../../
+      - name: Run deckwer19 PBE
+        run: |
+          cd experimental_cases/deckwer19
+          bash run.sh 
+          cd ../../
+      - name: Run side sparger tutorial
+        run: |
+          cd tutorial_cases/side_sparger
+          bash run.sh 
+          cd ../../
+      - name: Run bubble column tutorial
+        run: |
+          cd tutorial_cases/bubble_column_20L
+          bash run.sh 
+          cd ../../
+      - name: Run stirred-tank tutorial
+        run: |
+          cd tutorial_cases/stirred_tank
+          bash run.sh 
+          cd ../../
+      - name: Run reactive loop reactor tutorial
+        run: |
+          cd tutorial_cases/loop_reactor_reacting
+          bash run.sh 
+          cd ../../
+      - name: Run mixing loop reactor tutorial
+        run: |
+          cd tutorial_cases/loop_reactor_mixing
+          bash run.sh 
+          cd ../../

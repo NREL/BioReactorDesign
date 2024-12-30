@@ -1,0 +1,124 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+R1 75.0;
+
+mR1 -75.0;
+
+L1 4400.0;
+L2 0.0;
+
+CW1 37.5;
+mCW1 -37.5;
+C11 53.033008588991066;
+mC11 -53.033008588991066;
+C21 53.03300858899106;
+mC21 -53.03300858899106;
+
+NR1 6;
+
+NS1 12;
+
+NVert1 100;
+
+vertices
+(
+     ($mCW1  $mCW1  $L1)// 0
+     ( $CW1  $mCW1  $L1)
+     ( $CW1   $CW1  $L1)
+     ($mCW1   $CW1  $L1)
+
+     ($mCW1  $mCW1  $L2)// 4
+     ( $CW1  $mCW1  $L2)
+     ( $CW1   $CW1  $L2)
+     ($mCW1   $CW1  $L2)
+
+    ($mC11   $mC21   $L1)// 8
+    ( $C11   $mC21   $L1)
+    ( $C11   $C21    $L1)
+    ($mC11   $C21    $L1)
+
+    ($mC11   $mC21   $L2)// 12
+    ( $C11   $mC21   $L2)
+    ( $C11   $C21    $L2)
+    ($mC11   $C21    $L2)
+
+);
+
+blocks
+(
+     hex (4 5 6 7 0 1 2 3) ($NS1 $NS1 $NVert1) simpleGrading (1 1 1.0)
+
+     hex (4 12 13 5 0 8 9 1) ($NR1 $NS1  $NVert1) simpleGrading (1.0 1 1.0)
+     hex (5 13 14 6 1 9 10 2) ($NR1 $NS1  $NVert1) simpleGrading (1.0 1 1.0)
+     hex (6 14 15 7 2 10 11 3) ($NR1 $NS1  $NVert1) simpleGrading (1.0 1 1.0)
+     hex (7 15 12 4 3 11 8 0) ($NR1 $NS1  $NVert1) simpleGrading (1.0 1 1.0)
+
+);
+
+edges
+(
+    arc 8 9 (0    $mR1 $L1)
+    arc 9 10 ($R1 0 $L1)
+    arc 10 11 (0 $R1 $L1)
+    arc 11 8 ($mR1 0 $L1)
+
+    arc 12 13 (0    $mR1 $L2)
+    arc 13 14 ($R1 0 $L2)
+    arc 14 15 (0 $R1 $L2)
+    arc 15 12 ($mR1 0 $L2)
+
+);
+
+boundary
+(
+    outlet
+    {
+        type patch;
+        faces
+        (
+            ( 4 5 6 7)
+
+            ( 4 12 13 5)
+            ( 5 13 6 14)
+            ( 6 14 15 7)
+            ( 7 15 12 4)
+
+        );
+    }
+    inlet
+    {
+        type patch;
+        faces
+        (
+            ( 0 1 2 3)
+
+            ( 0 8 9 1)
+            ( 1 9 2 10)
+            ( 2 10 11 3)
+            ( 3 11 8 0)
+
+        );
+    }
+    walls
+    {
+        type wall;
+        faces
+        (
+            ( 12 13 9 8)
+            ( 13 14 10 9)
+            ( 14 15 11 10)
+            ( 15 12 8 11)
+
+        );
+    }
+);
+
+mergePatchPairs
+(
+);

@@ -20,11 +20,11 @@ BIRD_BLOCK_RECT_MESH_TEMP_DIR = os.path.join(
 BIRD_BLOCK_RECT_CASE_TEMP_DIR = os.path.join(
     BIRD_MESH_DIR, "block_rect_case_templates"
 )
-BIRD_STIR_TANK_MESH_TEMP_DIR = os.path.join(
-    BIRD_MESH_DIR, "stir_tank_mesh_templates"
+BIRD_STIRRED_TANK_MESH_TEMP_DIR = os.path.join(
+    BIRD_MESH_DIR, "stirred_tank_mesh_templates"
 )
-BIRD_STIR_TANK_CASE_TEMP_DIR = os.path.join(
-    BIRD_MESH_DIR, "stir_tank_case_templates"
+BIRD_STIRRED_TANK_CASE_TEMP_DIR = os.path.join(
+    BIRD_MESH_DIR, "stirred_tank_case_templates"
 )
 BIRD_PRE_PATCH_TEMP_DIR = os.path.join(
     BIRD_PRE_DIR, "stl_patch", "bc_patch_mesh_template"
