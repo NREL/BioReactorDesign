@@ -43,6 +43,7 @@ jobs:
         run: |
           source .github/linters/formatting.sh
           format . true
+
   Test-BiRD:
     name: Test-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -73,6 +74,31 @@ jobs:
       - name: Test postprocessing
         run: |
           pytest tests/postprocess
+
+  Test-pypi-Bird:
+    name: Test-pypi-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10']
+        os: ['ubuntu-latest']
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install nrel-bird
+          pip install pytest
+      - name: Test
+        run: pytest .
+
   Test-OF:
     name: Test-OF (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
