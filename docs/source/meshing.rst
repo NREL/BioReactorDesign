@@ -58,7 +58,7 @@ Generates ``system/blockMeshDict``
 
    python applications/write_block_cyl_mesh.py -i $mesh_temp/input.json -t $mesh_temp/topology.json -o $caseFolder/system
 
-Then activate openFoam environment and mesh with
+Then, activate the openFoam environment and construct the mesh with
 
 .. code-block:: console
 
@@ -68,7 +68,7 @@ Then activate openFoam environment and mesh with
    transformPoints "rotate=((0 0 1) (0 1 0))"
    cd $root
 
-Visualize mesh in Paraview
+Visualize the mesh in Paraview
 
 .. _fig:sidesparger:
 
@@ -82,15 +82,15 @@ Visualize mesh in Paraview
 How to change the dimensions or mesh refinement?
 ^^^^^^^^^^^^^^^
 
-All dimensions and mesh are controlled by the input file ``input.json``.
+The geometry and the mesh size are controlled by the input file ``input.json``.
 The input file can also be in ``.yaml`` format. The parser will decide the file format based on its extension.
 See ``bird/meshing/block_cyl_mesh_templates/baseColumn/`` for an example of ``.yaml``
 
 How to change the arrangement of concentric cylinders?
 ^^^^^^^^^^^^^^^
 
-The block topology is controlled by the ``topology.json``
-We recomment always working with a schematic. Here is the schematic for this case
+The block topology is controlled by ``topology.json``
+We recommend always working with a schematic as shown below
 
 .. figure:: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/schematic.png
      :width: 50%
@@ -102,7 +102,7 @@ We recomment always working with a schematic. Here is the schematic for this cas
 
 The purple blocks are walls (not meshed) and the white blocks are fluid blocks (meshed). The symmetry axis is indicated as a dashed line
 
-In the ``topology.json``, the purple blocks are defined as
+In ``topology.json``, the purple blocks are defined as
 
 .. code-block:: json
 
@@ -124,7 +124,7 @@ How to change boundaries?
 
 Boundaries are defined with three types, ``top``, ``bottom`` and ``lateral``
 
-In the case of sparger walls shown below with the red lines
+For example, if one wants to create a boundary calles ``wall_sparger``, shown below as the red lines
 
 .. figure:: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/schematicSpargerWalls.png
      :width: 50%
@@ -134,7 +134,7 @@ In the case of sparger walls shown below with the red lines
      :alt: Wall side sparger schematic
 
 
-the boundary is defined in the ``topology.json`` as
+one can define the boundary as follows in ``topology.json``
 
 .. code-block:: json
 
@@ -146,7 +146,7 @@ the boundary is defined in the ``topology.json`` as
                               {"type": "top", "Rmin": 2, "Rmax": 2, "Lmin": 1, "Lmax": 2}
                             ],
 
-For the side sparger, the inlet is shown below with the red line
+For lateral boundaries (called ``inlet`` in this example), and shown below as the red line
 
 .. figure:: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/schematicSpargerInlet.png
      :width: 50%
@@ -155,7 +155,7 @@ For the side sparger, the inlet is shown below with the red line
      :target: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/schematicSpargerInlet.png
      :alt: Inlet side sparger schematic
 
-the boundary is defined in the ``topology.json`` as
+one can define the boundary as follows in ``topology.json``
 
 .. code-block:: json
 
@@ -186,7 +186,7 @@ Generates ``system/blockMeshDict``
 
    python applications/write_block_rect_mesh.py -i $mesh_temp/input.json -o $caseFolder/system
 
-Then activate openFoam environment and mesh with
+Then, activate openFoam environment and construct the mesh with
 
 .. code-block:: console
 
@@ -194,7 +194,7 @@ Then activate openFoam environment and mesh with
    blockMesh
    cd $root
 
-Visualize mesh in Paraview
+Visualize the mesh in Paraview
 
 .. _fig:loop_reactor:
 
@@ -220,7 +220,7 @@ The geometry of the block cylindrical mesh is defined within a 3D domain (X,Y,Z)
      :alt: Loop reactor schematic
 
 
-The corners are defined in the ``input.json``
+The corners are defined in ``input.json``
 
 .. code-block:: json
 
