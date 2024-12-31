@@ -124,7 +124,7 @@ How to change boundaries?
 
 Boundaries are defined with three types, ``top``, ``bottom`` and ``lateral``
 
-For example, if one wants to create a boundary calles ``wall_sparger``, shown below as the red lines
+For example, if one wants to create a boundary called ``wall_sparger``, shown below as the red lines
 
 .. figure:: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/schematicSpargerWalls.png
      :width: 50%
