@@ -5,7 +5,7 @@ on:
     branches: [ main, docfix ]
     paths:
       - 'docs/**'
-      - '.github/workflows/docs_pages.yml'
+      - '.github/workflows/deploy_docs.yml'
  
 jobs:
  
