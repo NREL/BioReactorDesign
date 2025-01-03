@@ -16,7 +16,7 @@ Generate a ``blockMeshDict`` with
 
    python applications/write_stirred_tank_mesh.py -i $inp -o $out
 
-Then activate openFoam environment and mesh with
+Then activate openFOAM environment and mesh with
 
 .. code-block:: console
 
@@ -58,7 +58,7 @@ Generates ``system/blockMeshDict``
 
    python applications/write_block_cyl_mesh.py -i $mesh_temp/input.json -t $mesh_temp/topology.json -o $caseFolder/system
 
-Then, activate the openFoam environment and construct the mesh with
+Then, activate the openFOAM environment and construct the mesh with
 
 .. code-block:: console
 
@@ -186,7 +186,7 @@ Generates ``system/blockMeshDict``
 
    python applications/write_block_rect_mesh.py -i $mesh_temp/input.json -o $caseFolder/system
 
-Then, activate openFoam environment and construct the mesh with
+Then, activate openFOAM environment and construct the mesh with
 
 .. code-block:: console
 
