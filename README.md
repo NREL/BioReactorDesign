@@ -17,7 +17,7 @@ conda create --name bird python=3.10
 conda activate bird
 git clone https://github.com/NREL/BioReactorDesign.git
 cd BioReactorDesign
-pip install -e .
+pip install -e .[all]
 ```
 
 ## Installation of python package for users
@@ -25,6 +25,12 @@ pip install -e .
 ```bash
 conda create --name bird python=3.10
 conda activate bird
+pip install nrel-bird[post]
+```
+
+If you do not need the post processing tools, please replace the last line with 
+
+```bash
 pip install nrel-bird
 ```
 
