@@ -1,16 +1,11 @@
 name: BiRD-build-documentation
  
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'docs/**'
-      - '.github/workflows/docs_pages.yml'
   pull_request:
-     branches: [main]
+     branches: [ main ]
      paths:
       - 'docs/**'
-      - '.github/workflows/docs_pages.yml'
+      - '.github/workflows/build_docs.yml'
  
 jobs:
  
