@@ -7,14 +7,14 @@ Preprocess
 Generate STL patch mesh
 ------------
 
-Boundaries may be specified with ``surfaceToPatch`` utility in OpenFOAM, based on STL files that can be generated with
+Boundaries may be specified with the ``surfaceToPatch`` utility in OpenFOAM, based on STL files that can be generated with
 
 .. code-block:: console
 
    python applications/write_stl_patch.py -v
 
 
-The verbose flag (``-v``) generates a plot of the stl mesh
+The verbose flag (``-v``) generates a plot of the stl mesh (as shown below)
 
 .. _fig:stl_patch:
 
@@ -28,7 +28,7 @@ The verbose flag (``-v``) generates a plot of the stl mesh
 How to change the set of shapes in the boundary patch?
 ^^^^^^^^^^^^^^^
 
-Edit the json files read when generating the mesh. In the case ``tutorial_cases/loop_reactor_mixing`` the boundary condition ``inlets`` consists of 3 discs
+Edit the json files that are read when generating the mesh. In the case ``tutorial_cases/loop_reactor_mixing``, the boundary condition ``inlets`` consists of 3 discs
 
 .. code-block:: json
 

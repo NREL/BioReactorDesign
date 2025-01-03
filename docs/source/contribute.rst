@@ -6,16 +6,14 @@ We welcome pull requests from anybody!
 Formatting
 ------------
 
-Code formatting and import sorting are done automatically with ``black`` and ``isort``.
+Code formatting, import sorting, and spell checks are done automatically with ``black``, ``isort`` and ``codespell``.
 
 You can automatically enforce the formatting guidelines with
 
 .. code-block:: console
 
-   pip install black isort
+   pip install black isort codespell
    bash fixFormat.sh
-
-Spelling is checked but not automatically fixed using ``codespell``
 
 
 Test
