@@ -2,7 +2,7 @@ name: BiRD-deploy-documentation
  
 on:
   push:
-    branches: [ main, docfix ]
+    branches: [ main ]
     paths:
       - 'docs/**'
       - '.github/workflows/deploy_docs.yml'
@@ -33,7 +33,7 @@ jobs:
           cd docs
           make html
 
-      - name: deploy
+      - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
