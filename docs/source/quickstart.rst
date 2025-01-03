@@ -14,7 +14,7 @@ Installation of python package for developers
    conda activate bird
    git clone https://github.com/NREL/BioReactorDesign.git
    cd BioReactorDesign
-   pip install -e .
+   pip install -e .[all]
 
 .. _installation_users:
 
