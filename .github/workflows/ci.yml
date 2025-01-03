@@ -94,7 +94,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install nrel-bird
+          pip install nrel-bird[post]
           pip install pytest
       - name: Test
         run: pytest .
