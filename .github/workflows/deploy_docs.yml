@@ -2,7 +2,7 @@ name: BiRD-deploy-documentation
  
 on:
   push:
-    branches: [ main ]
+    branches: [ main, docfix ]
     paths:
       - 'docs/**'
       - '.github/workflows/docs_pages.yml'
