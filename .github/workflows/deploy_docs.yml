@@ -32,6 +32,7 @@ jobs:
           make html
 
   deploy_docs:
+    needs: build_docs
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
