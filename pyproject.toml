@@ -70,7 +70,7 @@ documentation = "https://nrel.github.io/BioReactorDesign/"
 repository = "https://github.com/NREL/BioReactorDesign"
 
 [tool.setuptools]
-packages = ["bird"]
+packages = ["bird", "bird.meshing"]
 include-package-data = true
 
 [tool.setuptools.package-data]
