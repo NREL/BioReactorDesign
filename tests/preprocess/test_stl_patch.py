@@ -5,7 +5,7 @@ import numpy as np
 from bird import BIRD_PRE_PATCH_TEMP_DIR
 from bird.meshing._mesh_tools import parseJsonFile
 from bird.preprocess.stl_patch.stl_bc import write_boundaries
-from bird.utilities.stl_plotting import plt, plotSTL, pretty_labels
+from bird.utilities.stl_plotting import plotSTL, plt, pretty_labels
 
 
 def test_spider_sparger(verbose=False):
@@ -18,6 +18,7 @@ def test_spider_sparger(verbose=False):
     pretty_labels("x", "y", zlabel="z", fontsize=14, ax=axes)
     if verbose:
         plt.show()
+
 
 def test_loop_reactor(verbose=False):
     input_dict = parseJsonFile(

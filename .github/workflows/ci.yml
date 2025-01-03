@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install .[format] --no-deps
+          pip install black isort codespell
 
       - name: Formatting and sorting import
         run: |
