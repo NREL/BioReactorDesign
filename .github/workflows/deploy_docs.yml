@@ -9,8 +9,10 @@ on:
  
 jobs:
  
-  build_docs:
+  build_deploy_docs:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,13 +33,6 @@ jobs:
           cd docs
           make html
 
-  deploy_docs:
-    needs: build_docs
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
- 
-    steps:
       - name: deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
