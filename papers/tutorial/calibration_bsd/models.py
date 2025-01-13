@@ -84,14 +84,16 @@ def lehr_DSD(
 
 
 if __name__ == "__main__":
+    from scipy.integrate import simpson
     flow = ZeroDFlow()
     drange = np.linspace(1e-4, 1e-2, 100)
     # freq = breakup_freq(drange,flow)
     # plt.plot(drange, freq)
     # plt.show()
 
-    pdf1 = DSD(1e-3, drange, flow)
-    mean_d = np.sum(pdf1 * drange) / np.sum(pdf1)
+    pdf1 = lehr_DSD(1e-3, drange, flow)
+    #mean_d = np.sum(pdf1 * drange) / np.sum(pdf1)
+    mean_d = simpson(pdf1 * drange, drange) / simpson(pdf1, drange)
     print(mean_d)
     plt.plot(drange, pdf1, color="b")
     plt.show()
