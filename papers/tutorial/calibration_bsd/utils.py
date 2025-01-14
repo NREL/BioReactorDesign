@@ -15,7 +15,7 @@ def vol2diam(vol: float | np.ndarray) -> float | np.ndarray:
     if isinstance(vol, np.ndarray):
         assert not np.any(vol, where=vol < 0)
     if isinstance(vol, float):
-        assert vol > 0
+        assert vol >= 0
     return 2 * np.pow(vol * (3 / 4) / np.pi, 1 / 3)
 
 
