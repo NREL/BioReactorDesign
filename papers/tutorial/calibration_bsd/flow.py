@@ -41,11 +41,7 @@ class Bubbles:
     def update_mean(self):
         self.mean_diameter = np.mean(self.diameters)
 
-    def coalesce(self, id_in: list[int]) -> None:
-        # Compute the volume of the bubbles to coalesce
-        vol_in = sum([diam2vol(self.diameters[id_b]) for id_b in id_in])
-        # Compute the diameter of coalesced bubble
-        new_diameter = vol2diam(vol_in)
+    def coalesce(self, id_in: list[int], new_diameter: float = None) -> None:
 
         check_vol_cons(
             diam_in=[self.diameters[id_b] for id_b in id_in],
@@ -55,12 +51,15 @@ class Bubbles:
         # Update bubble diameters
         self.diameters = np.delete(self.diameters, [id_in])
         self.diameters = np.append(self.diameters, new_diameter)
-        self.breakup_rate_factor = 1.0
+        # Reset the coalescence rate factor
+        self.coalescence_rate_factor = 1.0
 
     def breakup(self, id_break: int, new_diam_list: list[float]) -> None:
         check_vol_cons([self.diameters[id_break]], new_diam_list)
+        # Update bubble diameters
         self.diameters = np.delete(self.diameters, id_break)
         self.diameters = np.append(self.diameters, new_diam_list)
+        # Reset the breakup rate factor
         self.breakup_rate_factor = 1.0
 
 
