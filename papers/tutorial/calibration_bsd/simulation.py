@@ -1,3 +1,4 @@
+import numpy as np
 from flow import Bubbles
 
 
@@ -32,4 +33,6 @@ class Simulation:
             # breakpoint()
             self.bubbles.update_mean()
             mean_diameter_history.append(self.bubbles.mean_diameter)
+            #print(len(self.bubbles.diameters))
+            #print(np.amin(self.bubbles.diameters))
         return mean_diameter_history
