@@ -5,10 +5,10 @@ from scipy.special import erf
 from utils import diam2vol, vol2diam
 
 
-def simple_nary_coalescence(bubbles: Bubbles, kwargs:dict) -> None:
-    '''
+def simple_nary_coalescence(bubbles: Bubbles, kwargs: dict) -> None:
+    """
     Coalescence of n_coal bubbles into a single bubble
-    '''
+    """
     coalescence_rate = kwargs["coalescence_rate"]  # s-1
     dt = kwargs["dt"]  # s
     n_coal = kwargs["n_coal"]
@@ -19,8 +19,8 @@ def simple_nary_coalescence(bubbles: Bubbles, kwargs:dict) -> None:
         * len(bubbles.diameters)
         * dt
     )
-    # If rate is too small to lead to any event, 
-    # increase the rate at the next timestep 
+    # If rate is too small to lead to any event,
+    # increase the rate at the next timestep
     # to make sure the rate is correct over time
     if num_events < 1:
         bubbles.coalescence_rate_factor += 1
@@ -44,10 +44,10 @@ def simple_nary_coalescence(bubbles: Bubbles, kwargs:dict) -> None:
             bubbles.coalesce(id_in=idcoal, new_diameter=new_diameter)
 
 
-def simple_nary_breakup(bubbles: Bubbles, kwargs:dict) -> None:
-    '''
+def simple_nary_breakup(bubbles: Bubbles, kwargs: dict) -> None:
+    """
     Breakup of a single bubble into n_break bubbles
-    '''
+    """
     breakup_rate = kwargs["breakup_rate"]  # s-1
     dt = kwargs["dt"]
     n_break = kwargs["n_break"]
@@ -58,8 +58,8 @@ def simple_nary_breakup(bubbles: Bubbles, kwargs:dict) -> None:
         * len(bubbles.diameters)
         * dt
     )
-    # If rate is too small to lead to any event, 
-    # increase the rate at the next timestep 
+    # If rate is too small to lead to any event,
+    # increase the rate at the next timestep
     # to make sure the rate is correct over time
     if num_events < 1:
         bubbles.breakup_rate_factor += 1
@@ -76,10 +76,10 @@ def simple_nary_breakup(bubbles: Bubbles, kwargs:dict) -> None:
             bubbles.breakup(id_break=id1, new_diam_list=list(new_diameters))
 
 
-def simple_normal_breakup(bubbles: Bubbles, kwargs:dict) -> None:
-    '''
+def simple_normal_breakup(bubbles: Bubbles, kwargs: dict) -> None:
+    """
     Breakup of a single bubble into bubbles sampled from Daughter size distribution, here a normal distribution
-    '''
+    """
     breakup_rate = kwargs["breakup_rate"]  # s-1
     dt = kwargs["dt"]
     n_break = kwargs["n_break"]
@@ -94,8 +94,8 @@ def simple_normal_breakup(bubbles: Bubbles, kwargs:dict) -> None:
         * len(bubbles.diameters)
         * dt
     )
-    # If rate is too small to lead to any event, 
-    # increase the rate at the next timestep 
+    # If rate is too small to lead to any event,
+    # increase the rate at the next timestep
     # to make sure the rate is correct over time
     if num_events < 1:
         bubbles.breakup_rate_factor += 1
@@ -118,7 +118,7 @@ def simple_normal_breakup(bubbles: Bubbles, kwargs:dict) -> None:
             )
             vol_out_all = diam2vol(diam_candidates)
             cumultative_vol = np.cumsum(vol_out_all)
-      
+
             # find how many bubbles need to be created to satisfy volume conservation
             ind_lim = np.argwhere(cumultative_vol > (vol_in - vol_min))
             if abs(ind_lim[0][0]) < 1e-12:
@@ -128,12 +128,11 @@ def simple_normal_breakup(bubbles: Bubbles, kwargs:dict) -> None:
             new_diameters = np.hstack(
                 (diam_candidates[: ind_lim[0][0]], diam_final)
             )
-            #print(f"breakup in {len(new_diameters)} daughter bubbles")
+            # print(f"breakup in {len(new_diameters)} daughter bubbles")
             if np.amin(new_diameters) > min_break_diam:
                 bubbles.breakup(
                     id_break=id1, new_diam_list=list(new_diameters)
                 )
-
 
 
 def resc_T(flow: ZeroDFlow) -> float:

@@ -16,14 +16,14 @@ nt = 7000
 breakup_kwargs = {
     "breakup_rate": 0.1,
     "dt": dt,
-    "n_break": 2, # if n_break=2, this is binary breakup
-    "min_break_diam": 1e-6, # forbid breakup that lead to diameter < min_break_diam
+    "n_break": 2,  # if n_break=2, this is binary breakup
+    "min_break_diam": 1e-6,  # forbid breakup that lead to diameter < min_break_diam
 }
 coalescence_kwargs = {
     "coalescence_rate": 0.05,
     "dt": dt,
-    "n_coal": 2, # if n_coal=2, this is binary coalescence
-    "max_coal_diam": 1e-2, # forbid coalescence that lead to diameter > max_coal_diam
+    "n_coal": 2,  # if n_coal=2, this is binary coalescence
+    "max_coal_diam": 1e-2,  # forbid coalescence that lead to diameter > max_coal_diam
 }
 sim = Simulation(
     nt=nt,
