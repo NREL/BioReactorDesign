@@ -8,7 +8,8 @@ from models import (
 from prettyPlot.plotting import *
 from simulation import Simulation
 
-bubbles = Bubbles(nbubbles=1000, diam=1e-4)
+# Initialize
+bubbles = Bubbles(nbubbles=1000, diam=1e-3)
 
 dt = 0.01
 nt = 7000
