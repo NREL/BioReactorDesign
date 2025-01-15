@@ -1,4 +1,4 @@
-Parameter calibration
+Parameter calibration for Normal and Beta distributions
 =====
 
 This tutorial demonstrates how to conduct the calibration with and without a surrogate forward model
