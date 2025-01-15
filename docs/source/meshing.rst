@@ -29,11 +29,11 @@ Visualize mesh in Paraview
 
 .. _fig:stirredtank:
 
-.. figure:: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/stirred_tank.png
+.. figure:: ../assets/stirred_tank.png
      :width: 70%
      :align: center
      :name: fig-str
-     :target: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/stirred_tank.png
+     :target: ../assets/stirred_tank.png
      :alt: Stirred-tank reactor
 
 Related tutorial
@@ -72,11 +72,11 @@ Visualize the mesh in Paraview
 
 .. _fig:sidesparger:
 
-.. figure:: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/3dsparger.png
+.. figure:: ../assets/3dsparger.png
      :width: 50%
      :align: center
      :name: fig-sidesparger
-     :target: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/3dsparger.png
+     :target: ../assets/3dsparger.png
      :alt: Reactor with a side sparger
 
 How to change the dimensions or mesh refinement?
@@ -92,11 +92,11 @@ How to change the arrangement of concentric cylinders?
 The block topology is controlled by ``topology.json``
 We recommend always working with a schematic as shown below
 
-.. figure:: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/schematic.png
+.. figure:: ../assets/schematic.png
      :width: 50%
      :align: center
      :name: fig-schematic
-     :target: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/schematic.png
+     :target: ../assets/schematic.png
      :alt: Side sparger schematic
 
 
@@ -126,11 +126,11 @@ Boundaries are defined with three types, ``top``, ``bottom`` and ``lateral``
 
 For example, if one wants to create a boundary called ``wall_sparger``, shown below as the red lines
 
-.. figure:: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/schematicSpargerWalls.png
+.. figure:: ../assets/schematicSpargerWalls.png
      :width: 50%
      :align: center
      :name: fig-schematicwalls
-     :target: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/schematicSpargerWalls.png
+     :target: ../assets/schematicSpargerWalls.png
      :alt: Wall side sparger schematic
 
 
@@ -148,11 +148,11 @@ one can define the boundary as follows in ``topology.json``
 
 For lateral boundaries (called ``inlet`` in this example), and shown below as the red line
 
-.. figure:: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/schematicSpargerInlet.png
+.. figure:: ../assets/schematicSpargerInlet.png
      :width: 50%
      :align: center
      :name: fig-schematicinlet
-     :target: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/schematicSpargerInlet.png
+     :target: ../assets/schematicSpargerInlet.png
      :alt: Inlet side sparger schematic
 
 one can define the boundary as follows in ``topology.json``
@@ -198,11 +198,11 @@ Visualize the mesh in Paraview
 
 .. _fig:loop_reactor:
 
-.. figure:: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/loop_react.png
+.. figure:: ../assets/loop_react.png
      :width: 80%
      :align: center
      :name: fig-loopreactor
-     :target: https://raw.githubusercontent.com/NREL/BioReactorDesign/main/assets/loop_react.png
+     :target: ../assets/loop_react.png
      :alt: Loop reactor
 
 
