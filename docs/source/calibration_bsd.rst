@@ -87,7 +87,7 @@ The plot below shows the values of `Bf` and `Cr` simulated and whether they lead
 .. container:: figures-succ-fail
 
    .. figure:: ../assets/calibration/tutorial_bsd/succ_fail.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Scatter plot of success and runaway (failed) simulations
 
@@ -98,12 +98,12 @@ We can also look at how close the generated data is to the target data. For the 
 .. container:: figures-viz-pred-ter
 
    .. figure:: ../assets/calibration/tutorial_bsd/cmap_bf_ternary.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Predicted data with the binary breakup and coalescence colored by Bf against the ternary target data
 
    .. figure:: ../assets/calibration/tutorial_bsd/cmap_cr_ternary.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Predicted data with the binary breakup and coalescence colored by Cr against the ternary target data
 
@@ -113,12 +113,12 @@ In the case of the binary breakup and coalescence target data, a low value of `B
 .. container:: figures-viz-pred-bin
 
    .. figure:: ../assets/calibration/tutorial_bsd/cmap_bf_binary.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Predicted data with the binary breakup and coalescence colored by Bf against the binary target data
 
    .. figure:: ../assets/calibration/tutorial_bsd/cmap_cr_binary.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Predicted data with the binary breakup and coalescence colored by Cr against the binary target data
 
@@ -135,7 +135,7 @@ This will generate a plot of the train and test loss history ``loss.png``. This 
 .. container:: figures-loss-bsdcal-surr
 
    .. figure:: ../assets/calibration/tutorial_bsd/Loss_surr.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Loss history
 
@@ -155,12 +155,12 @@ Calibrate against the target data obtained with ternary breakup and coalescence
 .. container:: figures-cal-tern
 
    .. figure:: ../assets/calibration/tutorial_bsd/Surr_opt_ternary_prop.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Calibrated prediction with the surrogate forward model against ternary target data 
 
    .. figure:: ../assets/calibration/tutorial_bsd/Surr_opt_ternary_corner.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Parameter PDF obtained with the surrogate forward model with ternary target data 
 
@@ -175,12 +175,12 @@ Calibrate against the target data obtained with binary breakup and coalescence
 .. container:: figures-cal-bin
 
    .. figure:: ../assets/calibration/tutorial_bsd/Surr_opt_binary_prop.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Calibrated prediction with the surrogate forward model against binary target data 
 
    .. figure:: ../assets/calibration/tutorial_bsd/Surr_opt_binary_corner.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Parameter PDF obtained with the surrogate forward model with binary target data 
 
@@ -202,12 +202,12 @@ Calibrate against the target data obtained with ternary breakup and coalescence
 .. container:: figures-cal-tern-calerr
 
    .. figure:: ../assets/calibration/tutorial_bsd/Surr_cal_ternary_prop.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Calibrated prediction with the surrogate forward model against ternary target data 
 
    .. figure:: ../assets/calibration/tutorial_bsd/Surr_cal_ternary_corner.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Parameter PDF obtained with the surrogate forward model with ternary target data 
 
@@ -221,12 +221,12 @@ Calibrate against the target data obtained with binary breakup and coalescence
 .. container:: figures-cal-bin-calerr
 
    .. figure:: ../assets/calibration/tutorial_bsd/Surr_cal_binary_prop.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Calibrated prediction with the surrogate forward model against binary target data 
 
    .. figure:: ../assets/calibration/tutorial_bsd/Surr_cal_binary_corner.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Parameter PDF obtained with the surrogate forward model with binary target data 
 
