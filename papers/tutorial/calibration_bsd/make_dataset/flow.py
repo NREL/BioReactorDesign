@@ -2,6 +2,7 @@ import numpy as np
 from prettyPlot.plotting import *
 from utils import check_vol_cons, diam2vol, vol2diam
 
+
 class Bubbles:
     def __init__(
         self,
@@ -45,4 +46,3 @@ class Bubbles:
         # Reset the breakup rate factor
         # This factor is useful for very small timesteps (this is not the efficiency factor)
         self.breakup_rate_factor = 1.0
-

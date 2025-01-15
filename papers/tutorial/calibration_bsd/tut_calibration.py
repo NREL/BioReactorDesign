@@ -69,12 +69,11 @@ scale_par_min = joblib.load(
 scale_par_max = joblib.load(
     os.path.join(nn.model_folder, "scaler_par.mod")
 ).data_max_
-scale_y_mean = joblib.load(
-    os.path.join(nn.model_folder, "scaler_y.mod")
-).mean_
+scale_y_mean = joblib.load(os.path.join(nn.model_folder, "scaler_y.mod")).mean_
 scale_y_scale = joblib.load(
     os.path.join(nn.model_folder, "scaler_y.mod")
 ).scale_
+
 
 @tf.function
 def forwardNN(p):
@@ -85,15 +84,19 @@ def forwardNN(p):
     out = unscale_y(out_resc, scale_y_mean, scale_y_scale)
     return out[:, 0]
 
+
 p = np.random.normal(size=(2,)).astype(np.float32)
 jax_func, jax_params = tf2jax.convert(forwardNN, np.zeros_like(p))
+
 
 def forward(p):
     return jax_func(jax_params, p)[0]
 
+
 # Uncertainty propagation
 rangex_tens = tf.convert_to_tensor(rangex, dtype=tf.dtypes.float32)
 rangeones_tf32 = tf.ones(tf.shape(rangex[:, 0]), dtype=tf.dtypes.float32)
+
 
 @tf.function
 def forward_range(p):
@@ -103,6 +106,7 @@ def forward_range(p):
     out = nn.model([rangex_tens_resc, par])
     out = unscale_y(out, scale_y_mean, scale_y_scale)
     return out[:, 0]
+
 
 def bayes_step_opt_err(y=None, y_err=0.1):
     beff_fact = numpyro.sample("beff_fact", dist.Uniform(0.8, 1.1))

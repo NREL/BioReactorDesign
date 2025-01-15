@@ -18,48 +18,56 @@ def make_dataset(data_folder):
     dim_par = len(parameter_names)
 
     dirl = os.listdir(data_folder)
-    tmp = np.load(os.path.join(data_folder,'target.npz'))
-    xlen = len(tmp['x'])
+    tmp = np.load(os.path.join(data_folder, "target.npz"))
+    xlen = len(tmp["x"])
     x_ind = 0
     beff_fact_ind = 1
     ceff_ind = 2
     count = 0
     for ifile, file in enumerate(dirl):
         if file.startswith("dataset"):
-           count +=1 
-           tmp = np.load(os.path.join(data_folder,file))
-           ndata = len(tmp["ceff"])
-           tmp_dataset_x = np.zeros((xlen*ndata,3))
-           tmp_dataset_y = np.zeros((xlen*ndata,))
-           sim_count = 0
-           for i_sim in range(ndata):
-               #beg = sim_count * xlen
-               #end = (sim_count + 1) * xlen
-               beg = i_sim * xlen
-               end = (i_sim + 1) * xlen
-               if abs(np.mean(tmp["y"][i_sim,:])-1) > 1e-6:
-                   tmp_dataset_x[beg:end, x_ind] = tmp["x"]
-                   tmp_dataset_x[beg:end, beff_fact_ind] = tmp["beff_fact"][i_sim]
-                   tmp_dataset_x[beg:end, ceff_ind] = tmp["ceff"][i_sim]
-                   tmp_dataset_y[beg:end] = tmp["y"][i_sim,:]
-                   sim_count += 1
-               else:
-                   tmp_dataset_x[beg:end, x_ind] = tmp["x"]
-                   tmp_dataset_x[beg:end, beff_fact_ind] = tmp["beff_fact"][i_sim]
-                   tmp_dataset_x[beg:end, ceff_ind] = tmp["ceff"][i_sim]
-                   tmp_dataset_y[beg:end] = tmp["y"][i_sim,:]
-           print(sim_count)
-           if count == 1:
-               #dataset_x = tmp_dataset_x[:sim_count*xlen]
-               #dataset_y = tmp_dataset_y[:sim_count*xlen]
-               dataset_x = tmp_dataset_x[:ndata*xlen]
-               dataset_y = tmp_dataset_y[:ndata*xlen]
-           else:
-               #dataset_x = np.vstack((dataset_x,tmp_dataset_x[:sim_count*xlen]))
-               #dataset_y = np.hstack((dataset_y, tmp_dataset_y[:sim_count*xlen]))
-               dataset_x = np.vstack((dataset_x,tmp_dataset_x[:ndata*xlen]))
-               dataset_y = np.hstack((dataset_y, tmp_dataset_y[:ndata*xlen]))
-           print(f"file {file} {dataset_x.shape}")
+            count += 1
+            tmp = np.load(os.path.join(data_folder, file))
+            ndata = len(tmp["ceff"])
+            tmp_dataset_x = np.zeros((xlen * ndata, 3))
+            tmp_dataset_y = np.zeros((xlen * ndata,))
+            sim_count = 0
+            for i_sim in range(ndata):
+                # beg = sim_count * xlen
+                # end = (sim_count + 1) * xlen
+                beg = i_sim * xlen
+                end = (i_sim + 1) * xlen
+                if abs(np.mean(tmp["y"][i_sim, :]) - 1) > 1e-6:
+                    tmp_dataset_x[beg:end, x_ind] = tmp["x"]
+                    tmp_dataset_x[beg:end, beff_fact_ind] = tmp["beff_fact"][
+                        i_sim
+                    ]
+                    tmp_dataset_x[beg:end, ceff_ind] = tmp["ceff"][i_sim]
+                    tmp_dataset_y[beg:end] = tmp["y"][i_sim, :]
+                    sim_count += 1
+                else:
+                    tmp_dataset_x[beg:end, x_ind] = tmp["x"]
+                    tmp_dataset_x[beg:end, beff_fact_ind] = tmp["beff_fact"][
+                        i_sim
+                    ]
+                    tmp_dataset_x[beg:end, ceff_ind] = tmp["ceff"][i_sim]
+                    tmp_dataset_y[beg:end] = tmp["y"][i_sim, :]
+            print(sim_count)
+            if count == 1:
+                # dataset_x = tmp_dataset_x[:sim_count*xlen]
+                # dataset_y = tmp_dataset_y[:sim_count*xlen]
+                dataset_x = tmp_dataset_x[: ndata * xlen]
+                dataset_y = tmp_dataset_y[: ndata * xlen]
+            else:
+                # dataset_x = np.vstack((dataset_x,tmp_dataset_x[:sim_count*xlen]))
+                # dataset_y = np.hstack((dataset_y, tmp_dataset_y[:sim_count*xlen]))
+                dataset_x = np.vstack(
+                    (dataset_x, tmp_dataset_x[: ndata * xlen])
+                )
+                dataset_y = np.hstack(
+                    (dataset_y, tmp_dataset_y[: ndata * xlen])
+                )
+            print(f"file {file} {dataset_x.shape}")
 
     return dataset_x, dataset_y
 
@@ -85,7 +93,6 @@ def plot_loss(loss_dict):
     ax = plt.gca()
     ax.set_yscale("log")
     plt.tight_layout()
-
 
 
 if __name__ == "__main__":

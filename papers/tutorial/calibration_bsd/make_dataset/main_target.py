@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 from flow import Bubbles
 from models import (
@@ -7,7 +9,6 @@ from models import (
 )
 from prettyPlot.plotting import *
 from simulation import Simulation
-import os
 
 # Initialize
 bubbles = Bubbles(nbubbles=2000, diam=1e-3)
@@ -53,18 +54,20 @@ plt.figure(figsize=(10, 6))
 mean_bsd = np.mean(y_pdf, axis=0)
 std_bsd = np.std(y_pdf, axis=0)
 plt.plot(x_pdf, mean_bsd, color="k", linewidth=3)
-plt.plot(x_pdf, mean_bsd+std_bsd, "--", color="k", linewidth=3)
-plt.plot(x_pdf, mean_bsd-std_bsd, "--", color="k", linewidth=3)
+plt.plot(x_pdf, mean_bsd + std_bsd, "--", color="k", linewidth=3)
+plt.plot(x_pdf, mean_bsd - std_bsd, "--", color="k", linewidth=3)
 pretty_labels("diameter [m]", "Bin count", 14, fontname="Times")
 
-dataFolder = os.path.join("..","data")
+dataFolder = os.path.join("..", "data")
 os.makedirs(dataFolder, exist_ok=True)
 
-np.savez(os.path.join(dataFolder,"target.npz"), x=x_pdf, y=mean_bsd, sigma=std_bsd)
+np.savez(
+    os.path.join(dataFolder, "target.npz"), x=x_pdf, y=mean_bsd, sigma=std_bsd
+)
 
 ## Plot equilibrium BSD
-#plt.figure(figsize=(10, 6))
-#plt.hist(sim.bubbles.diameters, bins=25)
-#pretty_labels("diameter [m]", "Bin count", 14, fontname="Times")
+# plt.figure(figsize=(10, 6))
+# plt.hist(sim.bubbles.diameters, bins=25)
+# pretty_labels("diameter [m]", "Bin count", 14, fontname="Times")
 
 plt.show()

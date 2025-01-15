@@ -74,5 +74,3 @@ def simple_nary_breakup(bubbles: Bubbles, kwargs: dict) -> None:
         # Check that we are not creating too small of bubbles
         if np.amin(new_diameters) > min_break_diam:
             bubbles.breakup(id_break=id1, new_diam_list=list(new_diameters))
-
-
