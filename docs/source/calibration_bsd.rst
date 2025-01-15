@@ -26,7 +26,7 @@ Each bubble is modeled with a particle which can either be merged with another p
 
 At every timestep, a number of breakup and coalescence events are determined by the breakup and coalescence rates.
 
-In this example, breakup and coalescence rates are assumed independent of the bubble diameters. While simple, this implementation can result in a breakup or coalescene runaway in the case where breakup and coalescence rates are not balancing each other. In the case of breakup runaway, the number of particles grows monotonically, and in the base of coalescene runaway, the number of particles decreases monotonically. 
+In this example, breakup and coalescence rates are assumed independent of the bubble diameters. While simple, this implementation can result in a breakup or coalescence runaway in the case where breakup and coalescence rates are not balancing each other. In the case of breakup runaway, the number of particles grows monotonically, and in the base of coalescence runaway, the number of particles decreases monotonically. 
 
 For these runaway cases, the simulations are considered `failing` (see specific definition of failing in ``simulation.py``.
 
