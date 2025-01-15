@@ -1,11 +1,6 @@
 name: BiRD-deploy-documentation
  
 on:
-  pull_request:
-     branches: [ main ]
-     paths:
-      - 'docs/**'
-      - '.github/workflows/build_docs.yml'
   push:
     branches: [ main ]
     paths:
