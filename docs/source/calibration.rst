@@ -43,7 +43,7 @@ The following plots should be generated. The first one shows the training and te
 .. container:: figures-surr-train
 
    .. figure:: ../assets/calibration/tutorial_normal_beta/Loss_surr.png
-      :width: 30%
+      :width: 50%
       :align: center
       :alt: Loss history
 
@@ -67,18 +67,16 @@ Calibrate without a surrogate for ``alpha=5, beta=5``
    python tut_calibration.py --alpha 5 --beta 5
 
 
-.. container:: figures-cal-True-5-5
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/True_opt_5.0_5.0_prop.png
-      :width: 50%
-      :align: center
-      :alt: Calibrated prediction with the true forward model
+|figures-cal-True-5-5-prop| |figures-cal-True-5-5-corn|
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/True_opt_5.0_5.0_corner.png
-      :width: 50%
-      :align: center
-      :alt: Parameter PDF obtained with the true forward model
+.. |figures-cal-True-5-5-prop| image:: ../assets/calibration/tutorial_normal_beta/True_opt_5.0_5.0_prop.png
+   :width: 49.5%
+   :alt: Calibrated prediction with the true forward model
 
+.. |figures-cal-True-5-5-corn| image:: ../assets/calibration/tutorial_normal_beta/True_opt_5.0_5.0_corner.png
+   :width: 49.5%
+   :alt: Parameter PDF obtained with the true forward model
 
 Calibrate with a surrogate for ``alpha=5, beta=5``
 
@@ -87,18 +85,15 @@ Calibrate with a surrogate for ``alpha=5, beta=5``
    python tut_calibration.py -useNN --alpha 5 --beta 5
 
 
+|figures-cal-Surr-5-5-prop| |figures-cal-Surr-5-5-corn|
 
-.. container:: figures-cal-Surr-5-5
+.. |figures-cal-Surr-5-5-prop| image:: ../assets/calibration/tutorial_normal_beta/Surr_opt_5.0_5.0_prop.png
+   :width: 49.5%
+   :alt: Calibrated prediction with the surrogate forward model
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/Surr_opt_5.0_5.0_prop.png
-      :width: 50%
-      :align: center
-      :alt: Calibrated prediction with the surrogate forward model
-
-   .. figure:: ../assets/calibration/tutorial_normal_beta/Surr_opt_5.0_5.0_corner.png
-      :width: 50%
-      :align: center
-      :alt: Parameter PDF obtained with the surrogate forward model
+.. |figures-cal-Surr-5-5-corn| image:: ../assets/calibration/tutorial_normal_beta/Surr_opt_5.0_5.0_corner.png
+   :width: 49.5%
+   :alt: Parameter PDF obtained with the surrogate forward model
 
 
 Calibrate without a surrogate for ``alpha=2, beta=5``
@@ -109,17 +104,15 @@ Calibrate without a surrogate for ``alpha=2, beta=5``
    python tut_calibration.py --alpha 2 --beta 5
 
 
-.. container:: figures-cal-True-2-5
+|figures-cal-True-2-5-prop| |figures-cal-True-2-5-corn|
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/True_opt_2.0_5.0_prop.png
-      :width: 50%
-      :align: center
-      :alt: Calibrated prediction with the true forward model
+.. |figures-cal-True-2-5-prop| image:: ../assets/calibration/tutorial_normal_beta/True_opt_2.0_5.0_prop.png
+   :width: 49.5%
+   :alt: Calibrated prediction with the true forward model
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/True_opt_2.0_5.0_corner.png
-      :width: 50%
-      :align: center
-      :alt: Parameter PDF obtained with the true forward model
+.. |figures-cal-True-2-5-corn| image:: ../assets/calibration/tutorial_normal_beta/True_opt_2.0_5.0_corner.png
+   :width: 49.5%
+   :alt: Parameter PDF obtained with the true forward model
 
 
 Calibrate with a surrogate for ``alpha=2, beta=5``
@@ -130,17 +123,15 @@ Calibrate with a surrogate for ``alpha=2, beta=5``
 
 
 
-.. container:: figures-cal-True-2-5
+|figures-cal-Surr-2-5-prop| |figures-cal-Surr-2-5-corn|
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/Surr_opt_2.0_5.0_prop.png
-      :width: 50%
-      :align: center
-      :alt: Calibrated prediction with the surrogate forward model
+.. |figures-cal-Surr-2-5-prop| image:: ../assets/calibration/tutorial_normal_beta/Surr_opt_2.0_5.0_prop.png
+   :width: 49.5%
+   :alt: Calibrated prediction with the surrogate forward model
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/Surr_opt_2.0_5.0_corner.png
-      :width: 50%
-      :align: center
-      :alt: Parameter PDF obtained with the surrogate forward model
+.. |figures-cal-Surr-2-5-corn| image:: ../assets/calibration/tutorial_normal_beta/Surr_opt_2.0_5.0_corner.png
+   :width: 49.5%
+   :alt: Parameter PDF obtained with the surrogate forward model
 
 
 Clearly, the amount of missing physics vary depending on the observations.
@@ -160,17 +151,15 @@ Calibrate without a surrogate for ``alpha=5, beta=5``
    python tut_calibration.py --alpha 5 --beta 5 -cal_err
 
 
-.. container:: figures-cal-calerr-True-5-5
+|figures-cal-calerr-True-5-5-prop| |figures-cal-calerr-True-5-5-corn|
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/True_cal_5.0_5.0_prop.png
-      :width: 50%
-      :align: center
-      :alt: Calibrated prediction with the true forward model
+.. |figures-cal-calerr-True-5-5-prop| image:: ../assets/calibration/tutorial_normal_beta/True_cal_5.0_5.0_prop.png
+   :width: 49.5%
+   :alt: Calibrated prediction with the true forward model
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/True_cal_5.0_5.0_corner.png
-      :width: 50%
-      :align: center
-      :alt: Parameter PDF obtained with the true forward model
+.. |figures-cal-calerr-True-5-5-corn| image:: ../assets/calibration/tutorial_normal_beta/True_cal_5.0_5.0_corner.png
+   :width: 49.5%
+   :alt: Parameter PDF obtained with the true forward model
 
 
 Calibrate with a surrogate for ``alpha=5, beta=5``
@@ -180,18 +169,15 @@ Calibrate with a surrogate for ``alpha=5, beta=5``
    python tut_calibration.py -useNN --alpha 5 --beta 5 -cal_err
 
 
+|figures-cal-calerr-Surr-5-5-prop| |figures-cal-calerr-Surr-5-5-corn|
 
-.. container:: figures-cal-calerr-Surr-5-5
+.. |figures-cal-calerr-Surr-5-5-prop| image:: ../assets/calibration/tutorial_normal_beta/Surr_cal_5.0_5.0_prop.png
+   :width: 49.5%
+   :alt: Calibrated prediction with the surrogate forward model
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/Surr_cal_5.0_5.0_prop.png
-      :width: 50%
-      :align: center
-      :alt: Calibrated prediction with the surrogate forward model
-
-   .. figure:: ../assets/calibration/tutorial_normal_beta/Surr_cal_5.0_5.0_corner.png
-      :width: 50%
-      :align: center
-      :alt: Parameter PDF obtained with the surrogate forward model
+.. |figures-cal-calerr-Surr-5-5-corn| image:: ../assets/calibration/tutorial_normal_beta/Surr_cal_5.0_5.0_corner.png
+   :width: 49.5%
+   :alt: Parameter PDF obtained with the surrogate forward model
 
 
 Calibrate without a surrogate for ``alpha=2, beta=5``
@@ -202,17 +188,15 @@ Calibrate without a surrogate for ``alpha=2, beta=5``
    python tut_calibration.py --alpha 2 --beta 5 -cal_err
 
 
-.. container:: figures-cal-calerr-True-2-5
+|figures-cal-calerr-True-2-5-prop| |figures-cal-calerr-True-2-5-corn|
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/True_cal_2.0_5.0_prop.png
-      :width: 50%
-      :align: center
-      :alt: Calibrated prediction with the true forward model
+.. |figures-cal-calerr-True-2-5-prop| image:: ../assets/calibration/tutorial_normal_beta/True_cal_2.0_5.0_prop.png
+   :width: 49.5%
+   :alt: Calibrated prediction with the true forward model
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/True_cal_2.0_5.0_corner.png
-      :width: 50%
-      :align: center
-      :alt: Parameter PDF obtained with the true forward model
+.. |figures-cal-calerr-True-2-5-corn| image:: ../assets/calibration/tutorial_normal_beta/True_cal_2.0_5.0_corner.png
+   :width: 49.5%
+   :alt: Parameter PDF obtained with the true forward model
 
 
 Calibrate with a surrogate for ``alpha=2, beta=5``
@@ -223,17 +207,16 @@ Calibrate with a surrogate for ``alpha=2, beta=5``
 
 
 
-.. container:: figures-cal-calerr-True-2-5
+|figures-cal-calerr-Surr-2-5-prop| |figures-cal-calerr-Surr-2-5-corn|
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/Surr_cal_2.0_5.0_prop.png
-      :width: 50%
-      :align: center
-      :alt: Calibrated prediction with the surrogate forward model
+.. |figures-cal-calerr-Surr-2-5-prop| image:: ../assets/calibration/tutorial_normal_beta/Surr_cal_2.0_5.0_prop.png
+   :width: 49.5%
+   :alt: Calibrated prediction with the surrogate forward model
 
-   .. figure:: ../assets/calibration/tutorial_normal_beta/Surr_cal_2.0_5.0_corner.png
-      :width: 50%
-      :align: center
-      :alt: Parameter PDF obtained with the surrogate forward model
+.. |figures-cal-calerr-Surr-2-5-corn| image:: ../assets/calibration/tutorial_normal_beta/Surr_cal_2.0_5.0_corner.png
+   :width: 49.5%
+   :alt: Parameter PDF obtained with the surrogate forward model
+
 
 
  

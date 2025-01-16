@@ -130,7 +130,9 @@ def post_process_cal(
         label="95% Model confidence interval",
     )
     plt.plot(rangex, std2_5_real, "--", color="k", linewidth=3)
-    pretty_labels("", "", 20, title=f"Missing phys. unc. = {sigma:.2g}")
+    pretty_labels(
+        "", "", 20, title=f"Noise + missing phys. unc. = {sigma:.2g}"
+    )
     filename = ""
     filename += "Surr"
     if args.cal_err:
