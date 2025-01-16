@@ -45,8 +45,6 @@ def post_process_cal(
     else:
         filename += "_opt"
     filename += f"_{args.alpha}_{args.beta}_corner"
-    plt.savefig(filename + ".png")
-    plt.savefig(filename + ".eps")
 
     for ax in fig.get_axes():
         ax.tick_params(
@@ -68,6 +66,8 @@ def post_process_cal(
     for ax in fig.get_axes():
         ax.set_xlabel(ax.get_xlabel(), fontweight="bold")
         ax.set_ylabel(ax.get_ylabel(), fontweight="bold")
+    plt.savefig(filename + ".png")
+    plt.savefig(filename + ".eps")
 
     # Convergence
     fig, axes = plt.subplots(2, sharex=True)
