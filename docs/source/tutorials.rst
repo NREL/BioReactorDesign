@@ -10,6 +10,6 @@ Tutorials
    :maxdepth: 3
    :caption: Tutorials contents:
 
+   bubbleColumn.rst
    calibration.rst
    calibration_bsd.rst
-   bubbleColumn.rst
