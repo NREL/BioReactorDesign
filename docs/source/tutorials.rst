@@ -11,5 +11,5 @@ Tutorials
    :caption: Tutorials contents:
 
    bubbleColumn.rst
-   calibration.rst
+   calibration_normal_beta.rst
    calibration_bsd.rst
