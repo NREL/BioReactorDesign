@@ -94,33 +94,28 @@ The plot below shows the values of `Bf` and `Cr` simulated and whether they lead
 
 We can also look at how close the generated data is to the target data. For the ternary breakup and coalescence, there is clearly a discrepancy that is not resolvable by adjusting the coalescence and breakup rates.
 
+|figures-viz-pred-ter_bf| |figures-viz-pred-ter_cr|
 
-.. container:: figures-viz-pred-ter
+.. |figures-viz-pred-ter_bf| image:: ../assets/calibration/tutorial_bsd/cmap_bf_ternary.png
+   :width: 49.5%
+   :alt: Predicted data with the binary breakup and coalescence colored by Bf against the ternary target data
 
-   .. figure:: ../assets/calibration/tutorial_bsd/cmap_bf_ternary.png
-      :width: 50%
-      :align: center
-      :alt: Predicted data with the binary breakup and coalescence colored by Bf against the ternary target data
-
-   .. figure:: ../assets/calibration/tutorial_bsd/cmap_cr_ternary.png
-      :width: 50%
-      :align: center
-      :alt: Predicted data with the binary breakup and coalescence colored by Cr against the ternary target data
+.. |figures-viz-pred-ter_cr| image:: ../assets/calibration/tutorial_bsd/cmap_cr_ternary.png
+   :width: 49.5%
+   :alt: Predicted data with the binary breakup and coalescence colored by Cr against the ternary target data
 
 
 In the case of the binary breakup and coalescence target data, a low value of `Bf` and a high value of `Cr` should lead to a good agreement between the forward model and the target data.
 
-.. container:: figures-viz-pred-bin
+|figures-viz-pred-bin_bf| |figures-viz-pred-bin_cr|
 
-   .. figure:: ../assets/calibration/tutorial_bsd/cmap_bf_binary.png
-      :width: 50%
-      :align: center
-      :alt: Predicted data with the binary breakup and coalescence colored by Bf against the binary target data
+.. |figures-viz-pred-bin_bf| image:: ../assets/calibration/tutorial_bsd/cmap_bf_binary.png
+   :width: 49.5%
+   :alt: Predicted data with the binary breakup and coalescence colored by Bf against the binary target data
 
-   .. figure:: ../assets/calibration/tutorial_bsd/cmap_cr_binary.png
-      :width: 50%
-      :align: center
-      :alt: Predicted data with the binary breakup and coalescence colored by Cr against the binary target data
+.. |figures-viz-pred-bin_cr| image:: ../assets/calibration/tutorial_bsd/cmap_cr_binary.png
+   :width: 49.5%
+   :alt: Predicted data with the binary breakup and coalescence colored by Cr against the binary target data
 
 
 Train a neural net surrogate
@@ -152,18 +147,17 @@ Calibrate against the target data obtained with ternary breakup and coalescence
    python tut_calibration.py -ter
 
 
+
+|figures-cal-tern-prop| |figures-cal-tern-corn|
+
+.. |figures-cal-tern-prop| image:: ../assets/calibration/tutorial_bsd/Surr_opt_ternary_prop.png
+   :width: 49.5%
+   :alt: Calibrated prediction with the surrogate forward model against ternary target data 
+
+.. |figures-cal-tern-corn| image:: ../assets/calibration/tutorial_bsd/Surr_opt_ternary_corner.png
+   :width: 49.5%
+   :alt: Parameter PDF obtained with the surrogate forward model with ternary target data 
 .. container:: figures-cal-tern
-
-   .. figure:: ../assets/calibration/tutorial_bsd/Surr_opt_ternary_prop.png
-      :width: 50%
-      :align: center
-      :alt: Calibrated prediction with the surrogate forward model against ternary target data 
-
-   .. figure:: ../assets/calibration/tutorial_bsd/Surr_opt_ternary_corner.png
-      :width: 50%
-      :align: center
-      :alt: Parameter PDF obtained with the surrogate forward model with ternary target data 
-
 
 
 Calibrate against the target data obtained with binary breakup and coalescence 
@@ -172,17 +166,15 @@ Calibrate against the target data obtained with binary breakup and coalescence
    
    python tut_calibration.py
 
-.. container:: figures-cal-bin
+|figures-cal-bin-prop| |figures-cal-bin-corn|
 
-   .. figure:: ../assets/calibration/tutorial_bsd/Surr_opt_binary_prop.png
-      :width: 50%
-      :align: center
-      :alt: Calibrated prediction with the surrogate forward model against binary target data 
+.. |figures-cal-bin-prop| image:: ../assets/calibration/tutorial_bsd/Surr_opt_binary_prop.png
+   :width: 49.5%
+   :alt: Calibrated prediction with the surrogate forward model against binary target data 
 
-   .. figure:: ../assets/calibration/tutorial_bsd/Surr_opt_binary_corner.png
-      :width: 50%
-      :align: center
-      :alt: Parameter PDF obtained with the surrogate forward model with binary target data 
+.. |figures-cal-bin-corn| image:: ../assets/calibration/tutorial_bsd/Surr_opt_binary_corner.png
+   :width: 49.5%
+   :alt: Parameter PDF obtained with the surrogate forward model with binary target data 
 
 
 Clearly, the amount of missing physics vary depending on the observations and is significantly lower when calibrating against binary breakup and coalescence data.
@@ -199,17 +191,17 @@ Calibrate against the target data obtained with ternary breakup and coalescence
 
    python tut_calibration.py -ter -cal_err
 
-.. container:: figures-cal-tern-calerr
+|figures-cal-tern-calerr-prop| |figures-cal-tern-calerr-corn|
 
-   .. figure:: ../assets/calibration/tutorial_bsd/Surr_cal_ternary_prop.png
-      :width: 50%
-      :align: center
-      :alt: Calibrated prediction with the surrogate forward model against ternary target data 
+.. |figures-cal-tern-calerr-prop| image:: ../assets/calibration/tutorial_bsd/Surr_cal_ternary_prop.png
+   :width: 49.5%
+   :alt: Calibrated prediction with the surrogate forward model against ternary target data 
 
-   .. figure:: ../assets/calibration/tutorial_bsd/Surr_cal_ternary_corner.png
-      :width: 50%
-      :align: center
-      :alt: Parameter PDF obtained with the surrogate forward model with ternary target data 
+.. |figures-cal-tern-calerr-corn| image:: ../assets/calibration/tutorial_bsd/Surr_cal_ternary_corner.png
+   :width: 49.5%
+   :alt: Parameter PDF obtained with the surrogate forward model with ternary target data 
+
+
 
 Calibrate against the target data obtained with binary breakup and coalescence
 
@@ -218,18 +210,16 @@ Calibrate against the target data obtained with binary breakup and coalescence
    
    python tut_calibration.py -cal_err
 
-.. container:: figures-cal-bin-calerr
 
-   .. figure:: ../assets/calibration/tutorial_bsd/Surr_cal_binary_prop.png
-      :width: 50%
-      :align: center
-      :alt: Calibrated prediction with the surrogate forward model against binary target data 
+|figures-cal-bin-calerr-prop| |figures-cal-bin-calerr-corn|
 
-   .. figure:: ../assets/calibration/tutorial_bsd/Surr_cal_binary_corner.png
-      :width: 50%
-      :align: center
-      :alt: Parameter PDF obtained with the surrogate forward model with binary target data 
+.. |figures-cal-bin-calerr-prop| image:: ../assets/calibration/tutorial_bsd/Surr_cal_binary_prop.png
+   :width: 49.5%
+   :alt: Calibrated prediction with the surrogate forward model against binary target data 
 
+.. |figures-cal-bin-calerr-corn| image:: ../assets/calibration/tutorial_bsd/Surr_cal_binary_corner.png
+   :width: 49.5%
+   :alt: Parameter PDF obtained with the surrogate forward model with binary target data 
 
 
  
