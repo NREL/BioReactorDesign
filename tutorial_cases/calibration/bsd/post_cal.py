@@ -69,12 +69,8 @@ def post_process_cal(
         )  # Customize font size, line width, and tick length
         ax.xaxis.label.set_fontweight("bold")  # Set the X-axis label to bold
         ax.yaxis.label.set_fontweight("bold")  # Set the Y-axis label to bold
-        ax.xaxis.label.set_font(
-            "serif"
-        )  # Set the X-axis label to bold
-        ax.yaxis.label.set_font(
-            "serif"
-        )  # Set the Y-axis label to bold
+        ax.xaxis.label.set_font("serif")  # Set the X-axis label to bold
+        ax.yaxis.label.set_font("serif")  # Set the Y-axis label to bold
         ax.xaxis.label.set_fontsize(16)  # Set the X-axis label to bold
         ax.yaxis.label.set_fontsize(16)  # Set the Y-axis label to bold
         for tick in ax.get_xticklabels() + ax.get_yticklabels():
@@ -131,7 +127,10 @@ def post_process_cal(
     )
     plt.plot(rangex, std2_5_real, "--", color="k", linewidth=3)
     pretty_labels(
-        "Bubble diameter [m]", "PDF", 16, title=f"Noise + missing phys. unc. = {sigma:.2g}"
+        "Bubble diameter [m]",
+        "PDF",
+        16,
+        title=f"Noise + missing phys. unc. = {sigma:.2g}",
     )
     filename = ""
     filename += "Surr"
@@ -146,4 +145,4 @@ def post_process_cal(
     filename += f"_prop"
     plt.savefig(filename + ".png")
     plt.savefig(filename + ".eps")
-    #plt.show()
+    # plt.show()
