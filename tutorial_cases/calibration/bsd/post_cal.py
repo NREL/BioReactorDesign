@@ -40,9 +40,9 @@ def post_process_cal(
 
     labels_np_disp = labels_np.copy()
     ind_beff_fact = labels_np_disp.index("beff_fact")
-    labels_np_disp[ind_beff_fact] = r"$B_{\rm eff fact}$"
+    labels_np_disp[ind_beff_fact] = r"$B_{\rm f}$"
     ind_ceff = labels_np_disp.index("ceff")
-    labels_np_disp[ind_ceff] = r"$C_{\rm eff}$"
+    labels_np_disp[ind_ceff] = r"$C_{\rm r}$"
     fig = corner.corner(
         np_mcmc_samples,
         truths=truths,
@@ -62,29 +62,25 @@ def post_process_cal(
     else:
         filename += "_binary"
     filename += f"_corner"
-    plt.savefig(filename + ".png")
-    plt.savefig(filename + ".eps")
 
     for ax in fig.get_axes():
         ax.tick_params(
-            axis="both", labelsize=20
+            axis="both", labelsize=16
         )  # Customize font size, line width, and tick length
         ax.xaxis.label.set_fontweight("bold")  # Set the X-axis label to bold
         ax.yaxis.label.set_fontweight("bold")  # Set the Y-axis label to bold
-        ax.xaxis.label.set_font(
-            "Times New Roman"
-        )  # Set the X-axis label to bold
-        ax.yaxis.label.set_font(
-            "Times New Roman"
-        )  # Set the Y-axis label to bold
-        ax.xaxis.label.set_fontsize(20)  # Set the X-axis label to bold
-        ax.yaxis.label.set_fontsize(20)  # Set the Y-axis label to bold
+        ax.xaxis.label.set_font("serif")  # Set the X-axis label to bold
+        ax.yaxis.label.set_font("serif")  # Set the Y-axis label to bold
+        ax.xaxis.label.set_fontsize(16)  # Set the X-axis label to bold
+        ax.yaxis.label.set_fontsize(16)  # Set the Y-axis label to bold
         for tick in ax.get_xticklabels() + ax.get_yticklabels():
             tick.set_fontname("Times New Roman")
             tick.set_fontweight("bold")
     for ax in fig.get_axes():
         ax.set_xlabel(ax.get_xlabel(), fontweight="bold")
         ax.set_ylabel(ax.get_ylabel(), fontweight="bold")
+    plt.savefig(filename + ".png")
+    plt.savefig(filename + ".eps")
 
     # Convergence
     fig, axes = plt.subplots(2, sharex=True)
@@ -131,7 +127,10 @@ def post_process_cal(
     )
     plt.plot(rangex, std2_5_real, "--", color="k", linewidth=3)
     pretty_labels(
-        "", "", 20, title=f"Noise + missing phys. unc. = {sigma:.2g}"
+        "Bubble diameter [m]",
+        "PDF",
+        16,
+        title=f"Noise + missing phys. unc. = {sigma:.2g}",
     )
     filename = ""
     filename += "Surr"
@@ -146,4 +145,4 @@ def post_process_cal(
     filename += f"_prop"
     plt.savefig(filename + ".png")
     plt.savefig(filename + ".eps")
-    plt.show()
+    # plt.show()

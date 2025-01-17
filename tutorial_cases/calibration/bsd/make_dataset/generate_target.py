@@ -48,7 +48,7 @@ parser.add_argument(
     "-v",
     "--verbose",
     action="store_true",
-    help="Genrate plots",
+    help="Generate plots",
 )
 args, unknown = parser.parse_known_args()
 

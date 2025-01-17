@@ -53,7 +53,7 @@ Generate the target data by running
 
 This creates a folder ``data/`` with the file ``target_n_3_br_0.5_cr_0.5.npz`` and ``target_n_2_br_1.6_cr_2.0.npz``
 
-The numerical model is always a binary breakup and coalescence model with adjustable breakup and coalescence rate. To avoid breakup or coalescence runaway, we ensure that breakup rate is close to the coalescence rate. Specifically, the coalescence rate `Cr` varies in the interval `[0.02, 2]`. A breakup rate factor `Bf` varies in the interval [`0.8, 1.1]` and the breakup rate `Br = Bf Cr`. This ensures that the breakup rate and coalescence rate are close to one another, thereby avoiding breakup and coalescence runaway.
+The numerical model is always a binary breakup and coalescence model with adjustable breakup and coalescence rate. To avoid breakup or coalescence runaway, we ensure that breakup rate is close to the coalescence rate. Specifically, the coalescence rate `Cr` varies in the interval `[0.02, 2]`. A breakup rate factor `Bf` varies in the interval `[0.8, 1.1]` and the breakup rate `Br = Bf Cr`. This ensures that the breakup rate and coalescence rate are close to one another, thereby avoiding breakup and coalescence runaway.
 
 Each simulation (target and from the numerical model) uses a timeste `dt = 0.01s` and the simulations are run for 150s to reach statistical stationarity and allow for sufficient averaging of the BSD. Since each forward simulation is expensive (~30s on a M1 Mac), a surrogate needs to be constructed.
 
