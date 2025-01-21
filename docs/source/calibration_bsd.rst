@@ -157,7 +157,6 @@ Calibrate against the target data obtained with ternary breakup and coalescence
 .. |figures-cal-tern-corn| image:: ../assets/calibration/tutorial_bsd/Surr_opt_ternary_corner.png
    :width: 49.5%
    :alt: Parameter PDF obtained with the surrogate forward model with ternary target data 
-.. container:: figures-cal-tern
 
 
 Calibrate against the target data obtained with binary breakup and coalescence 
