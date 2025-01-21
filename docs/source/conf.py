@@ -1,8 +1,10 @@
 # Configuration file for the Sphinx documentation builder.
 import os
 import sys
+
 import sphinx.util.logging
-sphinx.util.logging.getLogger('sphinx').setLevel('ERROR')
+
+sphinx.util.logging.getLogger("sphinx").setLevel("ERROR")
 
 # Need this so sphinx can find lumache.py. Change is .py files are elsewhere than root.
 sys.path.insert(0, os.path.abspath("../.."))
