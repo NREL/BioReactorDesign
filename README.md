@@ -31,8 +31,8 @@ pip install nrel-bird
 ## Installation of BiRD OpenFOAM solver (for developers and users)
 
 1. Activate your OpenFOAM-9 environment (`source <OpenFOAM-9 installation directory>/etc/<your-shell>rc`)
-2. cd `OFsolvers/birdmultiphaseEulerFoam/`
-3. `./Allwmake`
+2. `cd OFsolvers/birdmultiphaseEulerFoam/`
+3. Compile `./Allwmake`
 
 ## Documentation
 
