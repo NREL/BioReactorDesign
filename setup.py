@@ -39,6 +39,7 @@ setup(
             "*.json",
             "*.yaml",
             "*.csv",
+            "*.dat",
             "data_conditional_mean",
             "data_kla",
         ]
