@@ -40,6 +40,7 @@ setup(
             "*.yaml",
             "*.csv",
             "data_conditional_mean",
+            "data_kla",
         ]
     },
     extras_require={
