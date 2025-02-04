@@ -199,21 +199,31 @@ def compute_kla(
         cstar_err.append(np.std(cstar_samples))
 
         # post_cal(hmc_samples, data_t, data_c)
+
         # If accuracy has significantly improved, we have chopped enough
         if len(acc) >= 3 and abs(acc[-1] - acc[-2]) < 0.1 * acc[0]:
             break
+        # If we exceed the maximum number of timesteps to ignore, break
         if max_chop == 0:
             break
 
-    # bootstrap
     bootstrapped = False
+    # Data bootstrapping
+    ## Include the uncertainty due to the number of data point available
+    ## Reduce the number of data points following 4 arbitrary scenarios
+    ## scenario 1: remove the first point
+    ## scenario 2: remove the first 2 points
+    ## scenario 3: remove the last point
+    ## scenario 4: remove the last 2 points
+
+    # Don't bootstrap if there aren't enough data points
     if bootstrap and len(data_t_tmp[ind[-1] :]) > 10:
         kla_boot = []
         kla_err_boot = []
         cstar_boot = []
         cstar_err_boot = []
         bootstrapped = True
-        print("BOOTSTRAP")
+        print("Doing data bootstrapping")
 
         for i in range(4):
             print(f"\t scenario {i}")
@@ -334,7 +344,7 @@ def post_cal(
 
 def print_res_dict(res_dict: dict) -> None:
     """
-    Log to screen
+    Log kla and cstar to screen
     """
     file = res_dict["filename"]
     t_ind = res_dict["time_ind"]
