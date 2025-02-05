@@ -3,16 +3,16 @@ References
 
 Software record `SWR 24-35 <https://www.osti.gov/biblio/2319227>`_
 
-To cite BiRD, please use these articles on `CO2 interphase mass transfer (open access) <https://arxiv.org/pdf/2404.19636>`_ on `aerobic bioreactors <https://www.sciencedirect.com/science/article/pii/S0263876218304337>`_ and on `butanediol synthesis <https://www.sciencedirect.com/science/article/pii/S0263876223004689>`_
+To cite BiRD, please use these articles on `CO2 interphase mass transfer <https://doi.org/10.1016/j.cherd.2025.01.034>`_ (open access `link <https://arxiv.org/pdf/2404.19636>`_ ) on `aerobic bioreactors <https://doi.org/10.1016/j.cherd.2018.08.033>`_ and on `butanediol synthesis <https://doi.org/10.1016/j.cherd.2023.07.031>`_
 
 
 .. code-block:: console 
 
-   @article{hassanaly2024inverse,
+   @article{hassanaly2025inverse,
      title={Bayesian calibration of bubble size dynamics applied to \ce{CO2} gas fermenters},
-     author={Hassanaly, Malik and Parra-Alvarez, John M. and Rahimi, Mohammad J. and Sitaraman, Hariswaran},
-     journal={Under Review},
-     year={2024},
+     author={Hassanaly, Malik and Parra-Alvarez, John M. and Rahimi, Mohammad J., Municchi, Federico and Sitaraman, Hariswaran},
+     journal={Chemical Engineering Research and Design},
+     year={2025},
    }
    
    
