@@ -1,0 +1,2 @@
+. ./presteps.sh
+birdmultiphaseEulerFoam

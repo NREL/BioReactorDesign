@@ -1,17 +1,18 @@
 Bio Reactor Design (BiRD)
 ===================================
 
-`BiRD` is a toolbox aimed a facilitating the numerical simulation of bioreactors with OpenFOAM.
-The purpose of `BiRD` is 
+`BiRD` is a toolbox for computational fluid dynamics (CFD) simulations of bioreactors with OpenFOAM.
 
-1. to ensure reproducibility of numerical simulations of bioreactors.
-2. to create a suite of test cases that can be used to test different reactor configurations.
-3. to facilitate validation of multiphase flow models against several experimental campaigns.
-4. to facilitate optimization (geometry and operating conditions) of bioreactors. 
+The objective of `BiRD` is to
+
+1. ensure reproducibility of numerical simulations of bioreactors.
+2. create a centralized suite of test cases for different reactor configurations.
+3. facilitate validation of multiphase flow models against several experimental campaigns.
+4. facilitate optimization (geometry and operating conditions) of bioreactors. 
 
 It contains a python module ``bird`` that can be used to generate input files that may be read by OpenFOAM to generate meshes and cases. It can also be used to post process the output of OpenFOAM simulations.
 
-We also provide a solver ``birdmultiphaseEulerFoam`` that contains custom models added to the base OpenFOAM-v9. 
+We provide a solver ``birdmultiphaseEulerFoam`` that contains custom models added to the base OpenFOAM-v9. 
 
 
 .. note::
@@ -26,6 +27,7 @@ We also provide a solver ``birdmultiphaseEulerFoam`` that contains custom models
    meshing
    preprocess
    postprocess
+   tutorials
    contribute
    references
    acknowledgments

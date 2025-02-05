@@ -5,6 +5,7 @@ on:
      branches: [main]
      paths-ignore:
       - '*.md'
+      - '*.rst'
       - 'README*'
       - 'LICENSE'
       - 'assets/*'
@@ -13,6 +14,7 @@ on:
      branches: [main]
      paths-ignore:
       - '*.md'
+      - '*.rst'
       - 'README*'
       - 'LICENSE'
       - 'assets/*'
@@ -43,13 +45,14 @@ jobs:
         run: |
           source .github/linters/formatting.sh
           format . true
+
   Test-BiRD:
     name: Test-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12']
         os: ['ubuntu-latest', 'macos-latest']
     defaults:
       run:
@@ -73,6 +76,31 @@ jobs:
       - name: Test postprocessing
         run: |
           pytest tests/postprocess
+
+  Test-pypi-Bird:
+    name: Test-pypi-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10']
+        os: ['ubuntu-latest']
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{matrix.python-version}}
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install nrel-bird
+          pip install pytest
+      - name: Test
+        run: pytest .
+
   Test-OF:
     name: Test-OF (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -143,3 +171,9 @@ jobs:
           cd tutorial_cases/loop_reactor_mixing
           bash run.sh 
           cd ../../
+      - name: Run airlift reactor tutorial
+        run: |
+          cd tutorial_cases/airlift_40m
+          bash run.sh
+          cd ../../
+

@@ -1,0 +1,52 @@
+//****** diffusion coeff ***********
+D_CO2       1.4663e-9; //Ngu et al., Chem. Engg. Sci., 251, 2022, 117478 SHOULD BE m2/s
+D_N2       1.2571891999999987e-9; //Cadogan et al., J Chem. Eng. Data, 59, 2014, 519−525 SHOULD BE m2/s
+//****** Henry coeff ***************
+He_CO2      0.83; //Ngu et al., Chem. Engg. Sci., 251, 2022, 117478  SHOULD BE mg/L/Pa
+//****Liquid properties**************
+CpMixLiq        4181;
+muMixLiq        0.001; // 1 cP  
+kThermLiq       0.62; // W/m-K
+rho0MixLiq      1000; // kg/m^3
+sigmaLiq        0.07; //surface tension N/m
+//*******inlet gas frac*************
+x_N2   0.522;
+x_CO2   0.478;
+f_N2 #calc "$x_N2*0.028 / ($x_CO2*0.044 + $x_N2*0.028)";
+f_CO2 #calc "$x_CO2*0.044 / ($x_CO2*0.044 + $x_N2*0.028)";
+//*******inlet gas frac*************
+uGasPhase_Sup   0.0463;
+uLiqPhase_Sup   0.0471;
+alphaGas 0.18;
+alphaLiq 0.82;
+uGasPhase #calc "$uGasPhase_Sup / $alphaGas";
+uLiqPhase #calc "$uLiqPhase_Sup / $alphaLiq";
+//*********************************
+LeLiqCO2 #calc "$kThermLiq / $rho0MixLiq / $D_CO2 / $CpMixLiq";
+LeLiqN2 #calc "$kThermLiq / $rho0MixLiq / $D_N2 / $CpMixLiq";
+LeLiqMix #calc "$f_CO2*$LeLiqCO2+$f_N2*$LeLiqN2";
+//*********************************
+mflowRateLiq 8.33e-4;
+mflowRateGas 8.1777375e-4;
+//*********************************
+kCO2 #calc "$D_CO2*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrCO2 #calc "$muMixLiq*$CpMixLiq / $kCO2";
+kN2 #calc "$D_N2*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrN2 #calc "$muMixLiq*$CpMixLiq / $kN2";
+//*********************************
+HtBcol  4.4;
+DiaBcol 0.15;
+LiqHt   4.4;
+NPS 6;
+NPD 6;
+NPY 200;
+//*********************************
+Pbot #calc "101325.0+1000.0*$LiqHt*9.8";
+Pmid #calc "101325.0+1000.0*0.5*$LiqHt*9.8";
+
+//bubble column cross-section divided by sparger area
+ArbyAs 1.0; 
+uSupVel 0.0463;
+uGas #calc "$Pmid / $Pbot * $ArbyAs * $uSupVel";     
+//*********************************
+
