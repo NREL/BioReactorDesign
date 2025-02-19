@@ -74,8 +74,11 @@ Foam::functionObjects::disengagement::disengagement
     tolerance_(dict.lookup<scalar>("tolerance")),
     nsamples_(dict.lookup<label>("nsamples")),
     direction_(dict.lookup<vector>("direction")),
+    pressure_probe_(dict.lookup<vector>("pressureProbe1"),dict.lookup<vector>("pressureProbe2")),
+    usePressure_(dict.lookup<bool>("usePressure")),
     disengage_(dict.lookup<bool>("disengage")),
     phase_com_(2*nsamples_,{0.,-1.}),
+    pressure_(2*nsamples_,{0.,-1.}),
     disengaged_(false)
 {
     //- Check that U has fixedValue
@@ -91,6 +94,29 @@ Foam::functionObjects::disengagement::disengagement
             << exit(FatalIOError);
     }
 
+    cellP_.first() = mesh_.findCell(pressure_probe_.first());
+    label maxCellP = cellP_.first();
+    reduce(maxCellP, maxOp<label>());
+    
+    if (maxCellP == -1 )
+    {
+        FatalIOErrorInFunction(dict)
+            << "Pressure probe 1 not inside the domain!"
+            << exit(FatalIOError);
+    }
+
+    cellP_.second() = mesh_.findCell(pressure_probe_.second());
+    maxCellP = cellP_.second();
+    reduce(maxCellP, maxOp<label>());
+    
+    if (maxCellP == -1 )
+    {
+        FatalIOErrorInFunction(dict)
+            << "Pressure probe 2 not inside the domain!"
+            << exit(FatalIOError);
+    }
+
+
     functionObject::read(dict);
     resetName(typeName);
 }
@@ -104,6 +130,72 @@ Foam::functionObjects::disengagement::~disengagement()
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
+void Foam::functionObjects::disengagement::checkDisengagement(const List<Pair<scalar>>& time_series)
+{
+
+ //- Do the check only if the list is complete
+ if (time_series[0].second() > 0.)
+ {
+     scalar phase_com_mean_long(0.);
+     scalar phase_com_mean_short(0.);
+     scalar t0_long(time_series[0].first());
+     scalar deltat_long(0.);
+     scalar deltat_short(0.);
+
+     //- The first (oldest) sample is skipped to have a well-defined dt
+     for (int i = 1; i < 2*nsamples_; i++)
+     {
+         scalar dt = time_series[i].first() - t0_long;
+         t0_long = time_series[i].first();
+         phase_com_mean_long += dt*time_series[i].second();
+         deltat_long += dt;
+
+         //- Compute average on the most recent samples
+         if (i >= nsamples_)
+         {
+             phase_com_mean_short +=  dt*time_series[i].second();
+             deltat_short += dt;
+         }         
+     }
+
+     phase_com_mean_long /= deltat_long;
+     phase_com_mean_short /= deltat_short;
+     
+     if (phase_com_mean_long < 1e-16) return;
+
+     if (mag(phase_com_mean_long - phase_com_mean_short)/phase_com_mean_long < tolerance_)
+     {
+         if(!disengaged_)
+         {
+             Info << "functionObject::disengagement: Disengaging!\n";
+         }
+
+         disengaged_ = true;
+
+         //- Get boundary condition
+         volVectorField& U = const_cast<volVectorField&>(mesh_.lookupObject<volVectorField>("U." + inletPhaseName_));
+
+         label patchI = mesh_.boundaryMesh().findPatchID(inletPatch_);
+
+         fvPatchVectorField& UBf = const_cast<fvPatchVectorField&>(U.boundaryFieldRef()[patchI]);
+
+         //- Stop the flow from entering
+         UBf == vector(0,0,0);
+         
+         //- Also make sure the phase is not entering the domain
+         //! NOTE: this crashes the simulation when using superficial velocity!
+         //  volScalarField& alpha_nc = const_cast<volScalarField&>(mesh_.lookupObject<volScalarField>("alpha." + inletPhaseName_));
+
+        //  fvPatchScalarField& alphaBf = const_cast<fvPatchScalarField&>(alpha_nc.boundaryFieldRef()[patchI]);        
+     
+        //  alphaBf == 0.;
+     
+     }
+                
+ }
+
+}
+
 void Foam::functionObjects::disengagement::writeFileHeader(const label i)
 {
     if (Pstream::master())
@@ -111,6 +203,7 @@ void Foam::functionObjects::disengagement::writeFileHeader(const label i)
         writeHeader(file(), "phase_com");
         writeCommented(file(), "time");
         writeTabbed(file(), "phase_com");
+        writeTabbed(file(), "pressure");
         writeTabbed(file(), "disengaged");
 
         file() << endl;
@@ -120,6 +213,8 @@ void Foam::functionObjects::disengagement::writeFileHeader(const label i)
 bool Foam::functionObjects::disengagement::execute()
 {
     const volScalarField& alpha = mesh_.lookupObject<volScalarField>("alpha." + phaseName_);
+    const volScalarField& p = mesh_.lookupObject<volScalarField>("p");
+    const volScalarField& p_rgh = mesh_.lookupObject<volScalarField>("p_rgh");
                     
     //- Compute phase_com
     scalar volume = gSum(fvc::volumeIntegrate(alpha));
@@ -127,8 +222,39 @@ bool Foam::functionObjects::disengagement::execute()
     scalar phase_com = gSum(fvc::volumeIntegrate(hcoord*alpha))/volume;
     Pair<scalar> holddata(mesh_.time().value(), phase_com);
 
+    //- Compute pressure
+    scalar pValue1(0);
+    scalar pValue2(0);
+    scalar hasPressure1(0);
+    scalar hasPressure2(0);
+
+    if ( cellP_.first() > -1 )
+    {
+        pValue1 = p[cellP_.first()] - p_rgh[cellP_.first()];
+        hasPressure1 = 1.;
+    }
+    
+    reduce(pValue1, sumOp<scalar>());
+    reduce(hasPressure1, sumOp<scalar>());
+
+    pValue1 /= hasPressure1;
+
+    if ( cellP_.second() > -1 )
+    {
+        pValue2 = p[cellP_.second()] - p_rgh[cellP_.second()];
+        hasPressure2 = 1.;
+    }
+    
+    reduce(pValue2, sumOp<scalar>());
+    reduce(hasPressure2, sumOp<scalar>());
+
+    pValue2 /= hasPressure2;
+
+    Pair<scalar> pressdata(mesh_.time().value(), pValue1 - pValue2 );
+
     //- See function at the beginning of file
     add_to_list_like_static_queue(phase_com_,holddata);
+    add_to_list_like_static_queue(pressure_,pressdata);
 
     //- Skip rest if no disengagement is required
     if (!disengage_) return true;
@@ -136,60 +262,8 @@ bool Foam::functionObjects::disengagement::execute()
     //- Stop if already disengaged
     if (disengaged_ ) return true;
 
-    //- Do the check only if the list is complete
-    if (phase_com_[0].second() > 0.)
-    {
-        scalar phase_com_mean_long(0.);
-        scalar phase_com_mean_short(0.);
-        scalar t0_long(phase_com_[0].first());
-        scalar deltat_long(0.);
-        scalar deltat_short(0.);
+    checkDisengagement( usePressure_ ? pressure_ : phase_com_ );
 
-        //- The first (oldest) sample is skipped to have a well-defined dt
-        for (int i = 1; i < 2*nsamples_; i++)
-        {
-            scalar dt = phase_com_[i].first() - t0_long;
-            t0_long = phase_com_[i].first();
-            phase_com_mean_long += dt*phase_com_[i].second();
-            deltat_long += dt;
-
-            //- Compute average on the most recent samples
-            if (i >= nsamples_)
-            {
-                phase_com_mean_short +=  dt*phase_com_[i].second();
-                deltat_short += dt;
-            }
-            
-        }
-
-        phase_com_mean_long /= deltat_long;
-        phase_com_mean_short /= deltat_short;
-        
-        if (phase_com_mean_long < 1e-16) return true;
-
-        if (mag(phase_com_mean_long - phase_com_mean_short)/phase_com_mean_long < tolerance_)
-        {
-            if(!disengaged_)
-            {
-                Info << "functionObject::disengagement: Disengaging!\n";
-            }
-
-            disengaged_ = true;
-
-            //- Get boundary condition
-            volVectorField& U = const_cast<volVectorField&>(mesh_.lookupObject<volVectorField>("U." + inletPhaseName_));
-
-            label patchI = mesh_.boundaryMesh().findPatchID(inletPatch_);
-
-            fvPatchVectorField& UBf = const_cast<fvPatchVectorField&>(U.boundaryFieldRef()[patchI]);
-
-            //- Stop the flow from entering
-            UBf == vector(0,0,0);
-        
-        }
-                   
-    }
-                
     return true;
 }
 
@@ -208,6 +282,8 @@ bool Foam::functionObjects::disengagement::write()
             file() << tab;
             file() << phase_com_[2*nsamples_ -1].second();
             file() << tab;
+            file() << pressure_[2*nsamples_ -1].second();
+            file() << tab;
             file() << dis;
             file() << endl;
      
@@ -217,4 +293,4 @@ bool Foam::functionObjects::disengagement::write()
 }
 
 
-// ************************************************************************* //
+// ************************************************************************* // 

@@ -1,0 +1,25 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      postPro;
+}
+
+
+    pressure_area
+    {
+        // Mandatory entries (unmodifiable)
+        type            surfaceFieldValue;
+        libs            ("fieldFunctionObjects");
+
+        // Mandatory entries (runtime modifiable)
+        fields          (p_rgh);
+        operation       areaAverage;
+        regionType      patch;
+        name            inlet;
+        log    true;
+        writeControl    writeTime;
+
+    }
+

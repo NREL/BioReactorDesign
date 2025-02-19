@@ -1,0 +1,88 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volVectorField;
+    object      U.gas;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0.0 0);
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+
+    inlet
+    {
+        //type            flowRateInletVelocity;
+        //massFlowRate    $mflowRateGas;
+        //rho             thermo:rho.gas;
+        //value           $internalField;
+        type            fixedValue;
+        value           uniform (0 0 0.31);
+        // type 		codedFixedValue;
+        // value       uniform (0 $uGasPhase 0);
+        // name 		shutDownAtSteadyState;
+        
+        // code
+        // #{
+        // 	// Only activate when the mean of the holdup satisfies a certain
+        // 	// condition on the norm.
+        // 	// Requires tracking the temporal mean in controlDict
+        // 	if (db().foundObject<volScalarField>("alpha.gasMean"))
+        // 	{
+        // 		const volScalarField& alpha_mean = db().lookupObject<volScalarField>("alpha.gasMean");
+        		
+        // 		scalar volume = gSum(mesh().V());
+        // 		scalar gas_holdup_mean     = gSum(fvc::volumeIntegrate(alpha_mean))/volume;
+        // 		scalar gas_holdup_mean_old = gSum(fvc::volumeIntegrate(alpha_mean.oldTime()))/volume;
+        		
+        // 		if ( mag(gas_holdup_mean - gas_holdup_mean_old) < 1e-2 )
+        // 		{
+        // 		    if( mag((*this)[0]) > 1e-16 )
+        // 		    {
+        // 		        Info << "Patch: steady state reached. Shutting down gas inflow.\n";q
+        // 		    }
+        		    
+        // 		    operator==(vector(0.,0.,0.));
+        // 		} 
+        		
+        // 	}
+        // #}     
+ 
+        // codeInclude
+        // #{
+        //     #include "fvCFD.H"
+        // #};
+
+        // codeOptions
+        // #{
+        //     -I$(LIB_SRC)/finiteVolume/lnInclude
+        // #};
+   
+    
+    }
+    outlet
+    {
+        type            pressureInletOutletVelocity;
+        phi             phi.gas;
+        value           $internalField;
+    }
+    walls
+    {
+        type            slip;
+    }
+}
+
+// ************************************************************************* //

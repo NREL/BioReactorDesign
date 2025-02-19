@@ -1,0 +1,45 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+pointSync false;
+
+// Optional: Write cyclic matches into .obj format; defaults to false.
+writeCyclicMatch  false;
+
+// Patches to create.
+patches
+(
+    {
+        // Name of new patch
+        name walls;
+
+        // Dictionary to construct new patch from
+        patchInfo
+        {
+            type wall;
+        }
+
+        // How to construct: either from 'patches' or 'set'
+        constructFrom patches;
+
+        // If constructFrom = patches : names of patches. Wildcards allowed.
+        patches (defaultFaces);
+
+    }
+
+);
+
+// ************************************************************************* //

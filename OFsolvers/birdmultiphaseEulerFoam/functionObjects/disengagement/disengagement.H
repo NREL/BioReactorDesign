@@ -26,9 +26,9 @@ Class
 
 Description
     This functionObject disengages (i.e., sets the inlet velocity to zero)
-    upon reaching a steady value for the phase center of mass.
+    upon reaching a steady value for the phase center of mass or pressure.
 
-    Steady state is computed by comparing the average center of mass from
+    Steady state is computed by comparing the average center of mass (or pressure) from
     the previous "2*nsamples" samples against the previous "samples" samples
     (see input below). If the relative difference falls below a user-defined 
     tolerance, steady stated is decleared. 
@@ -52,6 +52,8 @@ Description
         inlet           inlet;
         tolerance       1e-2;
         direction       (0 1 0);
+        pressureProbe   (0 0.15 0);
+        usePressure     true;
         nsamples        50;
         disengage       true;   
     }
@@ -66,6 +68,9 @@ Usage
         inlet        | name of the inlet patch | yes |
         tolerance    | relative difference to declare disengagement | yes |
         direction    | normally the direction of gravity | yes |
+        pressureProbe1| position of the probe for measuring pressure | yes |
+        pressureProbe2| position of the probe for measuring pressure | yes |
+        usePressure  | set true for using pressure instead of com | yes |
         nsamples     | number of samples for averaging | yes |
         disengage    | set false for disabling disengaging | yes |
     \endtable
@@ -127,14 +132,29 @@ protected:
         //- Direction for computing the holdup
         vector direction_;
 
+        //- Pressure probe location
+        Pair<vector> pressure_probe_;
+
+        //- Switch to use pressure instead of com for disengagement
+        bool usePressure_;
+
         //- Optional for not disengaging
         bool disengage_;
 
         //- Vector with phase ceneter of mass and times
         List<Pair<scalar>> phase_com_;
 
+        //- Pressure at probe
+        List<Pair<scalar>> pressure_;
+
         //- Check if disengaged
         bool disengaged_;
+
+        //- Cell for computing pressure
+        Pair<label> cellP_;
+
+        //- Check if it is time for disengaging
+        void checkDisengagement(const List<Pair<scalar>>& time_series);
 
         //- Output file header information
         virtual void writeFileHeader(const label i);
