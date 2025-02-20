@@ -109,8 +109,8 @@ class Laakkonen_limited
         dimensionedScalar C3_;
 
         //- Where to zero out
-        const dimensionedScalar height_lim_;
-        const dimensionedScalar height_dir_;
+        const scalar height_lim_;
+        const vector height_dir_;
 
 public:
 

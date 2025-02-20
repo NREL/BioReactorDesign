@@ -71,8 +71,8 @@ LehrMilliesMewesCoalescence_limited
     (
         dimensionedScalar::lookupOrDefault("alphaMax", dict, dimless, 0.6)
     ),
-    height_lim_("height_lim", dimless, dict),
-    height_dir_("height_dir", dimless, dict)
+    height_lim_(readScalar(dict.lookup("height_lim"))),
+    height_dir_(dict.lookup("height_dir"))
 {}
 
 
@@ -108,9 +108,9 @@ addToCoalescenceRate
            /cbrt(max(popBal_.alphas(), fi.phase().residualAlpha())) - 1)
         ));
    volVectorField centres = coalescenceRate.ref().mesh().C();
-   int dir = int (height_dir_.value());
+
    forAll(centres, cellI) {
-       if (centres[cellI][dir]>height_lim_.value()) {
+       if ( (centres[cellI] & height_dir_) > height_lim_) {
            coalescenceRate.ref()[cellI] = 0.0;
        }
    } 

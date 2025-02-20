@@ -79,8 +79,8 @@ Laakkonen_limited
     ),
     C2_(dimensionedScalar::lookupOrDefault("C2", dict, dimless, 0.04)),
     C3_(dimensionedScalar::lookupOrDefault("C3", dict, dimless, 0.01)),
-    height_lim_("height_lim", dimless, dict),
-    height_dir_("height_dir", dimless, dict)
+    height_lim_(readScalar(dict.lookup("height_lim"))),
+    height_dir_(dict.lookup("height_dir"))
 {}
 
 
@@ -106,21 +106,21 @@ Foam::diameterModels::breakupModels::Laakkonen_limited::setBreakupRate
                     continuousPhase.rho()*pow(fi.dSph(), 5.0/3.0)
                    *pow(popBal_.continuousTurbulence().epsilon(), 2.0/3.0)
                 )
-              + C3_*continuousPhase.thermo().mu()
-               /(
-                    sqrt(continuousPhase.rho()*fi.phase().rho())
-                   *cbrt(popBal_.continuousTurbulence().epsilon())
-                   *pow(fi.dSph(), 4.0/3.0)
-                )
+            //   + C3_*continuousPhase.thermo().mu()
+            //    /(
+            //         sqrt(continuousPhase.rho()*fi.phase().rho())
+            //        *cbrt(popBal_.continuousTurbulence().epsilon())
+            //        *pow(fi.dSph(), 4.0/3.0)
+            //     )
             )
         ));
+    
     volVectorField centres = breakupRate.ref().mesh().C();
-    int dir = int (height_dir_.value());
     forAll(centres, cellI) {
-        if (centres[cellI][dir]>height_lim_.value()) {
+        if ( (centres[cellI] & height_dir_) > height_lim_) {
             breakupRate.ref()[cellI] = 0.0;
         }
-    }
+    } 
 }
 
 
