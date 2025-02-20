@@ -1,0 +1,85 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvModels;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+massSource
+{
+    type            massSource;
+
+//    selectionMode   cellZone;
+//    cellZone        injection;
+
+    selectionMode   points;
+    points
+    (
+        (-0.2 0 0)
+        (-0.1 0 0)
+        (0.1 0 0)
+        (0.2 0 0)
+        (0 0 -0.2)
+        (0 0 -0.1)
+        (0 0 0.1)
+        (0 0 0.2)
+    );
+
+    massFlowRate    $M_flowRate;
+    phase           gas;
+    rho             thermo:rho.gas;
+
+    fieldValues
+    {
+        f1.gas     0;
+        f2.gas     0;
+        f3.gas     1;
+        f4.gas     0;
+        f5.gas     0;
+        f6.gas     0;
+        f7.gas     0;
+        f8.gas     0;
+        f9.gas     0;
+        f10.gas    0;
+        f11.gas    0;
+        U.gas     (0 0 0);
+        O2.gas  0.23;
+        N2.gas  0.77;
+        H2O.gas  0;
+    }
+}
+
+baseSource
+{
+    type            massSource;
+
+    selectionMode   points;
+    points
+    (
+        (-0.3 0.95 0)
+    );
+
+    massFlowRate     $base_flowRate;
+    phase            liquid;
+    rho              thermo:rho.liquid;
+
+    fieldValues
+    {
+        U.liquid       (0 0 0);
+	NH4OH.liquid   0.1;
+	H2O.liquid     0.9;
+    }
+}
+
+// ************************************************************************* //
