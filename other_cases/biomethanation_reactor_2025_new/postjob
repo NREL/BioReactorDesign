@@ -1,0 +1,12 @@
+#!/bin/bash
+#SBATCH --job-name=ht4post
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=01:00:00
+#SBATCH --partition=debug
+#SBATCH --account=microenviro
+#SBATCH --output=pyropostout
+#SBATCH --error=pyroposterr
+
+source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
+reconstructPar -newTimes
