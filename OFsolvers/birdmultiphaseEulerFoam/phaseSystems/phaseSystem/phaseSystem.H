@@ -181,6 +181,8 @@ protected:
         //- Interface compression coefficients
         cAlphaTable cAlphas_;
 
+        const word interfaceCaptureMethod_;
+
         //- Stabilisation for normalisation of the interface normal
         const dimensionedScalar deltaN_;
 
@@ -294,6 +296,24 @@ protected:
             (
                 const volScalarField& alpha1,
                 const volScalarField& alpha2
+            ) const;
+
+            //- 0 if it is not an interface between phases
+            //  1 if it is an interface between phases
+            //  This is the method implemented in:
+            //  Wardle and Weller, Hybrid Multiphase CFD Solver for Coupled
+            //  Dispersed/Segregated Flows in Liquid-Liquid Extraction, Int. J. Chem Eng., 2013
+            tmp<surfaceScalarField> getInterfaceWeller
+            (
+                const volScalarField& alpha1
+            ) const;
+
+            //- 0 if it is not an interface between phases
+            //  1 if it is an interface between phases
+            //  New algorithm that extrapolates alpha based on the face gradient
+            tmp<surfaceScalarField> getInterfaceNew
+            (
+                const volScalarField& alpha1
             ) const;
 
             //- Correction for the boundary condition on the unit normal nHat on

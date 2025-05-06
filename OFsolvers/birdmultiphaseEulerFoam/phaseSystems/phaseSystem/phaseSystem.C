@@ -41,6 +41,7 @@ License
 #include "movingWallVelocityFvPatchVectorField.H"
 #include "pimpleControl.H"
 #include "pressureReference.H"
+#include "fvcCellReduce.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -235,6 +236,92 @@ Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::nHatf
     return nHatfv(alpha1, alpha2) & mesh_.Sf();
 }
 
+Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::getInterfaceWeller
+(
+    const volScalarField& alpha1
+) const
+{
+    volScalarField interface
+    (
+        IOobject
+        (
+            "interface." + alpha1.name(),
+            alpha1.mesh().time().timeName(),
+            alpha1.mesh(),
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mag(fvc::grad(alpha1))*dimensionedScalar("l",dimLength,1.0)
+    );
+
+    const dimensionedScalar maxGrad = gMax(interface) + 1e-16;
+
+    interface = pos0( (interface/maxGrad) - 0.2 );
+
+    if(alpha1.mesh().time().writeTime())
+    {
+        interface.write();
+    }
+
+    return pos0(fvc::interpolate(interface) - 0.001); // 1 if at least one neighbor is interface, 0 otherwise
+}
+
+Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::getInterfaceNew
+(
+    const volScalarField& alpha1
+) const
+{
+
+    //dimensionedScalar dist = pow(average(mesh_.V()), 1.0/3.0)*2.0;
+    const surfaceScalarField alphaf = fvc::interpolate(alpha1);
+//    const surfaceScalarField deltaAlpha = 4.0*fvc::snGrad(alpha1)/mesh_.deltaCoeffs();
+    const surfaceScalarField deltaAlpha = 4.0*fvc::interpolate(fvc::grad(alpha1))&(mesh_.Sf()/mag(mesh_.Sf()))/mesh_.deltaCoeffs();
+    // 1 if :
+    // alphaf + deltaAlpha > 1 && alphaf - deltaAlpha < 0
+    // OR 
+    // alphaf - deltaAlpha > 1 && alphaf + deltaAlpha < 0
+    // This accounts for the gradient of the interface w.r.t. the face normal
+    tmp<surfaceScalarField> faceInterfacet = 0.0*alphaf;
+    surfaceScalarField& faceInterface = faceInterfacet.ref();
+    
+    scalar alphaMax = 1.01;
+
+    forAll(faceInterface, faceI)
+    {
+        if ( alphaf[faceI] + deltaAlpha[faceI] > alphaMax && alphaf[faceI] - deltaAlpha[faceI] < 0 )
+        {
+            faceInterface[faceI] = 1.0;
+        }
+        else if ( alphaf[faceI] - deltaAlpha[faceI] > alphaMax && alphaf[faceI] + deltaAlpha[faceI] < 0 )
+        {
+            faceInterface[faceI] = 1.0;
+        }
+    }
+    
+    //     pos0( alphaf + deltaAlpha - 1.01) * pos0( alphaf - deltaAlpha ) 
+    //   + pos0( alphaf - deltaAlpha - 1.01) * pos0( alphaf + deltaAlpha );
+
+    // The field's value is the number of cell faces to compress
+    volScalarField interface
+    (
+        IOobject
+        (
+            "interface." + alpha1.name(),
+            alpha1.mesh().time().timeName(),
+            alpha1.mesh(),
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        fvc::cellReduce(faceInterface, sumOp<scalar>())
+    );
+
+    if(alpha1.mesh().time().writeTime())
+    {
+        interface.write();
+    }
+
+    return faceInterfacet;
+}
 
 void Foam::phaseSystem::correctContactAngle
 (
@@ -404,6 +491,8 @@ Foam::phaseSystem::phaseSystem
 
     cAlphas_(lookupOrDefault("interfaceCompression", cAlphaTable())),
 
+    interfaceCaptureMethod_(lookupOrDefault("interfaceCaptureMethod", word("default"))),
+
     deltaN_
     (
         "deltaN",
@@ -500,6 +589,25 @@ Foam::phaseSystem::phaseSystem
         const volScalarField& alphai = phases()[phasei];
         mesh_.setFluxRequired(alphai.name());
     }
+
+    if ( interfaceCaptureMethod_ == "default")
+    {
+        Info << "Using default interface capture method" << endl;
+    }
+    else if ( interfaceCaptureMethod_ == "WardleWeller")
+    {
+        Info << "Using WardleWeller interface capture method" << endl;
+    }
+    else if ( interfaceCaptureMethod_ == "new")
+    {
+        Info << "Using new interface capture method" << endl;
+    }
+    else
+    {
+        FatalErrorInFunction<< "Unknown intreface capture method" 
+                            << interfaceCaptureMethod_ << exit(FatalError);
+    }
+
 }
 
 
@@ -731,12 +839,22 @@ Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::surfaceTension
 
             if (cAlpha != cAlphas_.end())
             {
+
                 tSurfaceTension.ref() +=
-                    fvc::interpolate(sigma(key12)*K(phase1, phase2))
-                   *(
-                        fvc::interpolate(phase2)*fvc::snGrad(phase1)
-                      - fvc::interpolate(phase1)*fvc::snGrad(phase2)
-                    );
+                fvc::interpolate(sigma(key12)*K(phase1, phase2))
+                *(
+                    fvc::interpolate(phase2)*fvc::snGrad(phase1)
+                    - fvc::interpolate(phase1)*fvc::snGrad(phase2)
+                );
+
+                if ( interfaceCaptureMethod_ == "WardleWeller" )
+                {
+                    tSurfaceTension.ref() *= getInterfaceWeller(phase1);
+                }
+                else if ( interfaceCaptureMethod_ == "new" )
+                {
+                    tSurfaceTension.ref() *= getInterfaceNew(phase1);
+                }
             }
         }
     }

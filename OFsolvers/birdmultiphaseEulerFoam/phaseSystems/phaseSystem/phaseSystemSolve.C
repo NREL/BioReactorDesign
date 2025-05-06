@@ -58,14 +58,14 @@ void Foam::phaseSystem::solve
     // and the new un-split phase flux discretisation
     const bool splitPhaseFlux
     (
-        alphaControls.lookupOrDefault<Switch>("splitPhaseFlux", false)
+        alphaControls.lookupOrDefault<Switch>("splitPhaseFlux", true)
     );
 
     // Temporary switch for testing and comparing the standard mean flux
     // and the new phase flux reference for the phase flux correction
     const bool meanFluxReference
     (
-        alphaControls.lookupOrDefault<Switch>("meanFluxReference", false)
+        alphaControls.lookupOrDefault<Switch>("meanFluxReference", true)
     );
 
     // Optional reference phase which is not solved for
@@ -317,9 +317,25 @@ void Foam::phaseSystem::solve
                                 (mag(phi_) + mag(phir))/mesh_.magSf()
                             );
 
-                            phir +=
+                            if ( interfaceCaptureMethod_ == "WardleWeller")
+                            {
+                                phir +=
+                                min(getInterfaceWeller(alpha)*cAlpha()*phic, max(phic))
+                               *nHatf(alpha, alpha2);
+                            }
+                            else if ( interfaceCaptureMethod_ == "new")
+                            {
+                                phir +=
+                                min(getInterfaceNew(alpha)*cAlpha()*phic, max(phic))
+                               *nHatf(alpha, alpha2);
+                            }
+                            else
+                            {
+                                phir +=
                                 min(cAlpha()*phic, max(phic))
                                *nHatf(alpha, alpha2);
+
+                            }
                         }
 
                         const word phirScheme
@@ -366,11 +382,24 @@ void Foam::phaseSystem::solve
                                 (mag(phi_) + mag(phir))/mesh_.magSf()
                             );
 
-                            const surfaceScalarField phirc
+                            surfaceScalarField phirc
                             (
-                                min(cAlpha()*phic, max(phic))
-                               *nHatf(alpha, alpha2)
+                               nHatf(alpha, alpha2)
                             );
+
+                            if ( interfaceCaptureMethod_ == "WardleWeller")
+                            {
+                                phirc *= min(getInterfaceWeller(alpha)*cAlpha()*phic, max(phic));
+                            }
+                            else if ( interfaceCaptureMethod_ == "new")
+                            {
+                                phirc *= min(getInterfaceNew(alpha)*cAlpha()*phic, max(phic));
+                            }
+                            else
+                            {
+                                phirc *= min(cAlpha()*phic, max(phic));
+
+                            }
 
                             const word phirScheme
                             (

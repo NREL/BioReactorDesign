@@ -28,6 +28,7 @@ License
 #include "populationBalanceModel.H"
 #include "addToRunTimeSelectionTable.H"
 #include "zeroGradientFvPatchFields.H"
+#include <vector>
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -231,6 +232,38 @@ void Foam::diameterModels::velocityGroup::correct()
     f_ = fSum();
 
     f_.correctBoundaryConditions();
+
+    // std::vector<scalar> groupAve, groupMin, groupMax;
+
+    // forAll(sizeGroups_ ,i)
+    // {
+    //     groupAve.push_back(sizeGroups_[i].weightedAverage(phase().mesh().V()).value());
+    //     groupMin.push_back(min(sizeGroups_[i]).value());
+    //     groupMax.push_back(max(sizeGroups_[i]).value());
+    // }
+
+    // if(Pstream::master())
+    // {
+    //     std::ofstream ave_out("groups_ave.csv", std::ios::app);
+    //     std::ofstream min_out("groups_min.csv", std::ios::app);
+    //     std::ofstream max_out("groups_max.csv", std::ios::app);
+    //     ave_out << phase().mesh().time().value() << " ";
+    //     min_out << phase().mesh().time().value() << " ";
+    //     max_out << phase().mesh().time().value() << " ";
+    //     for (label i = 0; i < groupAve.size(); i++)
+    //     {
+    //         ave_out << groupAve[i] << " ";
+    //         min_out << groupMin[i] << " ";
+    //         max_out << groupMax[i] << " ";
+    //     }
+    //     ave_out << "\n";
+    //     min_out << "\n";
+    //     max_out << "\n";
+
+    //     ave_out.close();
+    //     min_out.close();
+    //     max_out.close();      
+    // }
 
     Info<< phase().name() << " sizeGroups-sum volume fraction, min, max = "
         << f_.weightedAverage(phase().mesh().V()).value()
