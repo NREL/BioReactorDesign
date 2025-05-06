@@ -1,0 +1,317 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      phaseProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "$FOAM_CASE/constant/globalVars"
+
+//type populationBalanceMultiphaseSystem;
+
+type interfaceCompositionPhaseChangePopulationBalanceMultiphaseSystem;
+
+phases (gas liquid);
+
+populationBalances (bubbles);
+
+gas
+{
+    type            multiComponentPhaseModel;//pureIsothermalPhaseModel;
+
+    diameterModel   velocityGroup;
+
+    velocityGroupCoeffs
+    {
+        populationBalance    bubbles;
+
+        shapeModel           spherical;
+
+        sizeGroups
+        (
+            f1 {dSph  1e-3; value 0.0;}
+            f2 {dSph  1.5e-3; value 0.0;}
+            f3 {dSph  2e-3; value 0.0;}
+            f4 {dSph  2.5e-3; value 0.0;}
+            f5 {dSph  3e-3; value 1.0;}
+            f6 {dSph  3.5e-3; value 0.0;}
+            f7 {dSph  4e-3; value 0.0;}
+            f8 {dSph  4.5e-3; value 0.0;}
+            f9 {dSph  5e-3; value 0.0;}
+            f10 {dSph  5.5e-3; value 0.0;}
+            f11 {dSph  6e-3; value 0.0;}
+	    f12 {dSph  6.5e-3; value 0.0;}
+        );
+    }
+
+    residualAlpha   1e-6;
+}
+
+liquid
+{
+    type            multiComponentPhaseModel;//pureIsothermalPhaseModel;
+    diameterModel   constant;
+    constantCoeffs
+    {
+        d               1e-4;
+    }
+
+    residualAlpha   1e-6;
+}
+
+populationBalanceCoeffs
+{
+    bubbles
+    {
+        continuousPhase liquid;
+
+        coalescenceModels
+        (
+            LehrMilliesMewes{
+               efficiency 2.0;
+               uCrit 0.08;
+               alphaMax 0.6;
+            }
+        );
+
+        binaryBreakupModels
+        (
+//            LehrMilliesMewes{}
+        );
+
+        breakupModels
+        (
+            Laakkonen{
+                efficiency 12.0;
+                daughterSizeDistributionModel Laakkonen;
+                height_lim $LiqHt_limit;
+                height_dir 1;
+            }
+        );
+
+        driftModels
+        (
+//            densityChange{}
+        );
+
+        nucleationModels
+        ();
+    }
+}
+
+blending
+{
+    default
+    {   
+        type            linear;
+        minFullyContinuousAlpha.gas 0.7;
+        minPartlyContinuousAlpha.gas 0.3;
+        minFullyContinuousAlpha.liquid 0.7;
+        minPartlyContinuousAlpha.liquid 0.3;
+    }
+    heatTransfer
+    {   
+        type            linear;
+        minFullyContinuousAlpha.gas 1;
+        minPartlyContinuousAlpha.gas 0;
+        minFullyContinuousAlpha.liquid 1;
+        minPartlyContinuousAlpha.liquid 0;
+    }
+    massTransfer
+    {
+        $heatTransfer;
+    }
+}
+
+surfaceTension
+(
+    (gas and liquid)
+    {
+        type            constant;
+        sigma           $sigmaLiq;
+    }
+);
+
+interfaceCompression
+();
+
+aspectRatio
+(
+    (gas in liquid)
+    {
+        type            constant;
+        E0              1.0;
+    }
+
+    (liquid in gas)
+    {
+        type            constant;
+        E0              1.0;
+    }
+);
+
+drag
+(
+    (gas in liquid)
+    {
+        type           Grace;
+        residualRe 1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+);
+
+virtualMass
+(
+    (gas in liquid)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+);
+
+// heatTransfer
+// ();
+
+heatTransfer.gas
+(
+    (gas in liquid)
+    {
+        type spherical;
+        residualAlpha 1e-4;
+    }
+
+    (liquid in gas)
+    {
+        type RanzMarshall;
+        residualAlpha 1e-4;
+    }
+);
+
+heatTransfer.liquid
+(
+    (gas in liquid)
+    {
+        type RanzMarshall;
+        residualAlpha 1e-4;
+    }
+
+    (liquid in gas)
+    {
+        type spherical;
+        residualAlpha 1e-4;
+    }
+);
+
+interfaceComposition.gas
+(
+    (gas and liquid)
+    {   
+        type saturated;
+        species ( H2O );
+        Le $LeGas;
+        saturationPressure
+        {   
+            type ArdenBuck;
+        }
+    }
+);
+
+interfaceComposition.liquid
+(
+    (liquid and gas)
+    {
+        type Henry;
+        species ( O2 );
+        k ( $He_O2 );
+        Le $LeLiqMix;
+    }
+);
+
+diffusiveMassTransfer.gas
+(
+    (gas in liquid)
+    {
+        type spherical;
+        Le 1.0; //not used for spherical
+    }
+
+    (liquid in gas)
+    {
+        type Higbie;
+        Le $LeGas;
+    }
+);
+
+diffusiveMassTransfer.liquid
+(
+    (gas in liquid)
+    {
+        type Higbie;
+        Le $LeLiqMix;
+    }
+
+    (liquid in gas)
+    {
+        type spherical;
+        Le 1.0; //not used for spherical
+    }
+);
+
+phaseTransfer
+();
+
+lift
+(
+    (gas in liquid)
+    {
+        type            wallDamped;
+
+        wallDamping
+        {
+            type        cosine;
+            Cd          3.0;
+        }
+
+        lift
+        {
+            type        Tomiyama;
+            swarmCorrection
+            {
+                type    none;
+            }
+        }
+    }
+
+);
+
+wallLubrication
+(
+    (gas in liquid)
+    {
+        type            Antal;
+        Cw1             -0.01;
+        Cw2             0.05;
+    }
+);
+
+turbulentDispersion
+(
+    (gas in liquid)
+    {
+        type            Burns;
+        sigma           0.9;
+    }
+);
+
+// ************************************************************************* //

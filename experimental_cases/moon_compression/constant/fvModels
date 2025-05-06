@@ -1,0 +1,80 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvModels;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+massSource
+{
+    type            massSource;
+
+//    selectionMode   cellZone;
+//    cellZone        injection;
+
+    selectionMode   points;
+    points
+    (
+        ($x1 0.01 $z1)
+        ($x2 0.01 $z2)
+        ($x3 0.01 $z3)
+        ($x4 0.01 $z4)
+	($x1neg 0.01 $z1)
+        ($x2neg 0.01 $z2)
+        ($x3neg 0.01 $z3)
+	($x1 0.01 $z1neg)
+        ($x2 0.01 $z2neg)
+        ($x3 0.01 $z3neg)
+        ($x4 0.01 $z4neg)
+	($x1neg 0.01 $z1neg)
+        ($x2neg 0.01 $z2neg)
+        ($x3neg 0.01 $z3neg)
+
+    );
+
+    massFlowRate    $M_flowRate;
+    phase           gas;
+    rho             thermo:rho.gas;
+
+    fieldValues
+    {
+        f1.gas     0;
+        f2.gas     0;
+        f3.gas     0;
+        f4.gas     0;
+        f5.gas     0;
+        f6.gas     0;
+        f7.gas     0;
+        f8.gas     0;
+        f9.gas     1;
+        f10.gas    0;
+        f11.gas    0;
+	f12.gas    0;
+	f13.gas    0;
+	f14.gas    0;
+	f15.gas    0;
+	f16.gas    0;
+	f17.gas    0;
+        f18.gas    0;
+        f19.gas    0;
+        f20.gas    0;
+        f21.gas    0;
+        U.gas     (0 0 0);
+        O2.gas  0.23;
+        N2.gas  0.77;
+        H2O.gas  0;
+    }
+}
+
+// ************************************************************************* //

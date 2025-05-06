@@ -1,0 +1,54 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      fvConstraints;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+/*limitp
+{
+    type       limitPressure;
+    min        1e4;
+}
+//limitUliq
+//{
+//    type       limitVelocity;
+//    active yes;
+//    U          U.liquid;
+//    selectionMode all;
+//    max        1e1;
+//}
+//limitUgas
+//{
+//    type       limitVelocity;
+//    active yes;
+//    U          U.gas;
+//    selectionMode all;
+//    max        1e1;
+//}
+limitTgas
+{
+    type            limitTemperature;
+    selectionMode   all;
+    min             290;
+    max             305;
+    phase           gas;
+}
+limitTliq
+{
+    type            limitTemperature;
+    selectionMode   all;
+    min             290;
+    max             305;
+    phase           liquid;
+}
+*/
+// ************************************************************************* //
