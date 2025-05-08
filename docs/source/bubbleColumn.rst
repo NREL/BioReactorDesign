@@ -6,8 +6,8 @@ This tutorial demonstrates how to run a basic bubble column reactor case. The tu
 .. code-block:: console
 
    conda activate bird
-   BIRD_HOME = `python -c "import bird; print(bird.BIRD_DIR)"`
-   BCE_CASE = ${BIRD_HOME}/../tutorial_cases/bubble_column_20L
+   BIRD_HOME=`python -c "import bird; print(bird.BIRD_DIR)"`
+   BCE_CASE=${BIRD_HOME}/../tutorial_cases/bubble_column_20L
 
 The tutorial is located under ``${BCE_CASE}``
 
