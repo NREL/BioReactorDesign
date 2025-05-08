@@ -176,7 +176,7 @@ Inlet patch
 
 BiRD makes the generation of patches easy through the generation of ``.stl`` files that be used to define a patch in OpenFOAM.
 
-Here, we would like to create a circular sparger centered on (x,y,z)=(0,0,0), and of radius 0.2 mm, with a normal face along the y-direction
+Here, we would like to create a circular sparger centered on (x,y,z)=(0,0,0), and of radius 0.2 m, with a normal face along the y-direction
 Recall that we scaled our mesh so the outer radius of the column is now 0.360m, and not 360m
 
 The inlet patch geometry is defined in ``${BCE_CASE}/system/inlets_outlets.json`` as 
