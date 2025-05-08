@@ -11,7 +11,7 @@ This tutorial demonstrates how to run a basic bubble column reactor case. The tu
 
 The tutorial is located under ``${BCE_CASE}``
 
-This is a code-along tutorial, and the steps are shown in order of how one would go about setting up a case. The reader can execute the command in the order shown here
+This is a code-along tutorial, and the steps are shown in order of how one would go about setting up a case. The reader can execute the commands in the order shown below
 
 To simply run the entire tutorial, do:
 
@@ -64,7 +64,7 @@ Those numbers describes the coordinates of the cylindrical blocks. Using the blo
       :align: center
       :alt: Schematic of the block cylindrical geometry
 
-Note that the first radial number ``"column_trans`` is special and results in 2 radial blocks. The first radial block is the square of the pillow-mesh where the edge is half of the first coordinate (275/2=137.5). The second radial block is the outer-shell of the pillow. 
+Note that the first radial number ``column_trans`` is special and results in 2 radial blocks. The first radial block is the square of the pillow-mesh where the edge is half of the first coordinate (275/2=137.5). The second radial block is the outer-shell of the pillow. 
 
 Each one of the cylindrical blocks will be meshed because we are constructing a bubble column. So there is no need for defining one of the blocks as a wall (conversely to the example shown in :ref:`Block cylindrical meshing<block_cyl>`
 
