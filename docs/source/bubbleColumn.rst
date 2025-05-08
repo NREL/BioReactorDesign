@@ -213,7 +213,7 @@ Now, the inlet must be added to the boundary in place of some of the default wal
 
 Initial conditions
 ------------
-The initial conditions are defined through the ``${BCE_CASE}/0/`` time folder. We provide a premade folder ``${BCE_CASE}/0.orig/``. Two fields, the volume fraction of gas and liquid are essential in a bubble column and are left for the user to define. We typically define them with the ``setFields`` utility in OpenFOAM which looks up the values defined in ``${BCE_CASE}/system/setFieldsDict``. The important part of the file is shown below
+The initial conditions are defined through the ``${BCE_CASE}/0/`` time folder. We provide a pre-made folder ``${BCE_CASE}/0.orig/``. Two fields, the volume fraction of gas (``alpha.gas``) and liquid (``alpha.liquid``) are essential in a bubble column and are left for the user to define. We typically define them with the ``setFields`` utility in OpenFOAM which looks up the values defined in ``${BCE_CASE}/system/setFieldsDict``. The important part of the file is shown below
 
 .. code-block:: txt
 
@@ -248,7 +248,7 @@ In the end, the initial conditions are defined by running
 
 Mesh post-treatment 2
 ------------
-At this point, the reactor can still be post treated. We can, for example, ensure that the liquid volume is 20L by doing 
+At this point, the reactor can still be post-treated. We can, for example, ensure that the liquid volume is 20L by doing 
 
 .. code-block:: console
 
@@ -259,8 +259,8 @@ Global variables
 ------------
 Several cases in BiRD adjust the boundary conditions according to the ``${BCE_CASE}/constant/globalVars`` file. This is useful to get a holistic view of the whole case setup. In this case, ``globalVars`` defines ``uGasPhase`` which is used as an inlet boundary condition in ``${BCE_CASE}/0.orig/U.gas``.
 
-In practice, the gas velocity is set using a ``VVM`` which can result in different gas velocity depending on the size of the inlet or the size of the reactor. This is shown in ``globalVars_temp`` and ``globalVars`` as  ``uGasPhase #calc "$liqVol * $VVM / (60 * $inletA * $alphaGas)";``.
-Crucially, one needs to set ``liqVol`` (total volume of liquid in m3) and ``inletA`` (inlet area in m2) correctly. This can be done using a mix of OpenFOAM utilities (to get the ``inletA`` value) and BiRD utilities (to get the ``liqVol`` value). The script ``writeGlobalVars.py`` reads the erroneous ``globalVars_temp`` and writes the correct ``globalVars`` with the appropriate ``liqVol`` and ``inletA``.
+In practice, the gas velocity is set using a vessel-volume-per-minute (or ``VVM`` in ``globalsVars``) which can result in different gas velocity depending on the size of the inlet or the size of the reactor. This is shown in ``globalVars_temp`` and ``globalVars`` as  ``uGasPhase #calc "$liqVol * $VVM / (60 * $inletA * $alphaGas)";``.
+Crucially, one needs to set ``liqVol`` (total volume of liquid in m3) and ``inletA`` (inlet area in m2) correctly. This can be done using a mix of OpenFOAM utilities (to get the ``inletA`` value) and BiRD utilities (to get the ``liqVol`` value). The script ``${BCE_CASE}/writeGlobalVars.py`` reads the erroneous ``globalVars_temp`` and writes the correct ``globalVars`` with the appropriate ``liqVol`` and ``inletA``.
 
 
 This step can be done as
@@ -272,6 +272,8 @@ This step can be done as
    postProcess -func writeCellVolumes
    writeMeshObj
    python writeGlobalVars.py
+
+The ``globalVars`` file is also used to set up gas composition through the mass fractions. In this case, ``f_O2`` and ``f_N2`` are set through ``globalVars`` and are used to set the inlet boundary conditions in ``0.orig/O2.gas`` and ``0.orig/N2.gas``.
 
 
 Setup the bubble model
