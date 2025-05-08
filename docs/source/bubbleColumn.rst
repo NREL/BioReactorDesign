@@ -66,9 +66,9 @@ Those numbers describes the coordinates of the cylindrical blocks. Using the blo
 
 Note that the first radial number ``column_trans`` is special and results in 2 radial blocks. The first radial block is the square of the pillow-mesh where the edge is half of the first coordinate :math:`(275/2=137.5)`. The second radial block is the outer-shell of the pillow. 
 
-Each one of the cylindrical blocks will be meshed because we are constructing a bubble column. So there is no need for defining one of the blocks as a wall (conversely to the example shown in :ref:`Block cylindrical meshing<block_cyl>`
+Each one of the cylindrical blocks will be meshed because we are constructing a bubble column. So there is no need for defining one of the blocks as a wall (conversely to the example shown in :ref:`Block cylindrical meshing<block_cyl>`).
 
-The coordinate are shown in the figure above in radial coordinates but OpenFOAM only uses cartesian coordinates. The radial coordinates are transformed in :math:`(x,y)` cartesian coordinate for you. The longitudinal coordinate always matches the :math:`z` cartesian coordinate. In our present case, we want the bubble column axis of revolution to be along the :math:`y`-direction (not :math:`z`). We will show in :ref:`Mesh post-treatment<posttreat_bce>`
+The coordinate are shown in the figure above in radial coordinates but OpenFOAM only uses cartesian coordinates. The radial coordinates are transformed in :math:`(x,y)` cartesian coordinate for you. The longitudinal coordinate always matches the :math:`z` cartesian coordinate. In our present case, we want the bubble column axis of revolution to be along the :math:`y`-direction (not :math:`z`). We will show in :ref:`Mesh post-treatment<posttreat_bce>`.
 
 Boundaries
 ~~~~~~~~~~~
@@ -164,7 +164,7 @@ As mentioned earlier, one might want to define the axis of revolution of the col
 
    transformPoints "rotate=((0 0 1) (0 1 0))"
 
-Finally, one might want to convert the units from :math:`m` into :math:`mm` , which can be done as 
+Finally, one might want to convert the units from :math:`mm` into :math:`m` , which can be done as 
 
 .. code-block:: console
 
@@ -176,10 +176,10 @@ Finally, one might want to convert the units from :math:`m` into :math:`mm` , wh
 Inlet patch
 ------------
 
-BiRD makes the generation of patches easy through the generation of ``.stl`` files that be used to define a patch in OpenFOAM.
+BiRD makes the generation of patches easy through the generation of ``.stl`` files that will be used to define a patch in OpenFOAM.
 
-Here, we would like to create a circular sparger centered on :math:`(x,y,z)=(0,0,0)`, and of radius :math:`0.2 m`, with a normal face along the y-direction
-Recall that we scaled our mesh so the outer radius of the column is now :math:`0.360m`, and not :math:`360m`.
+Here, we would like to create a circular sparger centered on :math:`(x,y,z)=(0,0,0)`, and of radius :math:`0.2` m, with a normal face along the :math:`y`-direction
+Recall that we scaled our mesh so the outer radius of the column is now :math:`0.360` m, and not :math:`360` m.
 
 The inlet patch geometry is defined in ``${BCE_CASE}/system/inlets_outlets.json`` as 
 
