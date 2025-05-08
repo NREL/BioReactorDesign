@@ -64,11 +64,11 @@ Those numbers describes the coordinates of the cylindrical blocks. Using the blo
       :align: center
       :alt: Schematic of the block cylindrical geometry
 
-Note that the first radial number ``column_trans`` is special and results in 2 radial blocks. The first radial block is the square of the pillow-mesh where the edge is half of the first coordinate (275/2=137.5). The second radial block is the outer-shell of the pillow. 
+Note that the first radial number ``column_trans`` is special and results in 2 radial blocks. The first radial block is the square of the pillow-mesh where the edge is half of the first coordinate :math:`(275/2=137.5)`. The second radial block is the outer-shell of the pillow. 
 
 Each one of the cylindrical blocks will be meshed because we are constructing a bubble column. So there is no need for defining one of the blocks as a wall (conversely to the example shown in :ref:`Block cylindrical meshing<block_cyl>`
 
-The coordinate are shown in the figure above in radial coordinates but OpenFOAM only uses cartesian coordinates. The radial coordinates are transformed in ``(x,y)`` cartesian coordinate for you. The longitudinal coordinate always matches the ``z`` cartesian coordinate. In our present case, we want the bubble column axis of revolution to be along the y-direction (not z). We will show in :ref:`Mesh post-treatment<posttreat_bce>`
+The coordinate are shown in the figure above in radial coordinates but OpenFOAM only uses cartesian coordinates. The radial coordinates are transformed in :math:`(x,y)` cartesian coordinate for you. The longitudinal coordinate always matches the :math:`z` cartesian coordinate. In our present case, we want the bubble column axis of revolution to be along the :math:`y`-direction (not :math:`z`). We will show in :ref:`Mesh post-treatment<posttreat_bce>`
 
 Boundaries
 ~~~~~~~~~~~
@@ -97,7 +97,7 @@ Here, ``outlet`` contains the face of three blocks. First is the face boundary b
       :alt: Schematic of the boundary
 
 
-To finish defining the boundaries of the bubble column, we would need to define the outer walls and the inlet. We do not define any other boundaries for now and BiRD automatically sets non-defined patches as walls. We will show how to set the inlet boundary in the next sections.
+To finish defining the boundaries of the bubble column, we would need to define the outer walls and the inlet. We do not define any other boundaries for now and BiRD automatically sets non-defined patches as walls. We will show how to set the inlet boundary in :ref:`Inlet path<inletpatch_bce>`.
 
 Mesh
 ~~~~~~~~~~~
@@ -109,7 +109,7 @@ The meshing is defined based on ``Meshing`` in ``${BCE_CASE}/system/mesh.json``
            "NRSmallest": 4,
            "NVertSmallest": 12,
 
-The size of the radial mesh is defined using ``NRSmallest``. It denotes the number of mesh point through the smallest radial block. Blocks at R=0 have radial size 137.5, at R=1 have size 275-137.5=137.5, and at R=2 have size 360-275=85. So 4 mesh points will be used to mesh the radial blocks at R=2. 
+The size of the radial mesh is defined using ``NRSmallest``. It denotes the number of mesh point through the smallest radial block. Blocks at :math:`R=0` (where :math:`R` is the radial index of the block shown in the block diagrams above) have radial size :math:`137.5`, at :math:`R=1` have size :math:`275-137.5=137.5`, and at :math:`R=2` have size :math:`360-275=85`. The smallest radial block is at :math:`R=2`, so 4 mesh points will be used to mesh the radial blocks at :math:`R=2`. 
 
 Starting from this number, the number of points in the other radial blocks will be adjusted based on the size of the blocks, to make sure that the mesh size is constant radially. We refer to these numbers as the *base mesh numbers*.
 
@@ -135,7 +135,7 @@ The ratios denote the how the base mesh numbers should be altered. By default, n
 
 In the radial direction, no coarsening or refinement is done in the first two blocks. For the third one, the default setting is used (no coarsening). We recommend to avoid coarsening or refining in the radial direction at the moment: this feature is rarely used and would be prone to bugs.
 
-In the vertical direction, no coarsening is used, except for the first block. In the first block, we reduce the number of mesh points compared to the base mesh by a factor ``0.5``. The mesh size is adjusted using a grading so that a smooth mesh size transition is achieved. The ``direction`` and ``directionRef`` should always be opposite signs. The ``directionRef`` denotes where to look to define a smooth transition. Here, ``directionRef : "-"`` so mesh size to achieve at the bottom of the block should match the size of the mesh in block below. Here is this what we want, because the first vertical block is meshing the headspace, and less and less resolution is needed as z increases.
+In the vertical direction, no coarsening is used, except for the first block. In the first block, we reduce the number of mesh points compared to the base mesh by a factor ``0.5``. The mesh size is adjusted using a grading so that a smooth mesh size transition is achieved. The ``direction`` and ``directionRef`` should always be opposite signs. The ``directionRef`` denotes where to look to define a smooth transition. Here, ``directionRef : "-"`` so mesh size to achieve at the bottom of the block should match the size of the mesh in block below. This what we want, because the first vertical block is meshing the headspace, and less and less resolution is needed as :math:`z` increases.
 
 The resulting mesh looks as the picture below. The white line denotes the boundary between the first and the second vertical (also called longitudinal) block.
 
@@ -158,26 +158,28 @@ Once ``blockMeshDict`` is generated, the mesh can be constructed using the ``blo
 
    blockMesh -dict system/blockMeshDict
 
-As mentioned earlier, one might want to define the axis of revolution of the column along the y direction, in which case, one can use
+As mentioned earlier, one might want to define the axis of revolution of the column along the :math:`y` direction, in which case, one can use
 
 .. code-block:: console
 
    transformPoints "rotate=((0 0 1) (0 1 0))"
 
-Finally, one might want to convert the units into mm, which can be done as 
+Finally, one might want to convert the units from :math:`m` into :math:`mm` , which can be done as 
 
 .. code-block:: console
 
    transformPoints "scale=(0.001 0.001 0.001)"
 
 
+.. _inletpatch_bce:
+
 Inlet patch
 ------------
 
 BiRD makes the generation of patches easy through the generation of ``.stl`` files that be used to define a patch in OpenFOAM.
 
-Here, we would like to create a circular sparger centered on (x,y,z)=(0,0,0), and of radius 0.2 m, with a normal face along the y-direction
-Recall that we scaled our mesh so the outer radius of the column is now 0.360m, and not 360m
+Here, we would like to create a circular sparger centered on :math:`(x,y,z)=(0,0,0)`, and of radius :math:`0.2 m`, with a normal face along the y-direction
+Recall that we scaled our mesh so the outer radius of the column is now :math:`0.360m`, and not :math:`360m`.
 
 The inlet patch geometry is defined in ``${BCE_CASE}/system/inlets_outlets.json`` as 
 
@@ -236,7 +238,7 @@ The initial conditions are defined through the ``${BCE_CASE}/0/`` time folder. W
        }
    );
 
-Here, everything below y=7m is (almost) pure liquid and the rest (``defaultFieldValues``) is (almost) pure gas. 
+Here, everything below :math:`y=7m` is (almost) pure liquid and the rest (``defaultFieldValues``) is (almost) pure gas. 
 
 In the end, the initial conditions are defined by running
 
@@ -260,7 +262,7 @@ Global variables
 Several cases in BiRD adjust the boundary conditions according to the ``${BCE_CASE}/constant/globalVars`` file. This is useful to get a holistic view of the whole case setup. In this case, ``globalVars`` defines ``uGasPhase`` which is used as an inlet boundary condition in ``${BCE_CASE}/0.orig/U.gas``.
 
 In practice, the gas velocity is set using a vessel-volume-per-minute (or ``VVM`` in ``globalsVars``) which can result in different gas velocity depending on the size of the inlet or the size of the reactor. This is shown in ``globalVars_temp`` and ``globalVars`` as  ``uGasPhase #calc "$liqVol * $VVM / (60 * $inletA * $alphaGas)";``.
-Crucially, one needs to set ``liqVol`` (total volume of liquid in m3) and ``inletA`` (inlet area in m2) correctly. This can be done using a mix of OpenFOAM utilities (to get the ``inletA`` value) and BiRD utilities (to get the ``liqVol`` value). The script ``${BCE_CASE}/writeGlobalVars.py`` reads the erroneous ``globalVars_temp`` and writes the correct ``globalVars`` with the appropriate ``liqVol`` and ``inletA``.
+Crucially, one needs to set ``liqVol`` (total volume of liquid in :math:`m^3`) and ``inletA`` (inlet area in :math:`m^2`) correctly. This can be done using a mix of OpenFOAM utilities (to get the ``inletA`` value) and BiRD utilities (to get the ``liqVol`` value). The script ``${BCE_CASE}/writeGlobalVars.py`` reads the erroneous ``globalVars_temp`` and writes the correct ``globalVars`` with the appropriate ``liqVol`` and ``inletA``.
 
 
 This step can be done as
