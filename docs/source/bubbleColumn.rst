@@ -91,9 +91,9 @@ The boundary conditions are described in ``${BCE_CASE}/system/topology.json`` an
 
 The snippet above defines ``outlet`` as the concatenation of 3 faces of cylindrical blocks. The blocks faces are defined by a pair of block: a ``min`` block and a ``max`` block. Each one of the blocks is defined by its radial index (``Rmin`` or ``Rmax``) and its longitudinal index (``Lmin`` or ``Lmax``). In the bubble column case, the three block faces that define the outlet are
  
-1. The boundary between the block ``(Lmin=0, Rmin=0)`` and the block ``(Lmax=1, Rmax=0)``
-2. The boundary between the block ``(Lmin=0, Rmin=1)`` and the block ``(Lmax=1, Rmax=1)``
-3. The boundary between the block ``(Lmin=0, Rmin=2)`` and the block ``(Lmax=1, Rmax=2)``
+#. 1. The boundary between the block ``(Lmin=0, Rmin=0)`` and the block ``(Lmax=1, Rmax=0)``
+#. 2. The boundary between the block ``(Lmin=0, Rmin=1)`` and the block ``(Lmax=1, Rmax=1)``
+#. 3. The boundary between the block ``(Lmin=0, Rmin=2)`` and the block ``(Lmax=1, Rmax=2)``
 
 
 .. container:: figures-bound-geom-bce
@@ -231,9 +231,9 @@ Now, the inlet must be added to the boundary in place of some of the default wal
 
 At this point, you can visualize the inlet patch in paraview. The figure below shows the inlet patch in red. One can see that the inlet patch only approximately matches the stl file. In most applications, this amount of approximation is acceptable. If it is not one could
 
-1. modify the block-cylindrical mesh and make sure that the inlet exactly matches an ensemble of block cylindrical faces. Then one defines the inlet patch similarly to the way the outlet patch was constructed. This allows for a very close match to the .stl
+#. 1. modify the block-cylindrical mesh and make sure that the inlet exactly matches an ensemble of block cylindrical faces. Then one defines the inlet patch similarly to the way the outlet patch was constructed. This allows for a very close match to the .stl
 
-2. If 1. is not possible because the sparger geometry is complex, one could use a finer mesh to allow for a close match between the stl and inlet patch.
+#. 2. If 1. is not possible because the sparger geometry is complex, one could use a finer mesh to allow for a close match between the stl and inlet patch.
 
 .. container:: figures-stlin-bce
 
