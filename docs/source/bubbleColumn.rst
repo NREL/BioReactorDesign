@@ -64,7 +64,10 @@ Those numbers describes the coordinates of the cylindrical blocks. Using the blo
       :align: center
       :alt: Schematic of the block cylindrical geometry
 
+
 Note that the first radial number ``column_trans`` is special and results in 2 radial blocks. The first radial block is the square of the pillow-mesh where the edge is half of the first coordinate :math:`(275/2=137.5)`. The second radial block is the outer-shell of the pillow. 
+
+By default, the coordinates of the block cyclindrical geometry are in meters. In this case, the intention was to indicate milimeters instead. This will be handled during the :ref:`Mesh post-treatment<posttreat_bce>` below.
 
 Each one of the cylindrical blocks will be meshed because we are constructing a bubble column. So there is no need for defining one of the blocks as a wall (conversely to the example shown in :ref:`Block cylindrical meshing<block_cyl>`).
 
