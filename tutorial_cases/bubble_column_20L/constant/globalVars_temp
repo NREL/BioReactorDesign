@@ -87,3 +87,5 @@ eps_inlet_gas #calc "pow(0.09,0.75) * Foam::pow($k_inlet_gas, 1.5) / ($l_scale *
 eps_inlet_liq #calc "pow(0.09,0.75) * Foam::pow($k_inlet_liq, 1.5) / ($l_scale * 0.07)";
 omega_inlet_gas #calc "pow(0.09,-0.25) * pow($k_inlet_gas,0.5) / ($l_scale * 0.07)";
 omega_inlet_liq #calc "pow(0.09,-0.25) * pow($k_inlet_liq,0.5) / ($l_scale * 0.07)";
+nut_inlet_gas #calc "0.09 * Foam::pow(($k_inlet_gas), 2) / $eps_inlet_gas";
+nut_inlet_liq #calc "0.09 * Foam::pow(($k_inlet_liq), 2) / $eps_inlet_liq";

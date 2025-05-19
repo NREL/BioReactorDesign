@@ -34,7 +34,8 @@ boundaryField
 
     defaultFaces
     {
-        type            zeroGradient;
+        type            epsilonWallFunction;
+        value           $internalField;
     }
 
 }
