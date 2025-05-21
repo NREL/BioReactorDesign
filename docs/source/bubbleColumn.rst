@@ -37,7 +37,7 @@ This command generates the appropriate ``blockMeshDict``
 
 Block geometry
 ~~~~~~~~~~~
-BiRD uses a block cyclindral geometry description (:ref:`Block cylindrical meshing<block_cyl>`). The block description of the geometry is in ``${BCE_CASE}/system/mesh.json`` under the ``Geometry`` key
+BiRD uses a block cylindral geometry description (:ref:`Block cylindrical meshing<block_cyl>`). The block description of the geometry is in ``${BCE_CASE}/system/mesh.json`` under the ``Geometry`` key
 
 .. code-block:: json
 
@@ -67,7 +67,7 @@ Those numbers describes the coordinates of the cylindrical blocks. Using the blo
 
 Note that the first radial number ``column_trans`` is special and results in 2 radial blocks. The first radial block is the square of the pillow-mesh where the edge is half of the first coordinate :math:`(275/2=137.5)`. The second radial block is the outer-shell of the pillow. 
 
-By default, the coordinates of the block cyclindrical geometry are in meters. In this case, the intention was to indicate milimeters instead. This will be handled during the :ref:`Mesh post-treatment<posttreat_bce>` below.
+By default, the coordinates of the block cylindrical geometry are in meters. In this case, the intention was to indicate millimeters instead. This will be handled during the :ref:`Mesh post-treatment<posttreat_bce>` below.
 
 Each one of the cylindrical blocks will be meshed because we are constructing a bubble column. So there is no need for defining one of the blocks as a wall (conversely to the example shown in :ref:`Block cylindrical meshing<block_cyl>`).
 
@@ -184,7 +184,7 @@ Inlet patch
 ------------
 
 BiRD allows for the generation of complex patches through the generation of ``.stl`` files that describe the patch geometry. 
-Note that we could have generated the outlet patch with another stl file (we do it in the case of the loop reactor tutorial). Here, since the outlet can be simply defined as an entire block cyclindrical face, we prefer to define it that way. In the case of the inlet, only part of a block cyclindrical face is the inlet, and it is more convenient to use the ``.stl`` approach.
+Note that we could have generated the outlet patch with another stl file (we do it in the case of the loop reactor tutorial). Here, since the outlet can be simply defined as an entire block cylindrical face, we prefer to define it that way. In the case of the inlet, only part of a block cylindrical face is the inlet, and it is more convenient to use the ``.stl`` approach.
 
 Here, we would like to create a circular sparger centered on :math:`(x,y,z)=(0,0,0)`, and of radius :math:`0.2` m, with a normal face along the :math:`y`-direction
 Recall that we scaled our mesh so the outer radius of the column is now :math:`0.360` m, and not :math:`360` m.
@@ -319,6 +319,14 @@ For example, one choose to use the constant diameter model and do
 
    cd ${BCE_CASE}
    cp constant/phaseProperties_constantd constant/phaseProperties
+
+Turbulence model
+------------
+
+The turbulence model is set as :math:`k-\varepsilon` in the gas phase and the liquid phase. The turbulence model can be activated through ``${BCE_CASE}/constant/momentumTransport.gas`` for the gas phase and ``${BCE_CASE}/constant/momentumTransport.liquid`` for the liquid phase. 
+
+The boundary conditions for the turbulence model are set in ``0.orig/k.*``, ``0.orig/epsilon.*``, ``0.orig/nut.*``. The inlet boundary values are calculated from freestream turbulence correlations shown in ``constant/globalVars``. For example, ``k_inlet_liq #calc "1.5 * Foam::pow(($uGasPhase), 2) * Foam::pow($intensity, 2)";``. 
+
 
 Run the solver
 ------------
