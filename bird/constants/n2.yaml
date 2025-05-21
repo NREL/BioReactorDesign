@@ -1,0 +1,28 @@
+name: N2
+
+specie:
+    molWeight: 28.0134
+    elements:
+        N: 2 
+
+liquid:
+    LeLiq: '#calc "$kThermLiq / $rho0MixLiq / $D_N2 / $CpMixLiq"'
+
+gas:
+    in-H2O:
+        WC_V: "31.2e-3" # m3/kmol molar volume at normal boiling temperature (Treybal 1968)
+        D: '#calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_N2,0.6)' 
+    H_298: "0.015"
+    DH: "1300"
+    He: '#calc "$H_N2_298 * exp($DH_N2 *(1. / $T0 - 1./298.15))"'
+    k: '#calc "$D_N2*$rho0MixLiq*$CpMixLiq*$LeLiqMix"'
+    Pr: '#calc "$muMixLiq*$CpMixLiq / $kN2"'
+   
+    thermodynamics:
+        Tlow: 250
+        Thigh: 5000
+        highCpCoeffs: 2.92664 0.0014879768 -5.68476e-07 1.0097038e-10 -6.753351e-15 -922.7977 5.980528
+        lowCpCoeffs:  3.298677 0.0014082404 -3.963222e-06 5.641515e-09 -2.444854e-12 -1020.8999 3.950372
+    transport:
+        As: 1.688e-06
+        Ts: 273

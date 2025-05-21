@@ -1,0 +1,33 @@
+name: CH4
+
+specie:
+    molWeight: 16.04303
+    elements:
+        C: 1
+        H: 4 
+
+liquid:
+    LeLiq: '#calc "$kThermLiq / $rho0MixLiq / $D_CH4 / $CpMixLiq"'
+    thermodynamics:
+        Hf: -1.5879e+07
+
+gas:
+    in-H2O:
+        WC_V: "35e-3" # m3/kmol molar volume at normal boiling temperature (Treybal 1968)
+        D: '#calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_CH4,0.6)' 
+    H_298: "0.032"
+    DH: "1900"
+    He: '#calc "$H_CH4_298 * exp($DH_CH4 *(1. / $T0 - 1./298.15))"'
+    k: '#calc "$D_CH4*$rho0MixLiq*$CpMixLiq*$LeLiqMix"'
+    Pr: '#calc "$muMixLiq*$CpMixLiq / $kCH4"'
+  
+    thermodynamics:
+        Tlow: 200
+        Thigh: 3500
+        Tcommon: 1000
+        highCpCoeffs: 0.074851495 0.0133909467 -5.73285809e-06 1.22292535e-09 -1.0181523e-13 -9468.34459 18.437318
+        lowCpCoeffs: 5.14987613 -0.0136709788 4.91800599e-05 -4.84743026e-08 1.66693956e-11 -10246.6476 -4.64130376
+    transport:
+        As: 1.512e-06
+        Ts: 120
+   

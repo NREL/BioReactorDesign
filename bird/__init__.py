@@ -8,6 +8,7 @@ BIRD_DIR = os.path.dirname(os.path.realpath(__file__))
 BIRD_MESH_DIR = os.path.join(BIRD_DIR, "meshing")
 BIRD_POST_DIR = os.path.join(BIRD_DIR, "postprocess")
 BIRD_PRE_DIR = os.path.join(BIRD_DIR, "preprocess")
+BIRD_CONST_DIR = os.path.join(BIRD_DIR, "constants")
 BIRD_BLOCK_CYL_MESH_TEMP_DIR = os.path.join(
     BIRD_MESH_DIR, "block_cyl_mesh_templates"
 )

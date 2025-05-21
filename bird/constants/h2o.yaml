@@ -1,0 +1,30 @@
+name: H2O
+
+specie:
+     molWeight: 18.01534
+     elements:
+         H: 2
+         O: 1
+
+liquid:
+    CpMixLiq: "4181"
+    muMixLiq: '#calc "2.414e-5 * pow(10,247.8/($T0 - 140.0))"' # Viscosity (Pa.s)
+    kThermLiq: "0.62" # thermal conductivity (W/mK)
+    rho0MixLiq: "1000" # density (kg/m3)
+    sigmaLiq: "0.07" # surface tension (N/m)
+    WC_psi: "2.6"
+    thermodynamics:
+         Hf:  -1.5879e+07
+
+
+gas:
+    thermodynamics:
+        Tlow: 200
+        Thigh: 3500
+        Tcommon: 1000
+        highCpCoeffs: 3.03399249 0.00217691804 -1.64072518e-07 -9.7041987e-11 1.68200992e-14 -30004.2971 4.9667701
+        lowCpCoeffs: 4.19864056 -0.0020364341 6.52040211e-06 -5.48797062e-09 1.77197817e-12 -30293.7267 -0.849032208 
+        transport:
+            As: 1.456e-06
+            Ts: 273
+        

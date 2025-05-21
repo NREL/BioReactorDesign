@@ -1,0 +1,32 @@
+name: H2
+
+specie:
+    molWeight: 2.01594
+    elements:
+        H: 2
+
+liquid:
+    LeLiq: '#calc "$kThermLiq / $rho0MixLiq / $D_H2 / $CpMixLiq"'
+    thermodynamics:
+        Hf: -1.5879e+07
+
+gas:
+    in-H2O:
+        WC_V: "14.3e-3" # m3/kmol molar volume at normal boiling temperature (Treybal 1968)
+        D: '#calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_H2,0.6)' 
+    H_298: "0.019"
+    DH: "500"
+    He: '#calc "$H_H2_298 * exp($DH_H2 *(1. / $T0 - 1./298.15))"'
+    k: '#calc "$D_H2*$rho0MixLiq*$CpMixLiq*$LeLiqMix"'
+    Pr: '#calc "$muMixLiq*$CpMixLiq / $kH2"'
+  
+    thermodynamics:
+        Tlow: 200
+        Thigh: 3500
+        Tcommon: 1000
+        highCpCoeffs: 3.3372792 -4.94024731e-05 4.99456778e-07 -1.79566394e-10 2.00255376e-14 -950.158922 -3.20502331
+        lowCpCoeffs: 2.34433112 0.00798052075 -1.9478151e-05 2.01572094e-08 -7.37611761e-12 -917.935173 0.683010238
+    transport:
+        As: 6.362e-07
+        Ts: 72
+   
