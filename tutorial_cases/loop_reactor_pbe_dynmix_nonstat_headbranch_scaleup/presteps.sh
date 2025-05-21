@@ -1,21 +1,20 @@
 # Clean case
-module load anaconda3/2023
-conda activate /projects/gas2fuels/conda_env/bird
+module load conda
+conda activate /projects/gas2fuels/conda_env/bird_wf
 source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
 ./Allclean
 
+BIRD_HOME=`python -c "import bird; print(bird.BIRD_DIR)"`
+
 echo PRESTEP 1
 # Generate blockmeshDict
-python /projects/gas2fuels/BioReactorDesign/applications/write_block_rect_mesh.py -i system/mesh.json -o system
-#python ../../../applications/write_block_rect_mesh.py -i system/mesh.json -o system
+python ${BIRD_HOME}/../applications/write_block_rect_mesh.py -i system/mesh.json -o system
 
 # Generate boundary stl
-python /projects/gas2fuels/BioReactorDesign/applications/write_stl_patch.py -i system/inlets_outlets.json
-#python ../../../applications/write_stl_patch.py -i system/inlets_outlets.json
+python ${BIRD_HOME}/../applications/write_stl_patch.py -i system/inlets_outlets.json
 
 # Generate mixers
-python /projects/gas2fuels/BioReactorDesign/applications/write_dynMix_fvModels_force_sign.py -i system/mixers.json -o constant
-#python ../../../applications/write_dynMix_fvModels_force_sign.py -i system/mixers.json -o constant
+python ${BIRD_HOME}/../applications/write_dynMix_fvModels.py -fs -i system/mixers.json -o constant
 
 echo PRESTEP 2
 # Mesh gen
