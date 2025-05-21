@@ -12,7 +12,7 @@ def check_input(input_dict):
     assert isinstance(input_dict, dict)
     need_geom = False
     for bound in input_dict:
-        if not bound == "Geometry":
+        if not bound == "Geometry" and not bound == "Meshing":
             assert isinstance(input_dict[bound], list)
             for patch in input_dict[bound]:
                 assert isinstance(patch, dict)

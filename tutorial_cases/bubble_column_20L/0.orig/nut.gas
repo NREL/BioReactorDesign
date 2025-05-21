@@ -15,7 +15,9 @@ FoamFile
 
 dimensions      [0 2 -1 0 0 0 0];
 
-internalField   uniform 1e-8;
+#include "${FOAM_CASE}/constant/globalVars"
+
+internalField   uniform $nut_inlet_gas;
 
 boundaryField
 {
@@ -33,16 +35,10 @@ boundaryField
 
     defaultFaces
     {
-        //type            nutkWallFunction;
-        //value           $internalField;
-        type            calculated;
+        type            nutkWallFunction;
         value           $internalField;
     }
 
-    // defaultFaces
-    // {
-    //     type            empty;
-    // }
 }
 
 // ************************************************************************* //

@@ -15,7 +15,9 @@ FoamFile
 
 dimensions      [0 2 -1 0 0 0 0];
 
-internalField   uniform 1e-4;
+#include "${FOAM_CASE}/constant/globalVars"
+
+internalField   uniform $nut_inlet_liq;
 
 boundaryField
 {
