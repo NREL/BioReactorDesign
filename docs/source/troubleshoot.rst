@@ -15,3 +15,11 @@ This may mean that you are using ``multiphaseEulerFoam`` instead of ``birdmultip
 
 
 
+BDOFoam does not compile
+------------
+
+``birdmultiphaseEulerFoam`` requires OpenFOAM 9 but ``bdoFoam`` requires OpenFOAM 6. 
+Compiling ``bdoFoam`` also requires a little more work that ``birdmultiphaseEulerFoam``.
+Detailed step are discussed `here <https://github.com/NREL/BioReactorDesign/issues/32>`_ 
+
+In the future, we will make sure that ``bdoFoam`` works with OpenFOAM 9.
