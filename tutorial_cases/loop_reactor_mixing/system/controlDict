@@ -14,7 +14,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     multiphaseEulerFoam;
+application     birdmultiphaseEulerFoam;
 
 startFrom       latestTime;//startTime;
 

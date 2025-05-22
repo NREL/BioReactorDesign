@@ -10,5 +10,5 @@
 bash presteps.sh
 source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
 decomposePar -fileHandler collated
-srun -n 16 multiphaseEulerFoam -parallel -fileHandler collated
+srun -n 16 birdmultiphaseEulerFoam -parallel -fileHandler collated
 reconstructPar -newTimes
