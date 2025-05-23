@@ -4,9 +4,10 @@ import shutil
 
 import numpy as np
 
+from bird import BIRD_CASE_GEN_DATA_DIR
 from bird.preprocess.json_gen.design_io import *
 from bird.preprocess.json_gen.generate_designs import *
-from bird import BIRD_CASE_GEN_DATA_DIR 
+
 
 def test_continuous_loop():
 
