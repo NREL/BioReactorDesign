@@ -494,6 +494,7 @@ def generate_single_scaledup_reactor_sparger_cases(
         f"{template_folder}",
         os.path.join(f"{study_folder}", f"Sim_{sim_id}"),
     )
+    print("Sim folder contents:", os.listdir(os.path.join(study_folder, f"Sim_{sim_id}")))
 
     bc_dict = {}
     bc_dict["inlets"] = []
