@@ -131,12 +131,22 @@ def overwrite_bubble_size_model(case_folder, constantD=False):
 
 
 def generate_small_reactor_cases(
-    config_dict, branchcom_spots, vvm, power, constantD, study_folder
+    config_dict,
+    branchcom_spots,
+    vvm,
+    power,
+    constantD,
+    study_folder,
+    template_folder="loop_reactor_pbe_dynmix_nonstat_headbranch",
 ):
-    templateFolder = "loop_reactor_pbe_dynmix_nonstat_headbranch"
+    if not os.path.isabs(template_folder):
+
+        template_folder = os.path.join(
+            f"{BIRD_CASE_DIR}", f"{template_folder}"
+        )
 
     geom_dict = make_default_geom_dict_from_file(
-        f"{BIRD_CASE_DIR}/{templateFolder}/system/mesh.json",
+        os.path.join(f"{template_folder}", "system", "mesh.json"),
         rescale=0.05,
     )
     try:
@@ -146,8 +156,8 @@ def generate_small_reactor_cases(
     os.makedirs(study_folder)
     for simid in config_dict:
         shutil.copytree(
-            f"{BIRD_CASE_DIR}/{templateFolder}",
-            f"{study_folder}/Sim_{simid}",
+            f"{template_folder}",
+            os.path.join(f"{study_folder}", "Sim_{simid}"),
         )
         bc_dict = {}
         bc_dict["inlets"] = []
@@ -235,18 +245,28 @@ def generate_small_reactor_cases(
         )
 
     geom_dict = make_default_geom_dict_from_file(
-        f"{BIRD_CASE_DIR}/{templateFolder}/system/mesh.json",
+        os.path.join(f"{template_folder}", "system", "mesh.json"),
         rescale=0.05,
     )
 
 
 def generate_scaledup_reactor_cases(
-    config_dict, branchcom_spots, vvm, power, constantD, study_folder
+    config_dict,
+    branchcom_spots,
+    vvm,
+    power,
+    constantD,
+    study_folder,
+    template_folder="loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
 ):
 
-    templateFolder = "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup"
+    if not os.path.isabs(template_folder):
+        template_folder = os.path.join(
+            f"{BIRD_CASE_DIR}", f"{template_folder}"
+        )
+
     geom_dict = make_default_geom_dict_from_file(
-        f"{BIRD_CASE_DIR}/{templateFolder}/system/mesh.json"
+        os.path.join(f"{template_folder}", "system", "mesh.json")
     )
     try:
         shutil.rmtree(study_folder)
@@ -255,8 +275,8 @@ def generate_scaledup_reactor_cases(
     os.makedirs(study_folder)
     for simid in config_dict:
         shutil.copytree(
-            f"{BIRD_CASE_DIR}/{templateFolder}",
-            f"{study_folder}/Sim_{simid}",
+            f"{template_folder}",
+            os.path.join(f"{study_folder}", f"Sim_{simid}"),
         )
         bc_dict = {}
         bc_dict["inlets"] = []
@@ -416,6 +436,7 @@ def generate_single_scaledup_reactor_sparger_cases(
     constantD: bool = True,
     vvm: float = 0.4,
     study_folder: str = ".",
+    template_folder: str = "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
 ):
     """
     Generates loop reactor case with desired sparger placement configuration
@@ -441,6 +462,8 @@ def generate_single_scaledup_reactor_sparger_cases(
         VVM value [-]
     study_folder : str
         Where to generate the case
+    template_folder: str
+        The case template to start from
     """
 
     # Sanity checks
@@ -456,16 +479,18 @@ def generate_single_scaledup_reactor_sparger_cases(
     branch_id = [int(entry) for entry in sparger_locs]
 
     # Case generation
-    templateFolder = "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup"
-    geom_dict = make_default_geom_dict_from_file(
-        os.path.join(
-            f"{BIRD_CASE_DIR}", f"{templateFolder}", "system", "mesh.json"
+    if not os.path.isabs(template_folder):
+
+        template_folder = os.path.join(
+            f"{BIRD_CASE_DIR}", f"{template_folder}"
         )
+    geom_dict = make_default_geom_dict_from_file(
+        os.path.join(f"{template_folder}", "system", "mesh.json")
     )
 
     # Start from template
     shutil.copytree(
-        os.path.join(f"{BIRD_CASE_DIR}", f"{templateFolder}"),
+        f"{template_folder}",
         os.path.join(f"{study_folder}", f"Sim_{sim_id}"),
     )
 

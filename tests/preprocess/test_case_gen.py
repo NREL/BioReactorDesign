@@ -4,6 +4,7 @@ import shutil
 
 import numpy as np
 
+from bird import BIRD_CASEGEN_DATA_DIR
 from bird.preprocess.json_gen.design_io import *
 from bird.preprocess.json_gen.generate_designs import *
 
@@ -15,6 +16,10 @@ def test_continuous_loop():
         sim_id=0,
         vvm=0.4,
         study_folder=".",
+        template_folder=os.path.join(
+            BIRD_CASEGEN_DATA_DIR,
+            "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
+        ),
     )
 
 
@@ -75,6 +80,10 @@ def test_discrete_loop():
                 power=pow_v,
                 constantD=True,
                 study_folder=study_folder,
+                template_folder=os.path.join(
+                    BIRD_CASEGEN_DATA_DIR,
+                    "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
+                ),
             )
             write_script_start(f"{study_folder}/many_scripts_start", n_sim)
             write_script_post(f"{study_folder}/many_scripts_post", n_sim)
