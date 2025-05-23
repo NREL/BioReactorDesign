@@ -1,4 +1,3 @@
-
 import os
 import pickle
 import shutil
@@ -18,8 +17,9 @@ def test_continuous_loop():
         study_folder=".",
     )
 
+
 def test_discrete_loop():
- 
+
     def optimization_setup():
         # spots on the branches where we can place sparger or mixers
         branchcom_spots = {}
@@ -29,8 +29,7 @@ def test_discrete_loop():
         # branches where the sparger and mixers are placed
         branches_com = [0, 1, 2]
         return branchcom_spots, branches_com
-    
-    
+
     def random_sample(branches_com, branchcom_spots, config_dict={}):
         config = {}
         # choices = ["mix", "sparger", "none"]
@@ -39,7 +38,7 @@ def test_discrete_loop():
             config[branch] = np.random.choice(
                 choices_com, size=len(branchcom_spots[branch])
             )
-    
+
         existing = False
         new_config_key = 0
         for old_key_conf in config_dict:
@@ -48,13 +47,12 @@ def test_discrete_loop():
                 print("FOUND SAME CONFIG")
                 return config_dict
             new_config_key = old_key_conf + 1
-    
+
         if check_config(config):
             config_dict[new_config_key] = config
-    
+
         return config_dict
 
- 
     branchcom_spots, branches_com = optimization_setup()
     n_sim = 20
     config_dict = {}
@@ -64,7 +62,7 @@ def test_discrete_loop():
         )
 
     vvm_l = [0.1, 0.4]
-    pow_l = [3000,6000]
+    pow_l = [3000, 6000]
 
     for vvm_v in vvm_l:
         vvm_str = str(vvm_v).replace(".", "_")
@@ -84,5 +82,4 @@ def test_discrete_loop():
             save_config_dict(f"{study_folder}/configs.pkl", config_dict)
             save_config_dict(
                 f"{study_folder}/branchcom_spots.pkl", branchcom_spots
-            ) 
-
+            )
