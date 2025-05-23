@@ -41,6 +41,7 @@ setup(
             "*.dat",
             "data_conditional_mean",
             "data_kla",
+            "data_case_gen",
         ]
     },
     extras_require={

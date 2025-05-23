@@ -35,5 +35,5 @@ BIRD_PRE_DYNMIX_TEMP_DIR = os.path.join(
 )
 BIRD_EARLY_PRED_DATA_DIR = os.path.join(BIRD_POST_DIR, "data_early")
 BIRD_KLA_DATA_DIR = os.path.join(BIRD_POST_DIR, "data_kla")
-BIRD_CASEGEN_DATA_DIR = os.path.join(BIRD_PRE_DIR, "data")
+BIRD_CASE_GEN_DATA_DIR = os.path.join(BIRD_PRE_DIR, "data_case_gen")
 BIRD_INV_DIR = os.path.join(BIRD_DIR, "inverse_modeling")
