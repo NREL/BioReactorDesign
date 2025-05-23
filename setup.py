@@ -42,6 +42,8 @@ setup(
             "data_conditional_mean",
             "data_kla",
             "data_case_gen",
+            "constant",
+            "0.orig"
         ]
     },
     extras_require={
