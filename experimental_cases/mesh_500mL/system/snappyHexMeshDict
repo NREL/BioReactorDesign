@@ -1,0 +1,198 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7  
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+castellatedMesh true;
+snap            true;
+addLayers       false;
+
+geometry
+{
+    rotor
+    {
+        type triSurfaceMesh;
+        file "rotor.stl";
+    }
+    vessel
+    {
+        type triSurfaceMesh;
+        file "vessel_with_baffles.stl";
+    }
+    //- Used to define MRF zone and refine mesh round the impeller 
+    MRF
+    {
+        type searchableCylinder;
+        point1 (0.0 0.018 0.0);
+        point2 (0.0 0.055 0.0);
+        radius 0.024    ;
+    }
+
+    MRFREFINE
+    {
+        type searchableCylinder;
+        point1 (0.0 0.018 0.0);
+        point2 (0.0  0.055 0.0);
+        radius 0.024    ;
+    }
+}
+
+
+castellatedMeshControls
+{
+
+    maxLocalCells 100000;
+
+    maxGlobalCells 2000000;
+
+    minRefinementCells 0;
+
+    nCellsBetweenLevels 2;
+
+    maxLoadUnbalance 0.10;
+
+    features
+    (
+        {
+            file "vessel_with_baffles.eMesh";
+            level 1;
+        }
+
+        {
+            file "rotor.eMesh";
+            level 2;
+        }
+
+    );
+
+    resolveFeatureAngle 30;
+
+    refinementSurfaces
+    {
+        MRF
+        {
+            level (1 1);
+            cellZone cellMRFzone;
+            faceZone faceMRFzone;
+            cellZoneInside inside;
+        }
+
+        rotor
+        {
+            level (1 3);
+        }
+
+        vessel
+        {
+            level (1 1);
+        }
+    }
+
+    refinementRegions
+    {
+        MRFREFINE
+        {
+            mode inside;
+            levels ((1 1));
+        }
+        
+    }
+
+    locationInMesh (0.0 0.0001 0.0); // Inside point
+
+    allowFreeStandingZoneFaces true;
+}
+
+// Settings for the snapping.
+snapControls
+{
+
+    //- Number of patch smoothing iterations before finding correspondence
+    //  to surface
+    nSmoothPatch 3;
+
+    //- Relative distance for points to be attracted by surface feature point
+    //  or edge. True distance is this factor times local
+    //  maximum edge length.
+    tolerance 4.0;
+
+    //- Number of mesh displacement relaxation iterations.
+    nSolveIter 30;
+
+    //- Maximum number of snapping relaxation iterations. Should stop
+    //  before upon reaching a correct mesh.
+    nRelaxIter 5;
+
+}
+
+// Settings for the layer addition.
+addLayersControls
+{
+
+    relativeSizes true;
+
+    layers
+    {
+    }
+
+    expansionRatio 1.0;
+
+    finalLayerThickness 0.3;
+
+    minThickness 0.25;
+
+    nGrow 0;
+
+    featureAngle 30;
+
+    nRelaxIter 5;
+
+    nSmoothSurfaceNormals 1;
+
+    nSmoothNormals 3;
+
+    nSmoothThickness 10;
+
+    maxFaceThicknessRatio 0.5;
+
+    maxThicknessToMedialRatio 0.3;
+
+    minMedianAxisAngle 90;
+
+    nBufferCellsNoExtrude 0;
+
+    nLayerIter 50;
+
+    nRelaxedIter 20;
+}
+
+meshQualityControls
+{
+    #include "meshQualityDict"
+
+    relaxed
+    {
+        maxNonOrtho 4   5;
+    }
+}
+
+writeFlags
+(
+);
+
+mergeTolerance 1E-6;
+
+
+// ************************************************************************* //

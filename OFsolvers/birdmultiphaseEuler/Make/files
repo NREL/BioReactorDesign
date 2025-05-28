@@ -1,0 +1,11 @@
+setRDeltaT.C
+moveMesh.C
+momentumPredictor.C
+thermophysicalPredictor.C
+compressibilityEqns.C
+facePressureCorrector.C
+cellPressureCorrector.C
+pressureCorrector.C
+birdmultiphaseEuler.C
+
+LIB = $(FOAM_USER_LIBBIN)/libbirdmultiphaseEuler
