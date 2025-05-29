@@ -2,19 +2,21 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Version:  8
+    \\  /    A nd           | Version:  12
      \\/     M anipulation  |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
-    version     2.0;
     format      ascii;
     class       dictionary;
+    location    "system";
     object      controlDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     simpleFoam;
+application     foamRun;
+
+solver          incompressibleFluid;
 
 startFrom       startTime;
 
@@ -22,19 +24,19 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         1000;
+endTime         10;
 
-deltaT          1;
+deltaT          1e-03;
 
-writeControl    timeStep;
+writeControl    runTime;
 
-writeInterval   50;
+writeInterval   0.1;
 
 purgeWrite      0;
 
 writeFormat     ascii;
 
-writePrecision   8;
+writePrecision  6;
 
 writeCompression off;
 

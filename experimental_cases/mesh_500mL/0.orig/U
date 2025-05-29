@@ -2,13 +2,12 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Version:  7  
+    \\  /    A nd           | Version:  12
      \\/     M anipulation  |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
-    version     2.0;
-    format      binary;
+    format      ascii;
     class       volVectorField;
     object      U;
 }
@@ -20,26 +19,34 @@ internalField   uniform (0 0 0);
 
 boundaryField
 {
-    
-    top
-    {
-        type               symmetry;
-    }
+
+    #includeEtc "caseDicts/setConstraintTypes"
+
     vessel
     {
-        type               fixedValue;
-        value              uniform (0 0 0);
+        type            noSlip;
+    }
+    
+    rotor
+    {
+        type            movingWallVelocity;
+        value           $internalField;
     }
 
-    impeller
+    inlet
     {
-        type            fixedValue;
+        type            turbulentInlet;
+        referenceField  uniform (0 0.01 0);
+        fluctuationScale (0.02 0.01 0.01);
+        value           uniform (0 0.01 0);
+    }
+
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform (0 0 0);
         value           uniform (0 0 0);
     }
-
-
-   
-    
 }
 
 // ************************************************************************* //

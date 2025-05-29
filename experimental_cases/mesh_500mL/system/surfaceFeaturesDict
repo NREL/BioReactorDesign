@@ -18,6 +18,7 @@ surfaces
 (
     "rotor.stl"
     "vessel_with_baffles.stl"
+    "inner_rotating.stl"
 );
 
 // Identify a feature when angle between faces < includedAngle

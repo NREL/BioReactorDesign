@@ -1,3 +1,4 @@
+
 /*--------------------------------*- C++ -*----------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
@@ -9,8 +10,7 @@ FoamFile
 {
     format      ascii;
     class       volScalarField;
-    location    "0";
-    object      nut;
+    object      nuTilda;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -23,19 +23,27 @@ boundaryField
 
     #includeEtc "caseDicts/setConstraintTypes"
 
-    "vessel|rotor"
-    {
-        type            zeroGradient;
-    }
     inlet
     {
-        type            zeroGradient;
+        type            fixedValue;
+        value           uniform 0;
     }
+
     outlet
     {
-        type            zeroGradient;
+        type            inletOutlet;
+        inletValue      uniform 0;
+        value           uniform 0;
     }
+
+    "vessel|rotor"
+    {
+        type            fixedValue;
+        value           uniform 0;
+    }
+
 }
 
+// ************************************************************************* //
 
 // ************************************************************************* //

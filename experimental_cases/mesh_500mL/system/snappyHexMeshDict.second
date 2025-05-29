@@ -21,31 +21,14 @@ addLayers       false;
 
 geometry
 {
-    rotor
-    {
-        type triSurfaceMesh;
-        file "rotor.stl";
-    }
-    vessel
-    {
-        type triSurfaceMesh;
-        file "vessel_with_baffles.stl";
-    }
-    
-    MRF
+
+
+    //- Used to define MRF zone and refine mesh round the impeller 
+    rotatingCyl
     {
         type triSurfaceMesh;
         file "inner_rotating.stl";
     }
-    //- Used to define MRF zone and refine mesh round the impeller 
-/*    MRF
-    {
-        type searchableCylinder;
-        point1 (0.0 0.018 0.0);
-        point2 (0.0 0.055 0.0);
-        radius 0.024    ;
-    }*/
-
     MRFREFINE
     {
         type searchableCylinder;
@@ -71,43 +54,29 @@ castellatedMeshControls
 
     features
     (
-        {
-            file "vessel_with_baffles.eMesh";
-            level 1;
-        }
+
 
         {
-            file "rotor.eMesh";
-            level 2;
-        }
-        
-        {
             file "inner_rotating.eMesh";
-            level 2;
+            level 3;
         }
+
+
     );
 
     resolveFeatureAngle 30;
 
     refinementSurfaces
     {
-        MRF
+        rotatingCyl
         {
-            level (1 2);
+            level (1 1);
             cellZone cellMRFzone;
             faceZone faceMRFzone;
             cellZoneInside inside;
         }
 
-        rotor
-        {
-            level (2 2);
-        }
 
-        vessel
-        {
-            level (1 1);
-        }
     }
 
     refinementRegions
@@ -131,19 +100,21 @@ snapControls
 
     nSmoothPatch 3;
 
-    tolerance 2.0;
+    tolerance 1.0;
 
     nSolveIter 300;
 
     nRelaxIter 10;
 
-    nFeatureSnapIter 15;
+    nFeatureSnapIter 10;
 
-    implicitFeatureSnap false;
+    implicitFeatureSnap true;
 
-    explicitFeatureSnap true;
+    explicitFeatureSnap false;
 
     multiRegionFeatureSnap true;
+
+
 
 }
 

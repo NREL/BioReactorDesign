@@ -5,10 +5,23 @@ cd ${0%/*} || exit 1    # Run from this directory
 . $WM_PROJECT_DIR/bin/tools/RunFunctions
 
 application=$(getApplication)
-
+./create_cyl.sh
+surfaceTransformPoints "rotate=((0 0 1)(0 1 0)), scale=(0.024 0.037 0.024),translate=(0 0.018 0)" cylinder.stl inner_rotating.stl
+mv inner_rotating.stl constant/triSurface/inner_rotating.stl
 runApplication blockMesh
 runApplication surfaceFeatures
-runApplication snappyHexMesh -overwrite
-runApplication $application
+runApplication -s first snappyHexMesh -overwrite
+#runApplication -s second snappyHexMesh -overwrite -dict system/snappyHexMeshDict.second
+
+# Create the sliding patches
+runApplication createBaffles -overwrite
+runApplication splitBaffles -overwrite
+
+# Renumber
+runApplication renumberMesh -noFields -overwrite
+
+# Create non-conformal couples
+runApplication createNonConformalCouples -overwrite nonCouple1 nonCouple2
+
 
 #------------------------------------------------------------------------------

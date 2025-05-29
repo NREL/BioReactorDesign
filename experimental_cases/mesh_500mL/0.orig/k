@@ -2,12 +2,11 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Version:  8
+    \\  /    A nd           | Version:  12
      \\/     M anipulation  |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
-    version     2.0;
     format      ascii;
     class       volScalarField;
     location    "0";
@@ -17,23 +16,27 @@ FoamFile
 
 dimensions      [0 2 -2 0 0 0 0];
 
-internalField   uniform 1;
+internalField   uniform 0;
 
 boundaryField
 {
-    top
+
+    #includeEtc "caseDicts/setConstraintTypes"
+
+    "vessel|rotor"
     {
-        type            symmetry;
-    }
-    vessel
-    {
-        type            kqRWallFunction;
+        type            fixedValue;
         value           uniform 0;
     }
-
-    impeller
+    inlet
     {
-        type            kqRWallFunction;
+        type            fixedValue;
+        value           uniform 2e-5;
+    }
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform 0;
         value           uniform 0;
     }
 
