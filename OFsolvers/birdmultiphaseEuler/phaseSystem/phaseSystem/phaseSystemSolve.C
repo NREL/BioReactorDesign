@@ -308,9 +308,7 @@ void Foam::phaseSystem::solve(const PtrList<volScalarField>& rAs)
                                 (mag(phi_) + mag(phir))/mesh_.magSf()
                             );
 
-                            phir +=
-                                min(cAlpha()*phic, max(phic))
-                               *nHatf(alpha, alpha2);
+                            phir += trackInterface(phase,phase2)*cAlpha()*phic*nHatf(alpha, alpha2);
                         }
 
                         const word phirScheme
@@ -356,8 +354,7 @@ void Foam::phaseSystem::solve(const PtrList<volScalarField>& rAs)
 
                             const surfaceScalarField phirc
                             (
-                                min(cAlpha()*phic, max(phic))
-                               *nHatf(alpha, alpha2)
+                                trackInterface(phase,phase2)*cAlpha()*phic*nHatf(alpha, alpha2)
                             );
 
                             const word phirScheme

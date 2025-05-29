@@ -238,21 +238,34 @@ Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::nHatf
 
 Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::getInterfaceWeller
 (
-    const volScalarField& alpha1
+    const phaseModel& phase1,
+    const phaseModel& phase2
 ) const
 {
-    volScalarField interface
-    (
-        IOobject
-        (
-            "interface." + alpha1.name(),
-            alpha1.mesh().time().timeName(),
-            alpha1.mesh(),
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        mag(fvc::grad(alpha1))*dimensionedScalar("l",dimLength,1.0)
-    );
+    autoPtr<volScalarField>& interfacePtr = interfaceTracks_(phasePairKey( phase1.name(), phase2.name() ));
+
+    if(interfacePtr.empty())
+    {
+        interfacePtr.set(
+            new volScalarField
+            (
+                IOobject
+                (
+                    "interface." + phase1.name() + phase2.name(),
+                    mesh_.time().timeName(),
+                    mesh_,
+                    IOobject::NO_READ,
+                    IOobject::AUTO_WRITE
+                ),
+                mesh_,
+                dimensionedScalar("int",dimless,0)
+            )            
+        );
+    }
+
+    volScalarField& interface = interfacePtr();
+
+    interface = mag(fvc::grad(phase1))*dimensionedScalar("l",dimLength,1.0);
 
     const dimensionedScalar maxGrad = gMax(interface) + 1e-16;
 
@@ -262,70 +275,64 @@ Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::getInterfaceWeller
 
     tmp<surfaceScalarField> faceInterfacet = pos0(fvc::interpolate(interface) - 0.0001);
 
-    if(alpha1.mesh().time().writeTime())
-    {
-        interface.write();
-    }
-
     return faceInterfacet;
 }
 
 Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::getInterfaceNew
 (
-    const volScalarField& alpha1
+    const phaseModel& phase1,
+    const phaseModel& phase2
 ) const
 {
 
-    //dimensionedScalar dist = pow(average(mesh_.V()), 1.0/3.0)*2.0;
-    // const surfaceScalarField alphaf = fvc::interpolate(alpha1);
-    // const surfaceScalarField deltaAlpha = 4.0*fvc::snGrad(alpha1)/mesh_.deltaCoeffs();
-//    const surfaceScalarField deltaAlpha = 4.0*fvc::interpolate(fvc::grad(alpha1))&(mesh_.Sf()/mag(mesh_.Sf()))/mesh_.deltaCoeffs();
-    // 1 if :
-    // alphaf + deltaAlpha > 1 && alphaf - deltaAlpha < 0
-    // OR 
-    // alphaf - deltaAlpha > 1 && alphaf + deltaAlpha < 0
-    // This accounts for the gradient of the interface w.r.t. the face normal
-    // tmp<surfaceScalarField> faceInterfacet = 0.0*alphaf;
-    // surfaceScalarField& faceInterface = faceInterfacet.ref();
-    
-    // scalar alphaMax = 1.;
-
-    // forAll(faceInterface, faceI)
-    // {
-    //     if ( alphaf[faceI] + deltaAlpha[faceI] > alphaMax && alphaf[faceI] - deltaAlpha[faceI] < 0. )
-    //     {
-    //         faceInterface[faceI] = 1.0;
-    //     }
-    //     else if ( alphaf[faceI] - deltaAlpha[faceI] > alphaMax && alphaf[faceI] + deltaAlpha[faceI] < 0. )
-    //     {
-    //         faceInterface[faceI] = 1.0;
-    //     }
-    // }
-    
-    //     pos0( alphaf + deltaAlpha - 1.01) * pos0( alphaf - deltaAlpha ) 
-    //   + pos0( alphaf - deltaAlpha - 1.01) * pos0( alphaf + deltaAlpha );
-
     // The field's value is the number of cell faces to compress
-    const dimensionedScalar deltaL("dl",dimLength,lookup("interface_new_deltaL"));
-    volScalarField interface
-    (
-        IOobject
-        (
-            "interface." + alpha1.name(),
-            alpha1.mesh().time().timeName(),
-            alpha1.mesh(),
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        pos0(mag(fvc::grad(alpha1))*deltaL - 0.5 )
-    );
+    const dimensionedScalar eps("eps",dimless,lookup("interfaceTolerance"));
+    
+    autoPtr<volScalarField>& interfacePtr = interfaceTracks_(phasePairKey( phase1.name(), phase2.name() ));
 
-    tmp<surfaceScalarField> faceInterfacet = pos0(fvc::interpolate(interface) - 0.0001);
-
-    if(alpha1.mesh().time().writeTime())
+    if(interfacePtr.empty())
     {
-        interface.write();
+        interfacePtr.set(
+            new volScalarField
+            (
+                IOobject
+                (
+                    "interface." + phase1.name() + phase2.name(),
+                    mesh_.time().timeName(),
+                    mesh_,
+                    IOobject::NO_READ,
+                    IOobject::AUTO_WRITE
+                ),
+                mesh_,
+                dimensionedScalar("int",dimless,0)
+            )            
+        );
     }
+
+    volScalarField& interface = interfacePtr();
+
+    interface = fvc::surfaceSum(mag(fvc::snGrad(phase1)/mesh_.deltaCoeffs()));
+
+    //- Set to zero the cells below the treshold
+    interface *= pos0(interface - eps);
+
+    tmp<surfaceScalarField> faceInterfacet = fvc::interpolate(interface);
+    surfaceScalarField& faceInterface = faceInterfacet.ref();
+    const labelUList& owner = mesh_.owner();
+    const labelUList& neighbour = mesh_.neighbour();
+    forAll(owner, facei)
+    {
+        if ( mag(interface[owner[facei]]) > eps.value())
+        {
+            faceInterface[facei] = 1.;
+        }
+        if ( mag(interface[neighbour[facei]]) > eps.value())
+        {
+            faceInterface[facei] = 1.;
+        }
+    }
+
+    Info << "Interface faces found: " << gSum(faceInterface) << endl;
 
     return faceInterfacet;
 }
@@ -615,6 +622,49 @@ Foam::phaseSystem::phaseSystem
                             << interfaceCaptureMethod_ << exit(FatalError);
     }
 
+    // //- Build interface tracking fields
+     forAll(phases(), phasea)
+     {
+         const phaseModel& phase1 = phases()[phasea];
+         forAll(phases(),phaseb)
+         {
+             const phaseModel& phase2 = phases()[phaseb];
+
+             cAlphaTable::const_iterator cAlpha
+             (
+                 cAlphas_.find
+                 (
+                     phasePairKey(phase1.name(), phase2.name())
+                 )
+             );
+
+             if (cAlpha != cAlphas_.end())
+             {
+                    autoPtr<volScalarField>& interfacePtr = interfaceTracks_(phasePairKey( phase1.name(), phase2.name() ));
+
+                    if(interfacePtr.empty())
+                    {
+                        interfacePtr.set(
+                            new volScalarField
+                            (
+                                IOobject
+                                (
+                                    "interface." + phase1.name() + phase2.name(),
+                                    mesh_.time().timeName(),
+                                    mesh_,
+                                    IOobject::NO_READ,
+                                    IOobject::AUTO_WRITE
+                                ),
+                                mesh_,
+                                dimensionedScalar("int",dimless,0)
+                            )            
+                        );
+                    }
+             }
+
+         }
+     }
+
 }
 
 
@@ -856,11 +906,11 @@ Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::surfaceTension
 
                 if ( interfaceCaptureMethod_ == "WardleWeller" )
                 {
-                    tSurfaceTension.ref() *= getInterfaceWeller(phase1);
+                    tSurfaceTension.ref() *= getInterfaceWeller(phase1,phase2);
                 }
                 else if ( interfaceCaptureMethod_ == "new" )
                 {
-                    tSurfaceTension.ref() *= getInterfaceNew(phase1);
+                    tSurfaceTension.ref() *= getInterfaceNew(phase1,phase2);
                 }
             }
         }

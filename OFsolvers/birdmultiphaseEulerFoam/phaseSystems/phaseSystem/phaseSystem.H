@@ -138,6 +138,9 @@ protected:
         typedef HashTable<scalar, phasePairKey, phasePairKey::hash>
             cAlphaTable;
 
+        typedef HashTable<autoPtr<volScalarField>, phasePairKey, phasePairKey::hash>
+            interfaceTrackTable;
+
 
     // Protected data
 
@@ -181,10 +184,14 @@ protected:
         //- Interface compression coefficients
         cAlphaTable cAlphas_;
 
+        //- Name of the interface capture method
         const word interfaceCaptureMethod_;
 
         //- Stabilisation for normalisation of the interface normal
         const dimensionedScalar deltaN_;
+
+        //- Table with interface tracking fields
+        mutable interfaceTrackTable interfaceTracks_;
 
 
         // Sub Models
@@ -305,7 +312,8 @@ protected:
             //  Dispersed/Segregated Flows in Liquid-Liquid Extraction, Int. J. Chem Eng., 2013
             tmp<surfaceScalarField> getInterfaceWeller
             (
-                const volScalarField& alpha1
+                const phaseModel& phase1,
+                const phaseModel& phase2
             ) const;
 
             //- 0 if it is not an interface between phases
@@ -313,7 +321,8 @@ protected:
             //  New algorithm that extrapolates alpha based on the face gradient
             tmp<surfaceScalarField> getInterfaceNew
             (
-                const volScalarField& alpha1
+                const phaseModel& phase1,
+                const phaseModel& phase2
             ) const;
 
             //- Correction for the boundary condition on the unit normal nHat on

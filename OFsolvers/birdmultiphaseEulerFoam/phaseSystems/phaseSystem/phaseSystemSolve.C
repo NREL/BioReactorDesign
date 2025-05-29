@@ -58,14 +58,14 @@ void Foam::phaseSystem::solve
     // and the new un-split phase flux discretisation
     const bool splitPhaseFlux
     (
-        alphaControls.lookupOrDefault<Switch>("splitPhaseFlux", true)
+        alphaControls.lookupOrDefault<Switch>("splitPhaseFlux", false)
     );
 
     // Temporary switch for testing and comparing the standard mean flux
     // and the new phase flux reference for the phase flux correction
     const bool meanFluxReference
     (
-        alphaControls.lookupOrDefault<Switch>("meanFluxReference", true)
+        alphaControls.lookupOrDefault<Switch>("meanFluxReference", false)
     );
 
     // Optional reference phase which is not solved for
@@ -320,13 +320,13 @@ void Foam::phaseSystem::solve
                             if ( interfaceCaptureMethod_ == "WardleWeller")
                             {
                                 phir +=
-                                min(getInterfaceWeller(alpha)*cAlpha()*phic, max(phic))
+                                min(getInterfaceWeller(phase,phase2)*cAlpha()*phic, max(phic))
                                *nHatf(alpha, alpha2);
                             }
                             else if ( interfaceCaptureMethod_ == "new")
                             {
                                 phir +=
-                                min(getInterfaceNew(alpha)*cAlpha()*phic, max(phic))
+                                min(getInterfaceNew(phase,phase2)*cAlpha()*phic, max(phic))
                                *nHatf(alpha, alpha2);
                             }
                             else
@@ -389,11 +389,11 @@ void Foam::phaseSystem::solve
 
                             if ( interfaceCaptureMethod_ == "WardleWeller")
                             {
-                                phirc *= min(getInterfaceWeller(alpha)*cAlpha()*phic, max(phic));
+                                phirc *= min(getInterfaceWeller(phase,phase2)*cAlpha()*phic, max(phic));
                             }
                             else if ( interfaceCaptureMethod_ == "new")
                             {
-                                phirc *= min(getInterfaceNew(alpha)*cAlpha()*phic, max(phic));
+                                phirc *= min(getInterfaceNew(phase,phase2)*cAlpha()*phic, max(phic));
                             }
                             else
                             {

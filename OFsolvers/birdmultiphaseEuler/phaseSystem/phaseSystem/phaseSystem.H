@@ -122,6 +122,13 @@ protected:
         typedef HashTable<scalar, phaseInterfaceKey, phaseInterfaceKey::hash>
             cAlphaTable;
 
+        typedef HashTable<autoPtr<volScalarField>, phaseInterfaceKey, phaseInterfaceKey::hash>
+            interfaceTrackTable;
+
+        //- Table with interface tracking fields
+        mutable interfaceTrackTable interfaceTracks_;
+
+
 
     // Protected data
 
@@ -206,6 +213,15 @@ protected:
             (
                 const phaseModel& alpha1,
                 const phaseModel& alpha2
+            ) const;
+
+            //- 0 if it is not an interface between phases
+            //  1 if it is an interface between phases
+            //  New algorithm that extrapolates alpha based on the face gradient
+            tmp<surfaceScalarField> trackInterface
+            (
+                const phaseModel& phase1,
+                const phaseModel& phase2
             ) const;
 
 

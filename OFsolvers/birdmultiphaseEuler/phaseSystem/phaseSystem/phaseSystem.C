@@ -179,6 +179,87 @@ Foam::tmp<Foam::volScalarField> Foam::phaseSystem::K
     return -fvc::div(tnHatfv & mesh_.Sf());
 }
 
+Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::trackInterface
+(
+    const phaseModel& phase1,
+    const phaseModel& phase2
+) const
+{
+
+    dictionary interDict(subDict("interfaceTracking"));
+
+    // Tolerance to determine is the field variation is enough to trigger interface
+    const dimensionedScalar eps1("eps", dimless, interDict.lookup("vSquareTol"));
+
+    // Tolerance to determine if the local anisotropy is enough to trigger interface.
+    // This tells how much the local field deviates from a local maximum/minimum
+    // (lots of variation but no interface).
+    // 0 means it should strictly be a critical point (all normal gradients have the same sign)
+    // 0 < 1 allows some level of anisotropy in the sign
+    const dimensionedScalar eps2("eps", dimless, interDict.lookup("signAnisotropyTol"));
+
+    if (eps2.value() > 1. || eps2.value() < -1e-16 )
+    {
+        FatalErrorInFunction << "Wrong value for signAnisotropyTol. Keep it between 0 and 1" << exit(FatalError);
+    }
+
+
+    autoPtr<volScalarField>& interfacePtr = interfaceTracks_(phaseInterface(phase1,phase2));
+
+    if(interfacePtr.empty())
+    {
+        interfacePtr.set(
+            new volScalarField
+            (
+                IOobject
+                (
+                    "interface." + phase1.name() + phase2.name(),
+                    mesh_.time().name(),
+                    mesh_,
+                    IOobject::NO_READ,
+                    IOobject::AUTO_WRITE
+                ),
+                mesh_,
+                dimensionedScalar("int",dimless,0)
+            )
+        );
+    }
+
+    volScalarField& interface = interfacePtr();
+
+    surfaceScalarField deltaf = fvc::snGrad(phase1)/mesh_.deltaCoeffs();
+
+    interface = fvc::surfaceSum(mag(deltaf));
+
+    //- Set to zero the cells below the treshold
+    interface *= pos0(interface - eps1);
+
+    //- Also, remove those cellss with gradients of the same sign all around (like parabolas).
+    //  In those cases, summing the deltaf will give interface with, at most, a change in sign
+    interface *= pos0( (1.0 - eps2) - mag(fvc::surfaceSum(deltaf)/(interface + 1e-16)));
+
+
+    tmp<surfaceScalarField> faceInterfacet = fvc::interpolate(interface);
+    surfaceScalarField& faceInterface = faceInterfacet.ref();
+    const labelUList& owner = mesh_.owner();
+    const labelUList& neighbour = mesh_.neighbour();
+    forAll(owner, facei)
+    {
+        if ( mag(interface[owner[facei]]) > eps1.value())
+        {
+            faceInterface[facei] = 1.;
+        }
+        if ( mag(interface[neighbour[facei]]) > eps1.value())
+        {
+            faceInterface[facei] = 1.;
+        }
+    }
+
+    //Info << "Interface faces found: " << gSum(faceInterface) << endl;
+
+    return faceInterfacet;
+}
+
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -300,6 +381,48 @@ Foam::phaseSystem::phaseSystem
     if (this->found("interfaceCompression"))
     {
         generateInterfacialValues("interfaceCompression", cAlphas_);
+
+    // //- Build interface tracking fields
+        forAll(phases(), phasea)
+        {
+            const phaseModel& phase1 = phases()[phasea];
+            forAll(phases(),phaseb)
+            {
+                const phaseModel& phase2 = phases()[phaseb];
+
+                if (&phase2 == &phase1) continue;
+
+                cAlphaTable::const_iterator cAlpha
+                (
+                    cAlphas_.find(phaseInterface(phase1, phase2))
+                );
+
+                if (cAlpha != cAlphas_.end())
+                {
+                        autoPtr<volScalarField>& interfacePtr = interfaceTracks_(phaseInterface(phase1, phase2));
+
+                        if(interfacePtr.empty())
+                        {
+                            interfacePtr.set(
+                                new volScalarField
+                                (
+                                    IOobject
+                                    (
+                                        "interface." + phase1.name() + phase2.name(),
+                                        mesh_.time().name(),
+                                        mesh_,
+                                        IOobject::NO_READ,
+                                        IOobject::AUTO_WRITE
+                                    ),
+                                    mesh_,
+                                    dimensionedScalar("int",dimless,0)
+                                )
+                            );
+                        }
+                }
+
+            }
+        }
     }
 
     // Surface tension models
@@ -330,6 +453,8 @@ Foam::phaseSystem::phaseSystem
         const volScalarField& alphai = phases()[phasei];
         mesh_.schemes().setFluxRequired(alphai.name());
     }
+
+
 }
 
 
@@ -535,7 +660,7 @@ Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::surfaceTension
             if (cAlphas_.found(interface))
             {
                 tSurfaceTension.ref() +=
-                    fvc::interpolate(sigma(interface)*K(phase1, phase2))
+                    trackInterface(phase1,phase2)*fvc::interpolate(sigma(interface)*K(phase1, phase2))
                    *(
                         fvc::interpolate(phase2)*fvc::snGrad(phase1)
                       - fvc::interpolate(phase1)*fvc::snGrad(phase2)
