@@ -5,7 +5,14 @@ import numpy as np
 import pandas as pd
 from prettyPlot.plotting import *
 from sklearn.preprocessing import OneHotEncoder
-from bird.postprocess.SA_optimization.surrogate import tune_rf, tune_rbf, tune_nn, Surrogate_wrapper
+
+from bird.postprocess.SA_optimization.surrogate import (
+    Surrogate_wrapper,
+    tune_nn,
+    tune_rbf,
+    tune_rf,
+)
+
 warnings.filterwarnings("ignore")
 
 

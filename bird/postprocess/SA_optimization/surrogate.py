@@ -279,4 +279,3 @@ class Surrogate_wrapper:
             return float(self.model.predict(X)[0])
         else:
             return float(self.model(X)[0])
-
