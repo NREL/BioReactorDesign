@@ -1,0 +1,40 @@
+#!/bin/bash
+
+#SBATCH --job-name=MassColumn
+###SBATCH --partition=debug
+#SBATCH --partition=standard
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=32
+#SBATCH --time=47:00:00
+#SBATCH --account=algaecfd
+#SBATCH --output=log.out
+####SBATCH --qos=high
+###SBATCH --dependency=afterany:6930788
+
+module purge
+module use /nopt/nrel/apps/modules/default/modulefiles
+
+TMPDIR=/tmp/scratch/
+source /home/jparraa/OpenFoam/OpenFoamV9/module_loads
+source /home/jparraa/OpenFoam/OpenFoamV9/OpenFOAM-9/etc/bashrc
+
+## initial run 
+srun -n 32 multiphaseEulerFoam -parallel -fileHandler collated
+
+# ## change settings
+# mv constant/NofvModels constant/fvModels 
+# echo -e " - Manipulate default specie"
+# sed 's|^defaultSpecie.*|defaultSpecie CO2;|' -i constant/thermophysicalProperties.gas
+# echo -e " - Manipulate controlDict"
+# sed 's|^endTime.*|endTime   100;|' -i system/controlDict
+# sed 's|^deltaT.*|deltaT          0.0005;|' -i system/controlDict
+# sed 's|^adjustTimeStep.*|adjustTimeStep  no;//yes;//|' -i system/controlDict
+
+# ## run with new settings
+# srun -n 32 multiphaseEulerFoam -parallel
+
+# ## change settings again
+# echo -e " - Manipulate default specie"
+# sed 's|^defaultSpecie.*|defaultSpecie air;|' -i constant/thermophysicalProperties.gas
+# echo -e " - Manipulate controlDict"
+# sed 's|^endTime.*|endTime   150;|' -i system/controlDict
