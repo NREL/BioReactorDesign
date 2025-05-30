@@ -1,5 +1,17 @@
 # Surrogate-Based Optimization with Simulated Annealing
 
+## Install dependencies
+
+```
+   conda create --name bird python=3.10
+   conda activate bird
+   git clone https://github.com/NREL/BioReactorDesign.git
+   cd BioReactorDesign
+   pip install -e .[optim]
+```
+
+## Examples
+
 Implementation of surrogate-based design optimization with Simulated Annealing (SA). It supports three surrogate models:
     - Radial Basis Function Interpolator ('rbf')
     - Random Forest ('rf')
@@ -35,13 +47,3 @@ The SA optimizer operates on discrete feature values (0,1,2) with an option to r
             - Mean-CI plot of the objective function (qoi)
             - Mean-CI plot of the distance of an iterate from the optimal solution (this is not done in `get_optimal_with_constraints.py`).
 
-Python dependencies:
-- numpy
-- pandas
-- scikit-learn
-- scipy
-- optuna
-- matplotlib
-- warnings
-- random
-- tensorflow

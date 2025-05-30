@@ -5,16 +5,34 @@ import numpy as np
 import pickle as pkl
 
 
-def get_config_result(config_fold):
-    with open(os.path.join(config_fold, "results.pkl"), "rb") as f:
+def get_config_result(study_fold:str=".") -> None:
+    """
+    Read the configs.pkl and results.pkl files from a study
+    Saves the configuration in Xdata_{study_fold}.csv file
+    Save the qoi and qoi_error in ydata_{study_fold}.csv file
+
+    Parameters
+    ----------
+    study_fold : str
+        Folder that contains the study results
+  
+    Returns
+    ----------
+    None 
+
+    """
+    # Read results
+    with open(os.path.join(study_fold, "results.pkl"), "rb") as f:
         results = pkl.load(f)
-    with open(os.path.join(config_fold, "configs.pkl"), "rb") as f:
+    with open(os.path.join(study_fold, "configs.pkl"), "rb") as f:
         configs = pkl.load(f)
+
     Xdata = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], np.int64)
     count = 0
+
     # Save data into CSV files
-    xfname = "Xdata_" + config_fold + ".csv"
-    yfname = "ydata_" + config_fold + ".csv"
+    xfname = f"Xdata_{study_fold}.csv"
+    yfname = f"ydata_{study_fold}.csv"
     with open(xfname, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         for sims in results:
@@ -32,9 +50,7 @@ def get_config_result(config_fold):
             y_data = np.concatenate((q0, q1), axis=None)
             writer.writerow(y_data)
 
-
-studies = {"study_scaleup_0_4vvm_3000W": r"0.0036$m^3$ 0.4vvm 0W"}
-
-
-for study in studies:
-    get_config_result(study)
+if __name__ == "__main__":
+    studies = {"study_scaleup_0_4vvm_3000W": r"0.0036$m^3$ 0.4vvm 0W"}
+    for study in studies:
+        get_config_result(study)
