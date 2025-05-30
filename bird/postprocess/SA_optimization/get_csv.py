@@ -2,7 +2,7 @@ import csv
 import os
 
 import numpy as np
-import pickle5 as pkl
+import pickle as pkl
 
 
 def get_config_result(config_fold):
