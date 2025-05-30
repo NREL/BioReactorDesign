@@ -24,7 +24,7 @@ The SA optimizer operates on discrete feature values (0,1,2) with an option to r
             - max_spargers: maximum number of spargers (only in 'get_optimal_with_constraints.py') (default = 8)
             - n_runs: number of bootstrap runs (default = 10)
             - max_iters: maximum number of iterations of SA (default = 1000)
-            - bootstrap_size: sample size of each boostrap (default = 100)
+            - bootstrap_size: sample size of each bootstrap (default = 100)
         - For each bootstrap run, the model hyperparameters are tuned using 5-fold cross validation. 
         - The simulated_annealing_surrogate(...) function runs the optimization:
             - If SA is too slow or fails to converge, you can change the following parameters:
