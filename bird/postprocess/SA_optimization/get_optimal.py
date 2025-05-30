@@ -1,23 +1,70 @@
 import random
 import warnings
 
-import matplotlib.pyplot as plt
 import numpy as np
 import optuna
 import pandas as pd
+from prettyPlot.plotting import *
 from scipy.interpolate import RBFInterpolator
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.preprocessing import OneHotEncoder
 from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Model as tfModel
 from tensorflow.keras.models import Sequential
 
-warningsl.filterwarnings("ignore")
+warnings.filterwarnings("ignore")
 
 
-def tune_rbf(X, y):
-    # Tune the RBFInterpolator
+def check_data_shape(X: np.ndarray, y: np.ndarray) -> None:
+    """
+    Tune the shape parameter (epsilon) of the multiquadratic RBF
+
+    Parameters
+    ----------
+    X : np.ndarray
+        Design configuration
+        Dimension N by d, where N is the number of simulations,
+                       and d is the number of design variables
+    y: np.ndarray
+        Array of quantity of interest
+        Dimension N by 1, where N is the number of simulations
+    """
+
+    # Same number of samples
+    assert X.shape[0] == y.shape[0]
+    # Arrays are 2 dimensional
+    assert len(X.shape) == 2
+    assert len(y.shape) == 2
+    # only 1 QoI
+    assert y.shape[1] == 1
+    print(f"INFO: {X.shape[0]} sim with {X.shape[1]} design variables")
+
+
+def tune_rbf(X: np.ndarray, y: np.ndarray) -> dict:
+    """
+    Tune the shape parameter (epsilon) of the multiquadratic RBF
+
+    Parameters
+    ----------
+    X : np.ndarray
+        Design configuration
+        Dimension N by d, where N is the number of simulations,
+                       and d is the number of design variables
+    y: np.ndarray
+        Array of quantity of interest
+        Dimension N by 1, where N is the number of simulations
+    Returns
+    ----------
+    params: dict
+        dictionary of optimal parameters
+
+    """
+
+    check_data_shape(X=X, y=y)
+
+    # Tune the RBFInterpolator with optuna
     # kernel - "multiquadric" (Can try other kernels)
     def objective(trial):
         epsilon = trial.suggest_float("epsilon", 0.1, 10.0, log=False)
@@ -45,7 +92,32 @@ def tune_rbf(X, y):
     return study.best_params
 
 
-def tune_rf(X, y):
+def tune_rf(X: np.ndarray, y: np.ndarray):
+    """
+    Tune the number of trees (n_estimators)
+             tree depth (max_depth)
+             number of samples in a leaf (min_samples_leaf)
+    of the RandomForestRegressor
+
+    Parameters
+    ----------
+    X : np.ndarray
+        Design configuration
+        Dimension N by d, where N is the number of simulations,
+                       and d is the number of design variables
+    y: np.ndarray
+        Array of quantity of interest
+        Dimension N by 1, where N is the number of simulations
+
+    Returns
+    ----------
+    params: dict
+        dictionary of optimal parameters
+
+    """
+
+    check_data_shape(X=X, y=y)
+
     # Tune the Random Forest
     def objective(trial):
         model = RandomForestRegressor(
@@ -64,7 +136,31 @@ def tune_rf(X, y):
     return study.best_params
 
 
-def tune_nn(X_encoded, y):
+def tune_nn(X_encoded: np.ndarray, y: np.ndarray) -> dict:
+    """
+    Tune the number of neurons (n_units)
+             number of layers (n_layers)
+
+    in a leaf (min_samples_leaf) of the RandomForestRegressor
+
+    Parameters
+    ----------
+    X_encoded : np.ndarray
+        Design configuration
+        Dimension N by d, where N is the number of simulations,
+                       and d is the number of design variables
+    y: np.ndarray
+        Array of quantity of interest
+        Dimension N by 1, where N is the number of simulations
+
+    Returns
+    ----------
+    params: dict
+        dictionary of optimal parameters
+
+    """
+    check_data_shape(X=X_encoded, y=y)
+
     # Tune the Neural Network
     def objective(trial):
         units = trial.suggest_int("n_units", 16, 128)
@@ -101,36 +197,72 @@ def tune_nn(X_encoded, y):
     return study.best_params
 
 
-class Surrogatewrapper:
-    # Wrapper that builds the surrogate model and predicts the QOI value for given X
-    def __init__(self, model_type, X, y, params):
-        # Inputs:
-        # model_type = 'rbf' for RBFInterpolator
-        #            = 'rf' for Random Forest
-        #            = 'nn' for Neural Network
-        # X,y = the raw data
-        # params = tune parameter of the surrogate model
+class Surrogate_wrapper:
+    """
+    Wrapper that builds the surrogate model and predicts the QOI value for given X
+    """
 
+    def __init__(
+        self, model_type: str, X: np.ndarray, y: np.ndarray, params: dict
+    ):
+        """
+        Create the surroagte wrapper
+
+        Parameters
+        ----------
+        model_type : str
+            'rbf' for RBFInterpolator
+            'rf' for Random Forest
+            'nn' for Neural Network
+
+        X: np.ndarray
+            Raw design configuration
+            Dimension N by d, where N is the number of simulations,
+                           and d is the number of design variables
+        y: np.ndarray
+            Raw array of quantity of interest
+            Dimension N by 1, where N is the number of simulations
+        params: dict
+            dictionary of surrogate parameters
+
+        """
         self.model_type = model_type
         self.encoder = None
 
-        if model_type == "rbf":
+        if model_type.lower() == "rbf":
             self.model = RBFInterpolator(
                 X, y, kernel="multiquadric", epsilon=params["epsilon"]
             )
-        elif model_type == "rf":
+        elif model_type.lower() == "rf":
             self.model = RandomForestRegressor(**params, random_state=42)
             self.model.fit(X, y)
-        elif model_type == "nn":
+        elif model_type.lower() == "nn":
             self.encoder = OneHotEncoder(sparse_output=False)
             X_encoded = self.encoder.fit_transform(X)
             self.model = self._build_nn(
                 X_encoded.shape[1], params["n_units"], params["n_layers"]
             )
             self.model.fit(X_encoded, y, epochs=100, batch_size=16, verbose=0)
+        else:
+            raise NotImplementedError
 
-    def _build_nn(self, input_dim, units, layers):
-        # Builds the neural network
+    def _build_nn(self, input_dim: int, units: int, layers: int) -> tfModel:
+        """
+        Builds the neural net
+
+        Parameters
+        ----------
+        input_dim : int
+            number of features
+        units: int
+            number of neurons per layer
+        layers: int
+            number of hidden layers
+
+        Returns
+        ----------
+        model: tfModel
+        """
         model = Sequential()
         model.add(Dense(units, activation="relu", input_shape=(input_dim,)))
         for _ in range(layers - 1):
@@ -151,23 +283,41 @@ class Surrogatewrapper:
 
 
 def simulated_annealing_surrogate(
-    surrogate, dim=12, max_iters=1000, temp=10.0, alpha=0.95
-):
-    # Runs the Simulated Annealing (SA) and reports the results
-    # Inputs:
-    # surrogate = tuned surrogate model
-    # dim = dimension of the problem
-    # max_iters = maximum number of iterations for SA
-    # temp = parameter of Simulated Annealing (can be changes for tuned for other problems)
-    #      = max temperature. It controls the exploration rate of SA
-    # alpha = parameter of Simulated Annealing (can be changes for tuned for other problems)
-    #       = cooling rate. It determines how quickly temp decays.
+    surrogate: Surrogate_wrapper,
+    dim: int = 12,
+    max_iters: int = 1000,
+    temp: float = 10.0,
+    alpha: float = 0.95,
+) -> tuple[np.ndarray, float, list[tuple], list[np.ndarray]]:
+    """
+    Runs the Simulated Annealing (SA) and reports the results
 
-    # Outputs:
-    # x_best = optimal solution
-    # y_best = optimal objective function value
-    # trace = optimization log. Updates at the end of each iteration.
-    # trace_x = tracks how X changes during each iteration.
+    Parameters
+    ----------
+    surrogate : Surrogate_wrapper
+        tuned surrogate model
+    dim: int
+        dimension of the problem
+    max_iters: int
+        maximum number of iterations for SA
+    temp: float
+        parameter of Simulated Annealing (can be changed or tuned for other problems)
+        max temperature. It controls the exploration rate of SA
+    alpha:
+        parameter of Simulated Annealing (can be changed or tuned for other problems)
+        cooling rate. It determines how quickly temp decays
+
+    Returns
+    ----------
+    x_best: np.ndarray
+        optimal solution
+    y_best: float
+        optimal objective function value
+    trace: list[tuple]
+        optimization log. Updates at the end of each iteration.
+    trace_x: list[np.ndarray]
+        tracks how X changes during each iteration.
+    """
 
     # generate random starting point
     x_curr = np.random.randint(0, 3, size=dim)
@@ -196,22 +346,45 @@ def simulated_annealing_surrogate(
         trace.append((i, y_best))
         trace_x.append(x_curr.copy())
         temp *= alpha
-
     return x_best, y_best, trace, trace_x
 
 
 def run_optimization(
-    X, y, model_type="rbf", n_runs=10, max_iters=1000, bootstrap_size=100
+    X: np.ndarray,
+    y: np.ndarray,
+    model_type: str = "rbf",
+    n_runs: int = 10,
+    max_iters: int = 1000,
+    bootstrap_size: int = 100,
 ):
-    # Bootstraps data, runs optimization and postprocesses the results.
-    # Inputs:
-    # X,y = the raw data
-    # model_type = 'rbf' for RBFInterpolator
-    #            = 'rf' for Random Forest
-    #            = 'nn' for Neural Network
-    # n_runs = number of bootstraps
-    # max_iters = maximum number of SA iterations
-    # bootstrap_size = size of bootstrap samples
+    """
+    Bootstraps data, runs optimization and postprocesses the results.
+
+    Parameters
+    ----------
+    X: np.ndarray
+        Raw design configuration
+        Dimension N by d, where N is the number of simulations,
+                       and d is the number of design variables
+    y: np.ndarray
+        Raw array of quantity of interest
+        Dimension N by 1, where N is the number of simulations
+
+    model_type : str
+        'rbf' for RBFInterpolator
+        'rf' for Random Forest
+        'nn' for Neural Network
+
+    n_runs :int
+        number of bootstraps
+    max_iters: int
+        maximum number of SA iterations
+    bootstrap_size : int
+        size of bootstrap samples
+
+    Returns
+    ----------
+    """
 
     all_x = []
     all_y = []
@@ -240,7 +413,7 @@ def run_optimization(
             raise ValueError("Invalid model_type")
 
         # build the surrogate model
-        surrogate = Surrogatewrapper(model_type, X_sub, y_sub, params)
+        surrogate = Surrogate_wrapper(model_type, X_sub, y_sub, params)
 
         # run optimization
         x_best, y_best, trace, trace_x = simulated_annealing_surrogate(
@@ -294,16 +467,21 @@ def run_optimization(
         alpha=0.3,
         label="95% CI",
     )
-    plt.xlabel("Iteration")
-    plt.ylabel("Best Surrogate-Predicted Objective")
-    plt.title(
-        f"Mean Convergence with 95% Confidence Interval ({model_type.upper()})"
+    pretty_labels(
+        "Iteration",
+        "Best Surrogate-Predicted Objective",
+        fontsize=16,
+        title=f"Mean Convergence with 95% Confidence Interval ({model_type.upper()})",
+        grid=True,
+        fontname="Times",
     )
-    plt.grid(True)
-    plt.legend()
+    pretty_legend(fontsize=16, fontname="Times")
     plt.savefig(
         f"Mean_Convergence_plot_{model_type}_size_{bootstrap_size}.png",
         dpi=300,
+    )
+    plt.savefig(
+        f"Mean_Convergence_plot_{model_type}_size_{bootstrap_size}.pdf",
     )
     plt.show()
 
@@ -332,27 +510,35 @@ def run_optimization(
     plt.fill_between(
         iterations, lower, upper, alpha=0.3, color="darkred", label="95% CI"
     )
-    plt.xlabel("Iteration")
-    plt.ylabel("L1 Distance from Optimal")
-    plt.title("Convergence Toward Optimal Solution (L1 Norm)")
-    plt.grid(True)
-    plt.legend()
+    pretty_labels(
+        "Iteration",
+        "L1 Distance from Optimal",
+        fontsize=16,
+        title=f"Convergence Toward Optimal Solution (L1 Norm)",
+        grid=True,
+        fontname="Times",
+    )
+    pretty_legend(fontsize=16, fontname="Times")
     plt.tight_layout()
     plt.savefig(
         f"Mean_L1_distance_{model_type}_size_{bootstrap_size}.png", dpi=300
     )
+    plt.savefig(f"Mean_L1_distance_{model_type}_size_{bootstrap_size}.pdf")
     plt.show()
 
 
-# Read data from the csv file.
-X_raw_data = pd.read_csv("Xdata_study_scaleup_0_4vvm_3000W.csv")
-y_raw_data = pd.read_csv("ydata_study_scaleup_0_4vvm_3000W.csv")
+if __name__ == "__main__":
 
-X = X_raw_data.values
-y = y_raw_data.iloc[:, :-1].values
-y = y * -1
+    # Read data from the csv file.
+    X_raw_data = pd.read_csv("Xdata_study_scaleup_0_4vvm_3000W.csv")
+    y_raw_data = pd.read_csv("ydata_study_scaleup_0_4vvm_3000W.csv")
 
-# The function will build, tune, and optimize the surrogate model and postprocess the results.
-run_optimization(
-    X, y, model_type="rbf", n_runs=10, max_iters=1000, bootstrap_size=150
-)
+    X = X_raw_data.values
+    y = y_raw_data.iloc[:, :-1].values
+    # We want to maximize, so we minimize the opposite
+    y = y * -1
+
+    # The function will build, tune, and optimize the surrogate model and postprocess the results.
+    run_optimization(
+        X, y, model_type="rbf", n_runs=10, max_iters=1000, bootstrap_size=150
+    )

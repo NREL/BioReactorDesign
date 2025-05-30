@@ -1,11 +1,11 @@
 import csv
 import os
-
-import numpy as np
 import pickle as pkl
 
+import numpy as np
 
-def get_config_result(study_fold:str=".") -> None:
+
+def get_config_result(study_fold: str = ".") -> None:
     """
     Read the configs.pkl and results.pkl files from a study
     Saves the configuration in Xdata_{study_fold}.csv file
@@ -15,10 +15,10 @@ def get_config_result(study_fold:str=".") -> None:
     ----------
     study_fold : str
         Folder that contains the study results
-  
+
     Returns
     ----------
-    None 
+    None
 
     """
     # Read results
@@ -49,6 +49,7 @@ def get_config_result(study_fold:str=".") -> None:
             q1 = results[sims]["qoi_err"]
             y_data = np.concatenate((q0, q1), axis=None)
             writer.writerow(y_data)
+
 
 if __name__ == "__main__":
     studies = {"study_scaleup_0_4vvm_3000W": r"0.0036$m^3$ 0.4vvm 0W"}
