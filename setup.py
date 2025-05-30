@@ -50,6 +50,10 @@ setup(
             "scikit-learn",
             "tf2jax",
         ],
+        "optim": [
+            "optuna",
+            "pandas",
+        ],
     },
     project_urls={
         "Documentation": "https://nrel.github.io/BioReactorDesign/",
