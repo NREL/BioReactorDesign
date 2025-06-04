@@ -322,7 +322,9 @@ InterfaceCompositionPhaseChangePhaseSystem
                                 interface.name()
                             ),
                             this->mesh().time().name(),
-                            this->mesh()
+                            this->mesh(),
+                            IOobject::NO_READ,
+                            IOobject::AUTO_WRITE
                         ),
                         this->mesh(),
                         dimensionedScalar(dimDensity/dimTime, 0)
@@ -346,7 +348,9 @@ InterfaceCompositionPhaseChangePhaseSystem
                                 interface.name()
                             ),
                             this->mesh().time().name(),
-                            this->mesh()
+                            this->mesh(),
+                            IOobject::NO_READ,
+                            IOobject::AUTO_WRITE
                         ),
                         this->mesh(),
                         dimensionedScalar(dimDensity/dimTime, 0)
