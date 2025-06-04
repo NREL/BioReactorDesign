@@ -236,7 +236,7 @@ Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::trackInterface
 
     //- Also, remove those cellss with gradients of the same sign all around (like parabolas).
     //  In those cases, summing the deltaf will give interface with, at most, a change in sign
-    interface *= pos0( (1.0 - eps2) - mag(fvc::surfaceSum(deltaf)/(interface + 1e-16)));
+    //interface *= pos0( (1.0 - eps2) - mag(fvc::surfaceSum(deltaf)/(interface + 1e-16)));
 
 
     tmp<surfaceScalarField> faceInterfacet = fvc::interpolate(interface);

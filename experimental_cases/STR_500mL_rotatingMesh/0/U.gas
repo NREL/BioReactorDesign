@@ -23,8 +23,10 @@ boundaryField
 
     inlet
     {
-        type            fixedValue;
-        value           uniform (0 0.00187 0);
+        type            turbulentInlet;
+        fluctuationScale (0 0.1 0.01);
+        referenceField  uniform (0 0.019178868 0);
+        value           uniform (0 0.019178868 0);
     }
     outlet
     {
@@ -32,7 +34,12 @@ boundaryField
         phi             phi.gas;
         value           $internalField;
     }
-    "vessel|shaft|walls|impeller"
+    "vessel|walls"
+    {
+        type            noSlip;
+    }
+    
+    "shaft|impeller"
     {
         type            movingWallVelocity;
         value           $internalField;
@@ -40,7 +47,7 @@ boundaryField
     
     nonCouple
     {
-        type            movingWallSlipVelocity;
+        type            zeroGradient;
         value           $internalField;
     }
 }

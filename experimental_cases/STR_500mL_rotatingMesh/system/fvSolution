@@ -45,12 +45,14 @@ solvers
         smoother        DIC;
         tolerance       1e-8;
         relTol          0;
+        maxIter   20;
     }
 
     p_rghFinal
     {
         $p_rgh;
         relTol          0;
+        maxIter 30;
     }
     
      "pcorr.*"

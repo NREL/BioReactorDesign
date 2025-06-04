@@ -14,8 +14,8 @@ FoamFile
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 actions
-(/*
-    {
+(
+   {
         action  new;
         type    faceSet;
         name    baffles;
@@ -43,26 +43,7 @@ actions
         source  boxToFace;
         box     (-0.001 -1 0.13) (0.001 1 1);
     }
-    */
-    
-    {
-        action  new;
-        type    faceSet;
-        name    inlet;
-        source  cylinderAnnulusToFace;
-        p1 (0 -1 0);
-        p2 (0 -0.159 0);
-        outerRadius 0.1;
-        innerRadius 0.075;
-    } 
-/*
-    {
-        action  new;
-        type    faceSet;
-        name    inlet;
-        source  boxToFace;
-        box     (-0.1  -1 -0.1) (0.1  -0.1599 0.1);
-    }*/
+
 );
 
 // ************************************************************************* //

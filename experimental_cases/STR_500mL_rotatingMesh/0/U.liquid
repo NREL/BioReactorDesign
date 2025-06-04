@@ -28,9 +28,7 @@ boundaryField
     }
     outlet
     {
-        type            pressureInletOutletVelocity;
-        phi             phi.liquid;
-        value           $internalField;
+        type            noSlip;
     }
     "vessel|walls"
     {
@@ -45,7 +43,7 @@ boundaryField
 
     nonCouple
     {
-        type            movingWallSlipVelocity;
+        type            zeroGradient;
         value           $internalField;
     }
 

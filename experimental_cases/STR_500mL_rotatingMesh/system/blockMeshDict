@@ -48,7 +48,7 @@ patches
         (4 5 6 7)
     )
     
-    patch inlet
+    patch bottom
     (
         (1 5 4 0)
     )

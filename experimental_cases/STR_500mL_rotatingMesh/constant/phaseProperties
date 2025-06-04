@@ -316,6 +316,14 @@ turbulentDispersion
 
 
 interfaceCompression
-{}
+{
+    gas_liquid 1;
+}
+
+interfaceTracking
+{
+    vSquareTol 0.7;
+    signAnisotropyTol 0.1;
+};
 
 // ************************************************************************* //
