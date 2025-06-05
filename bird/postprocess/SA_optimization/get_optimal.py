@@ -1,3 +1,4 @@
+import os
 import random
 import warnings
 
@@ -90,6 +91,7 @@ def run_optimization(
     n_runs: int = 10,
     max_iters: int = 1000,
     bootstrap_size: int = 100,
+    out_folder: str = ".",
 ):
     """
     Bootstraps data, runs optimization and postprocesses the results.
@@ -115,6 +117,8 @@ def run_optimization(
         maximum number of SA iterations
     bootstrap_size : int
         size of bootstrap samples
+    out_folder: str
+        folder where to output the results
 
     Returns
     ----------
@@ -175,7 +179,10 @@ def run_optimization(
         ]
     )
     df.to_csv(
-        f"best_bootstrap_solution_{model_type}_size_{bootstrap_size}.csv",
+        os.path.join(
+            out_folder,
+            f"best_bootstrap_solution_{model_type}_size_{bootstrap_size}.csv",
+        ),
         index=False,
     )
 
@@ -211,11 +218,17 @@ def run_optimization(
     )
     pretty_legend(fontsize=16, fontname="Times")
     plt.savefig(
-        f"Mean_Convergence_plot_{model_type}_size_{bootstrap_size}.png",
+        os.path.join(
+            out_folder,
+            f"Mean_Convergence_plot_{model_type}_size_{bootstrap_size}.png",
+        ),
         dpi=300,
     )
     plt.savefig(
-        f"Mean_Convergence_plot_{model_type}_size_{bootstrap_size}.pdf",
+        os.path.join(
+            out_folder,
+            f"Mean_Convergence_plot_{model_type}_size_{bootstrap_size}.pdf",
+        ),
     )
     plt.show()
 
@@ -255,24 +268,56 @@ def run_optimization(
     pretty_legend(fontsize=16, fontname="Times")
     plt.tight_layout()
     plt.savefig(
-        f"Mean_L1_distance_{model_type}_size_{bootstrap_size}.png", dpi=300
+        os.path.join(
+            out_folder,
+            f"Mean_L1_distance_{model_type}_size_{bootstrap_size}.png",
+        ),
+        dpi=300,
     )
-    plt.savefig(f"Mean_L1_distance_{model_type}_size_{bootstrap_size}.pdf")
+    plt.savefig(
+        os.path.join(
+            out_folder,
+            f"Mean_L1_distance_{model_type}_size_{bootstrap_size}.pdf",
+        )
+    )
     plt.show()
 
 
 if __name__ == "__main__":
 
-    # Read data from the csv file.
-    X_raw_data = pd.read_csv("Xdata_study_scaleup_0_4vvm_3000W.csv")
-    y_raw_data = pd.read_csv("ydata_study_scaleup_0_4vvm_3000W.csv")
+    # studies = ["study_scaleup_0_4vvm_3000W", "study_scaleup_0_1vvm_6000W", "study_0_4vvm_1W"]
+    studies = ["study_scaleup_0_1vvm_6000W", "study_0_4vvm_1W"]
+    # studies = ["study_scaleup_0_4vvm_3000W"]
 
-    X = X_raw_data.values
-    y = y_raw_data.iloc[:, :-1].values
-    # We want to maximize, so we minimize the opposite
-    y = y * -1
+    for study in studies:
+        # Read data from the csv file.
+        X_raw_data = pd.read_csv(os.path.join(study, "Xdata.csv"))
+        y_raw_data = pd.read_csv(os.path.join(study, "ydata.csv"))
 
-    # The function will build, tune, and optimize the surrogate model and postprocess the results.
-    run_optimization(
-        X, y, model_type="rbf", n_runs=10, max_iters=1000, bootstrap_size=150
-    )
+        X = X_raw_data.values
+        y = y_raw_data.iloc[:, :-1].values
+        # We want to maximize, so we minimize the opposite
+        y = y * -1
+
+        # The function will build, tune, and optimize the surrogate model and postprocess the results.
+        run_optimization(
+            X,
+            y,
+            model_type="rbf",
+            n_runs=10,
+            max_iters=1000,
+            bootstrap_size=150,
+            out_folder=study,
+        )
+        run_optimization(
+            X,
+            y,
+            model_type="rf",
+            n_runs=10,
+            max_iters=1000,
+            bootstrap_size=150,
+            out_folder=study,
+        )
+        # run_optimization(
+        #    X, y, model_type="nn", n_runs=10, max_iters=1000, bootstrap_size=150, out_folder=study
+        # )
