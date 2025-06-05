@@ -97,11 +97,15 @@ def cliq(caseFolder, timeFolder, nCells, field_dict={}):
     # c_h2 = rho_liq[indliq] * alpha_liq[indliq] * h2_liq[indliq] / 0.002016
     # c_co2 = rho_liq[indliq] * alpha_liq[indliq] * co2_liq[indliq] / 0.04401
 
-    c_h2 = 1000 * alpha_liq[indliq] * h2_liq[indliq] / 0.002016
-    c_co2 = 1000 * alpha_liq[indliq] * co2_liq[indliq] / 0.04401
+    c_h2 = 1000 * h2_liq[indliq] / 0.002016
+    c_co2 = 1000 * co2_liq[indliq] / 0.04401
 
-    c_h2 = np.sum(c_h2 * volume[indliq]) / np.sum(volume[indliq])
-    c_co2 = np.sum(c_co2 * volume[indliq]) / np.sum(volume[indliq])
+    c_h2 = np.sum(c_h2 * volume[indliq] * alpha_liq[indliq]) / np.sum(
+        volume[indliq] * alpha_liq[indliq]
+    )
+    c_co2 = np.sum(c_co2 * volume[indliq] * alpha_liq[indliq]) / np.sum(
+        volume[indliq] * alpha_liq[indliq]
+    )
 
     return c_co2, c_h2, field_dict
 

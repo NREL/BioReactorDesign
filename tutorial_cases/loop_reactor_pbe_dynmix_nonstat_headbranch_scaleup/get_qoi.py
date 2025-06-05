@@ -139,8 +139,8 @@ dataFolder = "data"
 fold = "local"
 
 nuq = 100
-mean_cstar_co2 = np.random.uniform(12.6, 13.3, nuq)
-mean_cstar_h2 = np.random.uniform(0.902, 0.96, nuq)
+mean_cstar_co2 = np.random.uniform(14, 16.9, nuq)
+mean_cstar_h2 = np.random.uniform(1.04, 1.19, nuq)
 
 
 tmp_cs_h2 = []
