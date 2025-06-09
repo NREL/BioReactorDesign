@@ -31,8 +31,8 @@ def get_config_result(study_fold: str = ".") -> None:
     count = 0
 
     # Save data into CSV files
-    xfname = f"Xdata_{study_fold}.csv"
-    yfname = f"ydata_{study_fold}.csv"
+    xfname = os.path.join(study_fold, f"Xdata.csv")
+    yfname = os.path.join(study_fold, f"ydata.csv")
     with open(xfname, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         for sims in results:
@@ -52,6 +52,10 @@ def get_config_result(study_fold: str = ".") -> None:
 
 
 if __name__ == "__main__":
-    studies = {"study_scaleup_0_4vvm_3000W": r"0.0036$m^3$ 0.4vvm 0W"}
+    studies = {
+        "study_scaleup_0_4vvm_3000W": r"608$m^3$ 0.4vvm 3000W",
+        "study_scaleup_0_1vvm_6000W": r"608$m^3$ 0.1vvm 6000W",
+        "study_0_4vvm_1W": r"0.00361$m^3$ 0.4vvm 1W",
+    }
     for study in studies:
         get_config_result(study)
