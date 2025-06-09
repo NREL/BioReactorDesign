@@ -193,7 +193,7 @@ def run_optimization(
     upper_bound = mean_trace + 1.96 * std_trace / np.sqrt(n_runs)
     iterations = np.arange(max_iters + 1)
 
-    plt.figure(figsize=(8, 4))
+    plt.figure(figsize=(8, 6))
     plt.plot(
         iterations,
         mean_trace,
@@ -210,13 +210,13 @@ def run_optimization(
     )
     pretty_labels(
         "Iteration",
-        "Best Surrogate-Predicted Objective",
-        fontsize=16,
+        r"Predicted QOI [kg$^2$/kWh$^2$]",
+        fontsize=20,
         title=f"Mean Convergence with 95% Confidence Interval ({model_type.upper()})",
         grid=True,
         fontname="Times",
     )
-    pretty_legend(fontsize=16, fontname="Times")
+    pretty_legend(fontsize=20, fontname="Times")
     plt.savefig(
         os.path.join(
             out_folder,
@@ -286,8 +286,8 @@ def run_optimization(
 if __name__ == "__main__":
 
     # studies = ["study_scaleup_0_4vvm_3000W", "study_scaleup_0_1vvm_6000W", "study_0_4vvm_1W"]
-    studies = ["study_scaleup_0_1vvm_6000W", "study_0_4vvm_1W"]
-    # studies = ["study_scaleup_0_4vvm_3000W"]
+    # studies = ["study_scaleup_0_1vvm_6000W", "study_0_4vvm_1W"]
+    studies = ["study_scaleup_0_4vvm_3000W", "study_0_4vvm_1W"]
 
     for study in studies:
         # Read data from the csv file.
@@ -309,15 +309,15 @@ if __name__ == "__main__":
             bootstrap_size=150,
             out_folder=study,
         )
-        run_optimization(
-            X,
-            y,
-            model_type="rf",
-            n_runs=10,
-            max_iters=1000,
-            bootstrap_size=150,
-            out_folder=study,
-        )
+        # run_optimization(
+        #    X,
+        #    y,
+        #    model_type="rf",
+        #    n_runs=10,
+        #    max_iters=1000,
+        #    bootstrap_size=150,
+        #    out_folder=study,
+        # )
         # run_optimization(
         #    X, y, model_type="nn", n_runs=10, max_iters=1000, bootstrap_size=150, out_folder=study
         # )
