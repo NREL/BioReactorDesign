@@ -41,6 +41,24 @@ Edit the json files that are read when generating the mesh. In the case ``tutori
    }
 
 
+What if the STL patches overlap?
+^^^^^^^^^^^^^^^
+
+If STL patches are defined such that there is an overlap between patches, the final patch will be the union of the overlapping patches.
+In case of an overlap, the final patch will be therefore smaller than without an overlap.
+An example of this behavior is shown below for a U-loop reactor.
+ 
+In this case, the inlet (highlighted in red) contain 2 circular spargers. On the left, the two spargers contain an overlap and on the right they are disjoint. The inlet patch surface area is 13% smaller on the left than the right, but both simulations successfully run.
+
+.. figure:: ../assets/overlap_patches.png
+     :width: 70%
+     :align: center
+     :name: fig-stl-patch
+     :target: ../assets/overlap_patches.png
+     :alt: Overlapping STL patch
+
+
+
 Related tutorials
 ^^^^^^^^^^^^^^^
 
