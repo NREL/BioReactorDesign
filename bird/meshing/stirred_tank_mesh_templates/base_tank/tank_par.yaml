@@ -1,23 +1,23 @@
 geometry:
-    Dt:        0.26		# Tank diameter  [m]
-    Da:        0.0866667	# Impleller tip Diameter  [m]
-    H:         0.39		# Height of the reactor  [m]
-    nimpellers:	1
-    C: 		[0.0866667]	# height of the center of impellers [m]
-    W:		0.026		# impeller blade width [m]
-    L:		0.013		# impeller blade length (beyond the hub) [m]
-    Lin:	0.013		# impeller blade length (inside the hub)
-    J:		0.026		# Baffle width
-    Wh:		0.0026		# Hub height (Width)
-    polyrad:	0.00866667	# Stem radius (R_shaft)
-    Z0:		0.0		# bottom of reactor
-    nbaffles:	6		# number of baffles and impeller fins
+    Dt:         0.26           # Tank diameter  [m]
+    Da:         0.0866667      # Impleller tip Diameter  [m]
+    H:          0.39           # Height of the reactor  [m]
+    nimpellers: 1
+    C:          [0.0866667]    # height of the center of impellers [m]
+    W:          0.026          # impeller blade width [m]
+    L:          0.013          # impeller blade length (beyond the hub) [m]
+    Lin:        0.013          # impeller blade length (inside the hub)
+    J:          0.026          # Baffle width
+    Wh:         0.0026         # Hub height (Width)
+    polyrad:    0.00866667     # Stem radius (R_shaft)
+    Z0:         0.0            # bottom of reactor
+    nbaffles:   6              # number of baffles and impeller fins
  
 mesh:
-    nr:		120		# mesh points per unit radial length
-    nz:		240		# mesh points per unit axial length
-    Npoly:	4		# mesh points in the polygon at the axis
-    Na:		6		# mesh points in the azimuthal direction
+    nr:         120            # mesh points per unit radial length
+    nz:         240            # mesh points per unit axial length
+    Npoly:      4              # mesh points in the polygon at the axis
+    Na:         6              # mesh points in the azimuthal direction
     
 
 
