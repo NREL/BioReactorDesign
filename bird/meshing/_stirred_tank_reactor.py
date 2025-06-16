@@ -2,7 +2,8 @@ import os
 from pathlib import Path
 
 import numpy as np
-from ruamel.yaml import YAML
+
+from bird.meshing._mesh_tools import parseYAMLFile
 
 
 class StirredTankReactor:
@@ -133,11 +134,6 @@ class StirredTankReactor:
     def from_file(cls, yamlfile):
         if ".yaml" not in yamlfile:
             yamlfile += ".yaml"
-        if os.path.exists(yamlfile):
-            yamlpath = Path(yamlfile)
-        else:
-            raise FileNotFoundError(yamlfile)
-        yaml = YAML(typ="safe")
-        in_dict = yaml.load(yamlpath)
+        in_dict = parseYAMLFile(yamlfile)
         react_dict = {**in_dict["geometry"], **in_dict["mesh"]}
         return cls(**react_dict)
