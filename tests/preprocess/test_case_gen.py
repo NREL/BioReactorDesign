@@ -22,6 +22,18 @@ def test_continuous_loop():
         ),
     )
 
+    generate_single_scaledup_reactor_sparger_cases(
+        sparger_locs=[0.3, 0.35],
+        sim_id=0,
+        vvm=0.4,
+        study_folder="sparger_overlap",
+        template_folder=os.path.join(
+            BIRD_CASE_GEN_DATA_DIR,
+            "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
+        ),
+        bypass_sparger_spacing=True,
+    )
+
 
 def test_discrete_loop():
 

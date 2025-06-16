@@ -371,6 +371,7 @@ def check_sparger_config(
     sparger_spacing: float,
     edge_spacing: float,
     n_branches: int,
+    bypass_sparger_spacing: bool,
 ) -> None:
     """
     Check realizability of the sparger placement configuration
@@ -390,6 +391,8 @@ def check_sparger_config(
         Spacing required between any sparger and the edges of the branches [-]
     n_branches : int
         Number of loop reactor branches
+    bypass_sparger_spacing: bool
+        If true, allow an overlap of spargers
     """
 
     # Check that number of spargers is consistent
@@ -424,7 +427,8 @@ def check_sparger_config(
 
     # Check that spargers are sufficiently spaced out
     assert sparger_spacing >= 0
-    assert all(np.diff(np.sort(np.array(sparger_locs))) >= sparger_spacing)
+    if not bypass_sparger_spacing:
+        assert all(np.diff(np.sort(np.array(sparger_locs))) >= sparger_spacing)
 
 
 def generate_single_scaledup_reactor_sparger_cases(
@@ -438,6 +442,7 @@ def generate_single_scaledup_reactor_sparger_cases(
     vvm: float = 0.4,
     study_folder: str = ".",
     template_folder: str = "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
+    bypass_sparger_spacing: bool = False,
 ):
     """
     Generates loop reactor case with desired sparger placement configuration
@@ -465,6 +470,8 @@ def generate_single_scaledup_reactor_sparger_cases(
         Where to generate the case
     template_folder: str
         The case template to start from
+    bypass_sparger_spacing: bool
+        If true, allow an overlap of spargers
     """
 
     # Sanity checks
@@ -474,6 +481,7 @@ def generate_single_scaledup_reactor_sparger_cases(
         sparger_spacing=sparger_spacing,
         edge_spacing=edge_spacing,
         n_branches=n_branches,
+        bypass_sparger_spacing=bypass_sparger_spacing,
     )
 
     # Find on which branch is each sparger

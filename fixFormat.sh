@@ -1,4 +1,5 @@
 source .github/linters/formatting.sh
 
-format .
+format bird
+format applications
 
