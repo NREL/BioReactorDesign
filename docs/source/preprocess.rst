@@ -51,7 +51,7 @@ An example of this behavior is shown below for a U-loop reactor.
 In this case, the inlet (highlighted in red) contain 2 circular spargers. On the left, the two spargers contain an overlap and on the right they are disjoint. The inlet patch surface area is 13% smaller on the left than the right, but both simulations successfully run.
 
 .. figure:: ../assets/overlap_patches.png
-     :width: 70%
+     :width: 95%
      :align: center
      :name: fig-stl-patch
      :target: ../assets/overlap_patches.png
