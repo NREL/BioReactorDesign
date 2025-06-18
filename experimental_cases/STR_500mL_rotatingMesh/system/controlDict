@@ -30,7 +30,7 @@ deltaT          1e-5;
 
 writeControl    runTime;
 
-writeInterval   0.02;
+writeInterval   0.1;
 
 purgeWrite      0;
 
@@ -52,12 +52,13 @@ maxCo           0.5;
 
 maxDeltaT       1;
 
-/*
+
 functions
 {
-    #includeFunc fieldAverage(U.gas, U.liquid, alpha.gas, p)
+    #includeFunc fieldAverage(U.gas, U.liquid, alpha.gas, p, p_rgh, d.gas)
     #includeFunc    writeObjects(d.gas)
-}*/
+    #include "writeStatistics"
+}
 
 
 // ************************************************************************* //

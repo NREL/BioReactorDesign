@@ -89,7 +89,11 @@ protected:
         //  Defaults to false
         Switch dragCorrection;
 
-        //- Number of energy correctors
+	//- Disables energy equation solution, essentially forcing the flow to become isothermal
+	//  Defaults to false
+	Switch forceIsothermal;
+
+	//- Number of energy correctors
         //  Used to improve stability of phase-change sibulations
         //  Defaults to 1
         int nEnergyCorrectors;

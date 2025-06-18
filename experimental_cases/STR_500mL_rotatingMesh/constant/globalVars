@@ -1,10 +1,12 @@
+#include "$FOAM_CASE/constant/caseVars"
+
 T0    293.15;  // initial T(K) which stays constant 
 // water thermophysical properties
 muMixLiq #calc "2.414e-5 * pow(10,247.8/($T0 - 140.0))"; //viscosity (Pa.s) of water as a function of T(K)
 CpMixLiq        4181; // J/kg-K
 kThermLiq       0.62; // W/m-K
 rho0MixLiq      1000; // kg/m^3
-sigmaLiq        0.07; //surface tension N/m
+
 //Wilke-Chang params for diffusion coefficient of a given solute in water (solvent)
 WC_psi          2.6;
 WC_M            18; // kg/kmol
@@ -39,10 +41,10 @@ He_CO2 #calc "$H_CO2_298 * exp($DH_CO2 *(1. / $T0 - 1./298.15))";
 He_O2 #calc "$H_O2_298 * exp($DH_O2 *(1. / $T0 - 1./298.15))";
 He_CH4 #calc "$H_CH4_298 * exp($DH_CH4 *(1. / $T0 - 1./298.15))";
 //*******inlet gas species mass frac*************
-f_H2    0.0;
-f_CO2   0.0;
+f_H2    $H2_in;
+f_CO2   $CO2_in;
 f_CO    0.0;
-f_O2    1.0;
+f_O2    $O2_in;
 //*********************************
 LeLiqH2 #calc "$kThermLiq / $rho0MixLiq / $D_H2 / $CpMixLiq";
 LeLiqCO #calc "$kThermLiq / $rho0MixLiq / $D_CO / $CpMixLiq";
@@ -72,67 +74,5 @@ PrCH4 #calc "$muMixLiq*$CpMixLiq / $kCH4";
 muMixGas        1.88e-05;
 PrMixGas        0.7;
 LeGas           1.0;
-//dbubGas         0.001;
-//*********************************
-HtBcol  0.13498;
-DiaBcol 0.085;
-LiqHt   0.055;
-LiqHt_limit #calc "0.9*$HtBcol";
-//*********************************
-P0 #calc "101325*0.85";
-//P0 101325.0;
-//P0 85000.0;
-Pbot #calc "$P0+1000.0*$LiqHt*9.8";
-Pmid #calc "$P0+1000.0*0.5*$LiqHt*9.8";
-
-//bubble column cross-section divided by sparger area
-ArbyAs 2.0; 
-uSupVel 0.02;
-uGas #calc "$Pmid / $Pbot * $ArbyAs * $uSupVel";     
-A_Bcol #calc "3.14159 * $DiaBcol * $DiaBcol / 4.0";
-rho_gas #calc "$Pmid / 287.0 / $T0";
-mflowRate #calc "$uSupVel * $A_Bcol * $rho_gas"; //kg/s
-//at .250 L working fluid, from t=6 to t=22.92h, 15 mL base added
-// -> 4000x scale up for 1000 L working fluid? ignore for now
-Vb_flowRate #calc "0.015/(22.92 - 6)/3600/1000"; //m^3/s
-
-VVM 0.2; //gas feed per vessel volume, m3 gas/m3 vessel min 
-V_flowRate #calc "$VVM * $A_Bcol * $LiqHt / 60";
-M_flowRate #calc "$V_flowRate * $rho_gas";
-base_flowRate #calc "$Vb_flowRate * $rho0MixLiq"; // 2.4635e-7 kg/s of base solution
-
-// Sparge holes
-ang1 #calc "degToRad(22.5)";
-ang2 #calc "degToRad(45)";
-ang3 #calc "degToRad(67.5)";
-spargeRad  0.0245;
-
-x1 #calc "$spargeRad*cos($ang1)";
-x1neg #calc "-1.0*$x1";
-z1 #calc "$spargeRad*sin($ang1)";
-z1neg #calc "-1.0*$z1";
-x2 #calc "$spargeRad*cos($ang2)";
-x2neg #calc "-1.0*$x2";
-z2 #calc "$spargeRad*sin($ang2)";
-z2neg #calc "-1.0*$z2";
-x3 #calc "$spargeRad*cos($ang3)";
-x3neg #calc "-1.0*$x3";
-z3 #calc "$spargeRad*sin($ang3)";
-z3neg #calc "-1.0*$z3";
-x4 0.0;
-z4 0.0245;
-z4neg -0.0245;
 
 
-
-//*********************************
-//intensity 0.01;
-//k_inlet #calc "1.5 * Foam::pow(($uSupVel * Foam::pow($ArbyAs, 2)), 2) * Foam::pow($intensity, 2)";
-intensity 0.02;
-k_inlet #calc "1.5 * pow($uSupVel * $intensity, 2)";
-//eps_gas_inlet #calc "0.09 * Foam::pow($k_inlet, 1.5) / (($DiaBcol / $ArbyAs) * 0.07)";
-eps_gas_inlet #calc "pow(0.09,0.75) * pow($k_inlet,1.5) / ($DiaBcol / $ArbyAs * 0.07)";
-//eps_liq_inlet #calc "0.09 * 1000 * Foam::pow($k_inlet, 2) * 0.05 / 0.00089";
-eps_liq_inlet #calc "pow(0.09,0.75) * pow($k_inlet,1.5) / ($DiaBcol / $ArbyAs * 0.07)";
-//omega_liq_inlet #calc "1000 * $k_inlet * 0.05 / 0.00089";
-omega_liq_inlet #calc "pow(0.09,-0.25) * pow($k_inlet,0.5) / ($DiaBcol / $ArbyAs * 0.07)";

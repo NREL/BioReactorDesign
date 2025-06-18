@@ -9,22 +9,26 @@ FoamFile
 {
     format      ascii;
     class       volScalarField;
-    object      T.gas;
+    object      N2;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions          [0 0 0 1 0 0 0];
+dimensions      [0 0 0 0 0 0 0];
 
-internalField       uniform 293.15;
+internalField   uniform 0;
+
+#include "$FOAM_CASE/constant/caseVars"
 
 boundaryField
 {
     #includeEtc "caseDicts/setConstraintTypes"
 
-    walls
+    inlet
     {
-        type            zeroGradient;
+        type            fixedValue;
+        value           uniform $CO2_in;
     }
+
     outlet
     {
         type            inletOutlet;
@@ -32,22 +36,16 @@ boundaryField
         inletValue      $internalField;
         value           $internalField;
     }
+
     "vessel|shaft|walls|impeller"
     {
         type            zeroGradient;
     }
-    
-    inlet
-    {
-        type            fixedValue;
-        value           $internalField;
-    }
-    
+
     nonCouple
     {
         type            zeroGradient;
     }
-
 
 }
 

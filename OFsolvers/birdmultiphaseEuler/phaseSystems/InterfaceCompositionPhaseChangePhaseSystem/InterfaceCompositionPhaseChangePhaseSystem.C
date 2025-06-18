@@ -119,7 +119,7 @@ totalDmidtfs() const
             {
                 const word& specie = *specieIter;
 
-                dmidtf_[interface][specie] =
+                tmp<volScalarField> dmidtf
                 (
                     (interfaceIter.index() == 0 ? +1 : -1)
                    *(
@@ -322,7 +322,9 @@ InterfaceCompositionPhaseChangePhaseSystem
                                 interface.name()
                             ),
                             this->mesh().time().name(),
-                            this->mesh()
+                            this->mesh(),
+                            IOobject::NO_READ,
+                            IOobject::AUTO_WRITE
                         ),
                         this->mesh(),
                         dimensionedScalar(dimDensity/dimTime, 0)
@@ -341,30 +343,6 @@ InterfaceCompositionPhaseChangePhaseSystem
                                 IOobject::groupName
                                 (
                                     "interfaceCompositionPhaseChange:dmidtfSp",
-                                    specie
-                                ),
-                                interface.name()
-                            ),
-                            this->mesh().time().name(),
-                            this->mesh()
-                        ),
-                        this->mesh(),
-                        dimensionedScalar(dimDensity/dimTime, 0)
-                    )
-                );
-
-                dmidtf_[interface]->insert
-                (
-                    specie,
-                    new volScalarField
-                    (
-                        IOobject
-                        (
-                            IOobject::groupName
-                            (
-                                IOobject::groupName
-                                (
-                                    "interfaceCompositionPhaseChange:dmidtf",
                                     specie
                                 ),
                                 interface.name()

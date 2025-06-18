@@ -58,6 +58,9 @@ bool Foam::solvers::birdmultiphaseEuler::read()
     dragCorrection =
         pimple.dict().lookupOrDefault<Switch>("dragCorrection", false);
 
+    forceIsothermal =
+        pimple.dict().lookupOrDefault<Switch>("forceIsothermal", false);
+
     nEnergyCorrectors =
         pimple.dict().lookupOrDefault<int>("nEnergyCorrectors", 1);
 
@@ -113,6 +116,11 @@ Foam::solvers::birdmultiphaseEuler::birdmultiphaseEuler(fvMesh& mesh)
     dragCorrection
     (
         pimple.dict().lookupOrDefault<Switch>("dragCorrection", false)
+    ),
+
+    forceIsothermal
+    (
+        pimple.dict().lookupOrDefault<Switch>("forceIsothermal", false)
     ),
 
     nEnergyCorrectors

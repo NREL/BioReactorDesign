@@ -31,6 +31,8 @@ species
 (
     H2O
     O2
+    H2
+    CO2
 );
 
 defaultSpecie H2O;
@@ -98,6 +100,28 @@ CO2
     {
         mu          $muMixLiq;
         Pr          $PrCO2;
+    }
+}
+
+H2
+{
+    specie
+    {
+        molWeight   2.01594;
+    }
+    equationOfState
+    {
+        rho     $rho0MixLiq;
+    }
+    thermodynamics
+    {
+        Cp          $CpMixLiq;
+        Hf         -1.5879e+07;//-9402451;
+    }
+    transport
+    {
+        mu          $muMixLiq;
+        Pr          $PrH2;
     }
 }
 

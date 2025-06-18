@@ -52,8 +52,8 @@ actions
         source  cylinderAnnulusToFace;
         p1 (0 -1 0);
         p2 (0 -0.159 0);
-        outerRadius 0.1;
-        innerRadius 0.075;
+        outerRadius 0.13;
+        innerRadius 0.12;
     } 
 /*
     {

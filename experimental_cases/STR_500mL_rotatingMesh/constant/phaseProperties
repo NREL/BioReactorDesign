@@ -157,7 +157,7 @@ surfaceTension
     gas_liquid
     {
         type            constant;
-        sigma           0.07;
+        sigma           $sigmaLiq;
     }
 }
 
@@ -268,8 +268,8 @@ interfaceComposition
     gas_liquid_inThe_liquid
     {   
         type Henry;
-        species ( O2 );
-        k ( $He_O2 );
+        species ( O2 H2 CO2 );
+        k ( $He_O2 $He_H2 $He_CO2 );
         Le $LeLiqMix;
     }
 }

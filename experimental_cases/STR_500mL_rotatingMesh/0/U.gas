@@ -17,6 +17,8 @@ dimensions      [0 1 -1 0 0 0 0];
 
 internalField   uniform (0 0 0);
 
+#include "$FOAM_CASE/constant/caseVars"
+
 boundaryField
 {
     #includeEtc "caseDicts/setConstraintTypes"
@@ -25,8 +27,8 @@ boundaryField
     {
         type            turbulentInlet;
         fluctuationScale (0 0.1 0.01);
-        referenceField  uniform (0 0.019178868 0);
-        value           uniform (0 0.019178868 0);
+        referenceField  uniform (0 $Uin 0);
+        value           uniform (0 $Uin 0);
     }
     outlet
     {

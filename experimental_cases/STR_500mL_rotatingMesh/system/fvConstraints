@@ -31,8 +31,8 @@ limitT
 
     phase           gas; // Optional phase name
 
-    min             430;
-    max             470;
+    min             283;
+    max             303;
 }
 
 

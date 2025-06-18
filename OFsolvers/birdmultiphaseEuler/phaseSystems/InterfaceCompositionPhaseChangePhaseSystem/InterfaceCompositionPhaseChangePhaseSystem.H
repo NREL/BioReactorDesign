@@ -102,9 +102,6 @@ class InterfaceCompositionPhaseChangePhaseSystem
             //- The implicit part of the interface specie transfer rates
             phaseSystem::dmidtfTable dmidtfSps_;
 
-            //- The specie transfer rate 
-            phaseSystem::dmidtfTable dmidtf_;
-
             //- Interface temperatures
             phaseSystem::dmdtfTable Tfs_;
 

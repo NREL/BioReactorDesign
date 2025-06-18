@@ -88,26 +88,29 @@ void Foam::solvers::birdmultiphaseEuler::energyPredictor()
         heatTransferPtr(fluid.heatTransfer());
 
     phaseSystem::heatTransferTable& heatTransfer = heatTransferPtr();
-
-    forAll(fluid.anisothermalPhases(), anisothermalPhasei)
+    
+    if(!forceIsothermal)
     {
-        phaseModel& phase = fluid_.anisothermalPhases()[anisothermalPhasei];
+    	forAll(fluid.anisothermalPhases(), anisothermalPhasei)
+    	{
+            phaseModel& phase = fluid_.anisothermalPhases()[anisothermalPhasei];
 
-        const volScalarField& alpha = phase;
-        const volScalarField& rho = phase.rho();
+            const volScalarField& alpha = phase;
+            const volScalarField& rho = phase.rho();
 
-        fvScalarMatrix EEqn
-        (
-            phase.heEqn()
-         ==
-           *heatTransfer[phase.name()]
-          + fvModels().source(alpha, rho, phase.thermo().he())
-        );
+            fvScalarMatrix EEqn
+            (
+                phase.heEqn()
+             ==
+               *heatTransfer[phase.name()]
+              + fvModels().source(alpha, rho, phase.thermo().he())
+            );
 
-        EEqn.relax();
-        fvConstraints().constrain(EEqn);
-        EEqn.solve();
-        fvConstraints().constrain(phase.thermo().he());
+            EEqn.relax();
+            fvConstraints().constrain(EEqn);
+            EEqn.solve();
+            fvConstraints().constrain(phase.thermo().he());
+        }
     }
 
     fluid_.correctThermo();
