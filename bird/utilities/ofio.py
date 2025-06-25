@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 
 import numpy as np
@@ -157,3 +158,98 @@ def getMeshTime(casePath):
     for entry in files_tmp:
         if entry.startswith("meshFaceCentres"):
             return entry[16:-4]
+
+
+def remove_comments(text):
+    text = re.sub(
+        r"/\*.*?\*/", "", text, flags=re.DOTALL
+    )  # Remove /* */ comments
+    text = re.sub(r"//.*", "", text)  # Remove // comments
+    return text
+
+
+def tokenize(text):
+    # Add spaces around braces and semicolons to make them separate tokens
+    text = re.sub(r"([{}();])", r" \1 ", text)
+    return text.split()
+
+
+def parse_tokens(tokens):
+    def parse_block(index):
+        result = {}
+        while index < len(tokens):
+            token = tokens[index]
+            if token == "}":
+                return result, index + 1
+            elif token == "{":
+                raise SyntaxError("Unexpected '{'")
+            else:
+                key = token
+                index += 1
+                if tokens[index] == "{":
+                    index += 1
+                    value, index = parse_block(index)
+                    result[key] = value
+                elif tokens[index] == "(":
+                    # Parse list
+                    index += 1
+                    lst = []
+                    while tokens[index] != ")":
+                        lst.append(tokens[index])
+                        index += 1
+                    index += 1  # Skip ')'
+                    result[key] = lst
+                    if tokens[index] == ";":
+                        index += 1
+                else:
+                    # Parse scalar value
+                    value = tokens[index]
+                    index += 1
+                    if tokens[index] == ";":
+                        index += 1
+                    result[key] = value
+        return result, index
+
+    parsed, _ = parse_block(0)
+    return parsed
+
+
+def parse_openfoam_dict(text):
+    text = remove_comments(text)
+    tokens = tokenize(text)
+    return parse_tokens(tokens)
+
+
+def read_properties(filename: str):
+    with open(filename, "r+") as f:
+        text = f.read()
+    foam_dict = parse_openfoam_dict(text)
+    return foam_dict
+
+
+def write_openfoam_dict(d, filename, indent=0):
+    lines = []
+
+    indent_str = " " * indent
+
+    for key, value in d.items():
+        if isinstance(value, dict):
+            lines.append(f"{indent_str}{key}")
+            lines.append(f"{indent_str}{{")
+            lines.extend(write_openfoam_dict(value, indent + 4))
+            lines.append(f"{indent_str}}}")
+        elif isinstance(value, list):
+            lines.append(f"{indent_str}{key}")
+            lines.append(f"{indent_str}(")
+            for item in value:
+                lines.append(f"{indent_str}    {item}")
+            lines.append(f"{indent_str});")
+        else:
+            lines.append(f"{indent_str}{key}    {value};")
+
+    with open(filename, "w") as f:
+        lines = write_openfoam_dict(foam_dict)
+        f.write("\n".join(lines))
+        f.write(
+            "\n\n// ************************************************************************* //\n"
+        )
