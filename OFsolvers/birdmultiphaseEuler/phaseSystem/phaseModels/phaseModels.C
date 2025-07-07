@@ -43,6 +43,7 @@ License
 #include "MulticomponentPhaseModel.H"
 #include "InertPhaseModel.H"
 #include "ReactingPhaseModel.H"
+#include "BioReactingPhaseModel.H"
 #include "MovingPhaseModel.H"
 #include "StationaryPhaseModel.H"
 
@@ -254,6 +255,34 @@ namespace Foam
         reactingPhaseModel,
         phaseSystem,
         reactingPhaseModel
+    );
+
+    typedef
+    MulticomponentPhaseModel
+    <
+        AnisothermalPhaseModel
+        <
+            BioReactingPhaseModel
+            <
+                MovingPhaseModel
+                <
+                    ThermoPhaseModel
+                    <
+                        phaseModel,
+                        rhoFluidMulticomponentThermo
+                    >
+                >
+            >
+        >
+    >
+    bioReactingPhaseModel;
+
+    addNamedToRunTimeSelectionTable
+    (
+        phaseModel,
+        bioReactingPhaseModel,
+        phaseSystem,
+        bioReactingPhaseModel
     );
 }
 
