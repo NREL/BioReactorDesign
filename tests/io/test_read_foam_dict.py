@@ -76,6 +76,7 @@ def test_read_momentumTransport():
     assert foam_dict["simulationType"] == "RAS"
     assert foam_dict["RAS"]["turbulence"] == "on"
 
+
 def test_read_controlDict():
     syst_folder = os.path.join(
         Path(__file__).parent,
@@ -92,6 +93,7 @@ def test_read_controlDict():
 
     assert foam_dict["writeControl"] == "adjustableRunTime"
     assert foam_dict["maxCo"] == "0.5"
+
 
 if __name__ == "__main__":
     test_read_phaseProperties()
