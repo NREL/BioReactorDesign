@@ -1,8 +1,8 @@
 import os
+from pathlib import Path
 
 import pytest
 
-from bird import BIRD_KLA_DATA_DIR
 from bird.postprocess.kla_utils import compute_kla, print_res_dict
 
 
@@ -14,6 +14,9 @@ from bird.postprocess.kla_utils import compute_kla, print_res_dict
     ],
 )
 def test_kla(bootstrap, max_chop):
+    BIRD_KLA_DATA_DIR = os.path.join(
+        Path(__file__).parent, "..", "..", "bird", "postprocess", "data_kla"
+    )
     res_dict = compute_kla(
         os.path.join(BIRD_KLA_DATA_DIR, "volume_avg.dat"),
         time_ind=0,

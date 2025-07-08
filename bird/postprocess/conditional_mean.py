@@ -88,7 +88,7 @@ def compute_cond_mean(
                     diff=diff,
                 )
             else:
-                field_tmp = readOFScal(filename, nCells)
+                field_tmp = readOFScal(filename, nCells)["field"]
             vert_axis, field_cond_tmp = conditionalAverage(
                 cellCentres[:, vert_ind], field_tmp, nbin=n_bins
             )

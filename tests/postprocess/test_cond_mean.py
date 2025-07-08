@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from prettyPlot.plotting import plt, pretty_labels
 
@@ -10,7 +11,14 @@ from bird.postprocess.conditional_mean import (
 
 
 def test_compute_cond():
-    caseFolder = os.path.join("bird", "postprocess", "data_conditional_mean")
+    caseFolder = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+    )
     fields_list = [
         "CO.gas",
         "CO.liquid",
