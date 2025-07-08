@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 
 import numpy as np
@@ -19,6 +20,8 @@ def readMesh(filename: str) -> np.ndarray:
         Array (N,3) representing the cell centers (N is number of cells)
 
     """
+    assert filename.startswith("meshCellCentres")
+    assert filename.endswith(".obj")
     cell_centers = np.loadtxt(filename, usecols=(1, 2, 3))
     return cell_centers
 
@@ -502,7 +505,7 @@ def getMeshTime(casePath: str) -> str:
     casePath: str
         Path to case folder
 
-    returns
+    Returns
     ----------
     time_mesh: str
         The name of the time at which "meshFaceCentresXXX" was created
@@ -513,3 +516,214 @@ def getMeshTime(casePath: str) -> str:
         if entry.startswith("meshFaceCentres"):
             time_mesh = entry[16:-4]
             return time_mesh
+
+
+def remove_comments(text: str) -> str:
+    """
+    Remove C++-style comments (// and /*) from the input and markers like #{ #}
+
+    Parameters
+    ----------
+    text: str
+        Raw input text containing comments
+
+    Returns
+    ----------
+    text: str
+        Text with all comments removed
+    """
+
+    # text = re.sub(
+    #    r"/\*.*?\*/", "", text, flags=re.DOTALL
+    # )  # Remove /* */ comments
+    # text_unc = re.sub(r"//.*", "", text)  # Remove // comments
+
+    text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+    text = re.sub(r"//.*", "", text)
+    text = re.sub(r"#\{", "{", text)
+    text = re.sub(r"#\};", "}", text)
+    text = re.sub(r"#codeStream", "", text)
+    return text
+
+
+def tokenize(text: str) -> list[str]:
+    """
+    Add spaces around special characters (brace and semicolons) to make them separate tokens
+
+    Parameters
+    ----------
+    text: str
+        The cleaned (comment-free) OpenFOAM-style text.
+
+    Returns:
+    ----------
+    token_list: list[str]
+        List of tokens.
+    """
+    text = re.sub(r"([{}();])", r" \1 ", text)
+    token_list = text.split()
+    return token_list
+
+
+def parse_tokens(tokens: list[str]) -> dict:
+    """
+    Parse OpenFOAM tokens into a nested Python dictionary.
+    Special handling for `code { ... }` blocks to be stored as raw strings.
+
+    Parameters
+    ----------
+    tokens: list[str]
+        A list of tokens produced by `tokenize`.
+
+    Returns
+    ----------
+    parsed: dict
+        A nested dictionary that represents the OpenFOAM dictionary.
+    """
+
+    def parse_block(index: int) -> tuple:
+        result = {}
+        while index < len(tokens):
+            token = tokens[index]
+            if token == "}":
+                return result, index + 1
+            elif token == "{":
+                raise SyntaxError("Unexpected '{'")
+
+            key = token
+            index += 1
+
+            # key followed by dictionary
+            if index < len(tokens) and tokens[index] == "{":
+                index += 1
+                if key == "code":
+                    code_lines = []
+                    while tokens[index] != "}":
+                        code_lines.append(tokens[index])
+                        index += 1
+                    index += 1
+                    if index < len(tokens) and tokens[index] == ";":
+                        index += 1
+                    result[key] = " ".join(code_lines).strip()
+                else:
+                    subdict, index = parse_block(index)
+                    result[key] = subdict
+
+            # key followed by list
+            elif index < len(tokens) and tokens[index] == "(":
+                index += 1
+
+                # Peek to check if it's a dict-list (starts with '(' then '{')
+                if tokens[index] == "(":
+                    dictlist = {}
+                    while tokens[index] != ")":
+                        if tokens[index] != "(":
+                            raise SyntaxError(
+                                f"Expected '(' for label in dict-list, got {tokens[index]}"
+                            )
+                        # Read full label (e.g., "(gas and liquid)")
+                        label_tokens = []
+                        while tokens[index] != ")":
+                            label_tokens.append(tokens[index])
+                            index += 1
+                        label_tokens.append(tokens[index])  # include ')'
+                        index += 1
+                        label = " ".join(label_tokens)
+
+                        if tokens[index] != "{":
+                            raise SyntaxError(
+                                f"Expected '{{' after label {label}"
+                            )
+                        index += 1
+                        subdict, index = parse_block(index)
+                        dictlist[label] = subdict
+                    index += 1  # skip final ')'
+                    if index < len(tokens) and tokens[index] == ";":
+                        index += 1
+                    result[key] = dictlist
+                else:
+                    # Standard list
+                    lst = []
+                    while tokens[index] != ")":
+                        lst.append(tokens[index])
+                        index += 1
+                    index += 1
+                    if index < len(tokens) and tokens[index] == ";":
+                        index += 1
+                    result[key] = lst
+
+            # key followed by scalar
+            elif index < len(tokens):
+                value = tokens[index]
+                index += 1
+                if index < len(tokens) and tokens[index] == ";":
+                    index += 1
+                result[key] = value
+
+        return result, index
+
+    parsed, _ = parse_block(0)
+    return parsed
+
+
+def parse_openfoam_dict(filename: str) -> dict:
+    """
+    Parse OpenFOAM dictionary into a python dictionary
+
+    Parameters
+    ----------
+    filename: str
+        OpenFOAM dictionary filename
+
+    Returns
+    ----------
+    dict_of: dict
+        A Python dictionary representing the structure of the OpenFOAM dictionary.
+    """
+    with open(filename, "r+") as f:
+        text = f.read()
+    text = remove_comments(text)
+    tokens = tokenize(text)
+    foam_dict = parse_tokens(tokens)
+    return foam_dict
+
+
+def write_openfoam_dict(d: dict, filename: str, indent: int = 0) -> None:
+    """
+    Save a Python dictionary back to an OpenFOAM-style file.
+
+    Parameters
+    ----------
+    d: dict
+        Python dictionary to save
+    filename: str
+        The file that will contain the saved dictionary
+    indent: int
+        Number of indentation space
+    """
+
+    lines = []
+
+    indent_str = " " * indent
+
+    for key, value in d.items():
+        if isinstance(value, dict):
+            lines.append(f"{indent_str}{key}")
+            lines.append(f"{indent_str}{{")
+            lines.extend(write_openfoam_dict(value, indent + 4))
+            lines.append(f"{indent_str}}}")
+        elif isinstance(value, list):
+            lines.append(f"{indent_str}{key}")
+            lines.append(f"{indent_str}(")
+            for item in value:
+                lines.append(f"{indent_str}    {item}")
+            lines.append(f"{indent_str});")
+        else:
+            lines.append(f"{indent_str}{key}    {value};")
+
+    with open(filename, "w") as f:
+        lines = write_openfoam_dict(foam_dict)
+        f.write("\n".join(lines))
+        f.write(
+            "\n\n// ************************************************************************* //\n"
+        )
