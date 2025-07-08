@@ -35,9 +35,6 @@ setup(
     package_data={
         "": [
             "*requirements.txt",
-            "*.json",
-            "*.yaml",
-            "*.dat",
         ]
     },
     extras_require={
