@@ -20,8 +20,8 @@ def readMesh(filename: str) -> np.ndarray:
         Array (N,3) representing the cell centers (N is number of cells)
 
     """
-    assert filename.startswith("meshCellCentres")
-    assert filename.endswith(".obj")
+    assert "meshCellCentres" in filename
+    assert ".obj" in filename
     cell_centers = np.loadtxt(filename, usecols=(1, 2, 3))
     return cell_centers
 
@@ -513,7 +513,7 @@ def getMeshTime(casePath: str) -> str:
 
     files_tmp = os.listdir(casePath)
     for entry in files_tmp:
-        if entry.startswith("meshFaceCentres"):
+        if "meshFaceCentres" in entry:
             time_mesh = entry[16:-4]
             return time_mesh
 

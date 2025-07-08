@@ -39,3 +39,7 @@ def test_compute_cond():
         plot_name = sequencePlot(cond, [caseFolder], field_name)
         pretty_labels(plot_name, "y [m]", 14)
         plt.close()
+
+
+if __name__ == "__main__":
+    test_compute_cond()
