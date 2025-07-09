@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 import numpy as np
-from prettyPlot.plotting import plt, pretty_labels
 
 from bird.utilities.ofio import readOF, readOFScal, readOFVec
 

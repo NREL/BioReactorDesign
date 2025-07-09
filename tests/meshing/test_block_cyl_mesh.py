@@ -1,9 +1,9 @@
 import os
 import sys
+from pathlib import Path
 
 import numpy as np
 
-from bird import BIRD_BLOCK_CYL_MESH_TEMP_DIR
 from bird.meshing.block_cyl_mesh import (
     assemble_geom,
     assemble_mesh,
@@ -19,6 +19,14 @@ def base_mesh(input_file, topo_file, output_folder):
 
 
 def test_side_sparger():
+    BIRD_BLOCK_CYL_MESH_TEMP_DIR = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "meshing",
+        "block_cyl_mesh_templates",
+    )
     input_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "sideSparger/input.json"
     )
@@ -30,6 +38,14 @@ def test_side_sparger():
 
 
 def test_flat_donut():
+    BIRD_BLOCK_CYL_MESH_TEMP_DIR = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "meshing",
+        "block_cyl_mesh_templates",
+    )
     input_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "flatDonut/input.json"
     )
@@ -41,6 +57,14 @@ def test_flat_donut():
 
 
 def test_base_column():
+    BIRD_BLOCK_CYL_MESH_TEMP_DIR = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "meshing",
+        "block_cyl_mesh_templates",
+    )
     input_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "baseColumn/input.json"
     )
@@ -52,6 +76,14 @@ def test_base_column():
 
 
 def test_base_column_refine():
+    BIRD_BLOCK_CYL_MESH_TEMP_DIR = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "meshing",
+        "block_cyl_mesh_templates",
+    )
     input_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "baseColumn_refineSparg/input.json"
     )
@@ -63,6 +95,14 @@ def test_base_column_refine():
 
 
 def test_base_column_projected():
+    BIRD_BLOCK_CYL_MESH_TEMP_DIR = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "meshing",
+        "block_cyl_mesh_templates",
+    )
     input_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "baseColumn_projected/input.json"
     )
@@ -74,6 +114,14 @@ def test_base_column_projected():
 
 
 def test_multiring():
+    BIRD_BLOCK_CYL_MESH_TEMP_DIR = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "meshing",
+        "block_cyl_mesh_templates",
+    )
     input_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "multiRing_simple/input.json"
     )
@@ -85,6 +133,14 @@ def test_multiring():
 
 
 def test_multiring_coarse():
+    BIRD_BLOCK_CYL_MESH_TEMP_DIR = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "meshing",
+        "block_cyl_mesh_templates",
+    )
     input_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "multiRing_coarse/input.json"
     )
@@ -93,3 +149,7 @@ def test_multiring_coarse():
     )
     output_folder = "system_tmp"
     base_mesh(input_file, topo_file, output_folder)
+
+
+if __name__ == "__main__":
+    test_multiring_coarse()
