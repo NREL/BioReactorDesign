@@ -1,3 +1,3 @@
 """Bio reactor design version"""
 
-__version__ = "0.0.23"
+__version__ = "0.0.24"
