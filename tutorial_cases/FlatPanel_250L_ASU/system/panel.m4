@@ -24,9 +24,9 @@ define(D, 0.0635) // total depth
 define(H, 1.1) //total height
 define(Lmh, calc(L-h))
 define(hpb, calc(h+b))
-define(NPX, 100)
-define(NPZ, 10)
-define(NPY, 100)
+define(NPX, 50)
+define(NPZ, 5)
+define(NPY, 50)
 
 vertices
 (
