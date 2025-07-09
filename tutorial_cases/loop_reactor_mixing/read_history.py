@@ -11,12 +11,12 @@ from bird.utilities.ofio import *
 def compute_gas_holdup(caseFolder, timeFolder, nCells, field_dict={}):
     if not ("alpha_liq" in field_dict) or field_dict["alpha_liq"] is None:
         alpha_liq_file = os.path.join(caseFolder, timeFolder, "alpha.liquid")
-        alpha_liq = readOFScal(alpha_liq_file, nCells)
+        alpha_liq = readOFScal(alpha_liq_file, nCells)["field"]
         # print("reading alpha_liq")
         field_dict["alpha_liq"] = alpha_liq
     if not ("volume" in field_dict) or field_dict["volume"] is None:
         volume_file = os.path.join(caseFolder, "0", "V")
-        volume = readOFScal(volume_file, nCells)
+        volume = readOFScal(volume_file, nCells)["field"]
         # print("reading Volume")
         field_dict["volume"] = volume
     alpha_liq = field_dict["alpha_liq"]
@@ -28,17 +28,17 @@ def compute_gas_holdup(caseFolder, timeFolder, nCells, field_dict={}):
 def co2liq(caseFolder, timeFolder, nCells, field_dict={}):
     if not ("alpha_liq" in field_dict) or field_dict["alpha_liq"] is None:
         alpha_liq_file = os.path.join(caseFolder, timeFolder, "alpha.liquid")
-        alpha_liq = readOFScal(alpha_liq_file, nCells)
+        alpha_liq = readOFScal(alpha_liq_file, nCells)["field"]
         # print("reading alpha_liq")
         field_dict["alpha_liq"] = alpha_liq
     if not ("co2_liq" in field_dict) or field_dict["co2_liq"] is None:
         co2_liq_file = os.path.join(caseFolder, timeFolder, "CO2.liquid")
-        co2_liq = readOFScal(co2_liq_file, nCells)
+        co2_liq = readOFScal(co2_liq_file, nCells)["field"]
         # print("computing co2 liq")
         field_dict["co2_liq"] = co2_liq
     if not ("volume" in field_dict) or field_dict["volume"] is None:
         volume_file = os.path.join(caseFolder, "0", "V")
-        volume = readOFScal(volume_file, nCells)
+        volume = readOFScal(volume_file, nCells)["field"]
         # print("reading Volume")
         field_dict["volume"] = volume
     if not ("indliq" in field_dict) or field_dict["indliq"] is None:
@@ -59,26 +59,26 @@ def co2liq(caseFolder, timeFolder, nCells, field_dict={}):
 def cliq(caseFolder, timeFolder, nCells, field_dict={}):
     if not ("alpha_liq" in field_dict) or field_dict["alpha_liq"] is None:
         alpha_liq_file = os.path.join(caseFolder, timeFolder, "alpha.liquid")
-        alpha_liq = readOFScal(alpha_liq_file, nCells)
+        alpha_liq = readOFScal(alpha_liq_file, nCells)["field"]
         # print("reading alpha_liq")
         field_dict["alpha_liq"] = alpha_liq
     if not ("rho_liq" in field_dict) or field_dict["rho_liq"] is None:
         rho_liq_file = os.path.join(caseFolder, timeFolder, "rhom")
-        rho_liq = readOFScal(rho_liq_file, nCells)
+        rho_liq = readOFScal(rho_liq_file, nCells)["field"]
         field_dict["rho_liq"] = rho_liq
     if not ("co2_liq" in field_dict) or field_dict["co2_liq"] is None:
         co2_liq_file = os.path.join(caseFolder, timeFolder, "CO2.liquid")
-        co2_liq = readOFScal(co2_liq_file, nCells)
+        co2_liq = readOFScal(co2_liq_file, nCells)["field"]
         # print("computing co2 liq")
         field_dict["co2_liq"] = co2_liq
     if not ("h2_liq" in field_dict) or field_dict["h2_liq"] is None:
         h2_liq_file = os.path.join(caseFolder, timeFolder, "H2.liquid")
-        h2_liq = readOFScal(h2_liq_file, nCells)
+        h2_liq = readOFScal(h2_liq_file, nCells)["field"]
         # print("computing h2 liq")
         field_dict["h2_liq"] = h2_liq
     if not ("volume" in field_dict) or field_dict["volume"] is None:
         volume_file = os.path.join(caseFolder, "0", "V")
-        volume = readOFScal(volume_file, nCells)
+        volume = readOFScal(volume_file, nCells)["field"]
         # print("reading Volume")
         field_dict["volume"] = volume
     if not ("indliq" in field_dict) or field_dict["indliq"] is None:
@@ -109,17 +109,17 @@ def cliq(caseFolder, timeFolder, nCells, field_dict={}):
 def h2liq(caseFolder, timeFolder, nCells, field_dict={}):
     if not ("alpha_liq" in field_dict) or field_dict["alpha_liq"] is None:
         alpha_liq_file = os.path.join(caseFolder, timeFolder, "alpha.liquid")
-        alpha_liq = readOFScal(alpha_liq_file, nCells)
+        alpha_liq = readOFScal(alpha_liq_file, nCells)["field"]
         # print("reading alpha_liq")
         field_dict["alpha_liq"] = alpha_liq
     if not ("h2_liq" in field_dict) or field_dict["h2_liq"] is None:
         h2_liq_file = os.path.join(caseFolder, timeFolder, "H2.liquid")
-        h2_liq = readOFScal(h2_liq_file, nCells)
+        h2_liq = readOFScal(h2_liq_file, nCells)["field"]
         # print("computing h2 liq")
         field_dict["h2_liq"] = h2_liq
     if not ("volume" in field_dict) or field_dict["volume"] is None:
         volume_file = os.path.join(caseFolder, "0", "V")
-        volume = readOFScal(volume_file, nCells)
+        volume = readOFScal(volume_file, nCells)["field"]
         # print("reading Volume")
         field_dict["volume"] = volume
     if not ("indliq" in field_dict) or field_dict["indliq"] is None:
@@ -140,12 +140,12 @@ def h2liq(caseFolder, timeFolder, nCells, field_dict={}):
 def vol_liq(caseFolder, timeFolder, nCells, field_dict={}):
     if not ("alpha_liq" in field_dict) or field_dict["alpha_liq"] is None:
         alpha_liq_file = os.path.join(caseFolder, timeFolder, "alpha.liquid")
-        alpha_liq = readOFScal(alpha_liq_file, nCells)
+        alpha_liq = readOFScal(alpha_liq_file, nCells)["field"]
         # print("reading alpha_liq")
         field_dict["alpha_liq"] = alpha_liq
     if not ("volume" in field_dict) or field_dict["volume"] is None:
         volume_file = os.path.join(caseFolder, "0", "V")
-        volume = readOFScal(volume_file, nCells)
+        volume = readOFScal(volume_file, nCells)["field"]
         # print("reading Volume")
         field_dict["volume"] = volume
     volume = field_dict["volume"]

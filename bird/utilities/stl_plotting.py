@@ -3,7 +3,6 @@ from prettyPlot.plotting import plt, pretty_labels, pretty_legend
 
 
 def plotSTL(stl_file):
-    import matplotlib.pyplot as plt
     from mpl_toolkits import mplot3d
     from stl import mesh
 

@@ -5,7 +5,7 @@ from bird.utilities.ofio import *
 
 def readFromDict(val_dict, key, read_func=None, path=None, nCells=None):
     if key not in val_dict:
-        field = read_func(path, nCells)
+        field = read_func(path, nCells)["field"]
         val_dict[key] = field
     else:
         field = val_dict[key]
