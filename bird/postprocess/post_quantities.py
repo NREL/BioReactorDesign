@@ -9,7 +9,7 @@ def read_field(
     field_name: str,
     n_cells: int | None = None,
     field_dict: dict = {},
-) -> dict:
+) -> tuple:
     """
     Read field at a given time and store it in dictionary for later reuse
 
@@ -44,6 +44,102 @@ def read_field(
         field = field_dict[field_name]
 
     return field, field_dict
+
+
+def read_cell_volume(
+    case_folder: str,
+    time_folder: str,
+    n_cells: int | None = None,
+    field_dict: dict = {},
+) -> tuple:
+    """
+    Read volume at a given time and store it in dictionary for later reuse
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str
+        Name of time folder to analyze
+    n_cells : int | None
+        Number of cells in the domain
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    cell_volume : np.ndarray | float
+        cell volume read from file
+    field_dict : dict
+        Dictionary of fields read
+    """
+    kwargs_vol = {
+        "case_folder": case_folder,
+        "time_folder": time_folder,
+        "n_cells": n_cells,
+    }
+    try:
+        cell_volume, field_dict = read_field(
+            field_name="V", field_dict=field_dict, **kwargs_vol
+        )
+    except FileNotFoundError:
+        message = f"ERROR: could not find {os.path.join(case_folder,volume_time,'V')}\n"
+        message += "You can generate V with\n\t"
+        message += f"`postProcess -func writeCellVolumes -time {time_folder} -case {case_folder}`"
+        sys.exit(message)
+
+    return cell_volume, field_dict
+
+
+def read_cell_centers(
+    case_folder: str,
+    cell_centers_file: str,
+    field_dict: dict = {},
+) -> tuple:
+    """
+    Read volume at a given time and store it in dictionary for later reuse
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    cell_centers_file : str
+        Filename of cell center data
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    cell_centers : np.ndarray
+        cell centers read from file
+    field_dict : dict
+        Dictionary of fields read
+    """
+
+    if (
+        not ("cell_centers" in field_dict)
+        or field_dict["cell_centers"] is None
+    ):
+        try:
+            cell_centers = readMesh(
+                os.path.join(case_folder, cell_centers_file)
+            )
+            field_dict["cell_centers"] = cell_centers
+        except FileNotFoundError:
+            message = f"ERROR: could not find {cell_centers_file}\n"
+            message += "You can generate it with\n\t"
+            message += f"`writeMeshObj -case {case_folder}`\n"
+            time_float, time_str = getCaseTimes(case_folder)
+            correct_path = f"meshCellCentres_{time_str[0]}.obj"
+            if not correct_path == cell_centers_file:
+                message += (
+                    f"And adjust the cell center file path to {correct_path}"
+                )
+            sys.exit(message)
+    else:
+        cell_centers = field_dict["cell_centers"]
+
+    return cell_centers, field_dict
 
 
 def get_ind_liq(
@@ -198,20 +294,103 @@ def compute_gas_holdup(
     alpha_liq, field_dict = read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
-    try:
-        cell_volume, field_dict = read_field(
-            field_name="V", field_dict=field_dict, **kwargs_vol
-        )
-    except FileNotFoundError:
-        message = f"ERROR: could not find {os.path.join(case_folder,volume_time,'V')}\n"
-        message += "You can generate V with\n\t"
-        message += f"`postProcess -func writeCellVolumes -time {volume_time} -case {case_folder}`"
-        sys.exit(message)
+    cell_volume, field_dict = read_cell_volume(
+        field_dict=field_dict, **kwargs_vol
+    )
 
     # Calculate
     gas_holdup = np.sum((1 - alpha_liq) * cell_volume) / np.sum(cell_volume)
 
     return gas_holdup, field_dict
+
+
+def compute_superficial_velocity(
+    case_folder: str,
+    time_folder: str,
+    n_cells: int | None = None,
+    volume_time: str = "0",
+    direction: int = 1,
+    cell_centers_file: str = "meshCellCentres_0.obj",
+    field_dict: dict = {},
+) -> tuple:
+    """
+    Calculate superficial velocity in a given direction at a given time
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str
+        Name of time folder to analyze
+    n_cells : int | None
+        Number of cells in the domain
+    volume_time : str
+        Time folder to read to get the cell volumes
+    direction :  int
+        Direction along which to calculate the superficial velocity
+    cell_centers_file : str
+        Filename of cell center data
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    sup_vel: float
+        Superficial velocity
+    field_dict : dict
+        Dictionary of fields read
+    """
+
+    # Read relevant fields
+    kwargs = {
+        "case_folder": case_folder,
+        "time_folder": time_folder,
+        "n_cells": n_cells,
+    }
+    kwargs_vol = {
+        "case_folder": case_folder,
+        "time_folder": volume_time,
+        "n_cells": n_cells,
+    }
+    alpha_gas, field_dict = read_field(
+        field_name="alpha.gas", field_dict=field_dict, **kwargs
+    )
+    U_gas, field_dict = read_field(
+        field_name="U.gas", field_dict=field_dict, **kwargs
+    )
+    U_gas = U_gas[:, direction]
+
+    cell_volume, field_dict = read_cell_volume(
+        field_dict=field_dict, **kwargs_vol
+    )
+    cell_centers, field_dict = read_cell_centers(
+        case_folder=case_folder,
+        cell_centers_file=cell_centers_file,
+        field_dict=field_dict,
+    )
+
+    # Find all cells in the middle of the domain
+    max_dir = np.amax(cell_centers[:, direction])
+    min_dir = np.amin(cell_centers[:, direction])
+    middle_dir = (max_dir + min_dir) / 2
+    tol = (max_dir - min_dir) * 0.05
+    ind_middle = np.argwhere(
+        (cell_centers[:, direction] >= middle_dir - tol)
+        & (cell_centers[:, direction] <= middle_dir + tol)
+    )
+
+    # Only compute in the middle
+    if isinstance(alpha_gas, np.ndarray):
+        alpha_gas = alpha_gas[ind_middle]
+    if isinstance(cell_volume, np.ndarray):
+        cell_volume = cell_volume[ind_middle]
+    if isinstance(U_gas, np.ndarray):
+        U_gas = U_gas[ind_middle]
+
+    # Compute
+    sup_vel = np.sum(U_gas * alpha_gas * cell_volume) / np.sum(cell_volume)
+
+    return sup_vel, field_dict
 
 
 def compute_ave_y_liq(
@@ -268,15 +447,10 @@ def compute_ave_y_liq(
         field_name=f"{spec_name}.liquid", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = get_ind_liq(field_dict=field_dict, **kwargs)
-    try:
-        cell_volume, field_dict = read_field(
-            field_name="V", field_dict=field_dict, **kwargs_vol
-        )
-    except FileNotFoundError:
-        message = f"ERROR: could not find {os.path.join(case_folder,volume_time,'V')}\n"
-        message += "You can generate V with\n\t"
-        message += f"`postProcess -func writeCellVolumes -time {volume_time} -case {case_folder}`"
-        sys.exit(message)
+
+    cell_volume, field_dict = read_cell_volume(
+        field_dict=field_dict, **kwargs_vol
+    )
 
     # Only compute over the liquid
     if isinstance(alpha_liq, np.ndarray):
@@ -363,15 +537,10 @@ def compute_ave_conc_liq(
         field_name=f"{spec_name}.liquid", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = get_ind_liq(field_dict=field_dict, **kwargs)
-    try:
-        cell_volume, field_dict = read_field(
-            field_name="V", field_dict=field_dict, **kwargs_vol
-        )
-    except FileNotFoundError:
-        message = f"ERROR: could not find {os.path.join(case_folder,volume_time,'V')}\n"
-        message += "You can generate V with\n\t"
-        message += f"`postProcess -func writeCellVolumes -time {volume_time} -case {case_folder}`"
-        sys.exit(message)
+
+    cell_volume, field_dict = read_cell_volume(
+        field_dict=field_dict, **kwargs_vol
+    )
 
     # Density of liquid is not always printed (special case)
     if not ("rho_liq" in field_dict) or field_dict["rho_liq"] is None:
@@ -454,15 +623,10 @@ def compute_ave_bubble_diam(
         field_name="d.gas", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = get_ind_liq(field_dict=field_dict, **kwargs)
-    try:
-        cell_volume, field_dict = read_field(
-            field_name="V", field_dict=field_dict, **kwargs_vol
-        )
-    except FileNotFoundError:
-        message = f"ERROR: could not find {os.path.join(case_folder,volume_time,'V')}\n"
-        message += "You can generate V with\n\t"
-        message += f"`postProcess -func writeCellVolumes -time {volume_time} -case {case_folder}`"
-        sys.exit(message)
+
+    cell_volume, field_dict = read_cell_volume(
+        field_dict=field_dict, **kwargs_vol
+    )
 
     # Only compute over the liquid
     if isinstance(d_gas, np.ndarray):

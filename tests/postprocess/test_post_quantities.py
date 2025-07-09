@@ -52,6 +52,31 @@ def test_compute_diam():
     )
 
 
+def test_compute_superficial_velocity():
+    """
+    Test for superficial velocity calculation
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+    )
+    kwargs = {
+        "case_folder": case_folder,
+        "n_cells": None,
+        "volume_time": "1",
+        "direction": 1,
+        "cell_centers_file": "meshCellCentres_1.obj",
+    }
+    field_dict = {}
+    sup_vel, field_dict = compute_superficial_velocity(
+        time_folder="79", field_dict=field_dict, **kwargs
+    )
+
+
 def test_ave_y_liq():
     """
     Test for liquid volume averaged species mass fraction
@@ -122,6 +147,7 @@ def test_ave_conc_liq():
 
 
 if __name__ == "__main__":
+    test_compute_superficial_velocity()
     test_compute_gh()
     test_ave_y_liq()
     test_ave_conc_liq()
