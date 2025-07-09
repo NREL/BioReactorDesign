@@ -3,7 +3,7 @@ import pickle
 
 from prettyPlot.plotting import plt
 
-from bird.utilities.bubble_col_util import *
+from bird.postprocess.post_quantities import *
 from bird.utilities.mathtools import *
 from bird.utilities.ofio import *
 
@@ -41,54 +41,9 @@ def compute_cond_mean(
         for field_name in field_name_list:
             field_file.append(os.path.join(case_path, time_folder, field_name))
 
-        # if os.path.isfile(d_gas_file):
-        #    has_d = True
-        # else:
-        #    has_d = False
-
         for filename, name in zip(field_file, field_name_list):
             val_dict = {}
-            if name.lower() == "kla_co":
-                if "D_CO" in diff_name_list:
-                    diff = diff_val_list[diff_name_list.index("D_CO")]
-                else:
-                    diff = None
-                field_tmp, val_dict = computeSpec_kla_field(
-                    os.path.join(case_path, time_folder),
-                    nCells,
-                    key_suffix="co",
-                    cellCentres=cellCentres,
-                    val_dict=val_dict,
-                    diff=diff,
-                )
-            elif name.lower() == "kla_co2":
-                if "D_CO2" in diff_name_list:
-                    diff = diff_val_list[diff_name_list.index("D_CO2")]
-                else:
-                    diff = None
-                field_tmp, val_dict = computeSpec_kla_field(
-                    os.path.join(case_path, time_folder),
-                    nCells,
-                    key_suffix="co2",
-                    cellCentres=cellCentres,
-                    val_dict=val_dict,
-                    diff=diff,
-                )
-            elif name.lower() == "kla_h2":
-                if "D_H2" in diff_name_list:
-                    diff = diff_val_list[diff_name_list.index("D_H2")]
-                else:
-                    diff = None
-                field_tmp, val_dict = computeSpec_kla_field(
-                    os.path.join(case_path, time_folder),
-                    nCells,
-                    key_suffix="h2",
-                    cellCentres=cellCentres,
-                    val_dict=val_dict,
-                    diff=diff,
-                )
-            else:
-                field_tmp = readOFScal(filename, nCells)["field"]
+            field_tmp = readOFScal(filename, nCells)["field"]
             vert_axis, field_cond_tmp = conditionalAverage(
                 cellCentres[:, vert_ind], field_tmp, nbin=n_bins
             )
