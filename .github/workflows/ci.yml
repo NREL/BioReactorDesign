@@ -176,4 +176,9 @@ jobs:
           cd tutorial_cases/airlift_40m
           bash run.sh
           cd ../../
+      - name: Run flat panel reactor tutorial
+        run: |
+          cd tutorial_cases/FlatPanel_250L_ASU
+          bash run.sh
+          cd ../../
 
