@@ -7,6 +7,9 @@ from bird.utilities.ofio import parse_openfoam_dict
 
 
 def test_read_phaseProperties():
+    """
+    Test for reading content of `constant/phaseProperties`
+    """
     const_folder = os.path.join(
         Path(__file__).parent,
         "..",
@@ -39,6 +42,9 @@ def test_read_phaseProperties():
 
 
 def test_read_thermophysicalProperties():
+    """
+    Test for reading content of `constant/thermophysicalProperties`
+    """
     const_folder = os.path.join(
         Path(__file__).parent,
         "..",
@@ -60,6 +66,9 @@ def test_read_thermophysicalProperties():
 
 
 def test_read_momentumTransport():
+    """
+    Test for reading content of `constant/momentumTransport`
+    """
     const_folder = os.path.join(
         Path(__file__).parent,
         "..",
@@ -78,6 +87,9 @@ def test_read_momentumTransport():
 
 
 def test_read_controlDict():
+    """
+    Test for reading content of `system/controlDict`
+    """
     syst_folder = os.path.join(
         Path(__file__).parent,
         "..",

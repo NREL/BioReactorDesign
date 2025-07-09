@@ -7,6 +7,9 @@ from bird.utilities.ofio import getCaseTimes
 
 
 def test_case_time():
+    """
+    Test for listing all time folders in a case
+    """
     caseFolder = os.path.join(
         Path(__file__).parent,
         "..",

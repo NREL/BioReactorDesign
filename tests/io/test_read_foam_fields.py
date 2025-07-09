@@ -7,6 +7,9 @@ from bird.utilities.ofio import readOF, readOFScal, readOFVec
 
 
 def test_read_nonunif_scal():
+    """
+    Test for reading non uniform scalarField
+    """
     caseFolder = os.path.join(
         Path(__file__).parent,
         "..",
@@ -32,6 +35,9 @@ def test_read_nonunif_scal():
 
 
 def test_read_unif_scal():
+    """
+    Test for reading uniform scalarField
+    """
     caseFolder = os.path.join(
         Path(__file__).parent,
         "..",
@@ -59,6 +65,9 @@ def test_read_unif_scal():
 
 
 def test_read_nonunif_vec():
+    """
+    Test for reading non uniform vectorField
+    """
     caseFolder = os.path.join(
         Path(__file__).parent,
         "..",
