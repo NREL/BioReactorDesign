@@ -29,6 +29,29 @@ def test_compute_gh():
     )
 
 
+def test_compute_diam():
+    """
+    Test for bubble diameter calculation
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+    )
+    kwargs = {"case_folder": case_folder, "n_cells": None, "volume_time": "1"}
+    field_dict = {}
+    diam, field_dict = compute_ave_bubble_diam(
+        time_folder="1", field_dict=field_dict, **kwargs
+    )
+    field_dict = {}
+    diam, field_dict = compute_ave_bubble_diam(
+        time_folder="79", field_dict=field_dict, **kwargs
+    )
+
+
 def test_ave_y_liq():
     """
     Test for liquid volume averaged species mass fraction
