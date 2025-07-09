@@ -477,4 +477,4 @@ def compute_ave_bubble_diam(
         alpha_liq * cell_volume
     )
 
-    return diam, val_dict
+    return diam, field_dict
