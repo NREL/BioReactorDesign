@@ -1,0 +1,2 @@
+bash presteps.sh
+birdmultiphaseEulerFoam

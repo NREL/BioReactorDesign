@@ -1,15 +1,12 @@
 import argparse
+import os
+import pickle
 import sys
 
 import numpy as np
 
-sys.path.append("../utilities")
-import os
-import pickle
-
-from ofio import *
-
-from bird.utilities.bubble_col_util import *
+from bird.postprocess.post_quantities import *
+from bird.utilities.ofio import *
 
 parser = argparse.ArgumentParser(
     description="Compute means QoI of OpenFOAM fields"
@@ -29,15 +26,14 @@ parser.add_argument(
     nargs="+",
     help="List of variables to compute",
     default=[
-        "GH",
-        "GH_height",
+        "gh",
         "d",
         "CO2_liq",
         "CO_liq",
         "H2_liq",
-        "kla_CO2",
-        "kla_CO",
-        "kla_H2",
+        "c_CO2_liq",
+        "c_CO_liq",
+        "c_H2_liq",
     ],
     required=False,
 )
@@ -109,87 +105,80 @@ def get_var(
     localFolder = os.path.join(case_path, time_folder)
     localFolder_vol = os.path.join(case_path, mesh_time_str)
     if name.lower() == "gh":
-        var, val_dict = computeGH(
-            localFolder, localFolder_vol, nCells, cellCentres, val_dict
-        )
-    elif name.lower() == "gh_height":
-        var, val_dict = computeGH_height(
-            localFolder,
+        var, val_dict = compute_gas_holdup(
+            case_path,
+            time_folder,
             nCells,
-            cellCentres,
-            height_liq_base=7.0,
-            val_dict=val_dict,
+            volume_time="0",
+            field_dict=val_dict,
         )
     elif name.lower() == "d":
-        var, val_dict = computeDiam(localFolder, nCells, cellCentres, val_dict)
-    elif name.lower() == "co2_liq":
-        var, val_dict = computeSpec_liq(
-            localFolder,
+        var, val_dict = compute_ave_bubble_diam(
+            case_path,
+            time_folder,
             nCells,
-            field_name="CO2.liquid",
-            key="co2_liq",
-            cellCentres=cellCentres,
-            val_dict=val_dict,
+            volume_time="0",
+            field_dict=val_dict,
+        )
+    elif name.lower() == "co2_liq":
+        var, val_dict = compute_ave_y_liq(
+            case_path,
+            time_folder,
+            nCells,
+            volume_time="0",
+            spec_name="CO2",
+            field_dict=val_dict,
         )
     elif name.lower() == "co_liq":
-        var, val_dict = computeSpec_liq(
-            localFolder,
+        var, val_dict = compute_ave_y_liq(
+            case_path,
+            time_folder,
             nCells,
-            field_name="CO.liquid",
-            key="co_liq",
-            cellCentres=cellCentres,
-            val_dict=val_dict,
+            volume_time="0",
+            spec_name="CO",
+            field_dict=val_dict,
         )
     elif name.lower() == "h2_liq":
-        var, val_dict = computeSpec_liq(
-            localFolder,
+        var, val_dict = compute_ave_y_liq(
+            case_path,
+            time_folder,
             nCells,
-            field_name="H2.liquid",
-            key="h2_liq",
-            cellCentres=cellCentres,
-            val_dict=val_dict,
+            volume_time="0",
+            spec_name="H2",
+            field_dict=val_dict,
         )
-    elif name.lower() == "kla_co":
-        if "D_CO" in diff_name_list:
-            diff = diff_val_list[diff_name_list.index("D_CO")]
-        else:
-            diff = None
-        var, val_dict = computeSpec_kla(
-            localFolder,
+    elif name.lower() == "c_co2_liq":
+        var, val_dict = compute_ave_conc_liq(
+            case_path,
+            time_folder,
             nCells,
-            key_suffix="co",
-            cellCentres=cellCentres,
-            val_dict=val_dict,
-            diff=diff,
+            volume_time="0",
+            spec_name="CO2",
+            mol_weight=44.00995 * 1e-3,
+            field_dict=val_dict,
         )
-    elif name.lower() == "kla_co2":
-        if "D_CO2" in diff_name_list:
-            diff = diff_val_list[diff_name_list.index("D_CO2")]
-        else:
-            diff = None
-        var, val_dict = computeSpec_kla(
-            localFolder,
+    elif name.lower() == "c_co_liq":
+        var, val_dict = compute_ave_conc_liq(
+            case_path,
+            time_folder,
             nCells,
-            key_suffix="co2",
-            cellCentres=cellCentres,
-            val_dict=val_dict,
-            diff=diff,
+            volume_time="0",
+            spec_name="CO",
+            mol_weight=28.01055 * 1e-3,
+            field_dict=val_dict,
         )
-    elif name.lower() == "kla_h2":
-        if "D_H2" in diff_name_list:
-            diff = diff_val_list[diff_name_list.index("D_H2")]
-        else:
-            diff = None
-        var, val_dict = computeSpec_kla(
-            localFolder,
+    elif name.lower() == "c_h2_liq":
+        var, val_dict = compute_ave_conc_liq(
+            case_path,
+            time_folder,
             nCells,
-            key_suffix="h2",
-            cellCentres=cellCentres,
-            val_dict=val_dict,
-            diff=diff,
+            volume_time="0",
+            spec_name="H2",
+            mol_weight=2.01594 * 1e-3,
+            field_dict=val_dict,
         )
     else:
-        sys.exit(f"ERROR: unknown variable {name}")
+        raise NotImplementedError(f"Unknown variable {name}")
 
     return var, val_dict
 
