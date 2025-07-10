@@ -31,4 +31,5 @@ We provide a solver ``birdmultiphaseEulerFoam`` that contains custom models adde
    tutorials
    contribute
    references
+   troubleshoot
    acknowledgments

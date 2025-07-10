@@ -257,7 +257,9 @@ def compute_gas_holdup(
 ) -> tuple:
     """
     Calculate volume averaged gas hold up at a given time
-    $\frac{1}{V_{\rm tot}} \int_{V} (1-\alpha_{\rm liq}) dV$
+
+    .. math::
+       \frac{1}{V_{\rm tot}} \int_{V} (1-\alpha_{\rm liq}) dV
 
     Parameters
     ----------
@@ -404,7 +406,8 @@ def compute_ave_y_liq(
     """
     Calculate liquid volume averaged mass fraction of a species at a given time
 
-    $\frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} Y dV_{\rm liq}$
+    .. math::
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} Y dV_{\rm liq}
 
     Parameters
     ----------
@@ -482,7 +485,8 @@ def compute_ave_conc_liq(
     """
     Calculate liquid volume averaged concentration of a species at a given time
 
-    $\frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} \rho_{\rm liq} Y / W dV_{\rm liq}$
+    .. math::
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} \rho_{\rm liq} Y / W dV_{\rm liq}
 
     Parameters
     ----------
@@ -582,7 +586,9 @@ def compute_ave_bubble_diam(
 ) -> tuple:
     """
     Calculate averaged bubble diameter over the liquid volume
-    $\frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} D dV$
+
+    .. math::
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} D dV
 
     Parameters
     ----------
