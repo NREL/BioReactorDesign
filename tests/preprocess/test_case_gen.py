@@ -1,16 +1,23 @@
 import os
 import pickle
 import shutil
-
+from pathlib import Path
 import numpy as np
 
-from bird import BIRD_CASE_GEN_DATA_DIR
 from bird.preprocess.json_gen.design_io import *
 from bird.preprocess.json_gen.generate_designs import *
 
 
 def test_continuous_loop():
 
+    BIRD_CASE_GEN_DATA_DIR = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "preprocess",
+        "data_case_gen",
+    )    
     generate_single_scaledup_reactor_sparger_cases(
         sparger_locs=[0.3, 0.5, 1.4],
         sim_id=0,
@@ -36,6 +43,16 @@ def test_continuous_loop():
 
 
 def test_discrete_loop():
+
+    
+    BIRD_CASE_GEN_DATA_DIR = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "preprocess",
+        "data_case_gen",
+    )    
 
     def optimization_setup():
         # spots on the branches where we can place sparger or mixers
