@@ -5,9 +5,8 @@ import sys
 import numpy as np
 from prettyPlot.plotting import plt, pretty_labels
 
-from bird.utilities.ofio import *
 from bird.postprocess.post_quantities import *
-
+from bird.utilities.ofio import *
 
 parser = argparse.ArgumentParser(description="Convergence of GH")
 parser.add_argument(
@@ -61,19 +60,45 @@ for itime, time in enumerate(time_float_sorted):
             new_field_dict["V"] = field_dict["V"]
         field_dict = new_field_dict
     gh_history[itime], field_dict = compute_gas_holdup(
-        case_path, time_str_sorted[itime], nCells, volume_time="0", field_dict=field_dict
+        case_path,
+        time_str_sorted[itime],
+        nCells,
+        volume_time="0",
+        field_dict=field_dict,
     )
     co2_history[itime], field_dict = compute_ave_y_liq(
-        case_path, time_str_sorted[itime], nCells, volume_time="0", spec_name="CO2", field_dict=field_dict
+        case_path,
+        time_str_sorted[itime],
+        nCells,
+        volume_time="0",
+        spec_name="CO2",
+        field_dict=field_dict,
     )
     h2_history[itime], field_dict = compute_ave_y_liq(
-        case_path, time_str_sorted[itime], nCells, volume_time="0", spec_name="H2", field_dict=field_dict
+        case_path,
+        time_str_sorted[itime],
+        nCells,
+        volume_time="0",
+        spec_name="H2",
+        field_dict=field_dict,
     )
     c_co2_history[itime], field_dict = compute_ave_conc_liq(
-        case_path, time_str_sorted[itime], nCells, volume_time="0", spec_name="CO2", mol_weight=0.04401, field_dict=field_dict
+        case_path,
+        time_str_sorted[itime],
+        nCells,
+        volume_time="0",
+        spec_name="CO2",
+        mol_weight=0.04401,
+        field_dict=field_dict,
     )
     c_h2_history[itime], field_dict = compute_ave_conc_liq(
-        case_path, time_str_sorted[itime], nCells, volume_time="0", spec_name="H2", mol_weight=0.002016, field_dict=field_dict
+        case_path,
+        time_str_sorted[itime],
+        nCells,
+        volume_time="0",
+        spec_name="H2",
+        mol_weight=0.002016,
+        field_dict=field_dict,
     )
 
 os.makedirs(dataFolder, exist_ok=True)
