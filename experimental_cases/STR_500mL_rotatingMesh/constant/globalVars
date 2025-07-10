@@ -2,7 +2,7 @@
 
 T0    293.15;  // initial T(K) which stays constant 
 // water thermophysical properties
-muMixLiq #calc "2.414e-5 * pow(10,247.8/($T0 - 140.0))"; //viscosity (Pa.s) of water as a function of T(K)
+muMixLiq #calc "2.414e-5 * pow(10,247.8/($T0 - 140.0)) * $viscousFactor"; //viscosity (Pa.s) of water as a function of T(K)
 CpMixLiq        4181; // J/kg-K
 kThermLiq       0.62; // W/m-K
 rho0MixLiq      1000; // kg/m^3

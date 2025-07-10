@@ -43,13 +43,13 @@ boundaryField
     
     "shaft|impeller"
     {
-        type            movingWallVelocity;
+        type            movingWallSlipVelocity;
         value           $internalField;
     }
     
     nonCouple
     {
-        type            zeroGradient;
+        type            movingWallSlipVelocity;
         value           $internalField;
     }
 }

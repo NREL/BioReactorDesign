@@ -34,7 +34,11 @@ writeStatistics
         const volScalarField& gl = mesh().lookupObject<volScalarField>("interface.gasliquid");
         const volScalarField& dg = mesh().lookupObject<volScalarField>("d.gas");
         const scalarField& V = mesh().V();
+        const volScalarField& kLAO2f = mesh().lookupObject<volScalarField>("interfaceCompositionPhaseChange:dmidtfSp.O2.gas_liquid");
+        const volScalarField& kLACO2f = mesh().lookupObject<volScalarField>("interfaceCompositionPhaseChange:dmidtfSp.CO2.gas_liquid");
+        const volScalarField& kLAH2f = mesh().lookupObject<volScalarField>("interfaceCompositionPhaseChange:dmidtfSp.H2.gas_liquid");
         const volScalarField& dmdt = mesh().lookupObject<volScalarField>("interfaceCompositionPhaseChange:dmdtf.gas_liquid");
+
 
         const volVectorField& Ug = mesh().lookupObject<volVectorField>("U.gas");        
         scalar liqVol = 0.;
@@ -49,6 +53,7 @@ writeStatistics
         scalar dgas = 0.;
         scalar kLAO2 = 0.;
         scalar kLACO2 = 0.;
+        scalar kLAH2 = 0.;
         vector UgMean(0,0,0);
         vector UgPrimeSqr(0,0,0);
         scalar totN2g = 0.;
@@ -75,7 +80,10 @@ writeStatistics
                 UgMean += V[cellI]*Ug[cellI]*alphag[cellI];
                 totN2g += V[cellI]*N2g[cellI]*alphag[cellI];
                 dmdttot += V[cellI] * dmdt[cellI];
-
+		        kLAO2 += vol_gas * kLAO2f[cellI] / rhog[cellI];
+                kLACO2 += vol_gas * kLACO2f[cellI] / rhog[cellI];
+                kLAH2 += vol_gas * kLAH2f[cellI] / rhog[cellI];
+/*
                 if (alphag[cellI] > 1e-4)
                 {
                     if (mag(O2g[cellI] -  O2l[cellI]) > 1e-16)
@@ -87,7 +95,7 @@ writeStatistics
                         kLACO2 +=  V[cellI] * dmdt[cellI]/ ( CO2g[cellI] -  CO2l[cellI] );    
                     }
                        
-                }
+                } */
             }
         }
 
@@ -103,14 +111,16 @@ writeStatistics
         reduce(dgas,sumOp<scalar>());
         reduce(kLAO2,sumOp<scalar>());
         reduce(kLACO2,sumOp<scalar>());
+        reduce(kLAH2,sumOp<scalar>());
         reduce(UgMean,sumOp<vector>());
-	reduce(dmdttot, sumOp<scalar>);
+	    reduce(dmdttot, sumOp<scalar>());
 
 
         scalar totVol = liqVol + holdup;        
         dgas /= holdup + 1e-16;    
-        kLAO2 /= totVol + 1e-16;
-        kLACO2 /= totVol + 1e-16;
+        kLAO2 /= holdup + 1e-16;
+        kLACO2 /= holdup + 1e-16;
+        kLAH2 /= holdup + 1e-16;
         UgMean /= holdup+ 1e-16;
         dmdttot /= totVol + 1e-16;
         
@@ -162,6 +172,7 @@ writeStatistics
                 << kLACO2 << ", "
                 << totH2g << ", "
                 << totH2l << ", "
+                << kLAH2 << ", "
 		<< dmdttot << ", "
                 << UgMean[0] << ", "
                 << UgMean[1] << ", "
