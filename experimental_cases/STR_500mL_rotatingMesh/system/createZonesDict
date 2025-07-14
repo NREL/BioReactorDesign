@@ -31,34 +31,35 @@ baffles
     
     baffle1
     {
-        type        box;
-        zoneType    face;
+        type        surface;
 
-        box     (-0.001 -1 0.13) (0.001 1 1);
+        surface     plate;
+        origin      (0.14 -10 0);
+        span        (10 20 0);
     };
-    
     baffle2
     {
-        type        box;
-        zoneType    face;
+        type        surface;
 
-        box     (0.13 -1 -0.001 ) (1  1 0.001);
+        surface     plate;
+        origin      (-2 -10 0);
+        span        (1.86 20 0);
     };
-
     baffle3
     {
-        type        box;
-        zoneType    face;
+        type        surface;
 
-        box     (-0.001 -1 -1) (0.001  1 -0.13);
+        surface     plate;
+        origin      (0 -10 0.14);
+        span        (0 20 10);
     };
-
     baffle4
     {
-        type        box;
-        zoneType    face;
+        type        surface;
 
-        box     (-0.001 -1 0.13) (0.001 1 1);
+        surface     plate;
+        origin      (0 -10 -2);
+        span        (0 20  1.86);
     };
 }
 

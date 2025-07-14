@@ -37,7 +37,7 @@ baffles
             }
         }
     }
-/*
+
     walls
     {
         type        faceZone;
@@ -57,9 +57,8 @@ baffles
                 type        wall;
             }
         }
-    }
-    
-    */
+    }    
+
 }
 
 

@@ -18,7 +18,7 @@ splitBaffles
 # Rescale to work with 500mL
 transformPoints "scale=(0.243530813 0.243530813 0.243530813)"
 
-#renumberMesh -noFields -overwrite
+renumberMesh -noFields -overwrite
 
 createNonConformalCouples nonCouple1 nonCouple2
 
