@@ -43,9 +43,10 @@ solvers
     {
         solver          GAMG;
         smoother        DIC;
-        tolerance       1e-8;
+        tolerance       1e-9;
         relTol          0;
         maxIter   20;
+        minIter   1;
     }
 
     p_rghFinal
@@ -110,9 +111,9 @@ solvers
 
 PIMPLE
 {
-    nOuterCorrectors 3;
-    nCorrectors      2;
-    nNonOrthogonalCorrectors 1;
+    nOuterCorrectors 1;
+    nCorrectors      15;
+    nNonOrthogonalCorrectors 0;
     correctMeshPhi      yes;
 
     faceMomentum        yes;
@@ -122,9 +123,13 @@ PIMPLE
 
 relaxationFactors
 {
+    fields
+    {
+        p_rgh 0.5;
+    }
     equations
     {
-        ".*"            1;
+        ".*"            0.9;
     }
 }
 

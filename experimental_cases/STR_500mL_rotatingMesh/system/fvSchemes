@@ -46,6 +46,10 @@ divSchemes
     div(alphaRhoPhi,k)      Gauss limitedLinear 1;
 
     div((((alpha*rho)*nuEff)*dev2(T(grad(U))))) Gauss linear;
+    
+    div(phim,epsilonm) Gauss limitedLinear 1;
+    div(phim,km) Gauss limitedLinear 1;
+    div(alphaRhoPhi,epsilon) Gauss limitedLinear 1;
 }
 
 laplacianSchemes

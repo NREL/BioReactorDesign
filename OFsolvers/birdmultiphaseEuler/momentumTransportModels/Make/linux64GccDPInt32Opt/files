@@ -1,0 +1,40 @@
+SOURCE += momentumTransportModels.C
+
+SOURCE += phasePressureModel/phasePressureModel.C
+
+SOURCE += kineticTheoryModels/kineticTheoryModel/kineticTheoryModel.C
+
+SOURCE += kineticTheoryModels/viscosityModel/viscosityModel/kineticTheoryViscosityModel.C
+SOURCE += kineticTheoryModels/viscosityModel/viscosityModel/kineticTheoryViscosityModelNew.C
+SOURCE += kineticTheoryModels/viscosityModel/Gidaspow/GidaspowViscosity.C
+SOURCE += kineticTheoryModels/viscosityModel/Syamlal/SyamlalViscosity.C
+SOURCE += kineticTheoryModels/viscosityModel/HrenyaSinclair/HrenyaSinclairViscosity.C
+SOURCE += kineticTheoryModels/viscosityModel/none/noneViscosity.C
+
+SOURCE += kineticTheoryModels/conductivityModel/conductivityModel/conductivityModel.C
+SOURCE += kineticTheoryModels/conductivityModel/conductivityModel/conductivityModelNew.C
+SOURCE += kineticTheoryModels/conductivityModel/Gidaspow/GidaspowConductivity.C
+SOURCE += kineticTheoryModels/conductivityModel/Syamlal/SyamlalConductivity.C
+SOURCE += kineticTheoryModels/conductivityModel/HrenyaSinclair/HrenyaSinclairConductivity.C
+
+SOURCE += kineticTheoryModels/radialModel/radialModel/radialModel.C
+SOURCE += kineticTheoryModels/radialModel/radialModel/radialModelNew.C
+SOURCE += kineticTheoryModels/radialModel/CarnahanStarling/CarnahanStarlingRadial.C
+SOURCE += kineticTheoryModels/radialModel/LunSavage/LunSavageRadial.C
+SOURCE += kineticTheoryModels/radialModel/SinclairJackson/SinclairJacksonRadial.C
+
+SOURCE += kineticTheoryModels/granularPressureModel/granularPressureModel/granularPressureModel.C
+SOURCE += kineticTheoryModels/granularPressureModel/granularPressureModel/granularPressureModelNew.C
+SOURCE += kineticTheoryModels/granularPressureModel/Lun/LunPressure.C
+SOURCE += kineticTheoryModels/granularPressureModel/SyamlalRogersOBrien/SyamlalRogersOBrienPressure.C
+
+SOURCE += kineticTheoryModels/frictionalStressModel/frictionalStressModel/frictionalStressModel.C
+SOURCE += kineticTheoryModels/frictionalStressModel/frictionalStressModel/frictionalStressModelNew.C
+SOURCE += kineticTheoryModels/frictionalStressModel/JohnsonJackson/JohnsonJacksonFrictionalStress.C
+SOURCE += kineticTheoryModels/frictionalStressModel/Schaeffer/SchaefferFrictionalStress.C
+SOURCE += kineticTheoryModels/frictionalStressModel/JohnsonJacksonSchaeffer/JohnsonJacksonSchaefferFrictionalStress.C
+
+SOURCE += derivedFvPatchFields/JohnsonJacksonParticleSlip/JohnsonJacksonParticleSlipFvPatchVectorField.C
+SOURCE += derivedFvPatchFields/JohnsonJacksonParticleTheta/JohnsonJacksonParticleThetaFvPatchScalarField.C
+
+LIB = $(FOAM_USER_LIBBIN)/libbirdmultiphaseEulerMomentumTransportModels

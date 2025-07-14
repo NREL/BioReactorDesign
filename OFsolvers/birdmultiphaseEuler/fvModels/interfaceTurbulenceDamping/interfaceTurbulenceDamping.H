@@ -55,7 +55,7 @@ Usage
     {
         type    interfaceTurbulenceDamping;
 
-        libs    ("libmultiphaseEulerFvModels.so");
+        libs    ("libbirdmultiphaseEulerFvModels.so");
 
         phase   water;
 

@@ -1,0 +1,72 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvModels;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+phaseChange
+{
+
+    #include "$FOAM_CASE/constant/globalVars";
+    
+    type            massDiffusionLimitedPhaseChange;
+
+    libs            ("libbirdmultiphaseEulerFvModels.so");
+
+    phases          (gas liquid);
+
+    energySemiImplicit yes;
+
+    interfaceComposition
+    {
+        gas_liquid_inThe_liquid
+        {   
+            type Henry;
+            species ( O2 H2 CO2 );
+            k ( $He_O2 $He_H2 $He_CO2 );
+            Le $LeLiqMix;
+        }
+    }
+
+    diffusiveMassTransfer
+    {
+        blending        heatAndDiffusiveMassTransfer;
+
+        gas_dispersedIn_liquid_inThe_liquid
+        {
+            type Frossling;
+            Le $LeLiqMix;
+        }
+
+        liquid_dispersedIn_gas_inThe_liquid
+        {
+            type spherical;
+            Le 1.0; 
+        }
+
+        gas_dispersedIn_liquid_inThe_gas
+        {
+            type Frossling;
+            Le $LeLiqMix;
+        }
+
+        liquid_dispersedIn_gas_inThe_gas
+        {
+            type spherical;
+            Le 1.0; 
+        }
+    }
+}
+
+// ************************************************************************* //
+

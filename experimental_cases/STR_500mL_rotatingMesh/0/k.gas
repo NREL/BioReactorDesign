@@ -12,10 +12,11 @@ FoamFile
     object      k;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+#include "$FOAM_CASE/constant/globalVars";
 
 dimensions      [0 2 -2 0 0 0 0];
 
-internalField   uniform 0;
+internalField   uniform 1e-5;
 
 boundaryField
 {
@@ -24,7 +25,7 @@ boundaryField
     inlet
     {
         type            fixedValue;
-        value           $internalField;
+        value           uniform $k_inlet_gas;
     }
 
     outlet

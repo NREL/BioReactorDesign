@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2021-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2021-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -40,7 +40,6 @@ SourceFiles
 
 #include "phaseModel.H"
 #include "compressibleTwoPhases.H"
-#include "uniformDimensionedFields.H"
 #include "runTimeSelectionTables.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -163,8 +162,13 @@ private:
         //- Phase 2
         const phaseModel& phase2_;
 
-        //- Gravitational acceleration
-        const uniformDimensionedVectorField& g_;
+
+protected:
+
+    // Protected Member Functions
+
+        //- Return true if the phase interfaces are the same
+        virtual bool same(const phaseInterface& interface, bool strict) const;
 
 
 public:
@@ -320,6 +324,12 @@ public:
             //- Return true if this phaseInterface contains the given phase
             inline bool contains(const phaseModel& phase) const;
 
+            //- Return true if the phase interfaces are the same
+            inline bool operator==(const phaseInterface& interface) const;
+
+            //- Return true if the phase interfaces are different
+            inline bool operator!=(const phaseInterface& interface) const;
+
             //- Return the other phase relative to the given phase
             //  Generates a FatalError if this phaseInterface does not contain
             //  the given phase
@@ -329,14 +339,15 @@ public:
             //  this phaseInterface does not contain the given phase
             inline label index(const phaseModel& phase) const;
 
+            //- Access the phase for the given index. Generates a FatalError if
+            //  the index is not 0 or 1.
+            inline const phaseModel& operator[](const label index) const;
+
             //- Return the phase system
             inline const phaseSystem& fluid() const;
 
             //- Return the mesh
             inline const fvMesh& mesh() const;
-
-            //- Return gravitational acceleration
-            inline const uniformDimensionedVectorField& g() const;
 
 
         // Properties
@@ -351,13 +362,15 @@ public:
             tmp<volScalarField> sigma() const;
 
 
+    // Iterators
+
         //- STL const_iterator
         class const_iterator
         {
             // Private Data
 
-                //- Reference to the pair for which this is an iterator
-                const phaseInterface& pair_;
+                //- Reference to the interface for which this is an iterator
+                const phaseInterface& interface_;
 
                 //- Current index
                 label index_;
@@ -371,7 +384,7 @@ public:
 
             // Constructors
 
-                //- Construct from pair, moving to its 'begin' position
+                //- Construct from interface, moving to its 'begin' position
                 inline explicit const_iterator(const phaseInterface&);
 
 
@@ -397,16 +410,16 @@ public:
         };
 
 
-        //- const_iterator set to the beginning of the pair
+        //- const_iterator set to the beginning of the interface
         inline const_iterator cbegin() const;
 
-        //- const_iterator set to beyond the end of the pair
+        //- const_iterator set to beyond the end of the interface
         inline const_iterator cend() const;
 
-        //- const_iterator set to the beginning of the pair
+        //- const_iterator set to the beginning of the interface
         inline const_iterator begin() const;
 
-        //- const_iterator set to beyond the end of the pair
+        //- const_iterator set to beyond the end of the interface
         inline const_iterator end() const;
 };
 

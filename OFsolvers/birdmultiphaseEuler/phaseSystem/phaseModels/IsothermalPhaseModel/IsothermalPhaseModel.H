@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2015-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2015-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -37,7 +37,7 @@ SourceFiles
 #ifndef IsothermalPhaseModel_H
 #define IsothermalPhaseModel_H
 
-#include "phaseModel.H"
+#include "ThermophysicalTransportPhaseModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -81,13 +81,18 @@ public:
         //- Return the effective thermal conductivity on a patch
         virtual tmp<scalarField> kappaEff(const label patchi) const;
 
-        //- Return the source term for the given specie mass-fraction
-        //  equation
-        virtual tmp<fvScalarMatrix> divj(volScalarField& Yi) const;
-
         //- Return the enthalpy equation
         virtual tmp<fvScalarMatrix> heEqn();
 };
+
+
+/*---------------------------------------------------------------------------*\
+        Typedef IsothermalThermophysicalTransportPhaseModel Declaration
+\*---------------------------------------------------------------------------*/
+
+template<class BasePhaseModel>
+using IsothermalThermophysicalTransportPhaseModel =
+    IsothermalPhaseModel<ThermophysicalTransportPhaseModel<BasePhaseModel>>;
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

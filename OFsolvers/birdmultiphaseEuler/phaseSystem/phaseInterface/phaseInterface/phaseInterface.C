@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2021-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2021-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -333,6 +333,21 @@ Foam::phaseInterface::identifyPhases
 }
 
 
+// * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
+
+bool Foam::phaseInterface::same
+(
+    const phaseInterface& interface,
+    bool strict
+) const
+{
+    return
+        (!strict || isType<phaseInterface>(interface))
+     && &phase1_ == &interface.phase1_
+     && &phase2_ == &interface.phase2_;
+}
+
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::phaseInterface::phaseInterface
@@ -342,8 +357,7 @@ Foam::phaseInterface::phaseInterface
 )
 :
     phase1_(getPhase1(phase1, phase2)),
-    phase2_(getPhase2(phase1, phase2)),
-    g_(phase1.mesh().lookupObject<uniformDimensionedVectorField>("g"))
+    phase2_(getPhase2(phase1, phase2))
 {}
 
 

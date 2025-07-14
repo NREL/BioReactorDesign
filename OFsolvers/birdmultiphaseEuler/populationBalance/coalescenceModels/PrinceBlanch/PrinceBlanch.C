@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2018-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2018-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,8 +24,9 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PrinceBlanch.H"
-#include "phaseCompressibleMomentumTransportModel.H"
 #include "fvcGrad.H"
+#include "phaseCompressibleMomentumTransportModel.H"
+#include "uniformDimensionedFields.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -60,27 +61,9 @@ PrinceBlanch
 )
 :
     coalescenceModel(popBal, dict),
-    C1_(dimensionedScalar::lookupOrDefault("C1", dict, dimless, 0.356)),
-    h0_
-    (
-        dimensionedScalar::lookupOrDefault
-        (
-            "h0",
-            dict,
-            dimLength,
-            1e-4
-        )
-    ),
-    hf_
-    (
-        dimensionedScalar::lookupOrDefault
-        (
-            "hf",
-            dict,
-            dimLength,
-            1e-8
-        )
-    ),
+    C1_("C1", dimless, dict, 0.356),
+    h0_("h0", dimLength, dict, 1e-4),
+    hf_("hf", dimLength, dict, 1e-8),
     turbulence_(dict.lookup("turbulence")),
     buoyancy_(dict.lookup("buoyancy")),
     laminarShear_(dict.lookup("laminarShear"))
@@ -89,7 +72,7 @@ PrinceBlanch
     {
         shearStrainRate_.set
         (
-            new volScalarField
+            new volScalarField::Internal
             (
                 IOobject
                 (
@@ -125,30 +108,35 @@ void Foam::diameterModels::coalescenceModels::PrinceBlanch::precompute()
 void Foam::diameterModels::coalescenceModels::PrinceBlanch::
 addToCoalescenceRate
 (
-    volScalarField& coalescenceRate,
+    volScalarField::Internal& coalescenceRate,
     const label i,
     const label j
 )
 {
-    const phaseModel& continuousPhase = popBal_.continuousPhase();
     const sizeGroup& fi = popBal_.sizeGroups()[i];
     const sizeGroup& fj = popBal_.sizeGroups()[j];
+
+    const volScalarField::Internal& rhoc = popBal_.continuousPhase().rho();
+
+    tmp<volScalarField> tsigma(popBal_.sigmaWithContinuousPhase(fi.phase()));
+    const volScalarField::Internal& sigma = tsigma();
+
+    tmp<volScalarField> tepsilonc(popBal_.continuousTurbulence().epsilon());
+    const volScalarField::Internal& epsilonc = tepsilonc();
+
     const uniformDimensionedVectorField& g =
         popBal_.mesh().lookupObject<uniformDimensionedVectorField>("g");
 
     const dimensionedScalar rij(1/(1/fi.dSph() + 1/fj.dSph()));
 
-    const volScalarField collisionEfficiency
+    const volScalarField::Internal collisionEfficiency
     (
         exp
         (
-          - sqrt
-            (
-                pow3(rij)*continuousPhase.rho()
-               /(16*popBal_.sigmaWithContinuousPhase(fi.phase()))
-            )
+          - sqrt(pow3(rij)*rhoc/(16*sigma))
            *log(h0_/hf_)
-           *cbrt(popBal_.continuousTurbulence().epsilon())/pow(rij, 2.0/3.0)
+           *cbrt(epsilonc)
+           /pow(rij, 2.0/3.0)
         )
     );
 
@@ -156,8 +144,10 @@ addToCoalescenceRate
     {
         coalescenceRate +=
             (
-                C1_*pi*sqr(fi.dSph() + fj.dSph())
-               *cbrt(popBal_.continuousTurbulence().epsilon())
+                C1_
+               *pi
+               *sqr(fi.dSph() + fj.dSph())
+               *cbrt(epsilonc)
                *sqrt(pow(fi.dSph(), 2.0/3.0) + pow(fj.dSph(), 2.0/3.0))
             )
            *collisionEfficiency;
@@ -168,23 +158,11 @@ addToCoalescenceRate
         const dimensionedScalar Sij(pi/4*sqr(fi.dSph() + fj.dSph()));
 
         coalescenceRate +=
+            Sij
+           *mag
             (
-                Sij
-               *mag
-                (
-                    sqrt
-                    (
-                        2.14*popBal_.sigmaWithContinuousPhase(fi.phase())
-                       /(continuousPhase.rho()*fi.dSph())
-                      + 0.505*mag(g)*fi.dSph()
-                    )
-                  - sqrt
-                    (
-                        2.14*popBal_.sigmaWithContinuousPhase(fi.phase())
-                       /(continuousPhase.rho()*fj.dSph())
-                      + 0.505*mag(g)*fj.dSph()
-                    )
-                )
+                sqrt(2.14*sigma/(rhoc*fi.dSph()) + 0.505*mag(g)*fi.dSph())
+              - sqrt(2.14*sigma/(rhoc*fj.dSph()) + 0.505*mag(g)*fj.dSph())
             )
            *collisionEfficiency;
     }

@@ -1,0 +1,110 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvModels;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+phaseChange
+{
+
+    #include "$FOAM_CASE/constant/globalVars";
+    
+    type            massDiffusionLimitedPhaseChange;
+
+    libs            ("libbirdmultiphaseEulerFvModels.so");
+
+    phases          (gas liquid);
+
+    energySemiImplicit yes;
+
+    interfaceComposition
+    {
+        gas_liquid_inThe_liquid
+        {   
+            type Henry;
+            species ( O2 H2 CO2 );
+            k ( $He_O2 $He_H2 $He_CO2 );
+            Le $LeLiqMix;
+        }
+    }
+
+    diffusiveMassTransfer
+    {
+        blending        heatAndDiffusiveMassTransfer;
+
+        gas_dispersedIn_liquid_inThe_liquid
+        {
+            type Frossling;
+            Le $LeLiqMix;
+        }
+
+        liquid_dispersedIn_gas_inThe_liquid
+        {
+            type spherical;
+            Le 1.0; 
+        }
+
+        gas_dispersedIn_liquid_inThe_gas
+        {
+            type Frossling;
+            Le $LeLiqMix;
+        }
+
+        liquid_dispersedIn_gas_inThe_gas
+        {
+            type spherical;
+            Le 1.0; 
+        }
+    }
+}
+/*
+massSource
+{
+    type            massSource;
+
+    #include "$FOAM_CASE/constant/globalVars";
+
+    cellZone
+    {
+        type            containsPoints;
+        points
+            (
+                ($x1 0.01 $z1)
+                ($x2 0.01 $z2)
+                ($x3 0.01 $z3)
+                ($x4 0.01 $z4)
+	            ($x1neg 0.01 $z1)
+                ($x2neg 0.01 $z2)
+                ($x3neg 0.01 $z3)
+	            ($x1 0.01 $z1neg)
+                ($x2 0.01 $z2neg)
+                ($x3 0.01 $z3neg)
+                ($x4 0.01 $z4neg)
+	            ($x1neg 0.01 $z1neg)
+                ($x2neg 0.01 $z2neg)
+                ($x3neg 0.01 $z3neg)
+
+            );
+    }
+
+
+
+    
+
+    massFlowRate    $M_flowRate;
+    phase           gas;
+    rho             thermo:rho.gas;
+}
+*/
+// ************************************************************************* //
+

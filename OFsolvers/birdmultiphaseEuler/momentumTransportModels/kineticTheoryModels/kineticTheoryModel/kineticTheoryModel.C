@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -42,7 +42,7 @@ Foam::RASModels::kineticTheoryModel::continuousPhase() const
     {
         if (fluid.movingPhases().size() != 2)
         {
-            FatalIOErrorInFunction(coeffDict_)
+            FatalIOErrorInFunction(coeffDict())
                 << "Continuous phase name must be specified "
                 << "when there are more than two moving phases."
                 << exit(FatalIOError);
@@ -91,65 +91,65 @@ Foam::RASModels::kineticTheoryModel::kineticTheoryModel
 
     continuousPhaseName_
     (
-        coeffDict_.lookupOrDefault("continuousPhase", word::null)
+        coeffDict().lookupOrDefault("continuousPhase", word::null)
     ),
 
     viscosityModel_
     (
         kineticTheoryModels::viscosityModel::New
         (
-            coeffDict_
+            coeffDict()
         )
     ),
     conductivityModel_
     (
         kineticTheoryModels::conductivityModel::New
         (
-            coeffDict_
+            coeffDict()
         )
     ),
     radialModel_
     (
         kineticTheoryModels::radialModel::New
         (
-            coeffDict_
+            coeffDict()
         )
     ),
     granularPressureModel_
     (
         kineticTheoryModels::granularPressureModel::New
         (
-            coeffDict_
+            coeffDict()
         )
     ),
     frictionalStressModel_
     (
         kineticTheoryModels::frictionalStressModel::New
         (
-            coeffDict_
+            coeffDict()
         )
     ),
 
-    equilibrium_(coeffDict_.lookup("equilibrium")),
-    e_("e", dimless, coeffDict_),
+    equilibrium_(coeffDict().lookup("equilibrium")),
+    e_("e", dimless, coeffDict()),
     alphaMinFriction_
     (
         "alphaMinFriction",
         dimless,
-        coeffDict_
+        coeffDict()
     ),
     residualAlpha_
     (
         "residualAlpha",
         dimless,
-        coeffDict_
+        coeffDict()
     ),
 
     maxNut_
     (
         "maxNut",
         dimensionSet(0, 2, -1, 0, 0),
-        coeffDict_.lookupOrDefault<scalar>("maxNut", 1000)
+        coeffDict().lookupOrDefault<scalar>("maxNut", 1000)
     ),
 
     Theta_
@@ -220,12 +220,7 @@ Foam::RASModels::kineticTheoryModel::kineticTheoryModel
         U.mesh(),
         dimensionedScalar(dimensionSet(0, 2, -1, 0, 0), 0)
     )
-{
-    if (type == typeName)
-    {
-        printCoeffs(type);
-    }
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -244,15 +239,16 @@ bool Foam::RASModels::kineticTheoryModel::read()
         read()
     )
     {
-        coeffDict().lookup("equilibrium") >> equilibrium_;
-        e_.readIfPresent(coeffDict());
-        alphaMinFriction_.readIfPresent(coeffDict());
+        const dictionary& coeffDict = this->coeffDict();
+        coeffDict.lookup("equilibrium") >> equilibrium_;
+        e_.readIfPresent(coeffDict);
+        alphaMinFriction_.readIfPresent(coeffDict);
 
-        viscosityModel_->read();
-        conductivityModel_->read();
-        radialModel_->read();
-        granularPressureModel_->read();
-        frictionalStressModel_->read();
+        viscosityModel_->read(coeffDict);
+        conductivityModel_->read(coeffDict);
+        radialModel_->read(coeffDict);
+        granularPressureModel_->read(coeffDict);
+        frictionalStressModel_->read(coeffDict);
 
         return true;
     }
@@ -288,7 +284,7 @@ Foam::RASModels::kineticTheoryModel::omega() const
 
 
 Foam::tmp<Foam::volSymmTensorField>
-Foam::RASModels::kineticTheoryModel::sigma() const
+Foam::RASModels::kineticTheoryModel::R() const
 {
     return tmp<volSymmTensorField>
     (
@@ -365,17 +361,22 @@ Foam::RASModels::kineticTheoryModel::pPrimef() const
 }
 
 
-Foam::tmp<Foam::volSymmTensorField>
+Foam::tmp<Foam::surfaceVectorField>
 Foam::RASModels::kineticTheoryModel::devTau() const
 {
-    return tmp<volSymmTensorField>
+    const surfaceScalarField rhoNuEff(fvc::interpolate(rho_*(nut_ + nuFric_)));
+
+    return tmp<surfaceVectorField>
     (
-        volSymmTensorField::New
+        surfaceVectorField::New
         (
             IOobject::groupName("devTau", U_.group()),
-          - (rho_*(nut_ + nuFric_))
-           *dev(twoSymm(fvc::grad(U_)))
-          - ((rho_*lambda_)*fvc::div(phi_))*symmTensor::I
+          - rhoNuEff
+           *(
+               fvc::dotInterpolate(mesh().nf(), dev2(T(fvc::grad(U_))))
+             + fvc::snGrad(U_)
+            )
+          - fvc::interpolate((rho_*lambda_)*fvc::div(phi_))*mesh().nf()
         )
     );
 }
@@ -387,16 +388,17 @@ Foam::RASModels::kineticTheoryModel::divDevTau
     volVectorField& U
 ) const
 {
+    const surfaceScalarField rhoNuEff(fvc::interpolate(rho_*(nut_ + nuFric_)));
+
     return
     (
-      - fvm::laplacian(rho_*(nut_ + nuFric_), U)
       - fvc::div
         (
-            (rho_*(nut_ + nuFric_))*dev2(T(fvc::grad(U)))
-          + ((rho_*lambda_)*fvc::div(phi_))
-           *dimensioned<symmTensor>("I", dimless, symmTensor::I),
-            "divDevTau(" + U_.name() + ')'
+            rhoNuEff
+           *fvc::dotInterpolate(mesh().Sf(), dev2(T(fvc::grad(U))))
+          + fvc::interpolate((rho_*lambda_)*fvc::div(phi_))*mesh().Sf()
         )
+      - fvm::laplacian(rhoNuEff, U)
     );
 }
 
@@ -506,12 +508,8 @@ void Foam::RASModels::kineticTheoryModel::correct()
         //     the laplacian has the wrong sign
         fvScalarMatrix ThetaEqn
         (
-            1.5*
-            (
-                fvm::ddt(alpha, rho, Theta_)
-              + fvm::div(alphaRhoPhi, Theta_)
-              - fvc::Sp(fvc::ddt(alpha, rho) + fvc::div(alphaRhoPhi), Theta_)
-            )
+            1.5*(fvm::ddt(alpha, rho, Theta_) + fvm::div(alphaRhoPhi, Theta_))
+          - 0.5*fvm::Sp(fvc::ddt(alpha, rho) + fvc::div(alphaRhoPhi), Theta_)
           - fvm::laplacian(kappa_, Theta_, "laplacian(kappa,Theta)")
          ==
           - fvm::SuSp((PsCoeff*I) && gradU, Theta_)

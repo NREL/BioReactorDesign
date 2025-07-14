@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2015-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2015-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,7 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "phaseSystem.H"
-#include "interfaceSurfaceTensionModel.H"
+#include "surfaceTensionCoefficientModel.H"
 #include "surfaceInterpolate.H"
 #include "fvcDdt.H"
 #include "localEulerDdtScheme.H"
@@ -33,9 +33,12 @@ License
 #include "fvcSnGrad.H"
 #include "fvCorrectPhi.H"
 #include "fvcMeshPhi.H"
+#include "generateInterfacialModels.H"
+#include "generateInterfacialValues.H"
 #include "correctContactAngle.H"
 #include "fixedValueFvsPatchFields.H"
 #include "movingWallVelocityFvPatchVectorField.H"
+#include "movingWallSlipVelocityFvPatchVectorField.H"
 #include "pressureReference.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -43,8 +46,8 @@ License
 namespace Foam
 {
     defineTypeNameAndDebug(phaseSystem, 0);
-    defineRunTimeSelectionTable(phaseSystem, dictionary);
 }
+
 
 const Foam::word Foam::phaseSystem::propertiesName("phaseProperties");
 
@@ -229,7 +232,7 @@ Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::trackInterface
 
     surfaceScalarField deltaf = fvc::snGrad(phase1)/mesh_.deltaCoeffs();
 
-    interface = fvc::surfaceSum(mag(deltaf));
+    interface.primitiveFieldRef() = fvc::surfaceSum(mag(deltaf));
 
     //- Set to zero the cells below the treshold
     interface *= pos0(interface - eps1);
@@ -259,6 +262,7 @@ Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::trackInterface
 
     return faceInterfacet;
 }
+
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -318,33 +322,53 @@ Foam::phaseSystem::phaseSystem
         dimensionedScalar(dimPressure/dimTime, 0)
     ),
 
+    cAlphas_
+    (
+        found("interfaceCompression")
+      ? generateInterfacialValues<scalar>
+        (
+            *this,
+            subDict("interfaceCompression")
+        )
+      : cAlphaTable()
+    ),
+
     deltaN_
     (
         "deltaN",
         1e-8/pow(average(mesh_.V()), 1.0/3.0)
+    ),
+
+    surfaceTensionCoefficientModels_
+    (
+        generateInterfacialModels<surfaceTensionCoefficientModel>
+        (
+            *this,
+            subDict(modelName<surfaceTensionCoefficientModel>())
+        )
     )
 {
     // Groupings
     label movingPhasei = 0;
     label stationaryPhasei = 0;
-    label anisothermalPhasei = 0;
+    label thermalPhasei = 0;
     label multicomponentPhasei = 0;
     forAll(phaseModels_, phasei)
     {
         phaseModel& phase = phaseModels_[phasei];
         movingPhasei += !phase.stationary();
         stationaryPhasei += phase.stationary();
-        anisothermalPhasei += !phase.isothermal();
+        thermalPhasei += !phase.isothermal();
         multicomponentPhasei += !phase.pure();
     }
     movingPhaseModels_.resize(movingPhasei);
     stationaryPhaseModels_.resize(stationaryPhasei);
-    anisothermalPhaseModels_.resize(anisothermalPhasei);
+    thermalPhaseModels_.resize(thermalPhasei);
     multicomponentPhaseModels_.resize(multicomponentPhasei);
 
     movingPhasei = 0;
     stationaryPhasei = 0;
-    anisothermalPhasei = 0;
+    thermalPhasei = 0;
     multicomponentPhasei = 0;
     forAll(phaseModels_, phasei)
     {
@@ -359,7 +383,7 @@ Foam::phaseSystem::phaseSystem
         }
         if (!phase.isothermal())
         {
-            anisothermalPhaseModels_.set(anisothermalPhasei++, &phase);
+            thermalPhaseModels_.set(thermalPhasei++, &phase);
         }
         if (!phase.pure())
         {
@@ -380,9 +404,8 @@ Foam::phaseSystem::phaseSystem
     // Interface compression coefficients
     if (this->found("interfaceCompression"))
     {
-        generateInterfacialValues("interfaceCompression", cAlphas_);
 
-    // //- Build interface tracking fields
+        //- Build interface tracking fields
         forAll(phases(), phasea)
         {
             const phaseModel& phase1 = phases()[phasea];
@@ -425,9 +448,6 @@ Foam::phaseSystem::phaseSystem
         }
     }
 
-    // Surface tension models
-    generateInterfacialModels(interfaceSurfaceTensionModels_);
-
     // Update motion fields
     correctKinematics();
 
@@ -454,7 +474,62 @@ Foam::phaseSystem::phaseSystem
         mesh_.schemes().setFluxRequired(alphai.name());
     }
 
+    // Check for and warn about the type entry being present
+    if (found("type"))
+    {
+        WarningInFunction
+            << "The phase system type entry - type - in "
+            << relativeObjectPath() << " is no longer used"
+            << endl;
+    }
 
+    // Check for and warn/error about phase change models being in the old
+    // location in constant/phaseProperties
+    const wordList modelEntries
+    ({
+        "phaseTransfer",
+        "saturationTemperature",
+        "interfaceComposition",
+        "diffusiveMassTransfer"
+    });
+
+    OStringStream modelEntriesString;
+    forAll(modelEntries, i)
+    {
+        modelEntriesString<< modelEntries[i];
+        if (i < modelEntries.size() - 2) modelEntriesString<< ", ";
+        if (i == modelEntries.size() - 2) modelEntriesString<< " and ";
+    }
+
+    label warnOrError = 0; // 1 == warn, 2 = error
+    forAll(modelEntries, i)
+    {
+        if (!found(modelEntries[i])) continue;
+
+        warnOrError =
+            isDict(modelEntries[i]) && !subDict(modelEntries[i]).empty()
+          ? 2
+          : 1;
+    }
+
+    OStringStream msg;
+    if (warnOrError != 0)
+    {
+        msg << "Phase change model entries - "
+            << modelEntriesString.str().c_str() << " - in "
+            << relativeObjectPath() << " are no longer used. These models "
+            << "are now specified as fvModels.";
+    }
+    if (warnOrError == 1)
+    {
+            WarningInFunction
+                << msg.str().c_str() << endl;
+    }
+    if (warnOrError == 2)
+    {
+        FatalIOErrorInFunction(*this)
+            << msg.str().c_str() << exit(FatalIOError);
+    }
 }
 
 
@@ -465,6 +540,43 @@ Foam::phaseSystem::~phaseSystem()
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+
+void Foam::phaseSystem::alphaControl::read(const dictionary& dict)
+{
+    nAlphaSubCyclesPtr = Function1<scalar>::New
+    (
+        dict.found("nAlphaSubCycles")
+          ? "nAlphaSubCycles"
+          : "nSubCycles",
+        dimless,
+        dimless,
+        dict
+    );
+
+    nAlphaCorr = dict.lookupOrDefaultBackwardsCompatible<label>
+    (
+        {"nCorrectors", "nAlphaCorr"},
+        1
+    );
+
+    MULESCorr = dict.lookupOrDefault<Switch>("MULESCorr", false);
+
+    MULESCorrRelax = dict.lookupOrDefault<scalar>("MULESCorrRelax", 0.5);
+
+    vDotResidualAlpha =
+        dict.lookupOrDefault("vDotResidualAlpha", 1e-4);
+
+    MULES.read(dict);
+
+    clip = dict.lookupOrDefault<Switch>("clip", true);
+}
+
+
+void Foam::phaseSystem::alphaControl::correct(const scalar CoNum)
+{
+    nAlphaSubCycles = ceil(nAlphaSubCyclesPtr->value(CoNum));
+}
+
 
 Foam::tmp<Foam::volScalarField> Foam::phaseSystem::rho() const
 {
@@ -523,17 +635,17 @@ Foam::tmp<Foam::volVectorField> Foam::phaseSystem::U() const
 Foam::tmp<Foam::volScalarField>
 Foam::phaseSystem::sigma(const phaseInterfaceKey& key) const
 {
-    if (interfaceSurfaceTensionModels_.found(key))
+    if (surfaceTensionCoefficientModels_.found(key))
     {
-        return interfaceSurfaceTensionModels_[key]->sigma();
+        return surfaceTensionCoefficientModels_[key]->sigma();
     }
     else
     {
         return volScalarField::New
         (
-            interfaceSurfaceTensionModel::typeName + ":sigma",
+            surfaceTensionCoefficientModel::typeName + ":sigma",
             mesh_,
-            dimensionedScalar(interfaceSurfaceTensionModel::dimSigma, 0)
+            dimensionedScalar(surfaceTensionCoefficientModel::dimSigma, 0)
         );
     }
 }
@@ -542,9 +654,9 @@ Foam::phaseSystem::sigma(const phaseInterfaceKey& key) const
 Foam::tmp<Foam::scalarField>
 Foam::phaseSystem::sigma(const phaseInterfaceKey& key, const label patchi) const
 {
-    if (interfaceSurfaceTensionModels_.found(key))
+    if (surfaceTensionCoefficientModels_.found(key))
     {
-        return interfaceSurfaceTensionModels_[key]->sigma(patchi);
+        return surfaceTensionCoefficientModels_[key]->sigma(patchi);
     }
     else
     {
@@ -579,58 +691,6 @@ Foam::phaseSystem::nearInterface() const
     }
 
     return tnearInt;
-}
-
-
-Foam::tmp<Foam::volScalarField> Foam::phaseSystem::dmdtf
-(
-    const phaseInterfaceKey& key
-) const
-{
-    return volScalarField::New
-    (
-        IOobject::groupName("dmdtf", phaseInterface(*this, key).name()),
-        mesh(),
-        dimensionedScalar(dimDensity/dimTime, 0)
-    );
-}
-
-
-Foam::PtrList<Foam::volScalarField> Foam::phaseSystem::dmdts() const
-{
-    return PtrList<volScalarField>(phaseModels_.size());
-}
-
-
-Foam::PtrList<Foam::volScalarField> Foam::phaseSystem::d2mdtdps() const
-{
-    return PtrList<volScalarField>(phaseModels_.size());
-}
-
-
-bool Foam::phaseSystem::incompressible() const
-{
-    forAll(phaseModels_, phasei)
-    {
-        if (!phaseModels_[phasei].incompressible())
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-
-bool Foam::phaseSystem::implicitPhasePressure(const phaseModel& phase) const
-{
-    return false;
-}
-
-
-bool Foam::phaseSystem::implicitPhasePressure() const
-{
-    return false;
 }
 
 
@@ -673,6 +733,20 @@ Foam::tmp<Foam::surfaceScalarField> Foam::phaseSystem::surfaceTension
 }
 
 
+bool Foam::phaseSystem::incompressible() const
+{
+    forAll(phaseModels_, phasei)
+    {
+        if (!phaseModels_[phasei].incompressible())
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
 void Foam::phaseSystem::correct()
 {
     forAll(phaseModels_, phasei)
@@ -682,10 +756,11 @@ void Foam::phaseSystem::correct()
 }
 
 
-void Foam::phaseSystem::correctContinuityError()
+void Foam::phaseSystem::correctContinuityError
+(
+    const PtrList<volScalarField::Internal>& dmdts
+)
 {
-    const PtrList<volScalarField> dmdts = this->dmdts();
-
     forAll(movingPhaseModels_, movingPhasei)
     {
         phaseModel& phase = movingPhaseModels_[movingPhasei];
@@ -709,7 +784,7 @@ void Foam::phaseSystem::correctContinuityError()
 
         if (dmdts.set(phase.index()))
         {
-            source += dmdts[phase.index()];
+            source.internalFieldRef() += dmdts[phase.index()];
         }
 
         phase.correctContinuityError(source);
@@ -821,7 +896,7 @@ void Foam::phaseSystem::correctBoundaryFlux()
         tmp<volVectorField> tU(phase.U());
         const volVectorField::Boundary& UBf = tU().boundaryField();
 
-        FieldField<fvsPatchField, scalar> phiRelBf
+        FieldField<surfaceMesh::PatchField, scalar> phiRelBf
         (
             MRF_.relative(mesh_.Sf().boundaryField() & UBf)
         );
@@ -834,6 +909,7 @@ void Foam::phaseSystem::correctBoundaryFlux()
             (
                 isA<fixedValueFvsPatchScalarField>(phiBf[patchi])
              && !isA<movingWallVelocityFvPatchVectorField>(UBf[patchi])
+             && !isA<movingWallSlipVelocityFvPatchVectorField>(UBf[patchi])
             )
             {
                 phiBf[patchi] == phiRelBf[patchi];

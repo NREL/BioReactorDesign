@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2018-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2018-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -57,48 +57,50 @@ Laakkonen
 )
 :
     breakupModel(popBal, dict),
-    C1_
-    (
-        dimensionedScalar::lookupOrDefault
-        (
-            "C1",
-            dict,
-            dimensionSet(0, -2.0/3.0, 0, 0, 0),
-            2.25
-        )
-    ),
-    C2_(dimensionedScalar::lookupOrDefault("C2", dict, dimless, 0.04)),
-    C3_(dimensionedScalar::lookupOrDefault("C3", dict, dimless, 0.01))
+    C1_("C1", dimensionSet(0, -2.0/3.0, 0, 0, 0), dict, 2.25),
+    C2_("C2", dimless, dict, 0.04),
+    C3_("C3", dimless, dict, 0.01)
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void
-Foam::diameterModels::breakupModels::Laakkonen::setBreakupRate
+void Foam::diameterModels::breakupModels::Laakkonen::setBreakupRate
 (
-    volScalarField& breakupRate,
+    volScalarField::Internal& breakupRate,
     const label i
 )
 {
-    const phaseModel& continuousPhase = popBal_.continuousPhase();
     const sizeGroup& fi = popBal_.sizeGroups()[i];
 
+    const volScalarField::Internal& rhoc = popBal_.continuousPhase().rho();
+
+    tmp<volScalarField> tsigma(popBal_.sigmaWithContinuousPhase(fi.phase()));
+    const volScalarField::Internal& sigma = tsigma();
+
+    tmp<volScalarField> tepsilonc(popBal_.continuousTurbulence().epsilon());
+    const volScalarField::Internal& epsilonc = tepsilonc();
+    tmp<volScalarField> tmu(popBal_.continuousPhase().fluidThermo().mu());
+    const volScalarField::Internal muc = tmu();
+
     breakupRate =
-        C1_*cbrt(popBal_.continuousTurbulence().epsilon())
+        C1_
+       *cbrt(epsilonc)
        *erfc
         (
             sqrt
             (
-                C2_*popBal_.sigmaWithContinuousPhase(fi.phase())
+                C2_
+               *sigma
                /(
-                    continuousPhase.rho()*pow(fi.dSph(), 5.0/3.0)
-                   *pow(popBal_.continuousTurbulence().epsilon(), 2.0/3.0)
+                   rhoc*pow(fi.dSph(), 5.0/3.0)
+                  *pow(epsilonc, 2.0/3.0)
                 )
-              + C3_*continuousPhase.fluidThermo().mu()
+              + C3_
+               *muc
                /(
-                    sqrt(continuousPhase.rho()*fi.phase().rho())
-                   *cbrt(popBal_.continuousTurbulence().epsilon())
+                    sqrt(rhoc*fi.phase().rho())
+                   *cbrt(epsilonc)
                    *pow(fi.dSph(), 4.0/3.0)
                 )
             )

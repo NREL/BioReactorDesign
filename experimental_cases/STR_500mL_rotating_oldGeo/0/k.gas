@@ -1,0 +1,61 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  12
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volScalarField;
+    object      k;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+#include "$FOAM_CASE/constant/globalVars";
+
+dimensions      [0 2 -2 0 0 0 0];
+
+internalField   uniform $k_inlet_gas;
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+
+    inlet
+    {
+        type            fixedValue;
+        value           uniform $k_inlet_gas;
+    }
+
+    outlet
+    {
+        type            inletOutlet;
+        phi             phi.gas;
+        inletValue      $internalField;
+        value           $internalField;
+    }
+
+    "vessel|shaft|walls|impeller.*"
+    {
+        type            kqRWallFunction;
+        value           $internalField;
+    }
+
+    nonCouple
+    {
+        type            zeroGradient;
+    }
+
+}
+
+sources
+{
+    massSource
+    {
+        type   uniformInletOutlet;
+        uniformInletValue $k_inlet_gas;
+    }
+}
+
+// ************************************************************************* //

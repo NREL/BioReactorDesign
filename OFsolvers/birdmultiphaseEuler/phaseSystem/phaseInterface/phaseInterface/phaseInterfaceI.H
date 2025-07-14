@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2021-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2021-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -81,6 +81,24 @@ inline bool Foam::phaseInterface::contains(const phaseModel& phase) const
 }
 
 
+inline bool Foam::phaseInterface::operator==
+(
+    const phaseInterface& interface
+) const
+{
+    return same(interface, true);
+}
+
+
+inline bool Foam::phaseInterface::operator!=
+(
+    const phaseInterface& interface
+) const
+{
+    return !same(interface, true);
+}
+
+
 inline const Foam::phaseModel& Foam::phaseInterface::otherPhase
 (
     const phaseModel& phase
@@ -126,6 +144,25 @@ inline Foam::label Foam::phaseInterface::index(const phaseModel& phase) const
 }
 
 
+inline const Foam::phaseModel& Foam::phaseInterface::operator[]
+(
+    const label index
+) const
+{
+    switch (index)
+    {
+        case 0:
+            return phase1_;
+        case 1:
+            return phase2_;
+        default:
+            FatalErrorInFunction
+                << "index out of range 0 ... 1" << exit(FatalError);
+            return NullObjectRef<phaseModel>();
+    }
+}
+
+
 inline const Foam::phaseSystem& Foam::phaseInterface::fluid() const
 {
     return phase1().fluid();
@@ -138,32 +175,25 @@ inline const Foam::fvMesh& Foam::phaseInterface::mesh() const
 }
 
 
-inline const Foam::uniformDimensionedVectorField&
-Foam::phaseInterface::g() const
-{
-    return g_;
-}
-
-
 // * * * * * * * * * * * * * * * * Iterators * * * * * * * * * * * * * * * * //
 
 inline Foam::phaseInterface::const_iterator::const_iterator
 (
-    const phaseInterface& pair,
+    const phaseInterface& interface,
     const label index
 )
 :
-    pair_(pair),
+    interface_(interface),
     index_(index)
 {}
 
 
 inline Foam::phaseInterface::const_iterator::const_iterator
 (
-    const phaseInterface& pair
+    const phaseInterface& interface
 )
 :
-    const_iterator(pair, 0)
+    const_iterator(interface, 0)
 {}
 
 
@@ -196,11 +226,11 @@ Foam::phaseInterface::const_iterator::operator*() const
 {
     if (index_ == 0)
     {
-        return pair_.phase1_;
+        return interface_.phase1_;
     }
     else
     {
-        return pair_.phase2_;
+        return interface_.phase2_;
     }
 }
 
@@ -217,11 +247,11 @@ Foam::phaseInterface::const_iterator::otherPhase() const
 {
     if (index_ == 0)
     {
-        return pair_.phase2_;
+        return interface_.phase2_;
     }
     else
     {
-        return pair_.phase1_;
+        return interface_.phase1_;
     }
 }
 

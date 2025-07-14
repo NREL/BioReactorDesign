@@ -75,4 +75,13 @@ muMixGas        1.88e-05;
 PrMixGas        0.7;
 LeGas           1.0;
 
+l_scale 0.5;
+intensity 0.05;
+k_inlet_gas #calc "1.5 * Foam::pow(($Uin), 2) * Foam::pow($intensity, 2)";
+k_inlet_liq #calc "1.5 * Foam::pow(($Uin), 2) * Foam::pow($intensity, 2)";
+k_inlet_mix #calc " ( 0.5 * $k_inlet_gas ) + ( 0.5 * $k_inlet_liq )";
+eps_inlet_gas #calc "pow(0.09,0.75) * Foam::pow($k_inlet_gas, 1.5) / ($l_scale * 0.07)";
+eps_inlet_liq #calc "pow(0.09,0.75) * Foam::pow($k_inlet_liq, 1.5) / ($l_scale * 0.07)";
+eps_inlet_mix #calc " ( 0.5 * $eps_inlet_gas ) + ( 0.5 * $eps_inlet_liq )";
+
 

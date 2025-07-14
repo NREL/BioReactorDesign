@@ -1,5 +1,0 @@
-bdoMathFuncs.C
-microbeModel.C
-bdoFoam.C
-
-EXE = $(FOAM_APPBIN)/bdoFoam

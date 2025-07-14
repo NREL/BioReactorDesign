@@ -12,10 +12,11 @@ FoamFile
     object      epsilon;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+#include "$FOAM_CASE/constant/globalVars"
 
 dimensions      [0 2 -3 0 0 0 0];
 
-internalField   uniform 1.5e-4;
+internalField   uniform 1e-4;
 
 boundaryField
 {
@@ -24,7 +25,7 @@ boundaryField
     inlet
     {
         type            fixedValue;
-        value           $internalField;
+        value           uniform $eps_inlet_liq;
     }
 
     outlet

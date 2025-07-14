@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2022-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2022-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -44,6 +44,7 @@ License
 void Foam::solvers::birdmultiphaseEuler::cellPressureCorrector()
 {
     volScalarField& p(p_);
+    volScalarField& p_rgh = p_rgh_;
 
     volScalarField rho("rho", fluid.rho());
 
@@ -103,14 +104,14 @@ void Foam::solvers::birdmultiphaseEuler::cellPressureCorrector()
             }
         }
 
-        fluid.invADVs(As, HVms, invADVs, invADVfs);
+        momentumTransferSystem_.invADVs(As, HVms, invADVs, invADVfs);
     }
 
     // Explicit force fluxes
     PtrList<surfaceScalarField> alphaByADfs;
     PtrList<surfaceScalarField> FgByADfs;
     {
-        PtrList<surfaceScalarField> Ffs(fluid.Fs());
+        PtrList<surfaceScalarField> Ffs(momentumTransferSystem_.Fs());
 
         const surfaceScalarField ghSnGradRho
         (
@@ -118,44 +119,35 @@ void Foam::solvers::birdmultiphaseEuler::cellPressureCorrector()
             buoyancy.ghf*fvc::snGrad(rho)*mesh.magSf()
         );
 
-        PtrList<surfaceScalarField> lalphafs(movingPhases.size());
+        UPtrList<surfaceScalarField> movingAlphafs(movingPhases.size());
         PtrList<surfaceScalarField> Fgfs(movingPhases.size());
 
         forAll(movingPhases, movingPhasei)
         {
             const phaseModel& phase = movingPhases[movingPhasei];
-            const volScalarField& alpha = phase;
 
-            lalphafs.set
-            (
-                movingPhasei,
-                fvc::interpolate(max(alpha, phase.residualAlpha()))
-            );
+            movingAlphafs.set(movingPhasei, &alphafs[phase.index()]);
 
             Fgfs.set
             (
                 movingPhasei,
-                (
-                    Ffs[phase.index()]
-                  + lalphafs[movingPhasei]
-                   *(
-                       ghSnGradRho
-                     - (fvc::interpolate(phase.rho() - rho))
-                      *(buoyancy.g & mesh.Sf())
-                     - fluid.surfaceTension(phase)*mesh.magSf()
-                    )
-                ).ptr()
+                Ffs[phase.index()]
+              + alphafs[phase.index()]
+               *(
+                   ghSnGradRho
+                 - fluid.surfaceTension(phase)*mesh.magSf()
+                )
+              - fvc::interpolate(max(phase, phase.residualAlpha()))
+               *fvc::interpolate(phase.rho() - rho)*(buoyancy.g & mesh.Sf())
             );
         }
 
-        alphaByADfs = invADVfs & lalphafs;
+        alphaByADfs = invADVfs & movingAlphafs;
         FgByADfs = invADVfs & Fgfs;
     }
 
-
     // Mass transfer rates
-    PtrList<volScalarField> dmdts(fluid.dmdts());
-    PtrList<volScalarField> d2mdtdps(fluid.d2mdtdps());
+    PtrList<volScalarField::Internal> dmdts(populationBalanceSystem_.dmdts());
 
     // --- Optional momentum predictor
     if (predictMomentum)
@@ -229,7 +221,10 @@ void Foam::solvers::birdmultiphaseEuler::cellPressureCorrector()
             PtrList<surfaceScalarField> phiHs(movingPhases.size());
 
             // Correction force fluxes
-            PtrList<surfaceScalarField> ddtCorrs(fluid.ddtCorrs());
+            PtrList<surfaceScalarField> ddtCorrs
+            (
+                momentumTransferSystem_.ddtCorrs()
+            );
 
             forAll(movingPhases, movingPhasei)
             {
@@ -345,7 +340,7 @@ void Foam::solvers::birdmultiphaseEuler::cellPressureCorrector()
         }
 
         // Compressible pressure equations
-        PtrList<fvScalarMatrix> pEqnComps(compressibilityEqns(dmdts, d2mdtdps));
+        PtrList<fvScalarMatrix> pEqnComps(compressibilityEqns(dmdts));
 
         // Cache p prior to solve for density update
         volScalarField p_rgh_0(p_rgh);
@@ -414,7 +409,7 @@ void Foam::solvers::birdmultiphaseEuler::cellPressureCorrector()
                 {
                     PtrList<volVectorField> dragCorrs(movingPhases.size());
                     PtrList<surfaceScalarField> dragCorrfs(movingPhases.size());
-                    fluid.dragCorrs(dragCorrs, dragCorrfs);
+                    momentumTransferSystem_.dragCorrs(dragCorrs, dragCorrfs);
 
                     PtrList<volVectorField> dragCorrByADs
                     (
@@ -494,15 +489,6 @@ void Foam::solvers::birdmultiphaseEuler::cellPressureCorrector()
             if (!phase.incompressible())
             {
                 phase.rho() += phase.fluidThermo().psi()*(p_rgh - p_rgh_0);
-            }
-        }
-
-        // Update mass transfer rates for change in p_rgh
-        forAll(phases, phasei)
-        {
-            if (dmdts.set(phasei) && d2mdtdps.set(phasei))
-            {
-                dmdts[phasei] += d2mdtdps[phasei]*(p_rgh - p_rgh_0);
             }
         }
 

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2022-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2022-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -58,11 +58,10 @@ bool Foam::solvers::birdmultiphaseEuler::read()
     dragCorrection =
         pimple.dict().lookupOrDefault<Switch>("dragCorrection", false);
 
-    forceIsothermal =
-        pimple.dict().lookupOrDefault<Switch>("forceIsothermal", false);
-
     nEnergyCorrectors =
         pimple.dict().lookupOrDefault<int>("nEnergyCorrectors", 1);
+
+    alphaControls.read(mesh.solution().solverDict("alpha"));
 
     return true;
 }
@@ -118,11 +117,6 @@ Foam::solvers::birdmultiphaseEuler::birdmultiphaseEuler(fvMesh& mesh)
         pimple.dict().lookupOrDefault<Switch>("dragCorrection", false)
     ),
 
-    forceIsothermal
-    (
-        pimple.dict().lookupOrDefault<Switch>("forceIsothermal", false)
-    ),
-
     nEnergyCorrectors
     (
         pimple.dict().lookupOrDefault<int>("nEnergyCorrectors", 1)
@@ -169,9 +163,7 @@ Foam::solvers::birdmultiphaseEuler::birdmultiphaseEuler(fvMesh& mesh)
 
     buoyancy(mesh),
 
-    fluidPtr_(phaseSystem::New(mesh)),
-
-    fluid_(fluidPtr_()),
+    fluid_(mesh),
 
     phases_(fluid_.phases()),
 
@@ -179,14 +171,20 @@ Foam::solvers::birdmultiphaseEuler::birdmultiphaseEuler(fvMesh& mesh)
 
     phi_(fluid_.phi()),
 
+    momentumTransferSystem_(fluid_),
+
+    heatTransferSystem_(fluid_),
+
+    populationBalanceSystem_(fluid_),
+
     p_(movingPhases_[0].fluidThermo().p()),
 
-    p_rgh(buoyancy.p_rgh),
+    p_rgh_(buoyancy.p_rgh),
 
     pressureReference
     (
         p_,
-        p_rgh,
+        p_rgh_,
         pimple.dict(),
         fluid_.incompressible()
     ),
@@ -196,7 +194,10 @@ Foam::solvers::birdmultiphaseEuler::birdmultiphaseEuler(fvMesh& mesh)
     fluid(fluid_),
     phases(phases_),
     movingPhases(movingPhases_),
+    momentumTransfer(momentumTransferSystem_),
+    heatTransfer(heatTransferSystem_),
     p(p_),
+    p_rgh(p_rgh_),
     phi(phi_)
 {
     // Read the controls
@@ -254,25 +255,41 @@ void Foam::solvers::birdmultiphaseEuler::prePredictor()
 {
     if (pimple.thermophysics() || pimple.flow())
     {
-        fluid_.solve(rAs);
-        fluid_.correct();
-        fluid_.correctContinuityError();
-    }
+        alphaControls.correct(CoNum);
 
-    if (pimple.flow() && pimple.predictTransport())
-    {
-        fluid_.predictMomentumTransport();
+        fluid_.solve(alphaControls, rAs, momentumTransferSystem_);
+        populationBalanceSystem_.solve();
+
+        fluid_.correct();
+        populationBalanceSystem_.correct();
+
+        fluid_.correctContinuityError(populationBalanceSystem_.dmdts());
     }
 }
 
 
-void Foam::solvers::birdmultiphaseEuler::postCorrector()
+void Foam::solvers::birdmultiphaseEuler::momentumTransportPredictor()
 {
-    if (pimple.flow() && pimple.correctTransport())
-    {
-        fluid_.correctMomentumTransport();
-        fluid_.correctThermophysicalTransport();
-    }
+    fluid_.predictMomentumTransport();
+}
+
+
+void Foam::solvers::birdmultiphaseEuler::thermophysicalTransportPredictor()
+{
+    // Moved inside the nEnergyCorrectors loop in thermophysicalPredictor()
+    // fluid_.predictThermophysicalTransport();
+}
+
+
+void Foam::solvers::birdmultiphaseEuler::momentumTransportCorrector()
+{
+    fluid_.correctMomentumTransport();
+}
+
+
+void Foam::solvers::birdmultiphaseEuler::thermophysicalTransportCorrector()
+{
+    fluid_.correctThermophysicalTransport();
 }
 
 

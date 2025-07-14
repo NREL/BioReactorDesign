@@ -1,0 +1,1 @@
+../kineticTheoryModels/conductivityModel/HrenyaSinclair/HrenyaSinclairConductivity.H

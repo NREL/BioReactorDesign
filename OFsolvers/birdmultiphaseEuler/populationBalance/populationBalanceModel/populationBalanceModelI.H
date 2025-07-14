@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2017-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2017-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,6 +22,8 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
+
+#include "populationBalanceModel.H"
 
 // * * * * * * * * * * * * Private Member Functions * * * * * * * * * * * * //
 
@@ -43,10 +45,24 @@ Foam::diameterModels::populationBalanceModel::fluid() const
 }
 
 
-inline const Foam::phaseSystem::dmdtfTable&
+inline const Foam::diameterModels::populationBalanceModel::dmdtfTable&
 Foam::diameterModels::populationBalanceModel::dmdtfs() const
 {
     return dmdtfs_;
+}
+
+
+inline const Foam::diameterModels::populationBalanceModel::dmdtfTable&
+Foam::diameterModels::populationBalanceModel::expansionDmdtfs() const
+{
+    return expansionDmdtfs_;
+}
+
+
+inline const Foam::diameterModels::populationBalanceModel::dmdtfTable&
+Foam::diameterModels::populationBalanceModel::modelSourceDmdtfs() const
+{
+    return modelSourceDmdtfs_;
 }
 
 
@@ -58,27 +74,16 @@ Foam::diameterModels::populationBalanceModel::mesh() const
 
 
 inline const Foam::dictionary&
-Foam::diameterModels::populationBalanceModel::dict() const
+Foam::diameterModels::populationBalanceModel::solverDict() const
 {
-    return dict_;
+    return mesh_.solution().solverDict(name_);
 }
 
 
-inline Foam::label Foam::diameterModels::populationBalanceModel::nCorr() const
-{
-    return mesh_.solution().solverDict(name_).lookup<label>("nCorr");
-}
-
-
-inline Foam::Switch
+inline bool
 Foam::diameterModels::populationBalanceModel::solveOnFinalIterOnly() const
 {
-    return
-        mesh_.solution().solverDict(name_).lookupOrDefault<bool>
-        (
-            "solveOnFinalIterOnly",
-            false
-        );
+    return solverDict().lookupOrDefault<bool>("solveOnFinalIterOnly", false);
 }
 
 
@@ -96,10 +101,10 @@ Foam::diameterModels::populationBalanceModel::sizeGroups() const
 }
 
 
-inline const Foam::volScalarField&
-Foam::diameterModels::populationBalanceModel::Sp(const label i) const
+inline Foam::UPtrList<Foam::diameterModels::sizeGroup>&
+Foam::diameterModels::populationBalanceModel::sizeGroups()
 {
-    return Sp_[i];
+    return sizeGroups_;
 }
 
 

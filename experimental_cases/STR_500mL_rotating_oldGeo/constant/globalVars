@@ -1,0 +1,110 @@
+#include "$FOAM_CASE/constant/caseVars"
+
+T0    293.15;  // initial T(K) which stays constant 
+// water thermophysical properties
+muMixLiq #calc "2.414e-5 * pow(10,247.8/($T0 - 140.0)) * $viscousFactor"; //viscosity (Pa.s) of water as a function of T(K)
+CpMixLiq        4181; // J/kg-K
+kThermLiq       0.62; // W/m-K
+rho0MixLiq      1000; // kg/m^3
+
+//Wilke-Chang params for diffusion coefficient of a given solute in water (solvent)
+WC_psi          2.6;
+WC_M            18; // kg/kmol
+WC_V_O2         25.6e-3; // m3/kmol molar volume at normal boiling temperature (Treybal 1968) 
+WC_V_H2         14.3e-3; 
+WC_V_CO2        34e-3;
+WC_V_CO         30.7e-3;
+WC_V_CH4        35e-3; // V_b[cm3/mol]=0.285*V_critical^1.048 (Tyn and Calus; ESTIMATING LIQUID MOLAL VOLUME; Processing, Volume 21, Issue 4, Pages 16 - 17)
+//****** diffusion coeff ***********
+D_H2 #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_H2,0.6)"; 
+D_CO2 #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_CO2,0.6)"; 
+D_O2 #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_O2,0.6)"; 
+D_CO #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_CO,0.6)";
+D_CH4 #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_CH4,0.6)";
+// D_H2=3.4e-9, D_CO2=2e-9, D_CO=2.16e-9 at 25C
+// Looks like the H2 diffusion is less than litr reported values ~ 4.5e-9 
+//****** Henry coeff ***************
+H_O2_298 0.032;
+DH_O2   1700;
+H_CO2_298 0.83;
+DH_CO2  2400;
+H_CO_298 0.023;
+DH_CO  1300;
+H_H2_298 0.019;
+DH_H2   500;
+H_CH4_298 0.032;
+DH_CH4   1900;
+
+He_H2  #calc "$H_H2_298 * exp($DH_H2 *(1. / $T0 - 1./298.15))";
+He_CO  #calc "$H_CO_298 * exp($DH_CO *(1. / $T0 - 1./298.15))";
+He_CO2 #calc "$H_CO2_298 * exp($DH_CO2 *(1. / $T0 - 1./298.15))";
+He_O2 #calc "$H_O2_298 * exp($DH_O2 *(1. / $T0 - 1./298.15))";
+He_CH4 #calc "$H_CH4_298 * exp($DH_CH4 *(1. / $T0 - 1./298.15))";
+//*******inlet gas species mass frac*************
+f_H2    $H2_in;
+f_CO2   $CO2_in;
+f_CO    0.0;
+f_O2    $O2_in;
+//*********************************
+LeLiqH2 #calc "$kThermLiq / $rho0MixLiq / $D_H2 / $CpMixLiq";
+LeLiqCO #calc "$kThermLiq / $rho0MixLiq / $D_CO / $CpMixLiq";
+LeLiqCO2 #calc "$kThermLiq / $rho0MixLiq / $D_CO2 / $CpMixLiq"; // = 74
+LeLiqO2 #calc "$kThermLiq / $rho0MixLiq / $D_O2 / $CpMixLiq"; 
+LeLiqCH4 #calc "$kThermLiq / $rho0MixLiq / $D_CH4 / $CpMixLiq";
+
+LeLiqMix #calc "$f_H2*$LeLiqH2+$f_CO2*$LeLiqCO2+$f_CO*$LeLiqCO+$f_O2*$LeLiqO2";
+PrMixLiq #calc "$CpMixLiq * $muMixLiq / $kThermLiq";
+// Pr number is ~ 7 for water and ~ 0.7 for air
+//*********************************
+kH2 #calc "$D_H2*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrH2 #calc "$muMixLiq*$CpMixLiq / $kH2";
+
+kCO #calc "$D_CO*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrCO #calc "$muMixLiq*$CpMixLiq / $kCO";
+
+kCO2 #calc "$D_CO2*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrCO2 #calc "$muMixLiq*$CpMixLiq / $kCO2";
+
+kO2 #calc "$D_O2*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrO2 #calc "$muMixLiq*$CpMixLiq / $kO2";
+
+kCH4 #calc "$D_CH4*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrCH4 #calc "$muMixLiq*$CpMixLiq / $kCH4";
+//*****Gas transport*******************
+muMixGas        1.88e-05;
+PrMixGas        0.7;
+LeGas           1.0;
+
+l_scale 0.5;
+intensity 0.05;
+k_inlet_gas #calc "1.5 * Foam::pow(($Uin), 2) * Foam::pow($intensity, 2)";
+k_inlet_liq #calc "1.5 * Foam::pow(($Uin), 2) * Foam::pow($intensity, 2)";
+k_inlet_mix #calc " ( 0.5 * $k_inlet_gas ) + ( 0.5 * $k_inlet_liq )";
+eps_inlet_gas #calc "pow(0.09,0.75) * Foam::pow($k_inlet_gas, 1.5) / ($l_scale * 0.07)";
+eps_inlet_liq #calc "pow(0.09,0.75) * Foam::pow($k_inlet_liq, 1.5) / ($l_scale * 0.07)";
+eps_inlet_mix #calc " ( 0.5 * $eps_inlet_gas ) + ( 0.5 * $eps_inlet_liq )";
+
+/*
+// Sparge holes
+ang1 #calc "degToRad(22.5)";
+ang2 #calc "degToRad(45)";
+ang3 #calc "degToRad(67.5)";
+spargeRad  0.0245;
+
+x1 #calc "$spargeRad*cos($ang1)";
+x1neg #calc "-1.0*$x1";
+z1 #calc "$spargeRad*sin($ang1)";
+z1neg #calc "-1.0*$z1";
+x2 #calc "$spargeRad*cos($ang2)";
+x2neg #calc "-1.0*$x2";
+z2 #calc "$spargeRad*sin($ang2)";
+z2neg #calc "-1.0*$z2";
+x3 #calc "$spargeRad*cos($ang3)";
+x3neg #calc "-1.0*$x3";
+z3 #calc "$spargeRad*sin($ang3)";
+z3neg #calc "-1.0*$z3";
+x4 0.0;
+z4 0.0245;
+z4neg -0.0245;
+*/
+

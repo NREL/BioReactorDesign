@@ -26,7 +26,6 @@ License
 #include "BioReactingPhaseModel.H"
 #include "phaseSystem.H"
 #include "fvMatrix.H"
-#include "combustionModel.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -76,18 +75,41 @@ void Foam::BioReactingPhaseModel<BasePhaseModel>::correctReactions()
 
 
 template<class BasePhaseModel>
+Foam::tmp<Foam::volScalarField::Internal>
+Foam::BioReactingPhaseModel<BasePhaseModel>::R(const label speciei) const
+{
+    if ( this->Y()[speciei].name() == IOobject::groupName(species_, this->name()) )
+    {
+        volScalarField coeff( -OURmax_ / ( ( this->Y()[speciei]*K_ / this->fluid().rho() )  + this->Y()[speciei] ) );
+        return coeff.internalField();
+    }
+
+    return
+        volScalarField::Internal::New
+        (
+            IOobject::groupName("R_" + this->Y()[speciei].name(), this->name()),
+            this->mesh(),
+            dimensionedScalar(dimDensity/dimTime, 0)
+        );
+}
+
+
+template<class BasePhaseModel>
 Foam::tmp<Foam::fvScalarMatrix> Foam::BioReactingPhaseModel<BasePhaseModel>::R
 (
     volScalarField& Yi
 ) const
-{
+{ 
     if ( Yi.name() == IOobject::groupName(species_, this->name()) )
     {
         volScalarField coeff( OURmax_ / ( ( K_ / this->fluid().rho() )  + Yi ) );
         return -fvm::Sp( coeff, Yi );
     }
 
-    return fvm::Sp(0., Yi );
+    return tmp<fvScalarMatrix>
+    (
+        new fvScalarMatrix(Yi, dimMass/dimTime)
+    );
 }
 
 template<class BasePhaseModel>

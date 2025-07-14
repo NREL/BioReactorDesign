@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2014-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2014-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,6 +22,8 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 \*---------------------------------------------------------------------------*/
+
+#include "phaseSystem.H"
 
 // * * * * * * * * * * * * * * * Global Functions  * * * * * * * * * * * * * //
 
@@ -141,16 +143,16 @@ Foam::phaseSystem::stationaryPhases()
 
 
 inline const Foam::phaseSystem::phaseModelPartialList&
-Foam::phaseSystem::anisothermalPhases() const
+Foam::phaseSystem::thermalPhases() const
 {
-    return anisothermalPhaseModels_;
+    return thermalPhaseModels_;
 }
 
 
 inline Foam::phaseSystem::phaseModelPartialList&
-Foam::phaseSystem::anisothermalPhases()
+Foam::phaseSystem::thermalPhases()
 {
-    return anisothermalPhaseModels_;
+    return thermalPhaseModels_;
 }
 
 
@@ -368,14 +370,14 @@ inline void addField
 }
 
 
-template<class Type, template<class> class PatchField, class GeoMesh>
-PtrList<GeometricField<Type, PatchField, GeoMesh>> operator&
+template<class Type, class GeoMesh>
+PtrList<GeometricField<Type, GeoMesh>> operator&
 (
-    const PtrList<PtrList<GeometricField<scalar, PatchField, GeoMesh>>>& As,
-    const PtrList<GeometricField<Type, PatchField, GeoMesh>>& fs
+    const PtrList<PtrList<GeometricField<scalar, GeoMesh>>>& As,
+    const UPtrList<GeometricField<Type, GeoMesh>>& fs
 )
 {
-    PtrList<GeometricField<Type, PatchField, GeoMesh >> Afs(fs.size());
+    PtrList<GeometricField<Type, GeoMesh>> Afs(fs.size());
 
     forAll(Afs, i)
     {

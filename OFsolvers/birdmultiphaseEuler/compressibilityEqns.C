@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2022-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2022-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -36,10 +36,11 @@ License
 Foam::PtrList<Foam::fvScalarMatrix>
 Foam::solvers::birdmultiphaseEuler::compressibilityEqns
 (
-    const PtrList<volScalarField>& dmdts,
-    const PtrList<volScalarField>& d2mdtdps
+    const PtrList<volScalarField::Internal>& dmdts
 ) const
 {
+    volScalarField& p_rgh = p_rgh_;
+
     PtrList<fvScalarMatrix> pEqnComps(phases.size());
 
     forAll(phases_, phasei)
@@ -109,10 +110,6 @@ Foam::solvers::birdmultiphaseEuler::compressibilityEqns
         if (dmdts.set(phasei))
         {
             pEqnComp -= dmdts[phasei]/rho;
-        }
-        if (d2mdtdps.set(phasei))
-        {
-            pEqnComp -= correction(fvm::Sp(d2mdtdps[phasei]/rho, p_rgh));
         }
     }
 

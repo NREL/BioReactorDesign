@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2022-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2022-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -59,7 +59,7 @@ Foam::diameterModels::breakupModels::Kusters::Kusters
     breakupModel(popBal, dict),
     B_("B", dimensionSet(0, 3, -3, 0, 0), dict),
     dP_("dP", dimLength, dict),
-    kc_(dimensionedScalar::lookupOrDefault("kc", dict, dimless, 1)),
+    kc_("kc", dimless, dict, 1),
     Df_("Df", dimless, dict)
 {}
 
@@ -68,22 +68,23 @@ Foam::diameterModels::breakupModels::Kusters::Kusters
 
 void Foam::diameterModels::breakupModels::Kusters::setBreakupRate
 (
-    volScalarField& breakupRate,
+    volScalarField::Internal& breakupRate,
     const label i
 )
 {
     const sizeGroup& fi = popBal_.sizeGroups()[i];
+
+    tmp<volScalarField> tdi = fi.d();
+    const volScalarField::Internal& di = tdi();
+
+    tmp<volScalarField> tepsilonc(popBal_.continuousTurbulence().epsilon());
+    const volScalarField::Internal& epsilonc = tepsilonc();
+    tmp<volScalarField> tnu(popBal_.continuousPhase().fluidThermo().nu());
+    const volScalarField::Internal nuc = tnu();
+
     breakupRate =
-        sqrt
-        (
-            4*popBal_.continuousTurbulence().epsilon()
-           /(15*pi*popBal_.continuousPhase().fluidThermo().nu())
-        )
-       *exp
-        (
-          - B_/(dP_*0.5*pow(pow(fi.d()/dP_, Df_)/kc_, 1/Df_))
-           /popBal_.continuousTurbulence().epsilon()
-        );
+        sqrt(4*epsilonc/(15*pi*nuc))
+       *exp(- B_/(dP_*0.5*pow(pow(di/dP_, Df_)/kc_, 1/Df_))/epsilonc);
 }
 
 

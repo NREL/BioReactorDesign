@@ -1,0 +1,216 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7  
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+castellatedMesh true;
+snap            true;
+addLayers       false;
+
+geometry
+{
+    impeller1
+    {
+        type triSurfaceMesh;
+        file "rushton1.stl";
+    }
+
+    impeller2
+    {
+        type triSurfaceMesh;
+        file "rushton2.stl";
+    }
+    
+    vessel
+    {
+        type searchableCylinder;
+        point1 (0.0 -100 0.0);
+        point2 (0.0  100 0.0);
+        radius 0.0425;
+    }
+    //- Used to define MRF zone and refine mesh round the impeller 
+    MRF
+    {
+        type searchableCylinder;
+        point1 (0.0 0.018 0.0);
+        point2 (0.0  0.052 0.0);
+        radius 0.022;
+    }
+    
+    shaft
+    {
+        type searchableCylinder;
+        point1 (0.0 0.024 0.0);
+        point2 (0.0  100 0.0);
+        radius 0.004;
+    }
+}
+
+
+castellatedMeshControls
+{
+
+    maxLocalCells 100000;
+
+    maxGlobalCells 2000000;
+
+    minRefinementCells 0;
+
+    nCellsBetweenLevels 2;
+
+    maxLoadUnbalance 0.10;
+
+    features
+    (
+
+        {
+            file "rushton1.eMesh";
+            level 2;
+        }
+
+        {
+            file "rushton2.eMesh";
+            level 2;
+        }
+
+    );
+
+    resolveFeatureAngle 30;
+
+    refinementSurfaces
+    {
+        MRF
+        {
+            level (1 1);
+            cellZone cellMRFzone;
+            faceZone faceMRFzone;
+            mode        inside;
+        }
+
+        impeller1
+        {
+            level (2 2);
+        }
+        
+        impeller2
+        {
+            level (2 2);
+        }
+        vessel
+        {
+            level (0 0);
+        }
+
+        shaft
+        {
+            level (0 1);
+        } 
+    }
+
+    refinementRegions
+    {
+        MRF
+        {
+            mode inside;
+            levels ((1E15 1));
+        }
+        
+    }
+
+    locationInMesh (0.01 0.01 0.0); // Inside point
+
+    allowFreeStandingZoneFaces true;
+}
+
+// Settings for the snapping.
+snapControls
+{
+
+    nSmoothPatch 3;
+
+    tolerance 1.0;
+
+    nSolveIter 300;
+
+    nRelaxIter 10;
+
+    nFeatureSnapIter 10;
+
+    implicitFeatureSnap true;
+
+    explicitFeatureSnap false;
+
+    multiRegionFeatureSnap true;
+}
+
+// Settings for the layer addition.
+addLayersControls
+{
+
+    relativeSizes true;
+
+    layers
+    {
+    }
+
+    expansionRatio 1.0;
+
+    finalLayerThickness 0.3;
+
+    minThickness 0.25;
+
+    nGrow 0;
+
+    featureAngle 30;
+
+    nRelaxIter 5;
+
+    nSmoothSurfaceNormals 1;
+
+    nSmoothNormals 3;
+
+    nSmoothThickness 10;
+
+    maxFaceThicknessRatio 0.5;
+
+    maxThicknessToMedialRatio 0.3;
+
+    minMedianAxisAngle 90;
+
+    nBufferCellsNoExtrude 0;
+
+    nLayerIter 50;
+
+    nRelaxedIter 20;
+}
+
+meshQualityControls
+{
+    #include "meshQualityDict"
+
+    relaxed
+    {
+        maxNonOrtho 75;
+    }
+}
+
+writeFlags
+(
+);
+
+mergeTolerance 1E-6;
+
+
+// ************************************************************************* //

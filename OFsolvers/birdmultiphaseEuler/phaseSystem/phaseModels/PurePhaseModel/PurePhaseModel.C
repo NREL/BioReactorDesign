@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2015-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2015-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -74,8 +74,19 @@ const Foam::PtrList<Foam::volScalarField>&
 Foam::PurePhaseModel<BasePhaseModel>::Y() const
 {
     // Y_ has never been set, so we are returning an empty list
-
     return Y_;
+}
+
+
+template<class BasePhaseModel>
+const Foam::volScalarField&
+Foam::PurePhaseModel<BasePhaseModel>::Y(const label speciei) const
+{
+    FatalErrorInFunction
+        << "Cannot get a species fraction by index from a pure phase"
+        << exit(FatalError);
+
+    return NullObjectRef<volScalarField>();
 }
 
 
@@ -96,7 +107,7 @@ Foam::PtrList<Foam::volScalarField>&
 Foam::PurePhaseModel<BasePhaseModel>::YRef()
 {
     FatalErrorInFunction
-        << "Cannot access the species fractions of for a pure phase"
+        << "Cannot access the species fractions of a pure phase"
         << exit(FatalError);
 
     return Y_;

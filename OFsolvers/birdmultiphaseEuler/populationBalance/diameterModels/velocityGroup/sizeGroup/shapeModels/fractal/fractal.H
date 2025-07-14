@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2019-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2019-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -40,15 +40,9 @@ Description
     field-dependent surface area to volume ratio \f$\kappa_i\f$, assuming that
     the primary particles in an aggregate have the same size.
 
-    The effect of sintering, i.e. the coalescence of primary particles
-    resulting in a loss of surface area, is taken into account by a separate
-    source term in the transport equation for \f$\kappa_i\f$.
-
 Usage
     \table
         Property     | Description             | Required    | Default value
-        kappa        | Initial and boundary condition value\\
-                                               | yes         |
         Df           | Fractal dimension       | yes         |
         alphaC       | Scaling prefactor       | yes         |
     \endtable
@@ -76,8 +70,6 @@ namespace diameterModels
 namespace shapeModels
 {
 
-class sinteringModel;
-
 /*---------------------------------------------------------------------------*\
                            Class fractal Declaration
 \*---------------------------------------------------------------------------*/
@@ -86,22 +78,6 @@ class fractal
 :
     public SecondaryPropertyModel<shapeModel>
 {
-public:
-
-    // Public Data types
-
-        //- Surface growth type enumeration
-        enum surfaceGrowthTypes
-        {
-            sgHardSphere,
-            sgParkRogak,
-            sgConserved
-        };
-
-        //- Surface growth type names
-        static const NamedEnum<surfaceGrowthTypes, 3> sgTypeNames_;
-
-
 private:
 
     // Private Data
@@ -119,10 +95,7 @@ private:
         volScalarField dColl_;
 
         //- Explicit source
-        volScalarField Su_;
-
-        //- Sintering model
-        autoPtr<sinteringModel> sinteringModel_;
+        volScalarField::Internal Su_;
 
 
     // Private Member Functions
@@ -159,33 +132,35 @@ public:
 
         // Access
 
+            //- Return the fractal dimension
+            inline const dimensionedScalar& Df() const
+            {
+                return Df_;
+            }
+
+            //- Return the scaling prefactor
+            inline const dimensionedScalar& alphaC() const
+            {
+                return alphaC_;
+            }
+
             //- Return reference to secondary property field
             virtual const volScalarField& fld() const;
 
             //- Access to secondary property source
-            virtual volScalarField& src();
+            virtual volScalarField::Internal& src();
 
             //- Return representative surface area of the sizeGroup
             virtual const tmp<volScalarField> a() const;
 
             //- Return representative diameter of the sizeGroup
-            virtual const tmp<volScalarField> d() const
-            {
-                return dColl_;
-            }
+            virtual const tmp<volScalarField> d() const;
+
 
         // Edit
 
             //- Correct the collisional diameter
             virtual void correct();
-
-            //- Add drift contribution to secondary property source
-            virtual void addDrift
-            (
-                const volScalarField& Su,
-                const sizeGroup& fu,
-                const driftModel& model
-            );
 
 
     // Member Operators

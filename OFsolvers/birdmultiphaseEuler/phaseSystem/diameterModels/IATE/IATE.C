@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2013-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2013-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -81,7 +81,18 @@ Foam::diameterModels::IATE::IATE
     dMax_("dMax", dimLength, diameterProperties),
     dMin_("dMin", dimLength, diameterProperties),
     residualAlpha_("residualAlpha", dimless, diameterProperties),
-    d_(IOobject::groupName("d", phase.name()), dsm()),
+    d_
+    (
+        IOobject
+        (
+            IOobject::groupName("d", phase.name()),
+            phase.time().name(),
+            phase.mesh(),
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        dsm()
+    ),
     sources_(diameterProperties.lookup("sources"), IATEsource::iNew(*this))
 {}
 
@@ -108,11 +119,14 @@ Foam::tmp<Foam::volScalarField> Foam::diameterModels::IATE::Av() const
 
 void Foam::diameterModels::IATE::correct()
 {
+    const volScalarField& alpha = phase();
+    const volScalarField& rho = phase().rho();
+
     volScalarField alphaAv
     (
         max
         (
-            0.5*fvc::average(phase() + phase().oldTime()),
+            0.5*fvc::average(alpha + alpha.oldTime()),
             residualAlpha_
         )
     );
@@ -124,14 +138,8 @@ void Foam::diameterModels::IATE::correct()
         (
             ((1.0/3.0)/alphaAv)
            *(
-                (
-                    fvc::ddt(phase())
-                  + fvc::div(phase().alphaPhi())
-                )
-              - (
-                    fvc::ddt(phase(), phase().rho())
-                  + fvc::div(phase().alphaRhoPhi())
-                )/phase().rho()
+                (fvc::ddt(alpha) + fvc::div(phase().alphaPhi()))
+              - (fvc::ddt(alpha, rho) + fvc::div(phase().alphaRhoPhi()))/rho
             ),
             kappai_
         )
@@ -140,14 +148,13 @@ void Foam::diameterModels::IATE::correct()
     // Accumulate the run-time selectable sources
     forAll(sources_, j)
     {
-        R += sources_[j].R(alphaAv, kappai_);
+        R += sources_[j].R(kappai_);
     }
 
-    const Foam::fvModels& fvModels(Foam::fvModels::New(phase().mesh()));
-    const Foam::fvConstraints& fvConstraints
-    (
-        Foam::fvConstraints::New(phase().mesh())
-    );
+    const Foam::fvModels& fvModels =
+        Foam::fvModels::New(phase().mesh());
+    const Foam::fvConstraints& fvConstraints =
+        Foam::fvConstraints::New(phase().mesh());
 
     // Construct the interfacial curvature equation
     fvScalarMatrix kappaiEqn
@@ -156,7 +163,7 @@ void Foam::diameterModels::IATE::correct()
       - fvm::Sp(fvc::div(phase().phi()), kappai_)
      ==
         R
-      + fvModels.source(kappai_)
+      + fvModels.source(alpha, rho, kappai_)/(alphaAv*rho)
     );
 
     kappaiEqn.relax();
@@ -176,6 +183,8 @@ bool Foam::diameterModels::IATE::read(const dictionary& phaseProperties)
 
     diameterProperties().lookup("dMax") >> dMax_;
     diameterProperties().lookup("dMin") >> dMin_;
+
+    diameterProperties().lookup("residualAlpha") >> residualAlpha_;
 
     // Re-create all the sources updating number, type and coefficients
     PtrList<IATEsource>

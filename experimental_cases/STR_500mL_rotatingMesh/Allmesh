@@ -6,16 +6,13 @@ cd ${0%/*} || exit 1    # Run from this directory
 
 blockMesh
 surfaceFeatures
-snappyHexMesh -overwrite
-topoSet
-
-topoSet -dict system/topoSetDict.baffles
+snappyHexMesh 
+createZones
 
 createPatch -overwrite
-setsToZones -noFlipMap
 
-createBaffles -overwrite
-splitBaffles -overwrite
+createBaffles #-flipMap
+splitBaffles 
 
 
 # Rescale to work with 500mL
@@ -23,7 +20,7 @@ transformPoints "scale=(0.243530813 0.243530813 0.243530813)"
 
 #renumberMesh -noFields -overwrite
 
-createNonConformalCouples -overwrite nonCouple1 nonCouple2
+createNonConformalCouples nonCouple1 nonCouple2
 
 checkMesh
 

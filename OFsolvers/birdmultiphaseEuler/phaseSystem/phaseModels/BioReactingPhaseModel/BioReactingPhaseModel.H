@@ -25,8 +25,11 @@ Class
     Foam::BioReactingPhaseModel
 
 Description
-    Class which represents phases with volumetric reactions. Returns the
+    Class which represents phases with volumetric biological reactions. Returns the
     reaction rate and heat.
+
+Author
+    Federico Municchi
 
 SourceFiles
     BioReactingPhaseModel.C
@@ -92,6 +95,9 @@ public:
 
         //- Correct the reaction rates
         virtual void correctReactions();
+
+        //- Return the consumption rate for a specie
+        virtual tmp<volScalarField::Internal> R(const label speciei) const;
 
         //- Return the fuel consumption rate matrix
         virtual tmp<fvScalarMatrix> R(volScalarField& Yi) const;

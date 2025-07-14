@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2017-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2017-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -118,10 +118,6 @@ Description
 Usage
     Excerpt from an exemplary phaseProperties dictionary:
     \verbatim
-    type populationBalanceMultiphaseSystem;
-
-    ...
-
     populationBalances (bubbles);
 
     air
@@ -170,14 +166,6 @@ Usage
 
             breakupModels
             ();
-
-            driftModels
-            (
-                densityChange{}
-            );
-
-            nucleationModels
-            ();
         }
     }
     \endverbatim
@@ -191,8 +179,6 @@ See also
     Foam::diameterModels::breakupModel
     Foam::diameterModels::daughterSizeDistributionModel
     Foam::diameterModels::binaryBreakupModel
-    Foam::diameterModels::driftModel
-    Foam::diameterModels::nucleationModel
     Foam::functionObjects::sizeDistribution
     Foam::functionObjects::moments
 
@@ -207,13 +193,13 @@ SourceFiles
 #include "sizeGroup.H"
 #include "phaseSystem.H"
 #include "HashPtrTable.H"
-#include "Pair.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
+class distribution;
 class phaseCompressibleMomentumTransportModel;
 
 namespace diameterModels
@@ -222,8 +208,6 @@ namespace diameterModels
 class coalescenceModel;
 class breakupModel;
 class binaryBreakupModel;
-class driftModel;
-class nucleationModel;
 
 /*---------------------------------------------------------------------------*\
                    Class populationBalanceModel Declaration
@@ -234,6 +218,19 @@ class populationBalanceModel
     public regIOobject
 {
 public:
+
+    // Public Type Definitions
+
+        //- Table of interfacial mass transfer rates
+        typedef
+            HashPtrTable
+            <
+                volScalarField::Internal,
+                phaseInterfaceKey,
+                phaseInterfaceKey::hash
+            >
+            dmdtfTable;
+
 
     // Public Classes
 
@@ -379,17 +376,11 @@ private:
         //- Reference to the phaseSystem
         const phaseSystem& fluid_;
 
-        //- Interfacial mass transfer rates
-        phaseSystem::dmdtfTable dmdtfs_;
-
         //- Reference to the mesh
         const fvMesh& mesh_;
 
         //- Name of the populationBalance
-        word name_;
-
-        //- Dictionary
-        dictionary dict_;
+        const word name_;
 
         //- Continuous phase
         const phaseModel& continuousPhase_;
@@ -400,29 +391,38 @@ private:
         //- Size groups belonging to this populationBalance
         UPtrList<sizeGroup> sizeGroups_;
 
-        //- sizeGroup boundaries
+        //- Size group boundaries
         PtrList<dimensionedScalar> v_;
 
         //- Section width required for binary breakup formulation
         PtrList<PtrList<dimensionedScalar>> delta_;
 
-        //- Explicitly treated sources
-        PtrList<volScalarField> Su_;
+        //- Explicit coalescence and breakup source terms
+        PtrList<volScalarField::Internal> Su_;
 
-        //- Implicitly treated sources
-        PtrList<volScalarField> Sp_;
+        //- Implicit coalescence and breakup source terms
+        PtrList<volScalarField::Internal> Sp_;
+
+        //- Coalescence and breakup mass transfer rates
+        dmdtfTable dmdtfs_;
+
+        //- Expansion mass transfer rates
+        dmdtfTable expansionDmdtfs_;
+
+        //- Model source mass transfer rates
+        dmdtfTable modelSourceDmdtfs_;
+
+        //- Rates of change of volume per unit volume
+        PtrList<volScalarField::Internal> expansionRates_;
 
         //- Dilatation errors
-        HashTable<volScalarField> dilatationErrors_;
-
-        //- Field for caching sources
-        volScalarField Sui_;
+        PtrList<volScalarField::Internal> dilatationErrors_;
 
         //- Coalescence models
         PtrList<coalescenceModel> coalescenceModels_;
 
         //- Coalescence rate
-        autoPtr<volScalarField> coalescenceRate_;
+        autoPtr<volScalarField::Internal> coalescenceRate_;
 
         //- Coalescence relevant size group pairs
         List<labelPair> coalescencePairs_;
@@ -431,28 +431,16 @@ private:
         PtrList<breakupModel> breakupModels_;
 
         //- Breakup rate
-        autoPtr<volScalarField> breakupRate_;
+        autoPtr<volScalarField::Internal> breakupRate_;
 
         //- Binary breakup models
         PtrList<binaryBreakupModel> binaryBreakupModels_;
 
         //- Binary breakup rate
-        autoPtr<volScalarField> binaryBreakupRate_;
+        autoPtr<volScalarField::Internal> binaryBreakupRate_;
 
         //- Binary breakup relevant size group pairs
         List<labelPair> binaryBreakupPairs_;
-
-        //- Drift models
-        PtrList<driftModel> drift_;
-
-        //- Drift rate
-        autoPtr<volScalarField> driftRate_;
-
-        //- Zeroeth order models
-        PtrList<nucleationModel> nucleation_;
-
-        //- Zeroeth order rate
-        autoPtr<volScalarField> nucleationRate_;
 
         //- Total void fraction
         autoPtr<volScalarField> alphas_;
@@ -469,13 +457,9 @@ private:
 
     // Private Member Functions
 
-        void registerVelocityGroups();
+        const dictionary& coeffDict() const;
 
-        void initialiseDmdtfs();
-
-        void createPhasePairs();
-
-        void precompute();
+        void precomputeCoalescenceAndBreakup();
 
         void birthByCoalescence(const label j, const label k);
 
@@ -485,25 +469,35 @@ private:
 
         void deathByBreakup(const label i);
 
-        void calcDeltas();
-
         void birthByBinaryBreakup(const label i, const label j);
 
         void deathByBinaryBreakup(const label j, const label i);
 
-        void drift(const label i, driftModel& model);
+        void computeCoalescenceAndBreakup();
 
-        void nucleation(const label i, nucleationModel& model);
+        void precomputeExpansion();
 
-        void sources();
+        Pair<tmp<volScalarField::Internal>> expansionSus
+        (
+            const label i,
+            const UPtrList<const volScalarField>& flds =
+                UPtrList<const volScalarField>()
+        ) const;
 
-        void correctDilatationError();
+        void computeExpansion();
 
-        void calcAlphas();
+        void precomputeModelSources();
 
-        tmp<volScalarField> calcDsm();
+        Pair<tmp<volScalarField::Internal>> modelSourceRhoSus
+        (
+            const label i,
+            const UPtrList<const volScalarField>& flds =
+                UPtrList<const volScalarField>()
+        ) const;
 
-        void calcVelocity();
+        void computeModelSources();
+
+        void computeDilatationErrors();
 
         //- Return whether the sources should be updated on this iteration
         bool updateSources();
@@ -511,13 +505,29 @@ private:
         //- Return the interval at which the sources are updated
         inline label sourceUpdateInterval() const;
 
-        //- Calculate and return the number allocation coefficient
-        template<class EtaType, class VType>
-        EtaType eta(const label i, const VType& v) const;
+        //- Return the coefficients of the lower half of the number allocation
+        //  coefficient function. This spans the range from group i-1 to group
+        //  i. The first coefficient is a constant, and the second is
+        //  multiplied by v.
+        Pair<dimensionedScalar> etaCoeffs0(const label i) const;
 
-        //- Calculate and return the volume allocation coefficient
-        template<class EtaType, class VType>
-        EtaType etaV(const label i, const VType& v) const;
+        //- Return the coefficients of the lower half of the number allocation
+        //  coefficient function. This spans the range from group i to group
+        //  i+1. The first coefficient is a constant, and the second is
+        //  multiplied by v.
+        Pair<dimensionedScalar> etaCoeffs1(const label i) const;
+
+        //- Return the coefficients of the lower half of the volume allocation
+        //  coefficient function. This spans the range from group i-1 to group
+        //  i. The first coefficient is a constant, and the second is
+        //  multiplied by 1/v.
+        Pair<dimensionedScalar> etaVCoeffs0(const label i) const;
+
+        //- Return the coefficients of the lower half of the volume allocation
+        //  coefficient function. This spans the range from group i to group
+        //  i+1. The first coefficient is a constant, and the second is
+        //  multiplied by 1/v.
+        Pair<dimensionedScalar> etaVCoeffs1(const label i) const;
 
 
 public:
@@ -573,20 +583,24 @@ public:
         //- Return reference to the phaseSystem
         inline const phaseSystem& fluid() const;
 
-        //- Return reference to the interfacial mass transfer rates
-        inline const phaseSystem::dmdtfTable& dmdtfs() const;
+        //- Return reference to the coalescence and breakup interfacial mass
+        //  transfer rates
+        inline const dmdtfTable& dmdtfs() const;
+
+        //- Return reference to the expansion interfacial mass transfer rates
+        inline const dmdtfTable& expansionDmdtfs() const;
+
+        //- Return reference to the model source interfacial mass transfer rates
+        inline const dmdtfTable& modelSourceDmdtfs() const;
 
         //- Return reference to the mesh
         inline const fvMesh& mesh() const;
 
-        //- Return populationBalanceCoeffs dictionary
-        inline const dictionary& dict() const;
-
-        //- Return the number of corrections
-        inline label nCorr() const;
+        //- Return solution settings dictionary for this populationBalance
+        inline const dictionary& solverDict() const;
 
         //- Solve on final pimple iteration only
-        inline Switch solveOnFinalIterOnly() const;
+        inline bool solveOnFinalIterOnly() const;
 
         //- Return continuous phase
         inline const phaseModel& continuousPhase() const;
@@ -594,11 +608,8 @@ public:
         //- Return the size groups belonging to this populationBalance
         inline const UPtrList<sizeGroup>& sizeGroups() const;
 
-        //- Return implicit source terms
-        inline const volScalarField& Sp(const label i) const;
-
-        //- Return dilatation obtained from source terms
-        inline const HashTable<volScalarField>& sourceDilatation() const;
+        //- Access the size groups belonging to this populationBalance
+        inline UPtrList<sizeGroup>& sizeGroups();
 
         //- Return coalescence relevant size group pairs
         inline const List<labelPair>& coalescencePairs() const;
@@ -612,25 +623,36 @@ public:
         //- Return average velocity
         inline const volVectorField& U() const;
 
-        //- Return the number allocation coefficient
+        //- Return the number allocation coefficient for a single volume
         dimensionedScalar eta(const label i, const dimensionedScalar& v) const;
 
-        //- Return the number allocation coefficient
+        //- Return the number allocation coefficient for a field of volumes
         tmp<volScalarField::Internal> eta
         (
             const label i,
             const volScalarField::Internal& v
         ) const;
 
-        //- Return the volume allocation coefficient
+        //- Return the volume allocation coefficient for a single volume
         dimensionedScalar etaV(const label i, const dimensionedScalar& v) const;
 
-        //- Return the volume allocation coefficient
+        //- Return the volume allocation coefficient for a field of volumes
         tmp<volScalarField::Internal> etaV
         (
             const label i,
             const volScalarField::Internal& v
         ) const;
+
+        //- Return the volume allocation coefficient for a given distribution
+        //  of diameters over a range of size-groups. The diameter distribution
+        //  should be volumetrically sampled (i.e., sampleQ should equal 3).
+        dimensionedScalar etaV(const labelPair is, const distribution& d) const;
+
+        //- Return the volume allocation coefficient for a given distribution
+        //  of diameters. The diameter distribution should be volumetrically
+        //  sampled (i.e., sampleQ should equal 3). The result is normalised
+        //  with respect to the volume allocation coefficient for the phase.
+        dimensionedScalar etaV(const label i, const distribution& d) const;
 
         //- Return the surface tension coefficient between a given dispersed
         //  and the continuous phase
@@ -642,6 +664,28 @@ public:
         //- Return reference to momentumTransport model of the continuous phase
         const phaseCompressibleMomentumTransportModel&
             continuousTurbulence() const;
+
+        //- Return the implicit coalescence and breakup source term
+        tmp<volScalarField::Internal> Sp(const label i) const;
+
+        //- Return the explicit expansion source term
+        tmp<volScalarField::Internal> expansionSu
+        (
+            const label i,
+            const UPtrList<const volScalarField>& flds =
+                UPtrList<const volScalarField>()
+        ) const;
+
+        //- Return the implicit expansion source term
+        tmp<volScalarField::Internal> expansionSp(const label i) const;
+
+        //- Return the explicit model source source term
+        tmp<volScalarField::Internal> modelSourceSu
+        (
+            const label i,
+            const UPtrList<const volScalarField>& flds =
+                UPtrList<const volScalarField>()
+        ) const;
 
         //- Solve the population balance equation
         void solve();

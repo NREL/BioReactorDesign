@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2022-2023 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2022-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -32,13 +32,10 @@ void Foam::solvers::birdmultiphaseEuler::cellMomentumPredictor()
 {
     Info<< "Constructing momentum equations" << endl;
 
-    phaseSystem& fluid(fluid_);
-
-    autoPtr<phaseSystem::momentumTransferTable>
-        momentumTransferPtr(fluid.momentumTransfer());
-
-    phaseSystem::momentumTransferTable&
-        momentumTransfer(momentumTransferPtr());
+    autoPtr<HashPtrTable<fvVectorMatrix>> popBalMomentumTransferPtr =
+        populationBalanceSystem_.momentumTransfer();
+    HashPtrTable<fvVectorMatrix>& popBalMomentumTransfer =
+        popBalMomentumTransferPtr();
 
     forAll(movingPhases, movingPhasei)
     {
@@ -55,7 +52,7 @@ void Foam::solvers::birdmultiphaseEuler::cellMomentumPredictor()
             (
                 phase.UEqn()
              ==
-               *momentumTransfer[phase.name()]
+                *popBalMomentumTransfer[phase.name()]
               + fvModels().source(alpha, rho, U)
             )
         );
@@ -72,13 +69,10 @@ void Foam::solvers::birdmultiphaseEuler::faceMomentumPredictor()
 {
     Info<< "Constructing face momentum equations" << endl;
 
-    phaseSystem& fluid(fluid_);
-
-    autoPtr<phaseSystem::momentumTransferTable>
-        momentumTransferPtr(fluid.momentumTransferf());
-
-    phaseSystem::momentumTransferTable&
-        momentumTransfer(momentumTransferPtr());
+    autoPtr<HashPtrTable<fvVectorMatrix>> popBalMomentumTransferPtr =
+        populationBalanceSystem_.momentumTransferf();
+    HashPtrTable<fvVectorMatrix>& popBalMomentumTransfer =
+        popBalMomentumTransferPtr();
 
     forAll(movingPhases, movingPhasei)
     {
@@ -95,7 +89,7 @@ void Foam::solvers::birdmultiphaseEuler::faceMomentumPredictor()
             (
                 phase.UfEqn()
              ==
-               *momentumTransfer[phase.name()]
+                *popBalMomentumTransfer[phase.name()]
               + fvModels().source(alpha, rho, U)
             )
         );
@@ -112,18 +106,15 @@ void Foam::solvers::birdmultiphaseEuler::faceMomentumPredictor()
 
 void Foam::solvers::birdmultiphaseEuler::momentumPredictor()
 {
-    if (pimple.flow())
-    {
-        UEqns.setSize(phases.size());
+    UEqns.setSize(phases.size());
 
-        if (faceMomentum)
-        {
-            faceMomentumPredictor();
-        }
-        else
-        {
-            cellMomentumPredictor();
-        }
+    if (faceMomentum)
+    {
+        faceMomentumPredictor();
+    }
+    else
+    {
+        cellMomentumPredictor();
     }
 }
 
