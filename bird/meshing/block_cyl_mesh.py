@@ -1,9 +1,12 @@
+import logging
 import os
 import sys
 
 import numpy as np
 
 from bird.meshing._mesh_tools import *
+
+logger = logging.getLogger(__name__)
 
 
 def assemble_geom(input_file, topo_file):
@@ -106,7 +109,6 @@ def assemble_mesh(input_file, geomDict):
                 ),
                 1,
             )
-    # print(NR)
     NS = [NR[0] * 2]
     # Now figure out grading of each block
     for ir in range(len(R)):
@@ -189,14 +191,14 @@ def assemble_mesh(input_file, geomDict):
         minCellR = np.amin(block_cell_length)
         maxCellR = np.amax(block_cell_length)
 
-    print("Vertical mesh:")
-    print(f"\tTotal NVert {sum(NVert)}")
-    print(f"\tNVert {NVert}")
-    print(f"\tsize min {minCellVert:.2f}mm max {maxCellVert:.2f}mm")
-    print("Radial mesh:")
-    print(f"\tTotal NR {sum(NR)}")
-    print(f"\tNR {NR}")
-    print(f"\tsize min {minCellR:.2f}mm max {maxCellR:.2f}mm")
+    logger.info("Vertical mesh:")
+    logger.info(f"\tTotal NVert {sum(NVert)}")
+    logger.info(f"\tNVert {NVert}")
+    logger.info(f"\tsize min {minCellVert:.2f}mm max {maxCellVert:.2f}mm")
+    logger.info("Radial mesh:")
+    logger.info(f"\tTotal NR {sum(NR)}")
+    logger.info(f"\tNR {NR}")
+    logger.info(f"\tsize min {minCellR:.2f}mm max {maxCellR:.2f}mm")
 
     return {
         "NR": NR,
