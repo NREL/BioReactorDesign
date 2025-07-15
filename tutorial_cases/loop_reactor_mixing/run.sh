@@ -1,3 +1,8 @@
+#!/bin/bash
+set -e  # Exit on any error
+# Define what to do on error
+trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
+
 # Clean case
 #module load anaconda3/2023
 #conda activate /projects/gas2fuels/conda_env/bird
