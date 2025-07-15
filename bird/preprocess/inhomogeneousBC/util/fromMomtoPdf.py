@@ -1,7 +1,10 @@
+import logging
 import sys
 
 import numpy as np
 from scipy.optimize import minimize
+
+logger = logging.getLogger(__name__)
 
 
 def bounded_constraint(x):
@@ -64,16 +67,16 @@ def opt(meanTar, stdTar, diam):
     return res
 
 
-def get_f_vals(meanTar, stdTar, diam, verb=True):
+def get_f_vals(meanTar, stdTar, diam):
     if meanTar < np.amin(diam) or meanTar > np.amax(diam):
-        sys.exit(
-            f"ERROR: mean target {meanTar} out of bounds [{np.amin(diam)}, {np.amax(diam)}]"
+        logger.error(
+            f"mean target {meanTar} out of bounds [{np.amin(diam)}, {np.amax(diam)}]"
         )
+        sys.exit()
     tol = 10
     irep = 0
     while tol > 0.01:
-        if verb:
-            print(f"Rep = {irep}, tol={tol}")
+        logger.debug(f"Rep = {irep}, tol={tol}")
         res = opt(meanTar, stdTar, diam)
         x = np.zeros(len(res.x) + 1)
         x[:-1] = res.x
@@ -89,21 +92,17 @@ def get_f_vals(meanTar, stdTar, diam, verb=True):
         )
         irep += 1
         if irep > 100:
-            sys.exit(
-                "ERROR: optimization fail, typically occurs because the population balance domain is too tight"
+            logger.error(
+                "optimization fail, typically occurs because the population balance domain is too tight"
             )
 
-    if verb:
-        print("meanTar = ", meanTar)
-        print("stdTar = ", stdTar)
-        print("x = ", x)
-        print("mean = ", np.sum(x * diam))
-        print(
-            "std = ",
-            np.sqrt(
-                np.sum(np.clip(x, a_min=0, a_max=None) * (diam - meanTar) ** 2)
-            ),
-        )
+    logger.debug(f"meanTar = {meanTar}")
+    logger.debug(f"stdTar = {stdTar}")
+    logger.debug(f"x = {x}")
+    logger.debug(f"mean = {np.sum(x * diam)}")
+    logger.debug(
+        f"std = {np.sqrt(np.sum(np.clip(x, a_min=0, a_max=None) * (diam - meanTar) ** 2))}"
+    )
     return x
 
 
