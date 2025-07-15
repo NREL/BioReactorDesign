@@ -47,12 +47,15 @@ To cite BiRD, please use these articles on [CO2 interphase mass transfer](https:
 
 
 ```
-@article{hassanaly2025inverse,
-    title={Bayesian calibration of bubble size dynamics applied to \ce{CO2} gas fermenters},
-    author={Hassanaly, Malik and Parra-Alvarez, John M. and Rahimi, Mohammad J., Municchi, Federico and Sitaraman, Hariswaran},
-    journal={Chemical Engineering Research and Design},
-    year={2025},
-  }
+@article{hassanaly2025bayesian,
+  title={Bayesian calibration of bubble size dynamics applied to CO2 gas fermenters},
+  author={Hassanaly, Malik and Parra-Alvarez, John M and Rahimi, Mohammad J and Municchi, Federico and Sitaraman, Hariswaran},
+  journal={Chemical Engineering Research and Design},
+  volume={215},
+  pages={312--328},
+  year={2025},
+  publisher={Elsevier}
+}
 
 @article{rahimi2018computational,
   title={Computational fluid dynamics study of full-scale aerobic bioreactors: Evaluation of gas--liquid mass transfer, oxygen uptake, and dynamic oxygen distribution},

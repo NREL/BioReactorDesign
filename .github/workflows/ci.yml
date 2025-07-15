@@ -89,7 +89,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install nrel-bird==0.0.26
+          pip install nrel-bird
           pip install pytest
       - name: Test
         run: pytest .
