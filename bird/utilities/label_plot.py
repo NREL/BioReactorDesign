@@ -1,4 +1,8 @@
+import logging
+
 from prettyPlot.plotting import plt, pretty_labels, pretty_legend
+
+logger = logging.getLogger(__name__)
 
 
 def label_conv(input_string):
@@ -52,5 +56,5 @@ def label_conv(input_string):
     elif input_string.lower() == "gh_height":
         return "Height-based gas holdup"
     else:
-        print(input_string)
+        logger.info(input_string)
         return input_string

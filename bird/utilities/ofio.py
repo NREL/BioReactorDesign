@@ -1,8 +1,11 @@
+import logging
 import os
 import re
 import sys
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 def readMesh(filename: str) -> np.ndarray:
@@ -253,7 +256,7 @@ def readOFScal(
         try:
             field = np.loadtxt(filename, skiprows=n_header, max_rows=n_cells)
         except Exception as err:
-            print(f"Issue when reading {filename}")
+            logger.error(f"Issue when reading {filename}")
             print(err)
             sys.exit()
 
@@ -348,7 +351,7 @@ def readOFVec(
             field = np.array(field).astype(float)
 
         except Exception as err:
-            print(f"Issue when reading {filename}")
+            logger.error(f"Issue when reading {filename}")
             print(err)
             sys.exit()
 
@@ -450,9 +453,7 @@ def readSizeGroups(file):
     return sizeGroup, binGroup
 
 
-def getCaseTimes(
-    casePath: str, remove_zero: bool = False, verbose: bool = True
-) -> tuple:
+def getCaseTimes(casePath: str, remove_zero: bool = False) -> tuple:
     """
     Get list of all time folders from an OpenFOAM case
 
@@ -462,8 +463,6 @@ def getCaseTimes(
         Path to case folder
     remove_zero : bool
         Whether to remove zero from the time folder list
-    verbose : bool
-        Whether to print what time folders are included
 
     returns
     ----------
@@ -483,8 +482,7 @@ def getCaseTimes(
                 if abs(a) < 1e-12:
                     _ = times_tmp.pop(i)
         except ValueError:
-            if verbose:
-                print(f"{entry} not a time folder, removing")
+            logger.debug(f"{entry} not a time folder, removing")
             a = times_tmp.pop(i)
             # print('removed ', a)
     time_float = [float(entry) for entry in times_tmp]
