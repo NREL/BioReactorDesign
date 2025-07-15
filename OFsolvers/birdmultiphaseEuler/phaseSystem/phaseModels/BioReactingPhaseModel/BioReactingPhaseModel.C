@@ -41,21 +41,47 @@ Foam::BioReactingPhaseModel<BasePhaseModel>::BioReactingPhaseModel
     BasePhaseModel(fluid, phaseName, referencePhase, index),
     dict_(fluid.subDict("bioReactions")),
     species_(dict_.lookup("species")),
-    OURmax_(dict_.lookup("OURmax")),
-    K_(dict_.lookup("K")),
-    DCW_
-    (
-        IOobject
-        (
-            "DCW",
-            this->mesh().time().name(),
-            this->mesh(),
-            IOobject::MUST_READ,
-            IOobject::AUTO_WRITE
-        ),
-        this->mesh()
-    )
-{}
+    maxUptakeRate_(),
+    K_(),
+    URSp_()
+    // DCW_
+    // (
+    //     IOobject
+    //     (
+    //         "DCW",
+    //         this->mesh().time().name(),
+    //         this->mesh(),
+    //         IOobject::MUST_READ,
+    //         IOobject::AUTO_WRITE
+    //     ),
+    //     this->mesh()
+    // )
+{
+    forAll(species_, specieI)
+    {
+        dictionary subsp(dict_.subDict(species_[specieI]));
+
+        maxUptakeRate_.append(subsp.lookup("maxUptakeRate"));
+        K_.append(subsp.lookup("K"));
+        
+        URSp_.set(
+            specieI,
+            new volScalarField
+            (
+                IOobject
+                (
+                    phaseName + ":URSp" + species_[specieI].capitalise(),
+                    this->mesh().time().name(),
+                    this->mesh(),
+                    IOobject::NO_READ,
+                    IOobject::AUTO_WRITE
+                ),
+                this->mesh(),
+                dimensionedScalar(dimDensity/dimTime, 0)
+            )
+        );
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -70,6 +96,19 @@ Foam::BioReactingPhaseModel<BasePhaseModel>::~BioReactingPhaseModel()
 template<class BasePhaseModel>
 void Foam::BioReactingPhaseModel<BasePhaseModel>::correctReactions()
 {
+
+    forAll(this->Y(), speciei)
+    {
+        forAll(species_, speciej)
+        {
+            if ( this->Y()[speciei].name() == IOobject::groupName(species_[speciej], this->name()) )
+            {
+               volScalarField& URSp = URSp_[speciej];  
+               URSp =  - maxUptakeRate_[speciej] / (  K_[speciej] + this->Y()[speciei] );
+            }
+        }
+    }
+
     BasePhaseModel::correctReactions();
 }
 
@@ -78,10 +117,12 @@ template<class BasePhaseModel>
 Foam::tmp<Foam::volScalarField::Internal>
 Foam::BioReactingPhaseModel<BasePhaseModel>::R(const label speciei) const
 {
-    if ( this->Y()[speciei].name() == IOobject::groupName(species_, this->name()) )
+    forAll(species_, speciej)
     {
-        volScalarField coeff( -OURmax_ / ( ( this->Y()[speciei]*K_ / this->fluid().rho() )  + this->Y()[speciei] ) );
-        return coeff.internalField();
+        if ( this->Y()[speciei].name() == IOobject::groupName(species_[speciej], this->name()) )
+        {
+            return URSp_[speciej];
+        }
     }
 
     return
@@ -99,11 +140,13 @@ Foam::tmp<Foam::fvScalarMatrix> Foam::BioReactingPhaseModel<BasePhaseModel>::R
 (
     volScalarField& Yi
 ) const
-{ 
-    if ( Yi.name() == IOobject::groupName(species_, this->name()) )
-    {
-        volScalarField coeff( OURmax_ / ( ( K_ / this->fluid().rho() )  + Yi ) );
-        return -fvm::Sp( coeff, Yi );
+{
+    forAll(species_, speciej)
+    { 
+        if ( Yi.name() == IOobject::groupName(species_[speciej], this->name()) )
+        {            
+            return fvm::Sp(URSp_[speciej],Yi);
+        }
     }
 
     return tmp<fvScalarMatrix>

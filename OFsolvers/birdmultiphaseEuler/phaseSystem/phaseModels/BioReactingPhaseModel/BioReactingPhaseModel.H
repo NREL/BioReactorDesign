@@ -25,8 +25,18 @@ Class
     Foam::BioReactingPhaseModel
 
 Description
-    Class which represents phases with volumetric biological reactions. Returns the
-    reaction rate and heat.
+    Class which represents phases with volumetric enzymatic reactions. Returns the
+    reaction rate and heat using the Michaelis-Menten reaction rate for enzymatic reactions.
+
+    Reference:
+    \verbatim
+        Michaelis, L., & Menten, M. L. (1913).
+        Die Kinetik der InwertinWirkung.
+        Biochem., (49), 333-369.
+    \endverbatim
+
+    Compared to the reactionRate implementation in OpenFOAM, this version allows
+    easier model customization.
 
 Author
     Federico Municchi
@@ -63,16 +73,19 @@ protected:
         dictionary  dict_;
 
         // species
-        word species_; 
+        wordList species_; 
 
         // Maximum uptake rate
-        dimensionedScalar OURmax_;
+        List<dimensionedScalar> maxUptakeRate_;
 
         // Half saturation constant
-        dimensionedScalar K_;
+        List<dimensionedScalar> K_;
+
+        // Uptake rates Sp
+        PtrList<volScalarField> URSp_;
 
         // Dry-cell Weight
-        volScalarField DCW_;
+        //volScalarField DCW_;
 
 public:
 
