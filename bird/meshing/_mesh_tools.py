@@ -1,10 +1,13 @@
 import json
+import logging
 import os
 import sys
 from pathlib import Path
 
 import numpy as np
 from ruamel.yaml import YAML
+
+logger = logging.getLogger(__name__)
 
 
 def parseJsonFile(input_filename):
@@ -110,10 +113,8 @@ def bissection(val, stretch_fun, N1):
     resultmin = stretch_fun(Gmin, N1) - val
     resultmax = stretch_fun(Gmax, N1) - val
     if resultmin * resultmax > 0:
-        print(
-            "Error,the initial bounds of grading do not encompass the solution"
-        )
-        # stop
+        logger.error("Initial bounds of grading do not encompass the solution")
+        sys.exit()
 
     for i in range(1000):
         Gmid = 0.5 * (Gmax + Gmin)
@@ -227,8 +228,8 @@ def verticalCoarsening(
                         length / deltaE, stretch_fun, NVert[ind]
                     )
                 if iterate:
-                    print(
-                        f"WARNING: reduced NVert[{ind}] from {origNVert} to {NVert[ind]}"
+                    logger.warning(
+                        f"reduced NVert[{ind}] from {origNVert} to {NVert[ind]}"
                     )
                 block_cell_minus_length[ind] = deltaE
                 block_cell_plus_length[ind] = deltaE * gradVert[ind]
@@ -250,8 +251,8 @@ def verticalCoarsening(
                         length / deltaE, stretch_fun, NVert[ind]
                     )
                 if iterate:
-                    print(
-                        f"WARNING: reduced NVert[{ind}] from {origNVert} to {NVert[ind]}"
+                    logger.warning(
+                        f"reduced NVert[{ind}] from {origNVert} to {NVert[ind]}"
                     )
                 block_cell_minus_length[ind] = deltaE / gradVert[ind]
                 block_cell_plus_length[ind] = deltaE
@@ -341,8 +342,8 @@ def radialCoarsening(
                         length / deltaE, stretch_fun, NR[ind]
                     )
                 if iterate:
-                    print(
-                        f"WARNING: reduced NR[{ind}] from {origNR} to {NR[ind]}"
+                    logger.warning(
+                        f"reduced NR[{ind}] from {origNR} to {NR[ind]}"
                     )
                 block_cell_minus_length[ind] = deltaE
                 block_cell_plus_length[ind] = deltaE * gradR[ind]
@@ -359,8 +360,8 @@ def radialCoarsening(
                         length / deltaE, stretch_fun, NR[ind]
                     )
                 if iterate:
-                    print(
-                        f"WARNING: reduced NR[{ind}] from {origNR} to {NR[ind]}"
+                    logger.warning(
+                        f"reduced NR[{ind}] from {origNR} to {NR[ind]}"
                     )
                 block_cell_minus_length[ind] = deltaE / gradR[ind]
                 block_cell_plus_length[ind] = deltaE
@@ -384,9 +385,9 @@ def radialCoarsening(
     #    if (gradR[last_R] > 2 or gradR[last_R] < 0.5) and abs(
     #        ratio - 1
     #    ) <= 1e-12:
-    #        print(
-    #            "WARNING: radial smoothing had to be used because your mesh is very coarse"
+    #        logger.warning(
+    #            "radial smoothing had to be used because your mesh is very coarse"
     #        )
-    #        print("\tIncrease NS in input file to avoid this warning")
+    #        logger.warning("\tIncrease NS in input file to avoid this warning")
 
     return NR, gradR, minCell, maxCell

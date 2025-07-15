@@ -1,3 +1,5 @@
+import logging
+
 import corner
 import jax.numpy as jnp
 import jax.random as random
@@ -6,6 +8,8 @@ import numpyro
 import numpyro.distributions as dist
 from numpyro.infer import MCMC, NUTS
 from prettyPlot.plotting import *
+
+logger = logging.getLogger(__name__)
 
 
 def read_data(
@@ -165,7 +169,7 @@ def compute_kla(
     for ind_start in range(len(data_t_tmp) - 5):
         if max_chop is not None:
             max_chop -= 1
-        print(f"Chopping index = {ind_start}")
+        logger.debug(f"Chopping index = {ind_start}")
         data_t, data_c = read_data(filename, time_ind, conc_ind, ind_start)
 
         # Hamiltonian Monte Carlo (HMC) with no u turn sampling (NUTS)
@@ -223,10 +227,10 @@ def compute_kla(
         cstar_boot = []
         cstar_err_boot = []
         bootstrapped = True
-        print("Doing data bootstrapping")
+        logger.info("Doing data bootstrapping")
 
         for i in range(4):
-            print(f"\t scenario {i}")
+            logger.info(f"\t scenario {i}")
             if i == 0:
                 data_t = data_t_tmp[ind_start + 1 :]
                 data_c = data_c_tmp[ind_start + 1 :]
@@ -361,13 +365,15 @@ def print_res_dict(res_dict: dict) -> None:
 
     bs = res_dict["bootstrapped"]
 
-    print(f"For {file} with time index: {t_ind}, concentration index: {c_ind}")
+    logger.info(
+        f"For {file} with time index: {t_ind}, concentration index: {c_ind}"
+    )
     if bs:
-        print(f"\tkla = {kla:.4g} +/- {kla_err:.4g}")
-        print(f"\tcstar = {cs:.4g} +/- {cs_err:.4g}")
-        print(f"Without data bootstrap")
-    print(f"\tkla = {kla_nb:.4g} +/- {kla_err_nb:.4g}")
-    print(f"\tcstar = {cs_nb:.4g} +/- {cs_err_nb:.4g}")
+        logger.info(f"\tkla = {kla:.4g} +/- {kla_err:.4g}")
+        logger.info(f"\tcstar = {cs:.4g} +/- {cs_err:.4g}")
+        logger.info(f"Without data bootstrap")
+    logger.info(f"\tkla = {kla_nb:.4g} +/- {kla_err_nb:.4g}")
+    logger.info(f"\tcstar = {cs_nb:.4g} +/- {cs_err_nb:.4g}")
 
 
 if __name__ == "__main__":

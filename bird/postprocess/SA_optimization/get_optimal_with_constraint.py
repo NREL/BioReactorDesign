@@ -1,3 +1,4 @@
+import logging
 import os
 import random
 
@@ -13,6 +14,8 @@ from bird.postprocess.SA_optimization.surrogate import (
     tune_rbf,
     tune_rf,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def simulated_annealing_surrogate(
@@ -201,8 +204,8 @@ def run_optimization(
         index=False,
     )
 
-    print("X = ", x_best)
-    print("surrogate-predicted y", y_best)
+    logger.info(f"X = {x_best}")
+    logger.info(f"surrogate-predicted y = {y_best}")
 
     # Make the mean-CI plot for the objective function and save it
     mean_trace = np.mean(-1 * all_traces, axis=0)

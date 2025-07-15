@@ -1,4 +1,5 @@
 import json
+import logging
 import sys
 
 import numpy as np
@@ -6,6 +7,8 @@ import stl
 
 from bird.meshing._mesh_tools import parseJsonFile
 from bird.preprocess.stl_patch.stl_shapes import *
+
+logger = logging.getLogger(__name__)
 
 
 def check_input(input_dict):
@@ -41,9 +44,9 @@ def write_boundaries(input_dict):
     check_input(input_dict)
     for boundary_name in input_dict.keys():
         if not boundary_name == "Geometry":
-            print(f"Making {boundary_name}")
+            logger.info(f"Making {boundary_name}")
             boundary_mesh = get_all_vert_faces(input_dict, boundary_name)
-            print(f"\tArea {boundary_mesh.area} m2")
+            logger.info(f"\tArea {boundary_mesh.area} m2")
             boundary_mesh.save(f"{boundary_name}.stl")
 
 

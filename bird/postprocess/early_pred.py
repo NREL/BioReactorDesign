@@ -1,3 +1,4 @@
+import logging
 import os
 
 import corner
@@ -9,6 +10,8 @@ import numpyro.distributions as dist
 from numpyro.infer import MCMC, NUTS
 from prettyPlot.plotting import *
 from scipy.optimize import curve_fit
+
+logger = logging.getLogger(__name__)
 
 
 def plotAllEarly(data_dict, color_files=None, chop=False, extrap=False):
@@ -95,7 +98,7 @@ def multi_data_load(data_root, tmax=600, data_files=None, color_files=None):
         increase_ind = increase_ind_arr[
             np.argwhere(data_dict[datf]["t"][increase_ind_arr] > 10)[0][0]
         ][0]
-        print(
+        logger.info(
             f"data {datf} first time {data_dict[datf]['t'][increase_ind]:.2f}"
         )
         data_dict[datf]["lim"] = increase_ind
@@ -135,7 +138,7 @@ def fit_and_ext(
             bounds=bounds,
         )
         data_dict[datf]["yextrap"] = func(data_dict[datf]["textrap"], *popt)
-        print(f"data {datf} coeff {popt}")
+        logger.info(f"data {datf} coeff {popt}")
         lim_ind = data_dict[datf]["lim"]
         data_dict[datf]["textrap"] += data_dict[datf]["t"][lim_ind]
         data_dict[datf]["yextrap"] += data_dict[datf]["y"][lim_ind]
