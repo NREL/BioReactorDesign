@@ -480,7 +480,6 @@ def compute_ave_conc_liq(
     mol_weight: float = 0.04401,
     rho_val: float | None = 1000,
     field_dict={},
-    verbose: bool = True,
 ) -> tuple:
     """
     Calculate liquid volume averaged concentration of a species at a given time
@@ -506,8 +505,6 @@ def compute_ave_conc_liq(
         Constant density not available from time folder (kg/m3)
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
-    verbose : bool
-        If true, output mol weight, species name and density
 
     Returns
     ----------
@@ -516,12 +513,12 @@ def compute_ave_conc_liq(
     field_dict : dict
         Dictionary of fields read
     """
-    if verbose:
-        print(
-            f"INFO: Computing concentration for {spec_name} with molecular weight {mol_weight:.4g} kg/mol"
-        )
-        if rho_val is not None:
-            print(f"INFO: Assuming liquid density {rho_val} kg/m3")
+
+    logger.debug(
+        f"Computing concentration for {spec_name} with molecular weight {mol_weight:.4g} kg/mol"
+    )
+    if rho_val is not None:
+        logger.debug(f"Assuming liquid density {rho_val} kg/m3")
 
     # Read relevant fields
     kwargs = {

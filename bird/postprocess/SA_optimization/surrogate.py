@@ -14,6 +14,9 @@ from tensorflow.keras.models import Model as tfModel
 from tensorflow.keras.models import Sequential
 
 warnings.filterwarnings("ignore")
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def check_data_shape(X: np.ndarray, y: np.ndarray) -> None:
@@ -38,7 +41,7 @@ def check_data_shape(X: np.ndarray, y: np.ndarray) -> None:
     assert len(y.shape) == 2
     # only 1 QoI
     assert y.shape[1] == 1
-    print(f"INFO: {X.shape[0]} sim with {X.shape[1]} design variables")
+    logger.info(f"{X.shape[0]} sim with {X.shape[1]} design variables")
 
 
 def tune_rbf(X: np.ndarray, y: np.ndarray) -> dict:
