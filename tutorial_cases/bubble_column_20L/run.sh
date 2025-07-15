@@ -1,10 +1,12 @@
 #!/bin/bash
+
+# Clean case
+./Allclean
+
 set -e  # Exit on any error
 # Define what to do on error
 trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
 
-# Clean case
-./Allclean
 
 echo PRESTEP 1
 # Generate blockmeshDict

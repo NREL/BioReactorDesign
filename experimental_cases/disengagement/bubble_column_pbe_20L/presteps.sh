@@ -1,7 +1,4 @@
 #!/bin/bash
-set -e  # Exit on any error
-# Define what to do on error
-trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
 
 # Clean case
 module load conda
@@ -9,6 +6,12 @@ conda activate bird
 module load openfoam/9-craympich
 #source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
 ./Allclean
+
+
+set -e  # Exit on any error
+# Define what to do on error
+trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
+
 
 BIRD_HOME="/home/fmunicch/BioReactorDesign/bird"
 
