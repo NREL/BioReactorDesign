@@ -1,6 +1,12 @@
+#!/bin/bash
 
 # Clean case
 ./Allclean
+
+set -e  # Exit on any error
+# Define what to do on error
+trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
+
 
 # Generate blockmeshDict
 python ../../applications/write_block_rect_mesh.py -i system/mesh.json -o system

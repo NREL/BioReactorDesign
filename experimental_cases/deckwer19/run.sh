@@ -1,3 +1,8 @@
+#!/bin/bash
+set -e  # Exit on any error
+# Define what to do on error
+trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
+
 if ! type "blockMesh" &> /dev/null; then
     echo "<blockMesh> could not be found"
     echo "OpenFoam is likely not installed, skipping run"

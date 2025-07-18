@@ -35,7 +35,7 @@ case_name = args.case_name  # "12_hole_sparger_snappyRefine_700rpm_opt_coeff"
 case_path = "."
 dataFolder = args.data_folder
 
-if os.path.isfile(os.path.join(dataFolder, case_name, "conv2.npz")):
+if os.path.isfile(os.path.join(dataFolder, case_name, "conv.npz")):
     sys.exit("WARNING: History already created, Skipping")
 
 time_float_sorted, time_str_sorted = getCaseTimes(case_path, remove_zero=True)
@@ -104,7 +104,7 @@ for itime, time in enumerate(time_float_sorted):
 os.makedirs(dataFolder, exist_ok=True)
 os.makedirs(os.path.join(dataFolder, case_name), exist_ok=True)
 np.savez(
-    os.path.join(dataFolder, case_name, "conv2.npz"),
+    os.path.join(dataFolder, case_name, "conv.npz"),
     time=np.array(time_float_sorted),
     gh=gh_history,
     co2=co2_history,
