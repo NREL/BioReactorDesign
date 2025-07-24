@@ -55,13 +55,13 @@ With cells center locations and the internal fields, one can use python function
 
 .. code-block:: python
    
-   from bird.utilities.mathtools import conditionalAverage
+   from bird.utilities.mathtools import conditional_average
 
-   y_co2_gas_cond, co2_gas_cond = conditionalAverage(
-       cell_centers[:, 1], co2_gas["field"], nbin=32
+   y_co2_gas_cond, co2_gas_cond = conditional_average(
+       cell_centers[:, 1], co2_gas["field"], nbins=32
    )
-   y_alpha_gas_cond, alpha_gas_cond = conditionalAverage(
-       cell_centers[:, 1], alpha_gas["field"], nbin=32
+   y_alpha_gas_cond, alpha_gas_cond = conditional_average(
+       cell_centers[:, 1], alpha_gas["field"], nbins=32
    )
    
    from prettyPlot.plotting import *

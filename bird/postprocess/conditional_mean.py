@@ -47,8 +47,8 @@ def compute_cond_mean(
         for filename, name in zip(field_file, field_name_list):
             val_dict = {}
             field_tmp = readOFScal(filename, nCells)["field"]
-            vert_axis, field_cond_tmp = conditionalAverage(
-                cellCentres[:, vert_ind], field_tmp, nbin=n_bins
+            vert_axis, field_cond_tmp = conditional_average(
+                cellCentres[:, vert_ind], field_tmp, nbins=n_bins
             )
             if i_ave == 0:
                 fields_cond[name]["val"] = field_cond_tmp / window_ave
