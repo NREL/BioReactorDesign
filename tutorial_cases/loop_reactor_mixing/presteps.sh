@@ -1,8 +1,15 @@
+#!/bin/bash
+
 # Clean case
-module load anaconda3/2023
+module load conda
 conda activate /projects/gas2fuels/conda_env/bird
 source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
 ./Allclean
+
+set -e  # Exit on any error
+# Define what to do on error
+trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
+
 
 echo PRESTEP 1
 # Generate blockmeshDict
@@ -14,8 +21,8 @@ python /projects/gas2fuels/BioReactorDesign/applications/write_stl_patch.py -i s
 #python ../../../applications/write_stl_patch.py -i system/inlets_outlets.json
 
 # Generate mixers
-python /projects/gas2fuels/BioReactorDesign/applications/write_dynMix_fvModels_force_sign.py -i system/mixers.json -o constant
-#python ../../../applications/write_dynMix_fvModels_force_sign.py -i system/mixers.json -o constant
+python /projects/gas2fuels/BioReactorDesign/applications/write_dynMix_fvModels.py -fs -i system/mixers.json -o constant
+#python ../../../applications/write_dynMix_fvModels.py -fs -i system/mixers.json -o constant
 
 echo PRESTEP 2
 # Mesh gen

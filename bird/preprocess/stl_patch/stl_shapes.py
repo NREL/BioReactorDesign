@@ -1,4 +1,5 @@
 import json
+import logging
 import sys
 
 import numpy as np
@@ -6,9 +7,11 @@ import numpy as np
 from bird.meshing.block_rect_mesh import from_block_rect_to_seg
 from bird.preprocess.stl_patch.stl_mesh import STLMesh
 
+logger = logging.getLogger(__name__)
+
 
 def make_polygon(rad, nvert, center, normal_dir):
-    print(
+    logger.debug(
         f"\tMaking polygon at ({center[0]:.4g}, {center[1]:.4g}, {center[2]:.4g})"
     )
     theta = 2 * np.pi / nvert
@@ -26,7 +29,7 @@ def make_polygon(rad, nvert, center, normal_dir):
 
 
 def make_rectangle(w, h, center, normal_dir):
-    print(
+    logger.debug(
         f"\tMaking rectangle at ({center[0]:.4g}, {center[1]:.4g}, {center[2]:.4g})"
     )
     # Define vertices
@@ -49,7 +52,7 @@ def make_rectangle(w, h, center, normal_dir):
 
 
 def make_circle(radius, center, normal_dir, npts=3):
-    print(
+    logger.debug(
         f"\tMaking circle at ({center[0]:.4g}, {center[1]:.4g}, {center[2]:.4g})"
     )
     vertices = np.zeros((npts + 1, 3))
@@ -69,8 +72,7 @@ def make_circle(radius, center, normal_dir, npts=3):
 def make_spider(centerRad, nArms, widthArms, lengthArms, center, normal_dir):
     globalArea = 0
     if nArms < 2:
-        print("ERROR: nArms must be >= 2")
-        print(f"Got nArms = {nArms}")
+        logger.error(f"nArms ({nArms}) must be >= 2")
         sys.exit()
     if nArms == 2:
         nVertPol = 4
@@ -82,8 +84,9 @@ def make_spider(centerRad, nArms, widthArms, lengthArms, center, normal_dir):
     vertices = center_mesh.vertices
     maxWidth = np.linalg.norm((vertices[1, :] - vertices[0, :]))
     if widthArms > maxWidth:
-        print("ERROR: arm width will make arms overlap")
-        print("Either increase center radius or reduce arm width")
+        error_msg = "arm width will make arms overlap"
+        error_msg += "\nEither increase center radius or reduce arm width"
+        logger.error(error_msg)
         sys.exit()
 
     arm_mesh_list = []

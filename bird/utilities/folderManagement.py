@@ -1,5 +1,8 @@
+import logging
 import os
 import re
+
+logger = logging.getLogger(__name__)
 
 
 def makeRecursiveFolder(path):
@@ -22,8 +25,9 @@ def getManyFolders(rootFolder, prefix="flat_donut"):
     for entry in fold_tmp:
         num = re.findall(r"\d+", entry)
         if len(num) > 1:
-            print(f"WARNING: Cannot find num of folder {entry}.")
-            print("Do not trust the spearman stat")
+            msg = f"Cannot find num of folder {entry}."
+            msg += "\nDo not trust the spearman stat"
+            logger.warning(msg)
         else:
             fold_num.append(int(num[0]))
 

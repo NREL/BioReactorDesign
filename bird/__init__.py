@@ -37,3 +37,7 @@ BIRD_EARLY_PRED_DATA_DIR = os.path.join(BIRD_POST_DIR, "data_early")
 BIRD_KLA_DATA_DIR = os.path.join(BIRD_POST_DIR, "data_kla")
 BIRD_CASE_GEN_DATA_DIR = os.path.join(BIRD_PRE_DIR, "data_case_gen")
 BIRD_INV_DIR = os.path.join(BIRD_DIR, "inverse_modeling")
+
+from bird.logging_config import setup_logging
+
+setup_logging(level="INFO")

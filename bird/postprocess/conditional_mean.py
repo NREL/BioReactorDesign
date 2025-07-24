@@ -1,3 +1,4 @@
+import logging
 import os
 import pickle
 
@@ -6,6 +7,8 @@ from prettyPlot.plotting import plt
 from bird.postprocess.post_quantities import *
 from bird.utilities.mathtools import *
 from bird.utilities.ofio import *
+
+logger = logging.getLogger(__name__)
 
 
 def compute_cond_mean(
@@ -32,11 +35,11 @@ def compute_cond_mean(
         fields_cond[name] = {}
         fields_cond_tmp[name] = {}
 
-    print(f"Case : {case_path}")
+    logger.info(f"Case : {case_path}")
 
     for i_ave in range(window_ave):
         time_folder = time_str_sorted[-i_ave - 1]
-        print(f"\tReading Time : {time_folder}")
+        logger.debug(f"\tReading Time : {time_folder}")
         field_file = []
         for field_name in field_name_list:
             field_file.append(os.path.join(case_path, time_folder, field_name))
@@ -71,8 +74,8 @@ def sequencePlot(
     if not len(case_names) == len(folder_names):
         case_names = [f"test{i}" for i in range(len(folder_names))]
     if len(case_names) > len(symbList):
-        print(
-            f"ERROR: too many cases ({len(case_names)}), reduce number of case to {len(symbList)} or add symbols"
+        logger.error(
+            f"too many cases ({len(case_names)}), reduce number of case to {len(symbList)} or add symbols"
         )
         sys.exit()
     for ic, (case_name, folder_name) in enumerate(

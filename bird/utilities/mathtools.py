@@ -1,15 +1,19 @@
+import logging
 import sys
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 def conditionalAverage(x, y, nbin):
     try:
         assert len(x) == len(y)
     except AssertionError:
-        print("conditional average x and y have different dimension")
-        print("dim x = ", len(x))
-        print("dim y = ", len(y))
+        error_msg = "conditional average x and y have different dimension"
+        error_msg += f"\ndim x =  {len(x)}"
+        error_msg += f"\ndim y =  {len(y)}"
+        logger.error(error_msg)
         sys.exit()
 
     # Bin conditional space

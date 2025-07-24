@@ -9,6 +9,24 @@ from bird import BIRD_CASE_DIR
 from bird.preprocess.json_gen.design_io import *
 
 
+def id2simfolder(sim_id: int) -> str:
+    """
+    Generates simulation folder name from simulation index
+
+    Parameters
+    ----------
+    sim_id: int
+        Simulation index
+
+    Returns
+    ----------
+    sim_folder : str
+        Simulation folder name
+    """
+    sim_folder = f"Sim_{sim_id:04}"
+    return sim_folder
+
+
 def compare_config(config1, config2):
     same = True
     for key in config1:
@@ -46,7 +64,8 @@ def load_config_dict(filename):
 def write_script_start(filename, n):
     with open(filename, "w+") as f:
         for i in range(n):
-            f.write(f"cd Sim_{i}\n")
+            sim_folder = id2simfolder(i)
+            f.write(f"cd {sim_folder}\n")
             f.write(f"sbatch script\n")
             f.write(f"cd ..\n")
 
@@ -54,7 +73,8 @@ def write_script_start(filename, n):
 def write_script_post(filename, n):
     with open(filename, "w+") as f:
         for i in range(n):
-            f.write(f"cd Sim_{i}\n")
+            sim_folder = id2simfolder(i)
+            f.write(f"cd {sim_folder}\n")
             f.write(f"sbatch script_post\n")
             f.write(f"cd ..\n")
 
@@ -71,7 +91,8 @@ def write_prep(filename, n):
             f"source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc\n"
         )
         for i in range(n):
-            f.write(f"prep Sim_{i}\n")
+            sim_folder = id2simfolder(i)
+            f.write(f"prep {sim_folder}\n")
 
 
 def overwrite_vvm(case_folder, vvm):
@@ -155,10 +176,11 @@ def generate_small_reactor_cases(
     except:
         pass
     os.makedirs(study_folder)
-    for simid in config_dict:
+    for sim_id in config_dict:
+        sim_folder = id2simfolder(sim_id)
         shutil.copytree(
             f"{template_folder}",
-            os.path.join(f"{study_folder}", "Sim_{simid}"),
+            os.path.join(f"{study_folder}", sim_folder),
         )
         bc_dict = {}
         bc_dict["inlets"] = []
@@ -187,7 +209,7 @@ def generate_small_reactor_cases(
         )
         for branch in config_dict:
             if branch in [0, 1, 2]:
-                ind = np.argwhere(config_dict[simid][branch] == 1)
+                ind = np.argwhere(config_dict[sim_id][branch] == 1)
                 if len(ind) > 0:
                     ind = list(ind[:, 0])
                     for iind in ind:
@@ -204,7 +226,7 @@ def generate_small_reactor_cases(
                         )
         generate_stl_patch(
             os.path.join(
-                study_folder, f"Sim_{simid}", "system", "inlets_outlets.json"
+                study_folder, sim_folder, "system", "inlets_outlets.json"
             ),
             bc_dict,
             geom_dict,
@@ -213,7 +235,7 @@ def generate_small_reactor_cases(
         mix_list = []
         for branch in config_dict:
             if branch in [0, 1, 2]:
-                ind = np.argwhere(config_dict[simid][branch] == 0)
+                ind = np.argwhere(config_dict[sim_id][branch] == 0)
                 if len(ind) > 0:
                     ind = list(ind[:, 0])
                     for iind in ind:
@@ -231,17 +253,15 @@ def generate_small_reactor_cases(
                             }
                         )
         generate_dynamic_mixer(
-            os.path.join(
-                study_folder, f"Sim_{simid}", "system", "mixers.json"
-            ),
+            os.path.join(study_folder, sim_folder, "system", "mixers.json"),
             mix_list,
             geom_dict,
         )
         overwrite_vvm(
-            case_folder=os.path.join(study_folder, f"Sim_{simid}"), vvm=vvm
+            case_folder=os.path.join(study_folder, sim_folder), vvm=vvm
         )
         overwrite_bubble_size_model(
-            case_folder=os.path.join(study_folder, f"Sim_{simid}"),
+            case_folder=os.path.join(study_folder, sim_folder),
             constantD=constantD,
         )
 
@@ -274,10 +294,11 @@ def generate_scaledup_reactor_cases(
     except:
         pass
     os.makedirs(study_folder)
-    for simid in config_dict:
+    for sim_id in config_dict:
+        sim_folder = id2simfolder(sim_id)
         shutil.copytree(
             f"{template_folder}",
-            os.path.join(f"{study_folder}", f"Sim_{simid}"),
+            os.path.join(f"{study_folder}", sim_folder),
         )
         bc_dict = {}
         bc_dict["inlets"] = []
@@ -306,7 +327,7 @@ def generate_scaledup_reactor_cases(
         )
         for branch in config_dict:
             if branch in [0, 1, 2]:
-                ind = np.argwhere(config_dict[simid][branch] == 1)
+                ind = np.argwhere(config_dict[sim_id][branch] == 1)
                 if len(ind) > 0:
                     ind = list(ind[:, 0])
                     for iind in ind:
@@ -323,7 +344,7 @@ def generate_scaledup_reactor_cases(
                         )
         generate_stl_patch(
             os.path.join(
-                study_folder, f"Sim_{simid}", "system", "inlets_outlets.json"
+                study_folder, sim_folder, "system", "inlets_outlets.json"
             ),
             bc_dict,
             geom_dict,
@@ -332,7 +353,7 @@ def generate_scaledup_reactor_cases(
         mix_list = []
         for branch in config_dict:
             if branch in [0, 1, 2]:
-                ind = np.argwhere(config_dict[simid][branch] == 0)
+                ind = np.argwhere(config_dict[sim_id][branch] == 0)
                 if len(ind) > 0:
                     ind = list(ind[:, 0])
                     for iind in ind:
@@ -350,17 +371,15 @@ def generate_scaledup_reactor_cases(
                             }
                         )
         generate_dynamic_mixer(
-            os.path.join(
-                study_folder, f"Sim_{simid}", "system", "mixers.json"
-            ),
+            os.path.join(study_folder, sim_folder, "system", "mixers.json"),
             mix_list,
             geom_dict,
         )
         overwrite_vvm(
-            case_folder=os.path.join(study_folder, f"Sim_{simid}"), vvm=vvm
+            case_folder=os.path.join(study_folder, sim_folder), vvm=vvm
         )
         overwrite_bubble_size_model(
-            case_folder=os.path.join(study_folder, f"Sim_{simid}"),
+            case_folder=os.path.join(study_folder, sim_folder),
             constantD=constantD,
         )
 
@@ -498,9 +517,10 @@ def generate_single_scaledup_reactor_sparger_cases(
     )
 
     # Start from template
+    sim_folder = id2simfolder(sim_id)
     shutil.copytree(
         f"{template_folder}",
-        os.path.join(f"{study_folder}", f"Sim_{sim_id}"),
+        os.path.join(f"{study_folder}", sim_folder),
     )
 
     bc_dict = {}
@@ -544,7 +564,7 @@ def generate_single_scaledup_reactor_sparger_cases(
 
     generate_stl_patch(
         os.path.join(
-            study_folder, f"Sim_{sim_id}", "system", "inlets_outlets.json"
+            study_folder, sim_folder, "system", "inlets_outlets.json"
         ),
         bc_dict,
         geom_dict,
@@ -552,14 +572,12 @@ def generate_single_scaledup_reactor_sparger_cases(
 
     mix_list = []
     generate_dynamic_mixer(
-        os.path.join(study_folder, f"Sim_{sim_id}", "system", "mixers.json"),
+        os.path.join(study_folder, sim_folder, "system", "mixers.json"),
         mix_list,
         geom_dict,
     )
-    overwrite_vvm(
-        case_folder=os.path.join(study_folder, f"Sim_{sim_id}"), vvm=vvm
-    )
+    overwrite_vvm(case_folder=os.path.join(study_folder, sim_folder), vvm=vvm)
     overwrite_bubble_size_model(
-        case_folder=os.path.join(study_folder, f"Sim_{sim_id}"),
+        case_folder=os.path.join(study_folder, sim_folder),
         constantD=constantD,
     )
