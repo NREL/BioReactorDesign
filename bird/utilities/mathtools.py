@@ -1,3 +1,5 @@
+import sys
+
 import numpy as np
 
 
@@ -9,6 +11,7 @@ def conditionalAverage(x, y, nbin):
         print("dim x = ", len(x))
         print("dim y = ", len(y))
         sys.exit()
+
     # Bin conditional space
     mag = np.amax(x) - np.amin(x)
     x_bin = np.linspace(
