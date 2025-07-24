@@ -2,9 +2,16 @@ import logging
 import os
 
 import corner
+
+# https://github.com/pyro-ppl/numpyro/issues/2051
+import jax.experimental.pjit
 import jax.numpy as jnp
 import jax.random as random
 import numpy as np
+from jax.extend.core.primitives import jit_p
+
+jax.experimental.pjit.pjit_p = jit_p
+
 import numpyro
 import numpyro.distributions as dist
 from numpyro.infer import MCMC, NUTS
