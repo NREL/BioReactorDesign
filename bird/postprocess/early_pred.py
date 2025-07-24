@@ -2,9 +2,19 @@ import logging
 import os
 
 import corner
+import jax
 import jax.numpy as jnp
 import jax.random as random
 import numpy as np
+from packaging import version
+
+if version.parse(jax.__version__) >= version.parse("0.7.0"):
+    # https://github.com/pyro-ppl/numpyro/issues/2051
+    import jax.experimental.pjit
+    from jax.extend.core.primitives import jit_p
+
+    jax.experimental.pjit.pjit_p = jit_p
+
 import numpyro
 import numpyro.distributions as dist
 from numpyro.infer import MCMC, NUTS
