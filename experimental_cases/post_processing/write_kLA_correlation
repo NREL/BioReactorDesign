@@ -1,0 +1,187 @@
+
+    type            coded;
+    libs            ("libutilityFunctionObjects.so");
+
+    name            writeKlA;
+
+    writeControl        writeTime;
+
+
+    codeWrite
+    #{
+
+        const scalarField& V = mesh().V();
+        const volVectorField Ug
+        (
+            IOobject
+            (
+                "U.gas",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volVectorField Ul
+        (
+            IOobject
+            (
+                "U.liquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField alphal 
+        (
+            IOobject
+            (
+                "alpha.liquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField alphag 
+        (
+            IOobject
+            (
+                "alpha.gas",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField dg 
+        (
+            IOobject
+            (
+                "d.gas",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        
+        scalar nu = 1e-6;
+    
+        scalar totVol = 0;
+  
+        scalar kLAH2a = 0.;
+        scalar kLAO2a = 0.;
+        scalar kLACO2a = 0.;
+
+        scalar kLAH2b = 0.;
+        scalar kLAO2b = 0.;
+        scalar kLACO2b = 0.;
+
+        scalar kLAH2c = 0.;
+        scalar kLAO2c = 0.;
+        scalar kLACO2c = 0.;
+
+   
+ 
+        forAll(V,cellI)
+        {
+            if(alphal[cellI] > 0.5 )
+            {
+
+  
+                totVol += V[cellI];
+   
+                scalar Re = dg[cellI] * mag(Ug[cellI] - Ul[cellI]) / (0.4*nu);
+
+
+                scalar klaH2 = 1.13*sqrt(Re)*sqrt(nu/3.9e-9)*(3.9e-9/dg[cellI])*(6.0/dg[cellI])*alphag[cellI]*3600;
+                scalar klaCO2 = 1.13*sqrt(Re)*sqrt(nu/2.32e-9)*(2.32e-9/dg[cellI])*(6.0/dg[cellI])*alphag[cellI]*3600;
+                scalar klaO2 = 1.13*sqrt(Re)*sqrt(nu/2.32e-9)*(2.32e-9/dg[cellI])*(6.0/dg[cellI])*alphag[cellI]*3600;
+        		kLAO2a += V[cellI] * klaO2;
+                kLACO2a += V[cellI] * klaCO2;
+                kLAH2a += V[cellI] * klaH2;
+
+                Re = dg[cellI] * mag(Ug[cellI] - Ul[cellI]) / (4*nu);
+
+
+                klaH2 = 1.13*sqrt(Re)*sqrt(nu/3.9e-9)*(3.9e-9/dg[cellI])*(6.0/dg[cellI])*alphag[cellI]*3600;
+                klaCO2 = 1.13*sqrt(Re)*sqrt(nu/2.32e-9)*(2.32e-9/dg[cellI])*(6.0/dg[cellI])*alphag[cellI]*3600;
+                klaO2 = 1.13*sqrt(Re)*sqrt(nu/2.32e-9)*(2.32e-9/dg[cellI])*(6.0/dg[cellI])*alphag[cellI]*3600;
+        		kLAO2b += V[cellI] * klaO2;
+                kLACO2b += V[cellI] * klaCO2;
+                kLAH2b += V[cellI] * klaH2;
+
+                Re = dg[cellI] * mag(Ug[cellI] - Ul[cellI]) / (16*nu);
+
+
+                klaH2 = 1.13*sqrt(Re)*sqrt(nu/3.9e-9)*(3.9e-9/dg[cellI])*(6.0/dg[cellI])*alphag[cellI]*3600;
+                klaCO2 = 1.13*sqrt(Re)*sqrt(nu/2.32e-9)*(2.32e-9/dg[cellI])*(6.0/dg[cellI])*alphag[cellI]*3600;
+                klaO2 = 1.13*sqrt(Re)*sqrt(nu/2.32e-9)*(2.32e-9/dg[cellI])*(6.0/dg[cellI])*alphag[cellI]*3600;
+        		kLAO2c += V[cellI] * klaO2;
+                kLACO2c += V[cellI] * klaCO2;
+                kLAH2c += V[cellI] * klaH2;
+
+
+            }
+        }
+
+        reduce(totVol,sumOp<scalar>());
+        reduce(kLAO2a,sumOp<scalar>());
+        reduce(kLACO2a,sumOp<scalar>());
+        reduce(kLAH2a,sumOp<scalar>());
+        reduce(kLAO2b,sumOp<scalar>());
+        reduce(kLACO2b,sumOp<scalar>());
+        reduce(kLAH2b,sumOp<scalar>());
+        reduce(kLAO2c,sumOp<scalar>());
+        reduce(kLACO2c,sumOp<scalar>());
+        reduce(kLAH2c,sumOp<scalar>());
+
+       
+        kLAO2a /= totVol + 1e-32;
+        kLACO2a /= totVol + 1e-32;
+        kLAH2a /= totVol + 1e-32;        
+        kLAO2b /= totVol + 1e-32;
+        kLACO2b /= totVol + 1e-32;
+        kLAH2b /= totVol + 1e-32;  
+        kLAO2c /= totVol + 1e-32;
+        kLACO2c /= totVol + 1e-32;
+        kLAH2c /= totVol + 1e-32;  
+
+
+        if(Pstream::master())
+        {
+            std::ofstream file("kLA.csv", std::ios::app);
+            file<< mesh().time().value() << ", "
+                << totVol << ", "
+                << kLAO2a << ", "
+                << kLACO2a << ", "
+                << kLAH2a << ", "
+                << kLAO2b << ", "
+                << kLACO2b << ", "
+                << kLAH2b << ", "
+                << kLAO2c << ", "
+                << kLACO2c << ", "
+                << kLAH2c << ", "
+                << "\n";
+
+            file.close();    
+        } 
+    #};
+
+    codeInclude
+    #{
+	#include <fstream>        
+    #};
+
