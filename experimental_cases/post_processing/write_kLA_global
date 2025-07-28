@@ -1,0 +1,339 @@
+    /*
+        This functionObject is meant to be used as post-processing for complete simulations. Use the bash script in this folder to run on all subfolders.
+        It writes the kLA using \int_V mdot dV / \int_V(C - C*) dV.
+
+        This is the OpenFOAM-12 version. This script requires data written with a solver that incorporates Commit aefecc9: Writes Su and Sp for dmdi.
+        
+    */
+
+    type            coded;
+    libs            ("libutilityFunctionObjects.so");
+
+    name            writeKlA;
+
+    writeControl        writeTime;
+
+
+    codeWrite
+    #{
+
+        const scalarField& V = mesh().V();
+        const volVectorField Ug
+        (
+            IOobject
+            (
+                "U.gas",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volVectorField Ul
+        (
+            IOobject
+            (
+                "U.liquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField alphal 
+        (
+            IOobject
+            (
+                "alpha.liquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField alphag 
+        (
+            IOobject
+            (
+                "alpha.gas",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField dg 
+        (
+            IOobject
+            (
+                "d.gas",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+
+        const volScalarField SpO2f 
+        (
+            IOobject
+            (
+                "interfaceCompositionPhaseChange:dmidtfSp.O2.gas_liquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField SpCO2f 
+        (
+            IOobject
+            (
+                "interfaceCompositionPhaseChange:dmidtfSp.CO2.gas_liquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField SpH2f 
+        (
+            IOobject
+            (
+                "interfaceCompositionPhaseChange:dmidtfSp.H2.gas_liquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField SuO2f 
+        (
+            IOobject
+            (
+                "interfaceCompositionPhaseChange:dmidtfSu.O2.gas_liquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField SuCO2f 
+        (
+            IOobject
+            (
+                "interfaceCompositionPhaseChange:dmidtfSu.CO2.gas_liquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField SuH2f 
+        (
+            IOobject
+            (
+                "interfaceCompositionPhaseChange:dmidtfSu.H2.gas_liquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField O2g 
+        (
+            IOobject
+            (
+                "O2.gas",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField O2l 
+        (
+            IOobject
+            (
+                "O2.liquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField CO2g 
+        (
+            IOobject
+            (
+                "CO2.gas",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField CO2l 
+        (
+            IOobject
+            (
+                "CO2.liquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField H2g 
+        (
+            IOobject
+            (
+                "H2.gas",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+        const volScalarField H2l 
+        (
+            IOobject
+            (
+                "H2.liquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+
+        const volScalarField interf 
+        (
+            IOobject
+            (
+                "interface.gasliquid",
+                mesh().time().name(),
+                mesh(),
+                IOobject::MUST_READ,
+                IOobject::NO_WRITE
+            ),
+            mesh()
+        );
+
+
+        volScalarField mdotO2 = SuO2f + SpO2f*O2l;
+        volScalarField mdotCO2 = SuCO2f + SpCO2f*CO2l;
+        volScalarField mdotH2 = SuH2f + SpH2f*H2l; 
+
+        
+        scalar nu = 1e-6;
+    
+        scalar liqVol = 0.;
+
+        scalar totmdotO2 = 0.;
+        scalar totmdotCO2 = 0.;
+        scalar totmdotH2 = 0.;
+        scalar deltaO2 = 0.;
+        scalar deltaH2 = 0.;
+        scalar deltaCO2 = 0.;   
+
+        scalar SpO2 = 0.;
+        scalar SpH2 = 0.;
+        scalar SpCO2 = 0.;   
+ 
+        forAll(V,cellI)
+        {
+            if(alphal[cellI] > 0.5 )
+            {
+
+  
+                
+                scalar w = V[cellI];
+                liqVol += w;
+                totmdotO2 += w * mdotO2[cellI];
+                totmdotCO2 += w * mdotCO2[cellI];
+                totmdotH2 += w * mdotH2[cellI];
+
+                deltaO2 += w * ( O2l[cellI] - SuO2f[cellI]/(SpO2f[cellI] + 1e-32 ) );
+                deltaCO2 += w * ( CO2l[cellI] - SuCO2f[cellI]/(SpCO2f[cellI] + 1e-32 ) );
+                deltaH2 += w * ( H2l[cellI] - SuH2f[cellI]/(SpH2f[cellI] + 1e-32 ) );
+
+                SpO2 -= w * SpO2f[cellI];
+                SpH2 -= w * SpH2f[cellI];
+                SpCO2 -= w * SpCO2f[cellI];
+            }
+        }
+
+        reduce(liqVol,sumOp<scalar>());
+        reduce(totmdotO2 ,sumOp<scalar>());
+        reduce(totmdotCO2 ,sumOp<scalar>());
+        reduce(totmdotH2 ,sumOp<scalar>());
+        reduce(deltaO2,sumOp<scalar>());
+        reduce(deltaCO2,sumOp<scalar>());
+        reduce(deltaH2,sumOp<scalar>());
+        reduce(SpO2,sumOp<scalar>());
+        reduce(SpCO2,sumOp<scalar>());
+        reduce(SpH2,sumOp<scalar>());
+
+        // kLA in 1/hours
+        scalar kLAO2 = 3.2 * totmdotO2/(deltaO2+1e-32);
+        scalar kLACO2 = 3.2 * totmdotCO2/(deltaCO2+1e-32);
+        scalar kLAH2 = 3.2 * totmdotH2/(deltaH2+1e-32);
+
+        //scalar kLAO2 = 3.2 * SpO2 / liqVol;
+        //scalar kLACO2 = 3.2 * SpCO2 / liqVol;
+        //scalar kLAH2 = 3.2 * SpH2 / liqVol;      
+
+
+        if(Pstream::master())
+        {
+            std::ofstream file("kLA.csv", std::ios::app);
+            file<< mesh().time().value() << ", "
+                << kLAO2 << ", "
+                << kLACO2 << ", "
+                << kLAH2 
+                << "\n";
+
+            file.close();    
+        } 
+    #};
+
+    codeInclude
+    #{
+	#include <fstream>        
+    #};
+
