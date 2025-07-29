@@ -1,12 +1,14 @@
+import logging
 import os
 import pickle
 import shutil
-import sys
 
 import numpy as np
 
 from bird import BIRD_CASE_DIR
 from bird.preprocess.json_gen.design_io import *
+
+logger = logging.getLogger(__name__)
 
 
 def id2simfolder(sim_id: int) -> str:
@@ -98,9 +100,9 @@ def write_prep(filename, n):
 def overwrite_vvm(case_folder, vvm):
     list_dir = os.listdir(case_folder)
     if not "constant" in list_dir:
-        sys.exit(
-            f"ERROR: {case_folder} is likely not a case folder, could not find constant/"
-        )
+        error_msg = f"{case_folder} is likely not a case folder, could not find constant/"
+        logger.error(error_msg)
+        raise FileNotFoundError(error_msg)
     else:
         filename = os.path.join(case_folder, "constant", "globalVars_temp")
         filename_write = os.path.join(
@@ -124,9 +126,9 @@ def overwrite_vvm(case_folder, vvm):
 def overwrite_bubble_size_model(case_folder, constantD=False):
     list_dir = os.listdir(case_folder)
     if not "constant" in list_dir:
-        sys.exit(
-            f"ERROR: {case_folder} is likely not a case folder, could not find constant/"
-        )
+        error_msg = f"{case_folder} is likely not a case folder, could not find constant/"
+        logger.error(error_msg)
+        raise FileNotFoundError(error_msg)
     else:
         filename = os.path.join(case_folder, "presteps.sh")
         filename_write = os.path.join(case_folder, "presteps2.sh")

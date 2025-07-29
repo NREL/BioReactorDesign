@@ -2,6 +2,8 @@ import numpy as np
 
 from bird.utilities.ofio import *
 
+logger = logging.getLogger(__name__)
+
 
 def read_field(
     case_folder: str,
@@ -83,10 +85,13 @@ def read_cell_volume(
             field_name="V", field_dict=field_dict, **kwargs_vol
         )
     except FileNotFoundError:
-        message = f"ERROR: could not find {os.path.join(case_folder,volume_time,'V')}\n"
-        message += "You can generate V with\n\t"
-        message += f"`postProcess -func writeCellVolumes -time {time_folder} -case {case_folder}`"
-        sys.exit(message)
+        error_msg = (
+            f"Could not find {os.path.join(case_folder,volume_time,'V')}\n"
+        )
+        error_msg += "You can generate V with\n\t"
+        error_msg += f"`postProcess -func writeCellVolumes -time {time_folder} -case {case_folder}`"
+        logger.error(error_msg)
+        raise FileNotFoundError(error_msg)
 
     return cell_volume, field_dict
 
@@ -126,16 +131,17 @@ def read_cell_centers(
             )
             field_dict["cell_centers"] = cell_centers
         except FileNotFoundError:
-            message = f"ERROR: could not find {cell_centers_file}\n"
-            message += "You can generate it with\n\t"
-            message += f"`writeMeshObj -case {case_folder}`\n"
+            error_msg = f"Could not find {cell_centers_file}"
+            error_msg += "You can generate it with\n\t"
+            error_msg += f"`writeMeshObj -case {case_folder}`\n"
             time_float, time_str = getCaseTimes(case_folder)
-            correct_path = f"meshCellCentres_{time_str[0]}.obj"
+            correct_ph = f"meshCellCentres_{time_str[0]}.obj"
             if not correct_path == cell_centers_file:
-                message += (
+                error_msg += (
                     f"And adjust the cell center file path to {correct_path}"
                 )
-            sys.exit(message)
+            logger.error(error_msg)
+            raise FileNotFoundError(error_msg)
     else:
         cell_centers = field_dict["cell_centers"]
 

@@ -1,7 +1,6 @@
 import logging
 import os
 import re
-import sys
 
 import numpy as np
 
@@ -256,9 +255,9 @@ def readOFScal(
         try:
             field = np.loadtxt(filename, skiprows=n_header, max_rows=n_cells)
         except Exception as err:
-            logger.error(f"Issue when reading {filename}")
-            print(err)
-            sys.exit()
+            error_msg = f"Issue when reading {filename}"
+            logger.error(error_msg)
+            raise err(error_msg)
 
     return {
         "field": field,
@@ -351,9 +350,9 @@ def readOFVec(
             field = np.array(field).astype(float)
 
         except Exception as err:
-            logger.error(f"Issue when reading {filename}")
-            print(err)
-            sys.exit()
+            error_msg = f"Issue when reading {filename}"
+            logger.error(error_msg)
+            raise err(error_msg)
 
     return {
         "field": field,
