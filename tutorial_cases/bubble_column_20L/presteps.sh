@@ -22,6 +22,9 @@ python $BIRD_HOME/../applications/write_block_cyl_mesh.py -i system/mesh.json -t
 # Generate boundary stl
 python $BIRD_HOME/../applications/write_stl_patch.py -i system/inlets_outlets.json
 
+# Generate species thermo properties
+python $BIRD_HOME/../applications/write_species_thermo_prop.py -cf .
+
 echo PRESTEP 2
 # Mesh gen
 blockMesh -dict system/blockMeshDict

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from bird.utilities.ofio import parse_openfoam_dict
+from bird.utilities.ofio import read_openfoam_dict
 
 
 def test_read_phaseProperties():
@@ -19,7 +19,7 @@ def test_read_phaseProperties():
         "constant",
     )
     # Read non uniform field
-    foam_dict = parse_openfoam_dict(
+    foam_dict = read_openfoam_dict(
         filename=os.path.join(const_folder, "phaseProperties")
     )
 
@@ -54,7 +54,7 @@ def test_read_thermophysicalProperties():
         "constant",
     )
     # Read non uniform field
-    foam_dict = parse_openfoam_dict(
+    foam_dict = read_openfoam_dict(
         filename=os.path.join(const_folder, "thermophysicalProperties.gas")
     )
 
@@ -78,7 +78,7 @@ def test_read_momentumTransport():
         "constant",
     )
     # Read non uniform field
-    foam_dict = parse_openfoam_dict(
+    foam_dict = read_openfoam_dict(
         filename=os.path.join(const_folder, "momentumTransport.gas")
     )
 
@@ -99,7 +99,7 @@ def test_read_controlDict():
         "system",
     )
     # Read non uniform field
-    foam_dict = parse_openfoam_dict(
+    foam_dict = read_openfoam_dict(
         filename=os.path.join(syst_folder, "controlDict")
     )
 

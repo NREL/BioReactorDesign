@@ -20,6 +20,9 @@ python ../../applications/write_stl_patch.py -i system/inlets_outlets.json
 # Generate mixers
 python ../../applications/write_dynMix_fvModels.py -fs -i system/mixers.json -o constant
 
+# Generate species thermo properties
+python ../../applications/write_species_thermo_prop.py -cf .
+
 echo PRESTEP 2
 # Mesh gen
 blockMesh -dict system/blockMeshDict

@@ -59,7 +59,7 @@ Again, this is used in ``bird.postprocess.post_quantities`` in the ``compute_sup
 Read dictionaries
 ------------
 
-We provide a function ``parse_openfoam_dict`` in ``bird.utilities.ofio`` that can parse OpenFOAM dictionaries. The function requires a lot of special characters handling but works for processing basic dictionaries needed to manage OpenFOAM cases (``controlDict``, ``setFieldsDict``, ``phaseProperties``, ``thermophysicalProperties``, ``momentumTransport``, ...)
+We provide a function ``read_openfoam_dict`` in ``bird.utilities.ofio`` that can parse OpenFOAM dictionaries. The function requires a lot of special characters handling but works for processing basic dictionaries needed to manage OpenFOAM cases (``controlDict``, ``setFieldsDict``, ``phaseProperties``, ``thermophysicalProperties``, ``momentumTransport``, ...)
 
 
 Generate cases
