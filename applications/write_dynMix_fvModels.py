@@ -4,8 +4,8 @@ import numpy as np
 import stl
 
 from bird import BIRD_PRE_DYNMIX_TEMP_DIR
-from bird.meshing._mesh_tools import parseJsonFile
 from bird.preprocess.dynamic_mixer.mixing_fvModels import *
+from bird.utilities.parser import parse_json
 
 if __name__ == "__main__":
     import argparse
@@ -40,7 +40,7 @@ if __name__ == "__main__":
         help="Force mixing source sign",
     )
     args = parser.parse_args()
-    dynMix_dict = parseJsonFile(args.input)
+    dynMix_dict = parse_json(args.input)
     write_fvModel(
         dynMix_dict,
         output_folder=args.output_folder,

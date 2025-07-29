@@ -4,9 +4,9 @@ import numpy as np
 import stl
 
 from bird import BIRD_PRE_PATCH_TEMP_DIR
-from bird.meshing._mesh_tools import parseJsonFile
 from bird.preprocess.stl_patch.stl_bc import write_boundaries
 from bird.preprocess.stl_patch.stl_shapes import *
+from bird.utilities.parser import parse_json
 
 if __name__ == "__main__":
     import argparse
@@ -27,7 +27,7 @@ if __name__ == "__main__":
         "-v", "--verbose", action="store_true", help="plot on screen"
     )
     args = parser.parse_args()
-    bc_patch_dict = parseJsonFile(args.input)
+    bc_patch_dict = parse_json(args.input)
     write_boundaries(bc_patch_dict)
 
     if args.verbose:

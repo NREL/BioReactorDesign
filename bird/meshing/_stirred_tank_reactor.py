@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from bird.meshing._mesh_tools import parseYAMLFile
+from bird.utilities.parser import parse_yaml
 
 
 class StirredTankReactor:
@@ -134,6 +134,6 @@ class StirredTankReactor:
     def from_file(cls, yamlfile):
         if ".yaml" not in yamlfile:
             yamlfile += ".yaml"
-        in_dict = parseYAMLFile(yamlfile)
+        in_dict = parse_yaml(yamlfile)
         react_dict = {**in_dict["geometry"], **in_dict["mesh"]}
         return cls(**react_dict)
