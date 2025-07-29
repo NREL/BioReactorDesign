@@ -49,9 +49,12 @@ def get_species_name(case_dir: str, phase: str = "gas") -> list[str]:
     check_phase_name(phase)
     logger.debug(f"Finding species in phase '{phase}'")
 
+    breakpoint()
+    print(f"thermophysicalProperties.{phase}")
     thermo_properties = read_openfoam_dict(
         os.path.join(case_dir, "constant", f"thermophysicalProperties.{phase}")
     )
+    breakpoint()
 
     try:
         species = thermo_properties["species"]
@@ -154,6 +157,7 @@ def compare_old_new_prop(
     old_dict: dict,
     new_dict: dict,
     species: str,
+    phase: str,
     type_name="float",
 ) -> str:
     """
@@ -171,6 +175,8 @@ def compare_old_new_prop(
         New dictionary of values
     species: str
         Name of the species (useful for reporting mismatch)
+    phase: str
+        Name of the phase (useful for reporting mismatch)
     type_name: str
         Name of the data type compared (useful for detecting mismatch).
         Can be 'float' or 'list' for now
@@ -180,6 +186,9 @@ def compare_old_new_prop(
     status: str
         Whether comparison was successful or not, allows for handling missing keys
     """
+
+    assert type_name in ["float", "list"]
+
     status = ""
     try:
         old_val = old_dict
@@ -200,12 +209,12 @@ def compare_old_new_prop(
         if type_name == "float":
             if not abs(old_val - new_val) < 1e-12:
                 logger.warning(
-                    f"{key_seq_old[-1]} of '{species}' updated from {old_val} to {new_val}"
+                    f"{key_seq_old[-1]} of '{species}' ({phase}) updated from {old_val} to {new_val}"
                 )
         elif type_name == "list":
             if not np.linalg.norm(old_val - new_val) < 1e-12:
                 logger.warning(
-                    f"{key_seq_old[-1]} of '{species}' updated from {old_val} to {new_val}"
+                    f"{key_seq_old[-1]} of '{species}' ({phase}) updated from {old_val} to {new_val}"
                 )
         status = "success"
     except KeyError:
@@ -251,37 +260,54 @@ def update_gas_thermo_prop(
                 old_dict=spec_dict,
                 new_dict=target_wm_dict,
                 species=species,
+                phase="gas",
                 type_name="float",
             )
+            spec_dict["specie"]["molWeight"] = target_wm_dict["molWeight"]
             if status.lower() == "failure":
                 spec_dict["specie"] = target_wm_dict
 
         # Thermo coeff
-        target_thermo_dict = {
-            "Tlow": str(
+        thermo_keys = []
+        thermo_keys_cp_coeff = []
+        target_thermo_dict = {}
+        if "Tlow" in species_prop[species]["gas"]["thermodynamics"]:
+            target_thermo_dict["Tlow"] = str(
                 species_prop[species]["gas"]["thermodynamics"]["Tlow"]
-            ),
-            "Thigh": str(
+            )
+            thermo_keys.append("Tlow")
+        if "Thigh" in species_prop[species]["gas"]["thermodynamics"]:
+            target_thermo_dict["Thigh"] = str(
                 species_prop[species]["gas"]["thermodynamics"]["Thigh"]
-            ),
-            "highCpCoeffs": "( "
-            + str(
-                species_prop[species]["gas"]["thermodynamics"]["highCpCoeffs"]
             )
-            + " )",
-            "lowCpCoeffs": "( "
-            + str(
-                species_prop[species]["gas"]["thermodynamics"]["lowCpCoeffs"]
-            )
-            + " )",
-        }
+            thermo_keys.append("Thigh")
         if "Tcommon" in species_prop[species]["gas"]["thermodynamics"]:
             target_thermo_dict["Tcommon"] = str(
                 species_prop[species]["gas"]["thermodynamics"]["Tcommon"]
             )
-            thermo_keys = ["Tlow", "Thigh", "Tcommon"]
-        else:
-            thermo_keys = ["Tlow", "Thigh"]
+            thermo_keys.append("Tcommon")
+        if "highCpCoeffs" in species_prop[species]["gas"]["thermodynamics"]:
+            target_thermo_dict["highCpCoeffs"] = (
+                "( "
+                + str(
+                    species_prop[species]["gas"]["thermodynamics"][
+                        "highCpCoeffs"
+                    ]
+                )
+                + " )"
+            )
+            thermo_keys_cp_coeff.append("highCpCoeffs")
+        if "lowCpCoeffs" in species_prop[species]["gas"]["thermodynamics"]:
+            target_thermo_dict["lowCpCoeffs"] = (
+                "( "
+                + str(
+                    species_prop[species]["gas"]["thermodynamics"][
+                        "lowCpCoeffs"
+                    ]
+                )
+                + " )"
+            )
+            thermo_keys_cp_coeff.append("lowCpCoeffs")
 
         if not "thermodynamics" in spec_dict:
             spec_dict["thermodynamics"] = target_thermo_dict
@@ -293,47 +319,56 @@ def update_gas_thermo_prop(
                     old_dict=spec_dict,
                     new_dict=target_thermo_dict,
                     species=species,
+                    phase="gas",
                     type_name="float",
                 )
-                if status.lower() == "failure":
-                    spec_dict["thermodynamic"][thermo_key] = (
-                        target_thermo_dict[thermo_key]
-                    )
-            for thermo_key in ["highCpCoeffs", "lowCpCoeffs"]:
+                spec_dict["thermodynamics"][thermo_key] = target_thermo_dict[
+                    thermo_key
+                ]
+
+            for thermo_key in thermo_keys_cp_coeff:
                 status = compare_old_new_prop(
                     key_seq_old=["thermodynamics", thermo_key],
                     key_seq_new=[thermo_key],
                     old_dict=spec_dict,
                     new_dict=target_thermo_dict,
                     species=species,
+                    phase="gas",
                     type_name="list",
                 )
-                if status.lower() == "failure":
-                    spec_dict["thermodynamic"][thermo_key] = (
-                        target_thermo_dict[thermo_key]
-                    )
+                spec_dict["thermodynamics"][thermo_key] = target_thermo_dict[
+                    thermo_key
+                ]
 
         # Transport coeff
-        target_transport_dict = {
-            "As": str(species_prop[species]["gas"]["transport"]["As"]),
-            "Ts": str(species_prop[species]["gas"]["transport"]["Ts"]),
-        }
+        transport_keys = []
+        target_transport_dict = {}
+        if "As" in species_prop[species]["gas"]["transport"]:
+            target_transport_dict["As"] = str(
+                species_prop[species]["gas"]["transport"]["As"]
+            )
+            transport_keys.append("As")
+        if "Ts" in species_prop[species]["gas"]["transport"]:
+            target_transport_dict["Ts"] = str(
+                species_prop[species]["gas"]["transport"]["Ts"]
+            )
+            transport_keys.append("Ts")
         if not "transport" in spec_dict:
             spec_dict["transport"] = target_transport_dict
         else:
-            for trans_key in ["As", "Ts"]:
+            for trans_key in transport_keys:
                 status = compare_old_new_prop(
                     key_seq_old=["transport", trans_key],
                     key_seq_new=[trans_key],
                     old_dict=spec_dict,
                     new_dict=target_transport_dict,
                     species=species,
+                    phase="gas",
                     type_name="float",
                 )
-                if status.lower() == "failure":
-                    spec_dict["transport"][trans_key] = target_transport_dict[
-                        trans_key
-                    ]
+                spec_dict["transport"][trans_key] = target_transport_dict[
+                    trans_key
+                ]
 
         # Elements
         target_element_dict = species_prop[species]["specie"]["elements"]
@@ -384,8 +419,10 @@ def update_liq_thermo_prop(
                 old_dict=spec_dict,
                 new_dict=target_wm_dict,
                 species=species,
+                phase="liquid",
                 type_name="float",
             )
+            spec_dict["specie"]["molWeight"] = target_wm_dict["molWeight"]
             if status.lower() == "failure":
                 spec_dict["specie"] = target_wm_dict
 
@@ -404,8 +441,12 @@ def update_liq_thermo_prop(
                     old_dict=spec_dict,
                     new_dict=target_thermo_dict,
                     species=species,
+                    phase="liquid",
                     type_name="float",
                 )
+                spec_dict["thermodynamics"][thermo_key] = target_thermo_dict[
+                    thermo_key
+                ]
 
         thermo_properties[key_val] = spec_dict
 
