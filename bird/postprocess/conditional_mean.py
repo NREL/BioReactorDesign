@@ -74,10 +74,10 @@ def sequencePlot(
     if not len(case_names) == len(folder_names):
         case_names = [f"test{i}" for i in range(len(folder_names))]
     if len(case_names) > len(symbList):
-        logger.error(
-            f"too many cases ({len(case_names)}), reduce number of case to {len(symbList)} or add symbols"
-        )
-        sys.exit()
+        error_msg = f"too many cases ({len(case_names)}), reduce number of case to {len(symbList)} or add symbols"
+        logger.error(error_msg)
+        raise IndexError(error_msg)
+
     for ic, (case_name, folder_name) in enumerate(
         zip(case_names, folder_names)
     ):

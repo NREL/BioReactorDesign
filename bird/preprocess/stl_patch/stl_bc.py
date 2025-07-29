@@ -1,12 +1,10 @@
-import json
 import logging
-import sys
 
 import numpy as np
 import stl
 
-from bird.meshing._mesh_tools import parseJsonFile
 from bird.preprocess.stl_patch.stl_shapes import *
+from bird.utilities.parser import parse_json
 
 logger = logging.getLogger(__name__)
 
@@ -51,11 +49,11 @@ def write_boundaries(input_dict):
 
 
 if __name__ == "__main__":
-    input_dict = parseJsonFile(
+    input_dict = parse_json(
         "bc_patch_mesh_template/loop_reactor_expl/inlets_outlets.json"
     )
     write_boundaries(input_dict)
-    input_dict = parseJsonFile(
+    input_dict = parse_json(
         "bc_patch_mesh_template/loop_reactor_branch/inlets_outlets.json"
     )
     write_boundaries(input_dict)

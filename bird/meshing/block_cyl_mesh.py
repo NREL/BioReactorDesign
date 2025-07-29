@@ -1,26 +1,26 @@
 import logging
 import os
-import sys
 
 import numpy as np
 
 from bird.meshing._mesh_tools import *
+from bird.utilities.parser import parse_json, parse_yaml
 
 logger = logging.getLogger(__name__)
 
 
 def assemble_geom(input_file, topo_file):
-    # inpt = parseJsonFile(input_file)
+    # inpt = parse_json(input_file)
     if input_file.endswith(".yaml"):
-        inpt = parseYAMLFile(input_file)
+        inpt = parse_yaml(input_file)
     elif input_file.endswith(".json"):
-        inpt = parseJsonFile(input_file)
+        inpt = parse_json(input_file)
     else:
         raise ValueError(f"unknown input file ({input_file}) extension")
     if topo_file.endswith(".yaml"):
-        topo = parseYAMLFile(topo_file)
+        topo = parse_yaml(topo_file)
     elif topo_file.endswith(".json"):
-        topo = parseJsonFile(topo_file)
+        topo = parse_json(topo_file)
     else:
         raise ValueError(f"unknown topo file ({topo_file}) extension")
 
@@ -50,9 +50,9 @@ def assemble_geom(input_file, topo_file):
 
 def assemble_mesh(input_file, geomDict):
     if input_file.endswith(".yaml"):
-        inpt = parseYAMLFile(input_file)
+        inpt = parse_yaml(input_file)
     elif input_file.endswith(".json"):
-        inpt = parseJsonFile(input_file)
+        inpt = parse_json(input_file)
     else:
         raise ValueError(f"unknown input file ({input_file}) extension")
     R = geomDict["R"]

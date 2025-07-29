@@ -1,5 +1,4 @@
 import logging
-import sys
 
 import numpy as np
 
@@ -42,7 +41,7 @@ def conditional_average(
         error_msg += f"\nx shape =  {x.shape}"
         error_msg += f"\ny shape =  {y.shape}"
         logger.error(error_msg)
-        sys.exit()
+        raise AssertionError(error_msg)
     if len(x.shape) == 2:
         x = x[:, 0]
     if len(y.shape) == 2:
@@ -54,7 +53,7 @@ def conditional_average(
         error_msg += f"\ndim x =  {len(x)}"
         error_msg += f"\ndim y =  {len(y)}"
         logger.error(error_msg)
-        sys.exit()
+        raise AssertionError(error_msg)
 
     # Bin conditional space
     mag = np.amax(x) - np.amin(x)

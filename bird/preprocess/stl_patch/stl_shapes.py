@@ -1,6 +1,5 @@
 import json
 import logging
-import sys
 
 import numpy as np
 
@@ -72,8 +71,9 @@ def make_circle(radius, center, normal_dir, npts=3):
 def make_spider(centerRad, nArms, widthArms, lengthArms, center, normal_dir):
     globalArea = 0
     if nArms < 2:
-        logger.error(f"nArms ({nArms}) must be >= 2")
-        sys.exit()
+        error_msg = f"nArms ({nArms}) must be >= 2"
+        logger.error(error_msg)
+        raise ValueError(error_msg)
     if nArms == 2:
         nVertPol = 4
     if nArms > 2:
@@ -87,7 +87,7 @@ def make_spider(centerRad, nArms, widthArms, lengthArms, center, normal_dir):
         error_msg = "arm width will make arms overlap"
         error_msg += "\nEither increase center radius or reduce arm width"
         logger.error(error_msg)
-        sys.exit()
+        raise ValueError(error_msg)
 
     arm_mesh_list = []
     for i in range(nArms):

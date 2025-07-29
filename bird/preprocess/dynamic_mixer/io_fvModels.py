@@ -149,9 +149,10 @@ def write_mixer(mixer, output_folder):
             f.write("\t\t\t\tsource_sign_factor = 1.0;\n")
             f.write("\t\t\t\trhoV = downrhoV;\n")
         else:
-            sys.exit(
-                f"ERROR: mixer.sign = {mixer.sign} but should be '+' or '-'"
+            error_message = (
+                f"mixer.sign = {mixer.sign} but should be '+' or '-'"
             )
+            logger.error
         f.write(
             '\t\t\t\tFoam::Info << "[BIRD:DYNMIX WARN] " << "upV = " << upV << " downV = " << downV << " for source at " << source_pt_x << ", " << source_pt_y << ", " << source_pt_z <<  endl;\n'
         )

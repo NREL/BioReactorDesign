@@ -3,8 +3,8 @@ from pathlib import Path
 
 import numpy as np
 
-from bird.meshing._mesh_tools import parseJsonFile
 from bird.preprocess.dynamic_mixer.mixing_fvModels import *
+from bird.utilities.parser import parse_json
 
 
 def test_expl_list():
@@ -17,7 +17,7 @@ def test_expl_list():
         "dynamic_mixer",
         "mixing_template",
     )
-    input_dict = parseJsonFile(
+    input_dict = parse_json(
         os.path.join(BIRD_PRE_DYNMIX_TEMP_DIR, "expl_list", "mixers.json")
     )
     write_fvModel(input_dict, output_folder=".")
@@ -33,7 +33,7 @@ def test_loop_list():
         "dynamic_mixer",
         "mixing_template",
     )
-    input_dict = parseJsonFile(
+    input_dict = parse_json(
         os.path.join(
             BIRD_PRE_DYNMIX_TEMP_DIR, "loop_reactor_list", "mixers.json"
         )

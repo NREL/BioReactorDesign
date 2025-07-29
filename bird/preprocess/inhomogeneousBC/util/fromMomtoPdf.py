@@ -1,5 +1,4 @@
 import logging
-import sys
 
 import numpy as np
 from scipy.optimize import minimize
@@ -69,10 +68,9 @@ def opt(meanTar, stdTar, diam):
 
 def get_f_vals(meanTar, stdTar, diam):
     if meanTar < np.amin(diam) or meanTar > np.amax(diam):
-        logger.error(
-            f"mean target {meanTar} out of bounds [{np.amin(diam)}, {np.amax(diam)}]"
-        )
-        sys.exit()
+        error_msg = f"mean target {meanTar} out of bounds [{np.amin(diam)}, {np.amax(diam)}]"
+        logger.error(error_msg)
+        raise ValueError(error_msg)
     tol = 10
     irep = 0
     while tol > 0.01:

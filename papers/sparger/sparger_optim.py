@@ -10,7 +10,6 @@ from shutil import copy
 import argument
 from meshing import *
 from modifyGeom import *
-from myparser import parseJsonFile
 from writeBlockMesh import *
 
 

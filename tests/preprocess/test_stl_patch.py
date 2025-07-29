@@ -4,8 +4,8 @@ from pathlib import Path
 import numpy as np
 from prettyPlot.plotting import pretty_labels
 
-from bird.meshing._mesh_tools import parseJsonFile
 from bird.preprocess.stl_patch.stl_bc import write_boundaries
+from bird.utilities.parser import parse_json
 from bird.utilities.stl_plotting import plotSTL
 
 
@@ -20,7 +20,7 @@ def test_spider_sparger():
         "bc_patch_mesh_template",
     )
 
-    input_dict = parseJsonFile(
+    input_dict = parse_json(
         os.path.join(BIRD_PRE_PATCH_TEMP_DIR, "spider_spg/inlets_outlets.json")
     )
     write_boundaries(input_dict)
@@ -39,7 +39,7 @@ def test_loop_reactor():
         "stl_patch",
         "bc_patch_mesh_template",
     )
-    input_dict = parseJsonFile(
+    input_dict = parse_json(
         os.path.join(
             BIRD_PRE_PATCH_TEMP_DIR, "loop_reactor_expl/inlets_outlets.json"
         )
@@ -60,7 +60,7 @@ def test_loop_reactor_branch():
         "stl_patch",
         "bc_patch_mesh_template",
     )
-    input_dict = parseJsonFile(
+    input_dict = parse_json(
         os.path.join(
             BIRD_PRE_PATCH_TEMP_DIR, "loop_reactor_branch/inlets_outlets.json"
         )
