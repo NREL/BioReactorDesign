@@ -1,6 +1,5 @@
 import argparse
 import os
-import sys
 import time
 
 import joblib
@@ -32,7 +31,7 @@ def flexible_activation(x, activation):
     elif activation.lower() == "leakyrelu":
         out = layers.LeakyReLU()(x)
     else:
-        sys.exit(f"ERROR: unknown activation {activation}")
+        raise NotImplementedError(f"Unknown activation {activation}")
     return out
 
 

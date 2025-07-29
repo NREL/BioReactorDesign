@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 
 import corner
 import jax
@@ -209,7 +208,7 @@ def mcmc_iter(mcmc_method="HMC"):
     elif mcmc_method.lower() == "sa":
         kernel = SA(bayes_step)
     else:
-        sys.exit(f"MCMC method {mcmc_method} unrecognized")
+        raise NotImplementedError(f"MCMC method {mcmc_method} unrecognized")
 
     mcmc = MCMC(
         kernel,
