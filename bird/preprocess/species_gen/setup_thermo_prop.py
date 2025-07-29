@@ -149,13 +149,38 @@ def get_species_key_pair(
 
 
 def compare_old_new_prop(
-    key_seq_old: list,
-    key_seq_new: list,
-    old_dict,
-    new_dict,
-    species,
+    key_seq_old: list[str],
+    key_seq_new: list[str],
+    old_dict: dict,
+    new_dict: dict,
+    species: str,
     type_name="float",
-):
+)->str:
+    """
+    Compare old and new thermo properties and report any mismatch
+
+    Parameters
+    ----------
+    key_seq_old: list[str]
+        Sequence of keys in the old dict that gives access to the old property value
+    key_seq_new: list[str]
+        Sequence of keys in the new dict that gives access to the new property value
+    old_dict: dict
+        Old dictionary of values
+    new_dict: dict
+        New dictionary of values
+    species: str
+        Name of the species (useful for reporting mismatch)
+    type_name: str
+        Name of the data type compared (useful for detecting mismatch).
+        Can be 'float' or 'list' for now
+
+    Returns
+    ----------
+    status: str
+        Whether comparison was succesful or not, allows for handling missing keys
+    """
+    status = ''
     try:
         old_val = old_dict
         for key in key_seq_old:
@@ -182,9 +207,10 @@ def compare_old_new_prop(
                 logger.warning(
                     f"{key_seq_old[-1]} of '{species}' updated from {old_val} to {new_val}"
                 )
-        return "success"
+        status = "success"
     except KeyError:
-        return "failure"
+        status = "failure"
+    return status
 
 
 def update_gas_thermo_prop(
@@ -227,7 +253,7 @@ def update_gas_thermo_prop(
                 species=species,
                 type_name="float",
             )
-            if status == "failure":
+            if status.lower() == "failure":
                 spec_dict["specie"] = target_wm_dict
 
         # Thermo coeff
@@ -269,7 +295,7 @@ def update_gas_thermo_prop(
                     species=species,
                     type_name="float",
                 )
-                if status == "failure":
+                if status.lower() == "failure":
                     spec_dict["thermodynamic"][thermo_key] = (
                         target_thermo_dict[thermo_key]
                     )
@@ -282,7 +308,7 @@ def update_gas_thermo_prop(
                     species=species,
                     type_name="list",
                 )
-                if status == "failure":
+                if status.lower() == "failure":
                     spec_dict["thermodynamic"][thermo_key] = (
                         target_thermo_dict[thermo_key]
                     )
@@ -304,7 +330,7 @@ def update_gas_thermo_prop(
                     species=species,
                     type_name="float",
                 )
-                if status == "failure":
+                if status.lower() == "failure":
                     spec_dict["transport"][trans_key] = target_transport_dict[
                         trans_key
                     ]
@@ -360,7 +386,7 @@ def update_liq_thermo_prop(
                 species=species,
                 type_name="float",
             )
-            if status == "failure":
+            if status.lower() == "failure":
                 spec_dict["specie"] = target_wm_dict
 
         # Thermo coeff
