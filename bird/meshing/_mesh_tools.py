@@ -1,49 +1,8 @@
-import json
 import logging
-import os
-import sys
-from pathlib import Path
 
 import numpy as np
-from ruamel.yaml import YAML
 
 logger = logging.getLogger(__name__)
-
-
-def parseJsonFile(input_filename):
-    with open(input_filename) as f:
-        inpt = json.load(f)
-    return inpt
-
-
-def check_for_tabs_in_yaml(file_path: str) -> None:
-    """
-    Checks if a YAML file contains any tab characters.
-    Raises a ValueError if tabs found.
-
-    Parameters
-    ----------
-    file_path: str
-        path to yaml filename
-    """
-
-    with open(file_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-    for iline, line in enumerate(lines):
-        if "\t" in line:
-            raise ValueError(
-                f"Tab character found on line {iline} of '{file_path}'. "
-                "YAML files must use spaces for indentation."
-            )
-
-
-def parseYAMLFile(input_filename):
-    if not os.path.exists(input_filename):
-        raise FileNotFoundError(input_filename)
-    check_for_tabs_in_yaml(input_filename)
-    yaml = YAML(typ="safe")
-    inpt = yaml.load(Path(input_filename))
-    return inpt
 
 
 def make_walls_from_topo(topo):
@@ -114,7 +73,7 @@ def bissection(val, stretch_fun, N1):
     resultmax = stretch_fun(Gmax, N1) - val
     if resultmin * resultmax > 0:
         logger.error("Initial bounds of grading do not encompass the solution")
-        sys.exit()
+        raise ValueError
 
     for i in range(1000):
         Gmid = 0.5 * (Gmax + Gmin)
@@ -211,7 +170,7 @@ def verticalCoarsening(
                 message = "ERROR:"
                 message += f"Invalid coarsening ratio for vertical block {ind}"
                 message += "\nratio dir and ratio dir ref must be opposite"
-                sys.exit(message)
+                raise ValueError
 
             if ratio_dir[ind] == "+":
                 gradVert[ind] = 1.0 / bissection(
@@ -325,7 +284,7 @@ def radialCoarsening(
                 message = "ERROR:"
                 message += f"Invalid coarsening ratio for radial block {ind}"
                 message += "\nratio dir and ratio dir ref must be opposite"
-                sys.exit(message)
+                raise ValueError
 
             if ratio_dir[ind] == "+":
                 gradR[ind] = 1.0 / bissection(

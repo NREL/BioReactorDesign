@@ -1,9 +1,9 @@
 import numpy as np
 
-from bird.meshing._mesh_tools import parseJsonFile
 from bird.meshing.block_rect_mesh import from_block_rect_to_seg
 from bird.preprocess.dynamic_mixer.io_fvModels import *
 from bird.preprocess.dynamic_mixer.mixer import Mixer
+from bird.utilities.parser import parse_json
 
 
 def check_input(input_dict):
@@ -57,7 +57,7 @@ def write_fvModel(input_dict, output_folder=".", force_sign=False):
 
 
 if __name__ == "__main__":
-    input_dict = parseJsonFile(
+    input_dict = parse_json(
         os.path.join("mixing_template", "loop_reactor_list", "mixers.json"),
     )
     write_fvModel(input_dict)
