@@ -72,8 +72,9 @@ def bissection(val, stretch_fun, N1):
     resultmin = stretch_fun(Gmin, N1) - val
     resultmax = stretch_fun(Gmax, N1) - val
     if resultmin * resultmax > 0:
-        logger.error("Initial bounds of grading do not encompass the solution")
-        raise ValueError
+        error_msg = "Initial bounds of grading do not encompass the solution"
+        logger.error(error_msg)
+        raise ValueError(error_msg)
 
     for i in range(1000):
         Gmid = 0.5 * (Gmax + Gmin)
@@ -167,10 +168,12 @@ def verticalCoarsening(
                 deltaE = block_cell_minus_length[ind - 1]
 
             if ratio_dir[ind] == ratio_dir_ref[ind]:
-                message = "ERROR:"
-                message += f"Invalid coarsening ratio for vertical block {ind}"
-                message += "\nratio dir and ratio dir ref must be opposite"
-                raise ValueError
+                error_msg = (
+                    f"Invalid coarsening ratio for vertical block {ind}"
+                )
+                error_msg += "\nratio dir and ratio dir ref must be opposite"
+                logger.error(error_msg)
+                raise ValueError(error_msg)
 
             if ratio_dir[ind] == "+":
                 gradVert[ind] = 1.0 / bissection(
@@ -281,10 +284,10 @@ def radialCoarsening(
                 deltaE = block_cell_minus_length[ind + 1]
 
             if ratio_dir[ind] == ratio_dir_ref[ind]:
-                message = "ERROR:"
-                message += f"Invalid coarsening ratio for radial block {ind}"
-                message += "\nratio dir and ratio dir ref must be opposite"
-                raise ValueError
+                error_msg = f"Invalid coarsening ratio for radial block {ind}"
+                error_msg += "\nratio dir and ratio dir ref must be opposite"
+                logger.error(error_msg)
+                raise ValueError(error_msg)
 
             if ratio_dir[ind] == "+":
                 gradR[ind] = 1.0 / bissection(
