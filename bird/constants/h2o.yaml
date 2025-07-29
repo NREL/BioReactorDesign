@@ -1,7 +1,7 @@
 name: H2O
 
 specie:
-     molWeight: 18.01534
+     molWeight: 18.0153
      elements:
          H: 2
          O: 1
