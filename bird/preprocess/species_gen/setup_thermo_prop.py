@@ -96,13 +96,13 @@ def get_species_properties(species_name: list[str]) -> dict:
     """
     logger.debug(f"Reading properties of {species_name} from {BIRD_CONST_DIR}")
     species_prop = {}
-    for species in species_name:
-        if species == "water":
+    for spec_name in species_name:
+        if spec_name == "water":
             species_file = "h2o.yaml"
         else:
-            species_file = species.lower() + ".yaml"
+            species_file = spec_name.lower() + ".yaml"
         species_dict = parse_yaml(os.path.join(BIRD_CONST_DIR, species_file))
-        species_prop[species] = species_dict
+        species_prop[spec_name] = species_dict
     return species_prop
 
 
@@ -127,22 +127,22 @@ def get_species_key_pair(
 
     pair_species_keys = {}
 
-    for species in species_name:
-        if species in list(thermo_properties.keys()):
-            pair_species_keys[species] = species
+    for spec_name in species_name:
+        if spec_name in list(thermo_properties.keys()):
+            pair_species_keys[spec_name] = spec_name
         else:
             found = False
             for key in list(thermo_properties.keys()):
-                if species in key:
-                    pair_species_keys[species] = key
-                    logger.debug(f"Found '{species}' in {key}")
+                if spec_name in key:
+                    pair_species_keys[spec_name] = key
+                    logger.debug(f"Found '{spec_name}' in {key}")
                     found = True
                     break
             if not found:
-                thermo_properties[species] = {}
-                pair_species_keys[species] = species
+                thermo_properties[spec_name] = {}
+                pair_species_keys[spec_name] = spec_name
                 logger.warning(
-                    f"Could not find species '{species}' info in {thermo_properties_file}"
+                    f"Could not find species '{spec_name}' info in {thermo_properties_file}"
                 )
 
     return pair_species_keys
@@ -153,7 +153,7 @@ def compare_old_new_prop(
     key_seq_new: list[str],
     old_dict: dict,
     new_dict: dict,
-    species: str,
+    spec_name: str,
     phase: str,
     type_name="float",
 ) -> str:
@@ -170,7 +170,7 @@ def compare_old_new_prop(
         Old dictionary of values
     new_dict: dict
         New dictionary of values
-    species: str
+    spec_name: str
         Name of the species (useful for reporting mismatch)
     phase: str
         Name of the phase (useful for reporting mismatch)
@@ -206,12 +206,12 @@ def compare_old_new_prop(
         if type_name == "float":
             if not abs(old_val - new_val) < 1e-12:
                 logger.warning(
-                    f"{key_seq_old[-1]} of '{species}' ({phase}) updated from {old_val} to {new_val}"
+                    f"{key_seq_old[-1]} of '{spec_name}' ({phase}) updated from {old_val} to {new_val}"
                 )
         elif type_name == "list":
             if not np.linalg.norm(old_val - new_val) < 1e-12:
                 logger.warning(
-                    f"{key_seq_old[-1]} of '{species}' ({phase}) updated from {old_val} to {new_val}"
+                    f"{key_seq_old[-1]} of '{spec_name}' ({phase}) updated from {old_val} to {new_val}"
                 )
         status = "success"
     except KeyError:
@@ -241,12 +241,12 @@ def update_gas_thermo_prop(
     """
     species_name = list(pair_species_keys.keys())
 
-    for species in species_name:
-        key_val = pair_species_keys[species]
+    for spec_name in species_name:
+        key_val = pair_species_keys[spec_name]
         spec_dict = thermo_properties[key_val]
         # Molecular weight
         target_wm_dict = {
-            "molWeight": str(species_prop[species]["specie"]["molWeight"])
+            "molWeight": str(species_prop[spec_name]["specie"]["molWeight"])
         }
         if not "specie" in spec_dict:
             spec_dict["specie"] = target_wm_dict
@@ -256,7 +256,7 @@ def update_gas_thermo_prop(
                 key_seq_new=["molWeight"],
                 old_dict=spec_dict,
                 new_dict=target_wm_dict,
-                species=species,
+                spec_name=spec_name,
                 phase="gas",
                 type_name="float",
             )
@@ -268,37 +268,37 @@ def update_gas_thermo_prop(
         thermo_keys = []
         thermo_keys_cp_coeff = []
         target_thermo_dict = {}
-        if "Tlow" in species_prop[species]["gas"]["thermodynamics"]:
+        if "Tlow" in species_prop[spec_name]["gas"]["thermodynamics"]:
             target_thermo_dict["Tlow"] = str(
-                species_prop[species]["gas"]["thermodynamics"]["Tlow"]
+                species_prop[spec_name]["gas"]["thermodynamics"]["Tlow"]
             )
             thermo_keys.append("Tlow")
-        if "Thigh" in species_prop[species]["gas"]["thermodynamics"]:
+        if "Thigh" in species_prop[spec_name]["gas"]["thermodynamics"]:
             target_thermo_dict["Thigh"] = str(
-                species_prop[species]["gas"]["thermodynamics"]["Thigh"]
+                species_prop[spec_name]["gas"]["thermodynamics"]["Thigh"]
             )
             thermo_keys.append("Thigh")
-        if "Tcommon" in species_prop[species]["gas"]["thermodynamics"]:
+        if "Tcommon" in species_prop[spec_name]["gas"]["thermodynamics"]:
             target_thermo_dict["Tcommon"] = str(
-                species_prop[species]["gas"]["thermodynamics"]["Tcommon"]
+                species_prop[spec_name]["gas"]["thermodynamics"]["Tcommon"]
             )
             thermo_keys.append("Tcommon")
-        if "highCpCoeffs" in species_prop[species]["gas"]["thermodynamics"]:
+        if "highCpCoeffs" in species_prop[spec_name]["gas"]["thermodynamics"]:
             target_thermo_dict["highCpCoeffs"] = (
                 "( "
                 + str(
-                    species_prop[species]["gas"]["thermodynamics"][
+                    species_prop[spec_name]["gas"]["thermodynamics"][
                         "highCpCoeffs"
                     ]
                 )
                 + " )"
             )
             thermo_keys_cp_coeff.append("highCpCoeffs")
-        if "lowCpCoeffs" in species_prop[species]["gas"]["thermodynamics"]:
+        if "lowCpCoeffs" in species_prop[spec_name]["gas"]["thermodynamics"]:
             target_thermo_dict["lowCpCoeffs"] = (
                 "( "
                 + str(
-                    species_prop[species]["gas"]["thermodynamics"][
+                    species_prop[spec_name]["gas"]["thermodynamics"][
                         "lowCpCoeffs"
                     ]
                 )
@@ -315,7 +315,7 @@ def update_gas_thermo_prop(
                     key_seq_new=[thermo_key],
                     old_dict=spec_dict,
                     new_dict=target_thermo_dict,
-                    species=species,
+                    spec_name=spec_name,
                     phase="gas",
                     type_name="float",
                 )
@@ -329,7 +329,7 @@ def update_gas_thermo_prop(
                     key_seq_new=[thermo_key],
                     old_dict=spec_dict,
                     new_dict=target_thermo_dict,
-                    species=species,
+                    spec_name=spec_name,
                     phase="gas",
                     type_name="list",
                 )
@@ -340,14 +340,14 @@ def update_gas_thermo_prop(
         # Transport coeff
         transport_keys = []
         target_transport_dict = {}
-        if "As" in species_prop[species]["gas"]["transport"]:
+        if "As" in species_prop[spec_name]["gas"]["transport"]:
             target_transport_dict["As"] = str(
-                species_prop[species]["gas"]["transport"]["As"]
+                species_prop[spec_name]["gas"]["transport"]["As"]
             )
             transport_keys.append("As")
-        if "Ts" in species_prop[species]["gas"]["transport"]:
+        if "Ts" in species_prop[spec_name]["gas"]["transport"]:
             target_transport_dict["Ts"] = str(
-                species_prop[species]["gas"]["transport"]["Ts"]
+                species_prop[spec_name]["gas"]["transport"]["Ts"]
             )
             transport_keys.append("Ts")
         if not "transport" in spec_dict:
@@ -359,7 +359,7 @@ def update_gas_thermo_prop(
                     key_seq_new=[trans_key],
                     old_dict=spec_dict,
                     new_dict=target_transport_dict,
-                    species=species,
+                    spec_name=spec_name,
                     phase="gas",
                     type_name="float",
                 )
@@ -368,7 +368,7 @@ def update_gas_thermo_prop(
                 ]
 
         # Elements
-        target_element_dict = species_prop[species]["specie"]["elements"]
+        target_element_dict = species_prop[spec_name]["specie"]["elements"]
         if not "elements" in spec_dict:
             spec_dict["elements"] = target_element_dict
 
@@ -399,13 +399,13 @@ def update_liq_thermo_prop(
     """
 
     species_name = list(pair_species_keys.keys())
-    for species in species_name:
-        key_val = pair_species_keys[species]
+    for spec_name in species_name:
+        key_val = pair_species_keys[spec_name]
         spec_dict = thermo_properties[key_val]
 
         # Molecular weight
         target_wm_dict = {
-            "molWeight": str(species_prop[species]["specie"]["molWeight"])
+            "molWeight": str(species_prop[spec_name]["specie"]["molWeight"])
         }
         if not "specie" in spec_dict:
             spec_dict["specie"] = target_wm_dict
@@ -415,7 +415,7 @@ def update_liq_thermo_prop(
                 key_seq_new=["molWeight"],
                 old_dict=spec_dict,
                 new_dict=target_wm_dict,
-                species=species,
+                spec_name=spec_name,
                 phase="liquid",
                 type_name="float",
             )
@@ -426,7 +426,7 @@ def update_liq_thermo_prop(
         # Thermo coeff
         target_thermo_dict = {
             "Cv": "$CpMixLiq",
-            "Hf": species_prop[species]["liquid"]["thermodynamics"]["Hf"],
+            "Hf": species_prop[spec_name]["liquid"]["thermodynamics"]["Hf"],
         }
         if not "thermodynamics" in spec_dict:
             spec_dict["thermodynamics"] = target_thermo_dict
@@ -437,7 +437,7 @@ def update_liq_thermo_prop(
                     key_seq_new=[thermo_key],
                     old_dict=spec_dict,
                     new_dict=target_thermo_dict,
-                    species=species,
+                    spec_name=spec_name,
                     phase="liquid",
                     type_name="float",
                 )
@@ -483,9 +483,6 @@ def write_species_properties(case_dir: str, phase: str = "gas") -> None:
         case_dir, "constant", f"thermophysicalProperties.{phase}"
     )
     write_openfoam_dict(thermo_properties_update, filename=filename)
-
-
-# def write_thermo_properties(case_dir:str, phase:str="gas") -> None:
 
 
 if __name__ == "__main__":
