@@ -416,7 +416,7 @@ def write_species_properties(case_dir: str, phase: str = "gas") -> None:
             thermo_properties, species_prop, pair_species_keys
         )
     filename = os.path.join(
-        case_dir, "constant", f"thermophysicalProperties_up.{phase}"
+        case_dir, "constant", f"thermophysicalProperties.{phase}"
     )
     write_openfoam_dict(thermo_properties_update, filename=filename)
 
