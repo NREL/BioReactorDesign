@@ -49,12 +49,9 @@ def get_species_name(case_dir: str, phase: str = "gas") -> list[str]:
     check_phase_name(phase)
     logger.debug(f"Finding species in phase '{phase}'")
 
-    breakpoint()
-    print(f"thermophysicalProperties.{phase}")
     thermo_properties = read_openfoam_dict(
         os.path.join(case_dir, "constant", f"thermophysicalProperties.{phase}")
     )
-    breakpoint()
 
     try:
         species = thermo_properties["species"]
