@@ -155,7 +155,7 @@ def compare_old_new_prop(
     new_dict: dict,
     species: str,
     type_name="float",
-)->str:
+) -> str:
     """
     Compare old and new thermo properties and report any mismatch
 
@@ -178,9 +178,9 @@ def compare_old_new_prop(
     Returns
     ----------
     status: str
-        Whether comparison was succesful or not, allows for handling missing keys
+        Whether comparison was successful or not, allows for handling missing keys
     """
-    status = ''
+    status = ""
     try:
         old_val = old_dict
         for key in key_seq_old:
