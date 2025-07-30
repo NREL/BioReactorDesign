@@ -95,6 +95,7 @@ The snippet above defines ``outlet`` as the concatenation of 3 faces of cylindri
 #. 2. The boundary between the block ``(Lmin=0, Rmin=1)`` and the block ``(Lmax=1, Rmax=1)``
 #. 3. The boundary between the block ``(Lmin=0, Rmin=2)`` and the block ``(Lmax=1, Rmax=2)``
 
+In the graph below, the vertical block 0 and vertical block 4 are not represented. They are `ghost blocks` that are only used to define bounding boundaries. Likewise, the radial block 3 is not represented is another `ghost block` but can be used to define lateral boundaries.  
 
 .. container:: figures-bound-geom-bce
 
@@ -104,7 +105,7 @@ The snippet above defines ``outlet`` as the concatenation of 3 faces of cylindri
       :alt: Schematic of the boundary
 
 
-To finish defining the boundaries of the bubble column, we would need to define the outer walls and the inlet. We do not define any other boundaries for now and BiRD automatically sets non-defined patches as walls. We will show how to set the inlet boundary in :ref:`Inlet path<inletpatch_bce>`.
+To finish defining the boundaries of the bubble column, we would need to define the outer walls and the inlet. We do not define any other boundaries for now and BiRD automatically sets non-defined patches as walls. We will show how to set the inlet boundary in :ref:`Inlet patch<inletpatch_bce>`.
 
 Mesh
 ~~~~~~~~~~~
