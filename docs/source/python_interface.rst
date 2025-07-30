@@ -12,9 +12,10 @@ Internal scalar and vector fields
 ~~~~~~~~~~~~~~~~~~~~
 
 Currently internal scalar and vector fields can be read using the python interface. In particular, note that 
-#. 1. We do not support reading tensor fields for now.
-#. 2. We do not support reading boundary fields for now.
-#. 3. We only read reconstructed files
+
+1. We do not support reading tensor fields for now.
+2. We do not support reading boundary fields for now.
+3. We only read reconstructed files
 
 We are open to implementing 1. and 2. if need be. Implementing 3. is possible but will be more involved.
 
