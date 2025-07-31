@@ -134,6 +134,34 @@ namespace Foam
     );
 
     typedef
+    MulticomponentPhaseModel
+    <
+        ThermalPhaseModel
+        <
+            BioReactingPhaseModel
+            <
+                MovingPhaseModel
+                <
+                    ThermoPhaseModel
+                    <
+                        phaseModel,
+                        rhoFluidMulticomponentThermo
+                    >
+                >
+            >
+        >
+    >
+    bioReactingPhaseModel;
+
+    addNamedToRunTimeSelectionTable
+    (
+        phaseModel,
+        bioReactingPhaseModel,
+        phaseSystem,
+        bioReactingPhaseModel
+    );
+
+    typedef
         PurePhaseModel
         <
             SolidIsothermalPhaseModel
@@ -255,33 +283,7 @@ namespace Foam
         reactingPhaseModel
     );
 
-    typedef
-    MulticomponentPhaseModel
-    <
-        ThermalPhaseModel
-        <
-            BioReactingPhaseModel
-            <
-                MovingPhaseModel
-                <
-                    ThermoPhaseModel
-                    <
-                        phaseModel,
-                        rhoFluidMulticomponentThermo
-                    >
-                >
-            >
-        >
-    >
-    bioReactingPhaseModel;
 
-    addNamedToRunTimeSelectionTable
-    (
-        phaseModel,
-        bioReactingPhaseModel,
-        phaseSystem,
-        bioReactingPhaseModel
-    );
 }
 
 // ************************************************************************* //

@@ -76,13 +76,16 @@ protected:
         wordList species_; 
 
         // Maximum uptake rate
-        List<dimensionedScalar> maxUptakeRate_;
+        List<scalar> maxUptakeRate_;
 
         // Half saturation constant
-        List<dimensionedScalar> K_;
+        List<scalar> K_;
+
+        // Molar weights
+        List<scalar> M_;
 
         // Uptake rates Sp
-        PtrList<volScalarField> URSp_;
+        PtrList<volScalarField::Internal> URSp_;
 
         // Dry-cell Weight
         //volScalarField DCW_;
