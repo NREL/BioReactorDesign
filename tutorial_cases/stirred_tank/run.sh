@@ -18,6 +18,10 @@ if ! type "python" &> /dev/null; then
 else
     # Generate blockmeshDict
     python ../../applications/write_stirred_tank_mesh.py -i ../../bird/meshing/stirred_tank_mesh_templates/base_tank/tank_par.yaml -o system/blockMeshDict
+  
+    # Generate species thermo properties
+    # python ../../applications/write_species_thermo_prop.py -cf .
+
 fi
 
 

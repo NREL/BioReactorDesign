@@ -24,6 +24,9 @@ python /projects/gas2fuels/BioReactorDesign/applications/write_stl_patch.py -i s
 python /projects/gas2fuels/BioReactorDesign/applications/write_dynMix_fvModels.py -fs -i system/mixers.json -o constant
 #python ../../../applications/write_dynMix_fvModels.py -fs -i system/mixers.json -o constant
 
+# Generate species thermo properties
+python /projects/gas2fuels/BioReactorDesign//applications/write_species_thermo_prop.py -cf .
+
 echo PRESTEP 2
 # Mesh gen
 blockMesh -dict system/blockMeshDict

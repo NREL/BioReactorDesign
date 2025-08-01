@@ -6,6 +6,7 @@ from bird.version import __version__
 
 BIRD_DIR = os.path.dirname(os.path.realpath(__file__))
 BIRD_CASE_DIR = os.path.join(BIRD_DIR, "../tutorial_cases")
+BIRD_CONST_DIR = os.path.join(BIRD_DIR, "constants")
 BIRD_MESH_DIR = os.path.join(BIRD_DIR, "meshing")
 BIRD_POST_DIR = os.path.join(BIRD_DIR, "postprocess")
 BIRD_PRE_DIR = os.path.join(BIRD_DIR, "preprocess")
@@ -41,3 +42,4 @@ BIRD_INV_DIR = os.path.join(BIRD_DIR, "inverse_modeling")
 from bird.logging_config import setup_logging
 
 setup_logging(level="INFO")
+# setup_logging(level="DEBUG")

@@ -19,6 +19,10 @@ else
     BIRD_DIR=`python -c "import bird; print(bird.BIRD_DIR)"`
     # Generate blockmeshDict
     python ../../applications/write_block_cyl_mesh.py -i ../../bird/meshing/block_cyl_mesh_templates/sideSparger/input.json  -t ../../bird/meshing/block_cyl_mesh_templates/sideSparger/topology.json -o system
+
+    # Generate species thermo properties
+    python ../../applications/write_species_thermo_prop.py -cf .
+
 fi
 
 

@@ -1,0 +1,34 @@
+name: CO2
+
+specie:
+    molWeight: 44.00995
+    elements:
+        C: 1
+        O: 2 
+
+liquid:
+    LeLiq: '#calc "$kThermLiq / $rho0MixLiq / $D_CO2 / $CpMixLiq"'
+    thermodynamics:
+        Hf: -1.5879e+07
+
+gas:
+    in-H2O:
+        WC_V: "34e-3" # m3/kmol molar volume at normal boiling temperature (Treybal 1968)
+        D: '#calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_CO2,0.6)' 
+    H_298: "0.83"
+    DH: "2400"
+    He: '#calc "$H_CO2_298 * exp($DH_CO2 *(1. / $T0 - 1./298.15))"'
+    k: '#calc "$D_CO2*$rho0MixLiq*$CpMixLiq*$LeLiqMix"'
+    Pr: '#calc "$muMixLiq*$CpMixLiq / $kCO2"'
+   
+    thermodynamics:
+        Tlow: 200
+        Thigh: 3500
+        Tcommon: 1000
+        highCpCoeffs: 3.85746029 0.00441437026 -2.21481404e-06 5.23490188e-10 -4.72084164e-14 -48759.166 2.27163806
+        lowCpCoeffs: 2.35677352 0.00898459677 -7.12356269e-06 2.45919022e-09 -1.43699548e-13 -48371.9697 9.90105222
+    transport:
+        As: 1.572e-06
+        Ts: 240
+    
+     

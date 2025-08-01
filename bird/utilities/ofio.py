@@ -558,7 +558,13 @@ def tokenize(text: str) -> list[str]:
         List of tokens.
     """
     text = re.sub(r"([{}();])", r" \1 ", text)
+    text = re.sub(r'"\s*\(\s*([^)]+?)\s*\)\s*"', r'"(\1)"', text)
+
     token_list = text.split()
+
+    # print(token_list)
+    # print(text)
+
     return token_list
 
 
@@ -663,7 +669,7 @@ def parse_tokens(tokens: list[str]) -> dict:
     return parsed
 
 
-def parse_openfoam_dict(filename: str) -> dict:
+def read_openfoam_dict(filename: str) -> dict:
     """
     Parse OpenFOAM dictionary into a python dictionary
 
@@ -685,7 +691,7 @@ def parse_openfoam_dict(filename: str) -> dict:
     return foam_dict
 
 
-def write_openfoam_dict(d: dict, filename: str, indent: int = 0) -> None:
+def write_openfoam_dict(data: dict, filename: str, indent: int = 0) -> None:
     """
     Save a Python dictionary back to an OpenFOAM-style file.
 
@@ -699,28 +705,52 @@ def write_openfoam_dict(d: dict, filename: str, indent: int = 0) -> None:
         Number of indentation space
     """
 
-    lines = []
-
-    indent_str = " " * indent
-
-    for key, value in d.items():
+    def write_block(f, key, value, indent=0):
+        pad = " " * indent
         if isinstance(value, dict):
-            lines.append(f"{indent_str}{key}")
-            lines.append(f"{indent_str}{{")
-            lines.extend(write_openfoam_dict(value, indent + 4))
-            lines.append(f"{indent_str}}}")
+            f.write(f"{pad}{key}\n{pad}{{\n")
+            for k, v in value.items():
+                write_block(f, k, v, indent + 4)
+            f.write(f"{pad}}}\n")
         elif isinstance(value, list):
-            lines.append(f"{indent_str}{key}")
-            lines.append(f"{indent_str}(")
-            for item in value:
-                lines.append(f"{indent_str}    {item}")
-            lines.append(f"{indent_str});")
+            if all(isinstance(v, str) for v in value):
+                f.write(f"{pad}{key}\n{pad}(\n")
+                for v in value:
+                    f.write(f"{pad}    {v}\n")
+                f.write(f"{pad});\n")
+            else:
+                # assume list of numbers for OpenFOAM vectors
+                joined = " ".join(value)
+                f.write(f"{pad}{key}    ( {joined} );\n")
         else:
-            lines.append(f"{indent_str}{key}    {value};")
+            f.write(f"{pad}{key}    {value};\n")
 
     with open(filename, "w") as f:
-        lines = write_openfoam_dict(foam_dict)
-        f.write("\n".join(lines))
+        # Write OpenFOAM header
         f.write(
-            "\n\n// ************************************************************************* //\n"
+            r"""/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+"""
+        )
+        # Write FoamFile block first
+        foam_file = data.pop("FoamFile", None)
+        if foam_file:
+            write_block(f, "FoamFile", foam_file)
+        f.write(
+            "// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n\n"
+        )
+
+        # Then write the rest of the blocks
+        for key, value in data.items():
+            write_block(f, key, value)
+            f.write("\n")
+
+        # Write OpenFOAM footer
+        f.write(
+            "// ************************************************************************* //\n"
         )

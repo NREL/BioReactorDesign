@@ -16,7 +16,7 @@ Tutorials
    :maxdepth: 2
    :caption: Post processing OpenFOAM cases
 
-   pythonInterface_tut.rst
+   python_interface_tut.rst
 
 .. toctree::
    :maxdepth: 1
