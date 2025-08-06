@@ -5,7 +5,7 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-def make_walls_from_topo(topo_dict:dict) -> dict:
+def make_walls_from_topo(topo_dict: dict) -> dict:
     """
     Find block cylindrical coordinates of all the wall blocks
 
@@ -18,12 +18,12 @@ def make_walls_from_topo(topo_dict:dict) -> dict:
     ----------
     wall_dict: dict
         Dictionary of wall coordinates
-    """ 
+    """
 
     r_wall = []
     l_wall = []
     try:
-        elements = topo["Walls"]
+        elements = topo_dict["Walls"]
         for element in elements:
             for block in elements[element]:
                 r_wall.append(block["R"])
@@ -35,7 +35,7 @@ def make_walls_from_topo(topo_dict:dict) -> dict:
     return wall_dict
 
 
-def make_bound_from_topo(topo):
+def make_bound_from_topo(topo_dict):
     BoundaryNames = []
     BoundaryType = []
     BoundaryRmin = []
@@ -43,14 +43,14 @@ def make_bound_from_topo(topo):
     BoundaryLmin = []
     BoundaryLmax = []
 
-    for boundary in topo["Boundary"]:
+    for boundary in topo_dict["Boundary"]:
         BoundaryNames.append(boundary)
         tmp_bound_type = []
         tmp_rmin = []
         tmp_rmax = []
         tmp_lmin = []
         tmp_lmax = []
-        for bound_element in topo["Boundary"][boundary]:
+        for bound_element in topo_dict["Boundary"][boundary]:
             tmp_bound_type.append(bound_element["type"])
             tmp_rmin.append(bound_element["Rmin"])
             tmp_rmax.append(bound_element["Rmax"])
@@ -105,7 +105,7 @@ def bissection(val, stretch_fun, N1):
     return Gmid
 
 
-def is_wall(l_wall:list[int], r_wall:list[int], ir:int, il:int)->int:
+def is_wall(l_wall: list[int], r_wall: list[int], ir: int, il: int) -> int:
     """
     Is the present block a wall (not meshed)
 
@@ -133,7 +133,9 @@ def is_wall(l_wall:list[int], r_wall:list[int], ir:int, il:int)->int:
     return is_wall
 
 
-def merge_and_sort(coord_list: list[float], reverse_coord: bool) -> list[float]:
+def merge_and_sort(
+    coord_list: list[float], reverse_coord: bool
+) -> list[float]:
     """
     Preprocess coordinates to obtain an ordered set of value ameable to block cylindrical meshing
 
@@ -142,7 +144,7 @@ def merge_and_sort(coord_list: list[float], reverse_coord: bool) -> list[float]:
     coord_list: list[float]
         List of coordinates
     reverse_coord: bool
-        Whether or not to reverse the coordinates 
+        Whether or not to reverse the coordinates
 
     Returns
     ----------
