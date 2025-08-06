@@ -26,7 +26,8 @@ def assemble_geom(input_file, topo_file):
     # ~~~~ Define dimensions based on input
     r_dimensions_name = list(inpt_dict["Geometry"]["Radial"].keys())
     r_dimensions = [
-        float(inpt_dict["Geometry"]["Radial"][dim]) for dim in r_dimensions_name
+        float(inpt_dict["Geometry"]["Radial"][dim])
+        for dim in r_dimensions_name
     ]
 
     l_dimensions_name = list(inpt_dict["Geometry"]["Longitudinal"].keys())
@@ -36,7 +37,7 @@ def assemble_geom(input_file, topo_file):
     ]
 
     # Order the dimensions of R and L
-    r_coord = merge_and_sort(coord_list = r_dimensions, reverse_coord=False)
+    r_coord = merge_and_sort(coord_list=r_dimensions, reverse_coord=False)
     l_coord = merge_and_sort(coord_list=l_dimensions, reverse_coord=True)
     dimension_dict = {"R": r_coord, "L": l_coord}
 
@@ -96,6 +97,17 @@ def assemble_mesh(input_file, geom_dict):
     i_smallest_rad = iSmallest
     smallestRBlockSize = rad_len_block[i_smallest_rad]
 
+    for irad_block in range(len(rad_len_block)):
+        logger.debug(
+            f"\tRadial block {irad_block+1} has size {rad_len_block[irad_block]}mm"
+        )
+    logger.debug(
+        f"Smallest radial block {i_smallest_rad+1} with size {smallestRBlockSize}mm"
+    )
+    logger.debug(
+        f"Radial mesh size in the smallest block will be {smallestRBlockSize}/{NRSmallest} = {smallestRBlockSize/NRSmallest:.2f}mm"
+    )
+
     NR = [0 for i in range(len(R))]
     NR[iSmallest] = NRSmallest
     for i in range(len(R)):
@@ -128,6 +140,17 @@ def assemble_mesh(input_file, geom_dict):
     i_smallest_vert = iSmallest
     smallestVertBlockSize = vert_len_block[i_smallest_vert]
 
+    for ivert_block in range(len(vert_len_block)):
+        logger.debug(
+            f"\tVertical block {ivert_block+1} has size {vert_len_block[ivert_block]}mm"
+        )
+    logger.debug(
+        f"Smallest vertical block {i_smallest_vert+1} with size {smallestVertBlockSize}mm"
+    )
+    logger.debug(
+        f"Vertical mesh size in the smallest block will be {smallestVertBlockSize}/{NVertSmallest} = {smallestVertBlockSize/NVertSmallest:.2f}mm"
+    )
+
     NVert = [0] * (len(L) - 1)
     NVert[iSmallest] = NVertSmallest
     for i in range(len(L) - 1):
@@ -147,7 +170,9 @@ def assemble_mesh(input_file, geom_dict):
 
     # Mesh stretching
     try:
-        verticalCoarseningProperties = inpt_dict["Meshing"]["verticalCoarsening"]
+        verticalCoarseningProperties = inpt_dict["Meshing"][
+            "verticalCoarsening"
+        ]
         do_verticalCoarsening = True
     except KeyError:
         do_verticalCoarsening = False
