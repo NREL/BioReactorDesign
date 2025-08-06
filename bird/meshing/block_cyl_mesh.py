@@ -10,53 +10,53 @@ logger = logging.getLogger(__name__)
 
 
 def assemble_geom(input_file, topo_file):
-    # inpt = parse_json(input_file)
     if input_file.endswith(".yaml"):
-        inpt = parse_yaml(input_file)
+        inpt_dict = parse_yaml(input_file)
     elif input_file.endswith(".json"):
-        inpt = parse_json(input_file)
+        inpt_dict = parse_json(input_file)
     else:
         raise ValueError(f"unknown input file ({input_file}) extension")
     if topo_file.endswith(".yaml"):
-        topo = parse_yaml(topo_file)
+        topo_dict = parse_yaml(topo_file)
     elif topo_file.endswith(".json"):
-        topo = parse_json(topo_file)
+        topo_dict = parse_json(topo_file)
     else:
         raise ValueError(f"unknown topo file ({topo_file}) extension")
 
     # ~~~~ Define dimensions based on input
-    r_dimensions_name = list(inpt["Geometry"]["Radial"].keys())
+    r_dimensions_name = list(inpt_dict["Geometry"]["Radial"].keys())
     r_dimensions = [
-        float(inpt["Geometry"]["Radial"][dim]) for dim in r_dimensions_name
+        float(inpt_dict["Geometry"]["Radial"][dim])
+        for dim in r_dimensions_name
     ]
 
-    l_dimensions_name = list(inpt["Geometry"]["Longitudinal"].keys())
+    l_dimensions_name = list(inpt_dict["Geometry"]["Longitudinal"].keys())
     l_dimensions = [
-        float(inpt["Geometry"]["Longitudinal"][dim])
+        float(inpt_dict["Geometry"]["Longitudinal"][dim])
         for dim in l_dimensions_name
     ]
 
-    # Merge and sort R and L
-    R = mergeSort(r_dimensions, False)
-    L = mergeSort(l_dimensions, True)
-    dimensionDict = {"R": R, "L": L}
+    # Order the dimensions of R and L
+    r_coord = merge_and_sort(coord_list=r_dimensions, reverse_coord=False)
+    l_coord = merge_and_sort(coord_list=l_dimensions, reverse_coord=True)
+    dimension_dict = {"R": r_coord, "L": l_coord}
 
     # Define blocks that will be walls
-    wallDict = make_walls_from_topo(topo)
-    boundDict = make_bound_from_topo(topo)
+    wall_dict = make_walls_from_topo(topo_dict)
+    bound_dict = make_bound_from_topo(topo_dict)
 
-    return {**wallDict, **boundDict, **dimensionDict}
+    return {**wall_dict, **bound_dict, **dimension_dict}
 
 
-def assemble_mesh(input_file, geomDict):
+def assemble_mesh(input_file, geom_dict):
     if input_file.endswith(".yaml"):
-        inpt = parse_yaml(input_file)
+        inpt_dict = parse_yaml(input_file)
     elif input_file.endswith(".json"):
-        inpt = parse_json(input_file)
+        inpt_dict = parse_json(input_file)
     else:
         raise ValueError(f"unknown input file ({input_file}) extension")
-    R = geomDict["R"]
-    L = geomDict["L"]
+    R = geom_dict["R"]
+    L = geom_dict["L"]
     N1 = len(R)
     N2 = len(L) - 1
     CW = []
@@ -73,8 +73,8 @@ def assemble_mesh(input_file, geomDict):
         C2.append(rval * np.sin(np.pi / 4))
         mC2.append(-rval * np.sin(np.pi / 4))
 
-    NRSmallest = int(inpt["Meshing"]["NRSmallest"])
-    NVertSmallest = int(inpt["Meshing"]["NVertSmallest"])
+    NRSmallest = int(inpt_dict["Meshing"]["NRSmallest"])
+    NVertSmallest = int(inpt_dict["Meshing"]["NVertSmallest"])
     NS = []
     NR = []
     NVert = []
@@ -90,12 +90,23 @@ def assemble_mesh(input_file, geomDict):
         rad_len_block[i + 1] = abs(R[i + 1] - R[i])
 
     try:
-        iSmallest = int(inpt["Meshing"]["iRSmallest"])
+        iSmallest = int(inpt_dict["Meshing"]["iRSmallest"])
     except KeyError:
         iSmallest = np.argmin(rad_len_block)
 
     i_smallest_rad = iSmallest
     smallestRBlockSize = rad_len_block[i_smallest_rad]
+
+    for irad_block in range(len(rad_len_block)):
+        logger.debug(
+            f"\tRadial block {irad_block+1} has size {rad_len_block[irad_block]}mm"
+        )
+    logger.debug(
+        f"Smallest radial block {i_smallest_rad+1} with size {smallestRBlockSize}mm"
+    )
+    logger.debug(
+        f"Radial mesh size in the smallest block will be {smallestRBlockSize}/{NRSmallest} = {smallestRBlockSize/NRSmallest:.2f}mm"
+    )
 
     NR = [0 for i in range(len(R))]
     NR[iSmallest] = NRSmallest
@@ -122,12 +133,23 @@ def assemble_mesh(input_file, geomDict):
     )
 
     try:
-        iSmallest = int(inpt["Meshing"]["iVertSmallest"])
+        iSmallest = int(inpt_dict["Meshing"]["iVertSmallest"])
     except KeyError:
         iSmallest = np.argmin(vert_len_block)
 
     i_smallest_vert = iSmallest
     smallestVertBlockSize = vert_len_block[i_smallest_vert]
+
+    for ivert_block in range(len(vert_len_block)):
+        logger.debug(
+            f"\tVertical block {ivert_block+1} has size {vert_len_block[ivert_block]}mm"
+        )
+    logger.debug(
+        f"Smallest vertical block {i_smallest_vert+1} with size {smallestVertBlockSize}mm"
+    )
+    logger.debug(
+        f"Vertical mesh size in the smallest block will be {smallestVertBlockSize}/{NVertSmallest} = {smallestVertBlockSize/NVertSmallest:.2f}mm"
+    )
 
     NVert = [0] * (len(L) - 1)
     NVert[iSmallest] = NVertSmallest
@@ -148,12 +170,14 @@ def assemble_mesh(input_file, geomDict):
 
     # Mesh stretching
     try:
-        verticalCoarseningProperties = inpt["Meshing"]["verticalCoarsening"]
+        verticalCoarseningProperties = inpt_dict["Meshing"][
+            "verticalCoarsening"
+        ]
         do_verticalCoarsening = True
     except KeyError:
         do_verticalCoarsening = False
     try:
-        radialCoarseningProperties = inpt["Meshing"]["radialCoarsening"]
+        radialCoarseningProperties = inpt_dict["Meshing"]["radialCoarsening"]
         do_radialCoarsening = True
     except KeyError:
         do_radialCoarsening = False
@@ -217,33 +241,33 @@ def assemble_mesh(input_file, geomDict):
     }
 
 
-def writeBlockMeshDict(out_folder, geomDict, meshDict):
+def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
     outfile = os.path.join(out_folder, "blockMeshDict")
 
-    R = geomDict["R"]
-    L = geomDict["L"]
-    WallR = geomDict["WallR"]
-    WallL = geomDict["WallL"]
-    BoundaryNames = geomDict["names"]
-    BoundaryType = geomDict["types"]
-    BoundaryRmin = geomDict["rmin"]
-    BoundaryRmax = geomDict["rmax"]
-    BoundaryLmin = geomDict["lmin"]
-    BoundaryLmax = geomDict["lmax"]
+    R = geom_dict["R"]
+    L = geom_dict["L"]
+    r_wall = geom_dict["r_wall"]
+    l_wall = geom_dict["l_wall"]
+    BoundaryNames = geom_dict["names"]
+    BoundaryType = geom_dict["types"]
+    BoundaryRmin = geom_dict["rmin"]
+    BoundaryRmax = geom_dict["rmax"]
+    BoundaryLmin = geom_dict["lmin"]
+    BoundaryLmax = geom_dict["lmax"]
 
-    NR = meshDict["NR"]
-    NS = meshDict["NS"]
-    NVert = meshDict["NVert"]
-    gradR = meshDict["gradR"]
-    gradR_l = meshDict["gradR_l"]
-    gradR_r = meshDict["gradR_r"]
-    gradVert = meshDict["gradVert"]
-    CW = meshDict["CW"]
-    mCW = meshDict["mCW"]
-    C1 = meshDict["C1"]
-    mC1 = meshDict["mC1"]
-    C2 = meshDict["C2"]
-    mC2 = meshDict["mC2"]
+    NR = mesh_dict["NR"]
+    NS = mesh_dict["NS"]
+    NVert = mesh_dict["NVert"]
+    gradR = mesh_dict["gradR"]
+    gradR_l = mesh_dict["gradR_l"]
+    gradR_r = mesh_dict["gradR_r"]
+    gradVert = mesh_dict["gradVert"]
+    CW = mesh_dict["CW"]
+    mCW = mesh_dict["mCW"]
+    C1 = mesh_dict["C1"]
+    mC1 = mesh_dict["mC1"]
+    C2 = mesh_dict["C2"]
+    mC2 = mesh_dict["mC2"]
 
     N1 = len(R)
     N2 = len(L) - 1
@@ -340,7 +364,7 @@ def writeBlockMeshDict(out_folder, geomDict, meshDict):
     for i in range(N2):
         gradingVert = gradVert[i]
         # Am I a wall
-        iwall = amIwall(WallL, WallR, -1, i)
+        iwall = is_wall(l_wall, r_wall, -1, i)
         if iwall == 1:
             fw.write("//")
 
@@ -365,7 +389,7 @@ def writeBlockMeshDict(out_folder, geomDict, meshDict):
             gradingVert = gradVert[il]
             gradingR = gradR[ir]
             # Am I a wall
-            iwall = amIwall(WallL, WallR, ir, il)
+            iwall = is_wall(l_wall, r_wall, ir, il)
             # bottom right corner
             i1 = int(4 * (N2 + 1) * ir + 4 * (il + 1))
             # bottom left corner
@@ -418,10 +442,10 @@ def writeBlockMeshDict(out_folder, geomDict, meshDict):
     for ir in range(len(R)):
         for il in range(len(L)):
             # Edges should be removed if they are surrounded by walls
-            iwall1 = amIwall(WallL, WallR, ir, il)
-            iwall2 = amIwall(WallL, WallR, ir + 1, il)
-            iwall3 = amIwall(WallL, WallR, ir, il - 1)
-            iwall4 = amIwall(WallL, WallR, ir + 1, il - 1)
+            iwall1 = is_wall(l_wall, r_wall, ir, il)
+            iwall2 = is_wall(l_wall, r_wall, ir + 1, il)
+            iwall3 = is_wall(l_wall, r_wall, ir, il - 1)
+            iwall4 = is_wall(l_wall, r_wall, ir + 1, il - 1)
             sumwall = iwall1 + iwall2 + iwall3 + iwall4
             comment = 0
             if (
@@ -530,9 +554,9 @@ def writeBlockMeshDict(out_folder, geomDict, meshDict):
 
 
 def main(input_file, topo_file, output_folder):
-    geomDict = assemble_geom(input_file, topo_file)
-    meshDict = assemble_mesh(input_file, geomDict)
-    writeBlockMeshDict(output_folder, geomDict, meshDict)
+    geom_dict = assemble_geom(input_file, topo_file)
+    mesh_dict = assemble_mesh(input_file, geom_dict)
+    writeBlockMeshDict(output_folder, geom_dict, mesh_dict)
 
 
 if __name__ == "__main__":
