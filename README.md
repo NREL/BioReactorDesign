@@ -25,8 +25,10 @@ pip install -e .
 ```bash
 conda create --name bird python=3.10
 conda activate bird
-pip install nrel-bird
+pip install nrel-bird=={version}
 ```
+
+We highly recommend that you specify the version explicitly as the library is still rapidly changing.
 
 ## Installation of BiRD OpenFOAM solver (for developers and users)
 
