@@ -5,18 +5,34 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-def make_walls_from_topo(topo):
-    WallR = []
-    WallL = []
+def make_walls_from_topo(topo_dict:dict) -> dict:
+    """
+    Find block cylindrical coordinates of all the wall blocks
+
+    Parameters
+    ----------
+    topo_dict: dict
+        Dictionary input that describes the topology
+
+    Returns
+    ----------
+    wall_dict: dict
+        Dictionary of wall coordinates
+    """ 
+
+    r_wall = []
+    l_wall = []
     try:
         elements = topo["Walls"]
         for element in elements:
             for block in elements[element]:
-                WallR.append(block["R"])
-                WallL.append(block["L"])
+                r_wall.append(block["R"])
+                l_wall.append(block["L"])
     except KeyError:
         pass
-    return {"WallR": WallR, "WallL": WallL}
+
+    wall_dict = {"r_wall": r_wall, "l_wall": l_wall}
+    return wall_dict
 
 
 def make_bound_from_topo(topo):
@@ -89,23 +105,54 @@ def bissection(val, stretch_fun, N1):
     return Gmid
 
 
-def amIwall(WallL, WallR, ir, il):
-    # returns 1 if block is wall
-    # returns 0 otherwise
-    iwall = 0
-    for iw in range(len(WallL)):
-        if WallL[iw] == (il + 1) and WallR[iw] == ir + 1:
-            iwall = 1
-    return iwall
+def is_wall(l_wall:list[int], r_wall:list[int], ir:int, il:int)->int:
+    """
+    Is the present block a wall (not meshed)
+
+    Parameters
+    ----------
+    l_wall: list[int]
+        List of vertical coordinate index of wall blocks
+    r_wall: list[int]
+        List of radial coordinate index of wall blocks
+    ir: int
+        Radial coordinate index of the present block
+    il: int
+        Vertical coordinate index of the present block
+
+    Returns
+    ----------
+    is_wall: int
+        1 if block (ir,il) is a wall
+        0 if block (ir, il) is fluid (and should be meshed)
+    """
+    is_wall = 0
+    for iw in range(len(l_wall)):
+        if l_wall[iw] == (il + 1) and r_wall[iw] == ir + 1:
+            is_wall = 1
+    return is_wall
 
 
-def mergeSort(list, reverse):
-    list.sort(reverse=reverse)
-    listtmp = []
-    for val in list:
-        if len(listtmp) == 0 or not val == listtmp[-1]:
-            listtmp.append(val)
-    return listtmp
+def merge_and_sort(coord_list: list[float], reverse_coord: bool) -> list[float]:
+    """
+    Preprocess coordinates to obtain an ordered set of value ameable to block cylindrical meshing
+
+    Parameters
+    ----------
+    coord_list: list[float]
+        List of coordinates
+    reverse_coord: bool
+        Whether or not to reverse the coordinates 
+
+    Returns
+    ----------
+    clean_list: list[float]
+        preprocessed list
+
+    """
+    clean_list = list(set(coord_list))
+    clean_list.sort(reverse=reverse_coord)
+    return clean_list
 
 
 def verticalCoarsening(
