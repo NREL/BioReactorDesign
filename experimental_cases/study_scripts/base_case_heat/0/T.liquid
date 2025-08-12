@@ -1,0 +1,122 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  12
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volScalarField;
+    object      T.liquid;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions          [0 0 0 1 0 0 0];
+
+internalField       uniform 310.15;
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+
+    walls
+    {
+        type            zeroGradient;
+    }
+    outlet
+    {
+        type            inletOutlet;
+        phi             phi.liquid;
+        inletValue      $internalField;
+        value           $internalField;
+    }
+    "vessel|shaft|walls|impeller"
+    {
+        type            zeroGradient;
+    }
+    
+    inlet
+    {
+        type            fixedValue;
+        value           $internalField;
+    }
+    
+    nonCouple
+    {
+        type            zeroGradient;
+    }
+
+    heater
+    {
+        type            codedMixed;
+
+        refValue        uniform 310.15;
+        refGradient     uniform 0;
+        valueFraction   uniform 0;
+
+        name    fixedTemperatureControl;   
+
+        code
+        #{        
+            // This boundary conditions looks at the delta energy to get to 310.15 Kelvin average temperature and
+            // adjusts the heat flux accordingly
+            
+            // To avoid continuous micro-adjustments, the temperature is sampled at each write time
+            if(!this->mesh().time().writeTime()) return;
+            
+            const scalarField& Tin = this->primitiveField();
+            const volScalarField& alphal = this->mesh().lookupObject<volScalarField>("alpha.liquid");
+            const Field<scalar>& alphatp =
+                this->patch().lookupPatchField<surfaceScalarField, scalar>
+                (
+                    "alphat.liquid"
+                );
+            const Field<scalar>& alphap =
+                this->patch().lookupPatchField<surfaceScalarField, scalar>
+                (
+                    "alpha.liquid"
+                );
+
+            
+            scalar deltaEnergy = 0.;
+            scalar Cv = 4195 * 1000; // multiplied by density (when multiplied by volume and deltaT gives Joules)
+            scalar Ttarget = 310.15
+            forAll(Tin,cellI)
+            {
+                deltaEnergy += Cv * (Ttarget - Tin[cellI])*alphal[cellI]*this->mesh().V()[cellI]; 
+            }
+            
+            reduce(deltaEnergy,sumOp<scalar>());
+            
+            scalar totArea = gSum(this->patch().magSf());
+            
+            scalar heatFlux = deltaEnergy / totArea; // Assume the energy is delivered in 1 second (Joules = Watts)
+            
+            scalarField kappaEff = 0.6 + alphatp*Cv;           
+                       
+            this->refGrad() += heatFlux / kappaEff;
+            
+            scalar totFlux = gSum(this->refGrad() * kappaEff * this->patch().magSf());
+            totFlux /= totArea;
+            Info << "Total heat flux from boundary: " << totFlux << " [W/m^2]" << endl;
+            
+        #};
+
+        // codeInclude
+        //#{
+        //    #include ".H"
+        //#};
+
+        // codeOptions
+        //#{
+        //    -I$(LIB_SRC)/finiteVolume/lnInclude
+        //#};
+    }
+
+
+
+}
+
+// ************************************************************************* //

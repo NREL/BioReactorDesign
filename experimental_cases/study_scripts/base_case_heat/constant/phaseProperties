@@ -1,0 +1,102 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  12
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      phaseProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+#include "$FOAM_CASE/constant/globalVars"
+
+phases (gas liquid);
+
+
+gas
+{
+    type            purePhaseModel;
+
+    diameterModel   isothermal;
+    isothermalCoeffs
+    {
+        d0              1e-3;
+        p0              1e5;
+    }
+
+    residualAlpha   1e-6;
+}
+
+liquid
+{
+    type            purePhaseModel;
+
+    diameterModel   constant;
+    constantCoeffs
+    {
+        d               1e-4;
+    }
+
+    residualAlpha   1e-6;
+}
+
+surfaceTension
+{
+    gas_liquid
+    {
+        type            constant;
+        sigma           $sigmaLiq;
+    }
+}
+
+
+blending
+{
+    default
+    {
+        type            linear;
+        minFullyContinuousAlpha.gas 0.7;
+        minPartlyContinuousAlpha.gas 0.3;
+        minFullyContinuousAlpha.liquid 0.7;
+        minPartlyContinuousAlpha.liquid 0.3;
+    }
+
+    segregated
+    {
+        type            linear;
+        minFullyContinuousAlpha.gas 0.7;
+        minPartlyContinuousAlpha.gas 0.5;
+        minFullyContinuousAlpha.liquid 0.7;
+        minPartlyContinuousAlpha.liquid 0.5;
+    }
+
+    heatAndDiffusiveMassTransfer
+    {
+        type            linear;
+        minPartlyContinuousAlpha.gas 0;
+        minFullyContinuousAlpha.gas 1;
+        minPartlyContinuousAlpha.liquid 0;
+        minFullyContinuousAlpha.liquid 1;
+    }
+
+
+}
+
+
+interfaceCompression
+{
+    gas_liquid 1;
+}
+
+interfaceTracking
+{
+    vSquareTol 0.7;
+    signAnisotropyTol 0.1;
+};
+
+// ************************************************************************* //

@@ -1,0 +1,299 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+
+writeStatistics
+{
+    type            coded;
+    libs            ("libutilityFunctionObjects.so");
+
+    name            writeStatistics;
+
+    writeControl        writeTime;
+
+
+    codeWrite
+    #{
+        const volScalarField& alphal = mesh().lookupObject<volScalarField>("alpha.liquid");
+        const volScalarField alphag = 1. - alphal;
+
+        const volScalarField& rhog = mesh().lookupObject<volScalarField>("rho.gas");
+        const volScalarField& rhol = mesh().lookupObject<volScalarField>("rho.liquid");
+
+        const volScalarField& N2g = mesh().lookupObject<volScalarField>("N2.gas");
+        const volScalarField& O2g = mesh().lookupObject<volScalarField>("O2.gas");
+        const volScalarField& O2l = mesh().lookupObject<volScalarField>("O2.liquid");
+        const volScalarField& CO2g = mesh().lookupObject<volScalarField>("CO2.gas");
+        const volScalarField& CO2l = mesh().lookupObject<volScalarField>("CO2.liquid");
+        const volScalarField& H2g = mesh().lookupObject<volScalarField>("H2.gas");
+        const volScalarField& H2l = mesh().lookupObject<volScalarField>("H2.liquid");
+        const volScalarField& gl = mesh().lookupObject<volScalarField>("interface.gasliquid");
+        const volScalarField& dg = mesh().lookupObject<volScalarField>("d.gas");
+        const scalarField& V = mesh().V();
+        const volScalarField::Internal& SpO2 = mesh().lookupObject<volScalarField::Internal>("phaseChange:mDotO2Sp");
+        const volScalarField::Internal& SpCO2 = mesh().lookupObject<volScalarField::Internal>("phaseChange:mDotCO2Sp");
+        const volScalarField::Internal& SpH2 = mesh().lookupObject<volScalarField::Internal>("phaseChange:mDotH2Sp");
+        const volScalarField::Internal& SuO2 = mesh().lookupObject<volScalarField::Internal>("phaseChange:mDotO2Su");
+        const volScalarField::Internal& SuCO2 = mesh().lookupObject<volScalarField::Internal>("phaseChange:mDotCO2Su");
+        const volScalarField::Internal& SuH2 = mesh().lookupObject<volScalarField::Internal>("phaseChange:mDotH2Su");
+        const volScalarField::Internal& dmdt = mesh().lookupObject<volScalarField::Internal>("phaseChange:mDot");
+
+
+        const volScalarField::Internal& URCO2f =   mesh().lookupObject<volScalarField::Internal>("liquid:URSpCO2");
+        const volScalarField::Internal& URH2f =   mesh().lookupObject<volScalarField::Internal>("liquid:URSpH2");
+        const volScalarField::Internal& URO2f =   mesh().lookupObject<volScalarField::Internal>("liquid:URSpO2");
+
+        const volVectorField& Ug = mesh().lookupObject<volVectorField>("U.gas");  
+        const volVectorField& Ul = mesh().lookupObject<volVectorField>("U.liquid");        
+        scalar liqVol = 0.;
+
+        const volScalarField& mul = mesh().lookupObject<volScalarField>("mu.liquid");
+
+        scalar holdup = 0.;
+        scalar totO2g = 0.;
+        scalar totO2l = 0.;
+        scalar totCO2g = 0.;
+        scalar totCO2l = 0.;
+        scalar totH2g = 0.;
+        scalar totH2l = 0.;
+        scalar dgas = 0.;
+        scalar kLAO2 = 0.;
+        scalar kLACO2 = 0.;
+        scalar kLAH2 = 0.;
+        vector UgMean(0,0,0);
+        vector UgPrimeSqr(0,0,0);
+        scalar totN2g = 0.;
+	    scalar dmdttot = 0.;  
+
+        scalar mdotO2 = 0.;
+        scalar mdotCO2 = 0.;
+        scalar mdotH2 = 0.;
+        scalar cstarO2 = 0.;
+        scalar cstarCO2 = 0.;
+        scalar cstarH2 = 0.; 
+
+
+      
+        scalar kLAH2a = 0.;
+        scalar kLAO2a = 0.;
+        scalar kLACO2a = 0.;
+
+
+        scalar URCO2 = 0.;
+        scalar URH2 = 0.;
+        scalar URO2 = 0.;
+
+        scalar gasMass = 0.;
+        scalar liqMass = 0.;
+
+        scalar kg_to_g = 1000.;
+        scalar hr_to_sec = 3600.;
+        scalar kg_m3_to_mol_m3_CO2 = kg_to_g / 44;
+        scalar mol_m3_to_kg_m3_CO2 = 1./kg_m3_to_mol_m3_CO2;
+        scalar kg_m3_to_mol_m3_H2 = kg_to_g / 2;
+        scalar mol_m3_to_kg_m3_H2 = 1./kg_m3_to_mol_m3_H2;
+        scalar kg_m3_to_mol_m3_O2 = kg_to_g / 32;
+        scalar mol_m3_to_kg_m3_O2 = 1./kg_m3_to_mol_m3_H2; 
+        forAll(V,cellI)
+        {
+            if(alphal[cellI] > 0.05 &&  gl[cellI] < 0.7 )
+            {
+                const scalar vol_gas = V[cellI]*alphag[cellI];
+                const scalar vol_liq = V[cellI]*alphal[cellI];
+                const scalar mass_gas = vol_gas*rhog[cellI];
+                const scalar mass_liq = vol_liq*rhol[cellI];
+  
+                liqMass += mass_liq;
+                gasMass += mass_gas;
+                liqVol += vol_liq;
+                holdup += vol_gas;  
+                totO2g += mass_gas*O2g[cellI];
+                totO2l += mass_liq*O2l[cellI];
+                totCO2g += mass_gas*CO2g[cellI];
+                totCO2l += mass_liq*CO2l[cellI];
+                totH2g += mass_gas*H2g[cellI];
+                totH2l += mass_liq*H2l[cellI];
+                dgas += vol_gas*dg[cellI];
+                UgMean += vol_gas*Ug[cellI];
+                totN2g += V[cellI]*N2g[cellI]*alphag[cellI];
+                dmdttot += V[cellI] * dmdt[cellI];
+		        kLAO2 += vol_liq * SpO2[cellI] / rhol[cellI];
+                kLACO2 += vol_liq * SpCO2[cellI] / rhol[cellI];
+                kLAH2 += vol_liq * SpH2[cellI] / rhol[cellI];
+
+                scalar nu = mul[cellI]/rhol[cellI];
+                scalar Re = dg[cellI] * mag(Ug[cellI] - Ul[cellI]) / (nu);
+
+                scalar klaH2 = 1.13*sqrt(Re)*sqrt(nu/3.9e-9)*(3.9e-9/dg[cellI])*(6.0/dg[cellI])*alphag[cellI]*3600;
+                scalar klaCO2 = 1.13*sqrt(Re)*sqrt(nu/2.32e-9)*(2.32e-9/dg[cellI])*(6.0/dg[cellI])*alphag[cellI]*3600;
+                scalar klaO2 = 1.13*sqrt(Re)*sqrt(nu/2.32e-9)*(2.32e-9/dg[cellI])*(6.0/dg[cellI])*alphag[cellI]*3600;
+        		kLAO2a += vol_liq * klaO2;
+                kLACO2a += vol_liq * klaCO2;
+                kLAH2a += vol_liq * klaH2;
+
+                cstarO2 += mass_liq * SuO2[cellI] / (SpO2[cellI] + 1e-32);
+                cstarCO2 += mass_liq * SuCO2[cellI] / (SpCO2[cellI] + 1e-32);
+                cstarH2 += mass_liq * SuH2[cellI] / (SpH2[cellI] + 1e-32);
+
+                mdotO2 += vol_liq * (SuO2[cellI] + (SpO2[cellI] * O2l[cellI]));
+                mdotCO2 += vol_liq * (SuCO2[cellI] + (SpCO2[cellI] * CO2l[cellI]));
+                mdotH2 += vol_liq * (SuH2[cellI] + (SpH2[cellI] * H2l[cellI]));
+                
+                URCO2 += mass_liq*URCO2f[cellI]*hr_to_sec/mol_m3_to_kg_m3_CO2*CO2l[cellI]/44.0;
+                URH2 += mass_liq*URH2f[cellI]*hr_to_sec/mol_m3_to_kg_m3_H2*H2l[cellI]/2.0;
+                URO2 += mass_liq*URO2f[cellI]*hr_to_sec/mol_m3_to_kg_m3_O2*O2l[cellI]/32.0;
+
+
+            }
+        }
+
+        reduce(liqVol,sumOp<scalar>());
+        reduce(holdup,sumOp<scalar>());
+        reduce(totN2g,sumOp<scalar>());
+        reduce(totO2g,sumOp<scalar>());
+        reduce(totO2l,sumOp<scalar>());
+        reduce(totCO2g,sumOp<scalar>());
+        reduce(totCO2l,sumOp<scalar>());
+        reduce(totH2g,sumOp<scalar>());
+        reduce(totH2l,sumOp<scalar>());
+        reduce(dgas,sumOp<scalar>());
+        reduce(kLAO2,sumOp<scalar>());
+        reduce(kLACO2,sumOp<scalar>());
+        reduce(kLAH2,sumOp<scalar>());
+        reduce(UgMean,sumOp<vector>());
+	    reduce(dmdttot, sumOp<scalar>());
+
+
+        scalar totVol = liqVol + holdup;        
+        dgas /= holdup + 1e-16;    
+        kLAO2 /= liqVol + 1e-16;
+        kLACO2 /= liqVol + 1e-16;
+        kLAH2 /= liqVol + 1e-16;
+        UgMean /= holdup + 1e-16;
+        dmdttot /= totVol + 1e-16;
+        
+
+        reduce(totVol,sumOp<scalar>());
+        reduce(kLAO2a,sumOp<scalar>());
+        reduce(kLACO2a,sumOp<scalar>());
+        reduce(kLAH2a,sumOp<scalar>());
+
+       
+        kLAO2a /= totVol + 1e-32;
+        kLACO2a /= totVol + 1e-32;
+        kLAH2a /= totVol + 1e-32;  
+
+        reduce(URCO2,sumOp<scalar>());
+        reduce(URH2,sumOp<scalar>());
+        reduce(URO2,sumOp<scalar>());
+       
+        URCO2 /= liqVol + 1e-32;
+        URH2 /= liqVol + 1e-32;      
+        URO2 /= liqVol + 1e-32;
+
+        reduce(cstarO2,sumOp<scalar>());
+        reduce(cstarCO2,sumOp<scalar>());
+        reduce(cstarH2,sumOp<scalar>());
+        reduce(mdotO2,sumOp<scalar>());
+        reduce(mdotCO2,sumOp<scalar>());
+        reduce(mdotH2,sumOp<scalar>());
+        
+        reduce(gasMass,sumOp<scalar>());
+        reduce(liqMass,sumOp<scalar>());
+  
+        scalarField totf(21,0.);
+
+        forAll(V,cellI)
+        {
+            if(alphal[cellI] > 0.05 &&  gl[cellI] < 0.7 )
+            {
+                UgPrimeSqr[0] += V[cellI]*alphag[cellI]*sqr(Ug[cellI][0] - UgMean[0])/(holdup+1e-16);
+                UgPrimeSqr[1] += V[cellI]*alphag[cellI]*sqr(Ug[cellI][1] - UgMean[1])/(holdup+1e-16);
+                UgPrimeSqr[2] += V[cellI]*alphag[cellI]*sqr(Ug[cellI][2] - UgMean[2])/(holdup+1e-16);
+            }
+        }
+
+        reduce(UgPrimeSqr,sumOp<vector>());
+
+        for(label i=0; i<20; i++)
+        {
+            const volScalarField& fi = mesh().lookupObject<volScalarField>("f" + std::to_string(i+1) + ".gas");                
+
+            forAll(V,cellI)
+            {
+                if(alphal[cellI] > 0.05 &&  gl[cellI] < 0.7 )
+                {
+                    totf[i] += V[cellI]*fi[cellI]*alphag[cellI];
+                }
+            }
+
+            reduce(totf[i],sumOp<scalar>());
+            totf[i] /= holdup + 1e-16;            
+        } 
+
+        holdup /= liqVol;
+
+        if(Pstream::master())
+        {
+            std::ofstream file("stats.csv", std::ios::app);
+            file<< mesh().time().value() << ", " //1
+                << holdup  << ", " //2
+                << liqVol << ", " //3
+                << totVol << ", " //4
+                << totN2g << ", " //5
+                << totO2g << ", " //6
+                << totO2l << ", " //7
+                << kLAO2 << ", " //8
+                << kLAO2a << ", " //9
+                << cstarO2 << ", " //10
+                << mdotO2 << ", " //11
+                << URO2 << ", " //12
+                << totCO2g << ", " //13
+                << totCO2l << ", " //14
+                << kLACO2 << ", " //15
+                << kLACO2a << ", " //16
+                << cstarCO2 << ", " //17
+                << mdotCO2 << ", " //18
+                << URCO2 << ", " //19
+                << totH2g << ", " //20
+                << totH2l << ", " //21
+                << kLAH2 << ", " //22
+                << kLAH2a << ", " //23
+                << cstarH2 << ", " //24
+                << mdotH2 << ", " //25
+                << URH2 << ", " //26
+		        << dmdttot << ", " // 27
+                << UgMean[0] << ", " //28
+                << UgMean[1] << ", " //29
+                << UgMean[2] << ", " //30
+                << UgPrimeSqr[0] << ", " //31
+                << UgPrimeSqr[1] << ", " //32
+                << UgPrimeSqr[2] << ", " //33
+                << gasMass << ", " //34
+                << liqMass << ", " //35
+                << dgas << ", "; //36
+
+            for(label i=0; i<21; i++)
+            {
+                
+                file << ", " << totf[i];    
+                    
+            }
+
+            file << "\n";
+
+            file.close();    
+        } 
+    #};
+
+    codeInclude
+    #{
+	#include <fstream>        
+    #};
+}
+// ************************************************************************* //
+

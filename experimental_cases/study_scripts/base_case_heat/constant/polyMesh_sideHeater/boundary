@@ -1,0 +1,126 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+13
+(
+    outlet
+    {
+        type            patch;
+        nFaces          1288;
+        startFace       339020;
+    }
+    impeller
+    {
+        type            wall;
+        inGroups        List<word> 1(wall);
+        nFaces          2336;
+        startFace       340308;
+    }
+    vessel
+    {
+        type            wall;
+        inGroups        List<word> 1(wall);
+        nFaces          3556;
+        startFace       342644;
+    }
+    shaft
+    {
+        type            wall;
+        inGroups        List<word> 1(wall);
+        nFaces          1560;
+        startFace       346200;
+    }
+    inlet
+    {
+        type            patch;
+        nFaces          84;
+        startFace       347760;
+    }
+    nonCouple1
+    {
+        type            patch;
+        inGroups        List<word> 1(nonCouple);
+        nFaces          5848;
+        startFace       347844;
+    }
+    nonCouple2
+    {
+        type            patch;
+        inGroups        List<word> 1(nonCouple);
+        nFaces          5848;
+        startFace       353692;
+    }
+    walls
+    {
+        type            wall;
+        inGroups        List<word> 
+2
+(
+wall
+walls
+)
+;
+        nFaces          3168;
+        startFace       359540;
+    }
+    nonConformalCyclic_on_nonCouple1
+    {
+        type            nonConformalCyclic;
+        inGroups        List<word> 1(nonConformalCyclic);
+        nFaces          0;
+        startFace       362708;
+        matchTolerance  0.0001;
+        neighbourPatch  nonConformalCyclic_on_nonCouple2;
+        transformType   none;
+        originalPatch   nonCouple1;
+    }
+    nonConformalCyclic_on_nonCouple2
+    {
+        type            nonConformalCyclic;
+        inGroups        List<word> 1(nonConformalCyclic);
+        nFaces          0;
+        startFace       362708;
+        matchTolerance  0.0001;
+        neighbourPatch  nonConformalCyclic_on_nonCouple1;
+        transformType   none;
+        originalPatch   nonCouple2;
+    }
+    nonConformalError_on_nonCouple1
+    {
+        type            nonConformalError;
+        inGroups        List<word> 1(nonConformalError);
+        nFaces          0;
+        startFace       362708;
+        originalPatch   nonCouple1;
+    }
+    nonConformalError_on_nonCouple2
+    {
+        type            nonConformalError;
+        inGroups        List<word> 1(nonConformalError);
+        nFaces          0;
+        startFace       362708;
+        originalPatch   nonCouple2;
+    }
+    heater
+    {
+        type            wall;
+        inGroups        List<word> 1(wall);
+        nFaces          5040;
+        startFace       362708;
+    }
+)
+
+// ************************************************************************* //
