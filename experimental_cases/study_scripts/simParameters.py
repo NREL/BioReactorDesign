@@ -1,0 +1,10 @@
+#gas_species = [ "CO2", "O2", "air" ]
+#vol = [0.0005, 0.005 ]
+#VVM = [0.5, 0.1 ]#
+grav = [9.81, 1.62, 0 ]
+viscosityFactor = [0.4, 4, 16]
+gas_species = ["CO2H2", "O2"]
+vol = [0.0005 ]
+VVM = [0.1]
+#viscosityFactor = [0.4]
+#grav = [ 0]

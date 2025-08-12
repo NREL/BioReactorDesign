@@ -1,0 +1,29 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # Run from this directory
+
+# Source tutorial run functions
+. $WM_PROJECT_DIR/bin/tools/RunFunctions
+
+blockMesh
+surfaceFeatures
+snappyHexMesh 
+createZones
+
+createPatch -overwrite
+
+createBaffles #-flipMap
+splitBaffles 
+
+
+# Rescale to work with 500mL
+transformPoints "scale=(0.243530813 0.243530813 0.243530813)"
+
+renumberMesh -noFields -overwrite
+
+createNonConformalCouples nonCouple1 nonCouple2
+
+checkMesh
+
+setFields
+
+#------------------------------------------------------------------------------
