@@ -2,7 +2,22 @@ name: Run tests and upload coverage
 
 on:
   push:
-    branches: [main]
+     branches: [main]
+     paths-ignore:
+      - '*.md'
+      - '*.rst'
+      - 'README*'
+      - 'LICENSE'
+      - 'docs/**'
+
+   pull_request:
+     branches: [main]
+     paths-ignore:
+      - '*.md'
+      - '*.rst'
+      - 'README*'
+      - 'LICENSE'
+      - 'docs/**'
 
 jobs:
   run:
