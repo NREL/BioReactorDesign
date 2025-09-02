@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 def test_mean_stats_uniform():
+    """
+    Test for time series uniformly sampled over time
+    """
     # Make artificial signal
     t = np.linspace(0, 2, 100)
     signal = np.cos(t * 2 * np.pi)
@@ -39,6 +42,9 @@ def test_mean_stats_uniform():
 
 
 def test_mean_stats_nonuniform():
+    """
+    Test for time series non-uniformly sampled over time
+    """
     t = np.linspace(0, 2, 100)
     signal = np.cos(t * 2 * np.pi)
 
