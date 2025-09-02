@@ -122,7 +122,6 @@ def _to_equally_spaced(
     try:
         assert min_diff > 0
     except AssertionError:
-        breakpoint()
         logger.error(f"Time values are not ordered ({time_values})")
         raise ValueError
 

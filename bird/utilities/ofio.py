@@ -510,7 +510,7 @@ def getMeshTime(casePath: str) -> str:
 
     files_tmp = os.listdir(casePath)
     for entry in files_tmp:
-        if "meshFaceCentres" in entry:
+        if "meshCellCentres" in entry:
             time_mesh = entry[16:-4]
             return time_mesh
 
