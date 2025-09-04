@@ -21,6 +21,7 @@ def test_expl_list():
         os.path.join(BIRD_PRE_DYNMIX_TEMP_DIR, "expl_list", "mixers.json")
     )
     write_fvModel(input_dict, output_folder=".")
+    write_fvModel(input_dict, output_folder=".", force_sign=True)
 
 
 def test_loop_list():
@@ -39,6 +40,7 @@ def test_loop_list():
         )
     )
     write_fvModel(input_dict, output_folder=".")
+    write_fvModel(input_dict, output_folder=".", force_sign=True)
 
 
 if __name__ == "__main__":

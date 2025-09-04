@@ -1,0 +1,47 @@
+name: CodeCov
+
+on:
+  pull_request:
+     branches: [ main ]
+     paths-ignore:
+      - '*.md'
+      - '*.rst'
+      - 'README*'
+      - 'LICENSE'
+      - 'docs/**'
+
+jobs:
+  codecov:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install .
+          pip install pytest
+          pip install pytest-cov
+          python -m pip install --upgrade pip
+
+      - name: Generate coverage report
+        run: |
+          pytest --cov --cov-branch --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: unittests
+          env_vars: OS,PYTHON
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          verbose: true

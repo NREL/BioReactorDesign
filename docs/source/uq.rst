@@ -70,3 +70,46 @@ Generates
    	cstar = 0.3105 +/- 0.0005472
 
 
+Compute mean statistics with uncertainty
+------------
+
+Averaging a discretized time-series signal is used in many contexts to characterize bio reactors (to compute averaged holdup or species concentrations). Averaging is subject to statistical error and we provide tools to manage it. 
+
+The run the illustrative example we consider here:
+First enable ``setup_logging(level="DEBUG")`` in ``bird/__init__.py``.
+Second, run
+
+.. code-block:: console
+
+   python applications/compute_time_series_mean.py
+
+There, we consider a time series acquired over the interval :math:`[0, 2]` where the signal is :math:`cos (2 \pi t)` shown below 
+
+.. figure:: ../assets/time_series.png
+      :width: 70%
+      :align: center
+      :alt: Time series example
+
+We can sample the signal with 100 points through the interval :math:`[0, 2]`, and we obtain the following output
+
+.. code-block:: console
+
+   2025-09-02 12:36:15,016 [DEBUG] bird: Making the time series equally spaced over time
+   2025-09-02 12:36:15,016 [DEBUG] bird: Time series already equally spaced
+   2025-09-02 12:36:15,016 [DEBUG] bird: T0 = 1.270553916086648
+   2025-09-02 12:36:15,016 [INFO] bird: Mean = 0.01 +/- 0.081
+
+The ``T0`` value suggests that every :math:`1.27` points is considered independent. The uncertainty about the mean is estimated via the central limit theorem, where the number of datapoints is downsampled to make the sample independents
+
+We can also oversample the signal with 100 times more points. No more information has been provided about the signal, but without identifying the number of steps over which samples can be considered independent, the uncertainty (:math:`0.081`) would be artificially reduced to :math:`0.0081`.
+
+Here we obtain 
+
+.. code-block:: console
+
+   2025-09-02 12:36:15,016 [DEBUG] bird: Making the time series equally spaced over time
+   2025-09-02 12:36:15,016 [DEBUG] bird: Time series already equally spaced
+   2025-09-02 12:36:15,030 [DEBUG] bird: T0 = 126.6515206796017
+   2025-09-02 12:36:15,030 [INFO] bird: Mean = 0.0001 +/- 0.08
+
+The mean calculation function identifies that every 127 points is independent, and the uncertainty about the mean is not artificially reduced.
