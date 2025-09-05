@@ -78,6 +78,13 @@ def _T0_fn(autocorr: np.ndarray) -> float:
     k = np.array(range(1, N))
     T0 = 1.0 + 2.0 * np.sum((1.0 - k / N) * autocorr[1:])
 
+    # Check value of T0
+    if T0 < 1.0 or T0 > N / 2:
+        logger.warning(
+            f"T0 value ({T0}) is suspicious, falling back to T0 = 1"
+        )
+        T0 = 1.0
+
     logger.debug(f"T0 = {T0}")
 
     return T0
@@ -143,7 +150,7 @@ def _to_equally_spaced(
 
 def calc_mean(
     time_series: np.ndarray, time_values: np.ndarray | None = None
-) -> tuple:
+) -> tuple[float, float]:
     """
     Compute mean and the uncertainty about the mean, from a time-series
 
@@ -158,8 +165,10 @@ def calc_mean(
 
     Returns
     ----------
-    mean_val, unc_val : tuple
-        Mean value and the 68% uncertainty (1 sigma) about the mean
+    mean_val: float
+        Mean value of the time_series
+    unc_val: float
+        68% uncertainty (1 sigma) about the mean
 
     """
 

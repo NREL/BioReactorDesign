@@ -11,7 +11,7 @@ def read_field(
     field_name: str,
     n_cells: int | None = None,
     field_dict: dict = {},
-) -> tuple:
+) -> tuple[np.ndarray | float, dict]:
     """
     Read field at a given time and store it in dictionary for later reuse
 
@@ -53,7 +53,7 @@ def read_cell_volume(
     time_folder: str,
     n_cells: int | None = None,
     field_dict: dict = {},
-) -> tuple:
+) -> tuple[np.ndarray | float, dict]:
     """
     Read volume at a given time and store it in dictionary for later reuse
 
@@ -100,7 +100,7 @@ def read_cell_centers(
     case_folder: str,
     cell_centers_file: str,
     field_dict: dict = {},
-) -> tuple:
+) -> tuple[np.ndarray, dict]:
     """
     Read volume at a given time and store it in dictionary for later reuse
 
@@ -153,7 +153,7 @@ def get_ind_liq(
     time_folder: str | None = None,
     n_cells: int | None = None,
     field_dict: dict = {},
-) -> tuple:
+) -> tuple[np.ndarray | float, dict]:
     """
     Get indices of pure liquid cells (where alpha.liquid > 0.5)
 
@@ -206,7 +206,7 @@ def get_ind_gas(
     time_folder: str | None = None,
     n_cells: int | None = None,
     field_dict: dict = {},
-) -> tuple:
+) -> tuple[np.ndarray | float, dict]:
     """
     Get indices of pure gas cells (where alpha.liquid <= 0.5)
 
@@ -260,7 +260,7 @@ def compute_gas_holdup(
     n_cells: int | None = None,
     volume_time: str = "0",
     field_dict: dict = {},
-) -> tuple:
+) -> tuple[float, dict]:
     """
     Calculate volume averaged gas hold up at a given time
 
@@ -320,7 +320,7 @@ def compute_superficial_velocity(
     direction: int = 1,
     cell_centers_file: str = "meshCellCentres_0.obj",
     field_dict: dict = {},
-) -> tuple:
+) -> tuple[float, dict]:
     """
     Calculate superficial velocity in a given direction at a given time
 
@@ -408,7 +408,7 @@ def compute_ave_y_liq(
     volume_time: str = "0",
     spec_name: str = "CO2",
     field_dict={},
-) -> tuple:
+) -> tuple[float, dict]:
     """
     Calculate liquid volume averaged mass fraction of a species at a given time
 
@@ -486,7 +486,7 @@ def compute_ave_conc_liq(
     mol_weight: float = 0.04401,
     rho_val: float | None = 1000,
     field_dict={},
-) -> tuple:
+) -> tuple[float, dict]:
     """
     Calculate liquid volume averaged concentration of a species at a given time
 
@@ -586,7 +586,7 @@ def compute_ave_bubble_diam(
     n_cells: int | None = None,
     volume_time: str = "0",
     field_dict={},
-) -> tuple:
+) -> tuple[float, dict]:
     """
     Calculate averaged bubble diameter over the liquid volume
 

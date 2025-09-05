@@ -157,11 +157,17 @@ def read_meta_data(filename: str, mode: str | None = None) -> dict:
                             )
                     elif "uniform" in line:
                         meta_data["uniform"] = True
-                        sline = line.split()
                         if meta_data["type"] == "scalar":
+                            sline = line.split()
                             unif_value = float(sline[-1].strip(";"))
                         elif meta_data["type"] == "vector":
-                            unif_value = ofvec2arr(sline[-1].strip(";"))
+                            sline = line.split()
+                            for ientry, entry in enumerate(sline):
+                                if ";" in entry:
+                                    ind_end = ientry
+                                    break
+                            line_cropped = " ".join(sline[2 : ientry + 1])
+                            unif_value = ofvec2arr(line_cropped.strip(";"))
                         else:
                             raise NotImplementedError(
                                 f"Mode {mode} is unknown"
@@ -452,7 +458,9 @@ def readSizeGroups(file):
     return sizeGroup, binGroup
 
 
-def getCaseTimes(casePath: str, remove_zero: bool = False) -> tuple:
+def getCaseTimes(
+    casePath: str, remove_zero: bool = False
+) -> tuple[list[float], list[str]]:
     """
     Get list of all time folders from an OpenFOAM case
 
