@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 def conditional_average(
     x: np.ndarray, y: np.ndarray, nbins: int = 32
-) -> tuple:
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Compute a 1D conditional average of y with respect to x
     The conditional average is distributed to neighbors of the binned array when needed

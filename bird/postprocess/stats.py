@@ -150,7 +150,7 @@ def _to_equally_spaced(
 
 def calc_mean(
     time_series: np.ndarray, time_values: np.ndarray | None = None
-) -> tuple:
+) -> tuple[float, float]:
     """
     Compute mean and the uncertainty about the mean, from a time-series
 
@@ -165,8 +165,10 @@ def calc_mean(
 
     Returns
     ----------
-    mean_val, unc_val : tuple
-        Mean value and the 68% uncertainty (1 sigma) about the mean
+    mean_val: float
+        Mean value of the time_series
+    unc_val: float
+        68% uncertainty (1 sigma) about the mean
 
     """
 

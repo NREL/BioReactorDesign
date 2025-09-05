@@ -458,7 +458,9 @@ def readSizeGroups(file):
     return sizeGroup, binGroup
 
 
-def getCaseTimes(casePath: str, remove_zero: bool = False) -> tuple:
+def getCaseTimes(
+    casePath: str, remove_zero: bool = False
+) -> tuple[list[float], list[str]]:
     """
     Get list of all time folders from an OpenFOAM case
 
