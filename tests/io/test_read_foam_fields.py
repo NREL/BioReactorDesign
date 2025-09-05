@@ -112,7 +112,21 @@ def test_read_nonunif_vec():
     assert data_dict["name"] == "U.gas"
 
 
-if __name__ == "__main__":
-    test_read_nonunif_scal()
-    test_read_unif_scal()
-    test_read_nonunif_vec()
+def test_read_unif_vec():
+    """
+    Test for reading uniform vectorField
+    """
+    caseFolder = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+    )
+    # Read non uniform field
+    data_dict = readOFVec(
+        filename=os.path.join(caseFolder, "79", "U_unif_dummy")
+    )
+    assert np.linalg.norm(data_dict["field"] - [0.0, 0.1, 0.0]) < 1e-6
+    assert data_dict["name"] == "U_unif_dummy"
