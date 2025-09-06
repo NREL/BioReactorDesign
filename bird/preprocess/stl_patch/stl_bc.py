@@ -1,4 +1,5 @@
 import logging
+import os
 
 import numpy as np
 import stl
@@ -38,14 +39,16 @@ def get_all_vert_faces(input_dict, boundary_name):
     return boundary_mesh
 
 
-def write_boundaries(input_dict):
+def write_boundaries(input_dict, output_folder="."):
     check_input(input_dict)
     for boundary_name in input_dict.keys():
         if not boundary_name == "Geometry":
             logger.info(f"Making {boundary_name}")
             boundary_mesh = get_all_vert_faces(input_dict, boundary_name)
             logger.info(f"\tArea {boundary_mesh.area} m2")
-            boundary_mesh.save(f"{boundary_name}.stl")
+            boundary_mesh.save(
+                os.path.join(output_folder, f"{boundary_name}.stl")
+            )
 
 
 if __name__ == "__main__":
