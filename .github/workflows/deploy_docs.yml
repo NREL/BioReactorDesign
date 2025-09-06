@@ -6,6 +6,11 @@ on:
     paths:
       - 'docs/**'
       - '.github/workflows/deploy_docs.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/deploy_docs.yml'
  
 jobs:
  
