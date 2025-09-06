@@ -33,7 +33,7 @@ jobs:
 
       - name: Generate coverage report
         run: |
-          pytest --cov=. --cov-branch --cov-report=xml
+          pytest --cov=bird --cov-branch --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
