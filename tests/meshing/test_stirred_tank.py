@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -27,11 +28,14 @@ def test_stirred_tank():
     inp = os.path.join(
         BIRD_STIRRED_TANK_MESH_TEMP_DIR, "base_tank", "tank_par.yaml"
     )
-    out = "tmp_blockMeshDict"
-    with open(out, "w") as outfile:
-        react = get_reactor_geom(inp)
-        write_ofoam_preamble(outfile, react)
-        write_vertices(outfile, react)
-        write_edges(outfile, react)
-        write_blocks(outfile, react)
-        write_patches(outfile, react)
+    # Output to temporary directory and delete when done
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        output_folder = tmpdirname
+        outfilename = os.path.join(tmpdirname, "blockMeshDict")
+        with open(outfilename, "w") as outfile:
+            react = get_reactor_geom(inp)
+            write_ofoam_preamble(outfile, react)
+            write_vertices(outfile, react)
+            write_edges(outfile, react)
+            write_blocks(outfile, react)
+            write_patches(outfile, react)

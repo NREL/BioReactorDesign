@@ -1,4 +1,5 @@
 import os
+import tempfile
 from pathlib import Path
 
 from prettyPlot.plotting import plt, pretty_labels
@@ -30,7 +31,10 @@ def test_compute_cond():
         "d.gas",
     ]
     fields_cond = compute_cond_mean(caseFolder, 1, fields_list, 2, n_bins=32)
-    save_cond("cond.pkl", fields_cond)
+
+    # Output to temporary directory and delete when done
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        save_cond(os.path.join(tmpdirname, "cond.pkl"), fields_cond)
 
     cond = {}
     cond[caseFolder] = fields_cond

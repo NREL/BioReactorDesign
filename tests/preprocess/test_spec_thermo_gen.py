@@ -1,5 +1,6 @@
 import os
 import shutil
+import tempfile
 from pathlib import Path
 
 from bird.preprocess.species_gen.setup_thermo_prop import (
@@ -24,32 +25,42 @@ def test_species_thermo_write():
         "bubble_column_20L",
     )
 
-    src_fake_thermo = os.path.join(
-        case_dir, "constant", "thermophysicalProperties_erroneous.gas"
-    )
-    dest_thermo = os.path.join(
-        case_dir, "constant", "thermophysicalProperties.gas"
-    )
-    shutil.copyfile(src_fake_thermo, dest_thermo)
-
-    foam_dict = read_openfoam_dict(dest_thermo)
-    assert (
-        abs(
-            float(foam_dict["O2"]["thermodynamics"]["highCpCoeffs"][2])
-            + 7.57967e-07
+    # Output to temporary directory and delete when done
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        shutil.copytree(
+            os.path.join(case_dir, "constant"),
+            os.path.join(tmpdirname, "constant"),
         )
-        > 1e-12
-    )
 
-    write_species_properties(case_dir, phase="gas")
-    foam_dict = read_openfoam_dict(dest_thermo)
-    assert (
-        abs(
-            float(foam_dict["O2"]["thermodynamics"]["highCpCoeffs"][2])
-            + 7.57967e-07
+        src_fake_thermo = os.path.join(
+            tmpdirname, "constant", "thermophysicalProperties_erroneous.gas"
         )
-        < 1e-12
-    )
+
+        dest_thermo = os.path.join(
+            tmpdirname, "constant", "thermophysicalProperties.gas"
+        )
+
+        shutil.copyfile(src_fake_thermo, dest_thermo)
+
+        # Reading the wrong thermo file and making sure we have an error
+        foam_dict = read_openfoam_dict(dest_thermo)
+        assert (
+            abs(
+                float(foam_dict["O2"]["thermodynamics"]["highCpCoeffs"][2])
+                + 7.57967e-07
+            )
+            > 1e-12
+        )
+
+        write_species_properties(tmpdirname, phase="gas")
+        foam_dict = read_openfoam_dict(dest_thermo)
+        assert (
+            abs(
+                float(foam_dict["O2"]["thermodynamics"]["highCpCoeffs"][2])
+                + 7.57967e-07
+            )
+            < 1e-12
+        )
 
 
 def test_species_names():
@@ -160,7 +171,3 @@ def test_species_key_pair():
     assert "water" in species_key_pair_dict
     assert species_key_pair_dict["CO2"] == "CO2"
     assert species_key_pair_dict["water"] == '"(mixture|water)"'
-
-
-if __name__ == "__main__":
-    test_species_prop()
