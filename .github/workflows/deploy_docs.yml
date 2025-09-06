@@ -31,6 +31,7 @@ jobs:
       - name: Build documentation
         run: |
           cd docs
+          sphinx-apidoc -o docs/source bird
           make html
 
       - name: Deploy
