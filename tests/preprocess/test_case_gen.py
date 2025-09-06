@@ -1,6 +1,7 @@
 import os
 import pickle
 import shutil
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -19,28 +20,32 @@ def test_continuous_loop():
         "preprocess",
         "data_case_gen",
     )
-    generate_single_scaledup_reactor_sparger_cases(
-        sparger_locs=[0.3, 0.5, 1.4],
-        sim_id=0,
-        vvm=0.4,
-        study_folder=".",
-        template_folder=os.path.join(
-            BIRD_CASE_GEN_DATA_DIR,
-            "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
-        ),
-    )
+    # Output to temporary directory and delete when done
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        generate_single_scaledup_reactor_sparger_cases(
+            sparger_locs=[0.3, 0.5, 1.4],
+            sim_id=0,
+            vvm=0.4,
+            study_folder=tmpdirname,
+            template_folder=os.path.join(
+                BIRD_CASE_GEN_DATA_DIR,
+                "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
+            ),
+        )
 
-    generate_single_scaledup_reactor_sparger_cases(
-        sparger_locs=[0.3, 0.35],
-        sim_id=0,
-        vvm=0.4,
-        study_folder="sparger_overlap",
-        template_folder=os.path.join(
-            BIRD_CASE_GEN_DATA_DIR,
-            "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
-        ),
-        bypass_sparger_spacing=True,
-    )
+    # Output to temporary directory and delete when done
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        generate_single_scaledup_reactor_sparger_cases(
+            sparger_locs=[0.3, 0.35],
+            sim_id=0,
+            vvm=0.4,
+            study_folder=tmpdirname,
+            template_folder=os.path.join(
+                BIRD_CASE_GEN_DATA_DIR,
+                "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
+            ),
+            bypass_sparger_spacing=True,
+        )
 
 
 def test_discrete_loop():
@@ -101,23 +106,26 @@ def test_discrete_loop():
     for vvm_v in vvm_l:
         vvm_str = str(vvm_v).replace(".", "_")
         for pow_v in pow_l:
-            study_folder = f"study_scaleup_{vvm_str}vvm_{pow_v}W"
-            generate_scaledup_reactor_cases(
-                config_dict,
-                branchcom_spots,
-                vvm=vvm_v,
-                power=pow_v,
-                constantD=True,
-                study_folder=study_folder,
-                template_folder=os.path.join(
-                    BIRD_CASE_GEN_DATA_DIR,
-                    "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
-                ),
-            )
-            write_script_start(f"{study_folder}/many_scripts_start", n_sim)
-            write_script_post(f"{study_folder}/many_scripts_post", n_sim)
-            write_prep(f"{study_folder}/prep.sh", n_sim)
-            save_config_dict(f"{study_folder}/configs.pkl", config_dict)
-            save_config_dict(
-                f"{study_folder}/branchcom_spots.pkl", branchcom_spots
-            )
+            # Output to temporary directory and delete when done
+            with tempfile.TemporaryDirectory() as tmpdirname:
+                # study_folder = f"study_scaleup_{vvm_str}vvm_{pow_v}W"
+                study_folder = tmpdirname
+                generate_scaledup_reactor_cases(
+                    config_dict,
+                    branchcom_spots,
+                    vvm=vvm_v,
+                    power=pow_v,
+                    constantD=True,
+                    study_folder=study_folder,
+                    template_folder=os.path.join(
+                        BIRD_CASE_GEN_DATA_DIR,
+                        "loop_reactor_pbe_dynmix_nonstat_headbranch_scaleup",
+                    ),
+                )
+                write_script_start(f"{study_folder}/many_scripts_start", n_sim)
+                write_script_post(f"{study_folder}/many_scripts_post", n_sim)
+                write_prep(f"{study_folder}/prep.sh", n_sim)
+                save_config_dict(f"{study_folder}/configs.pkl", config_dict)
+                save_config_dict(
+                    f"{study_folder}/branchcom_spots.pkl", branchcom_spots
+                )

@@ -61,8 +61,3 @@ def test_mean_stats_nonuniform():
 
     # Make sure non uniform signal is correctly treated
     assert abs(unc_non_unif - unc_unif) / unc_unif < 0.1
-
-
-if __name__ == "__main__":
-    test_mean_stats_uniform()
-    test_mean_stats_nonuniform()

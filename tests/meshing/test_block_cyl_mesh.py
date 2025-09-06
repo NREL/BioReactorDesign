@@ -1,5 +1,6 @@
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -33,8 +34,11 @@ def test_side_sparger():
     topo_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "sideSparger/topology.json"
     )
-    output_folder = "system_tmp"
-    base_mesh(input_file, topo_file, output_folder)
+    # Output to temporary directory and delete when done
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        output_folder = tmpdirname
+        base_mesh(input_file, topo_file, output_folder)
+        assert os.path.exists(os.path.join(tmpdirname, "blockMeshDict"))
 
 
 def test_flat_donut():
@@ -52,8 +56,11 @@ def test_flat_donut():
     topo_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "flatDonut/topology.json"
     )
-    output_folder = "system_tmp"
-    base_mesh(input_file, topo_file, output_folder)
+    # Output to temporary directory and delete when done
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        output_folder = tmpdirname
+        base_mesh(input_file, topo_file, output_folder)
+        assert os.path.exists(os.path.join(tmpdirname, "blockMeshDict"))
 
 
 def test_base_column():
@@ -71,8 +78,11 @@ def test_base_column():
     topo_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "baseColumn/topology.json"
     )
-    output_folder = "system_tmp"
-    base_mesh(input_file, topo_file, output_folder)
+    # Output to temporary directory and delete when done
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        output_folder = tmpdirname
+        base_mesh(input_file, topo_file, output_folder)
+        assert os.path.exists(os.path.join(tmpdirname, "blockMeshDict"))
 
 
 def test_base_column_refine():
@@ -90,8 +100,11 @@ def test_base_column_refine():
     topo_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "baseColumn_refineSparg/topology.json"
     )
-    output_folder = "system_tmp"
-    base_mesh(input_file, topo_file, output_folder)
+    # Output to temporary directory and delete when done
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        output_folder = tmpdirname
+        base_mesh(input_file, topo_file, output_folder)
+        assert os.path.exists(os.path.join(tmpdirname, "blockMeshDict"))
 
 
 def test_base_column_projected():
@@ -109,8 +122,11 @@ def test_base_column_projected():
     topo_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "baseColumn_projected/topology.json"
     )
-    output_folder = "system_tmp"
-    base_mesh(input_file, topo_file, output_folder)
+    # Output to temporary directory and delete when done
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        output_folder = tmpdirname
+        base_mesh(input_file, topo_file, output_folder)
+        assert os.path.exists(os.path.join(tmpdirname, "blockMeshDict"))
 
 
 def test_multiring():
@@ -128,8 +144,11 @@ def test_multiring():
     topo_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "multiRing_simple/topology.json"
     )
-    output_folder = "system_tmp"
-    base_mesh(input_file, topo_file, output_folder)
+    # Output to temporary directory and delete when done
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        output_folder = tmpdirname
+        base_mesh(input_file, topo_file, output_folder)
+        assert os.path.exists(os.path.join(tmpdirname, "blockMeshDict"))
 
 
 def test_multiring_coarse():
@@ -147,9 +166,8 @@ def test_multiring_coarse():
     topo_file = os.path.join(
         BIRD_BLOCK_CYL_MESH_TEMP_DIR, "multiRing_coarse/topology.json"
     )
-    output_folder = "system_tmp"
-    base_mesh(input_file, topo_file, output_folder)
-
-
-if __name__ == "__main__":
-    test_multiring_coarse()
+    # Output to temporary directory and delete when done
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        output_folder = tmpdirname
+        base_mesh(input_file, topo_file, output_folder)
+        assert os.path.exists(os.path.join(tmpdirname, "blockMeshDict"))
