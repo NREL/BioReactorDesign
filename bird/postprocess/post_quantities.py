@@ -265,7 +265,13 @@ def compute_gas_holdup(
     Calculate volume averaged gas hold up at a given time
 
     .. math::
-       \frac{1}{V_{\rm tot}} \int_{V} (1-\alpha_{\rm liq}) dV
+       \\frac{1}{V_{\\rm tot}} \int_{V} (1-\\alpha_{\\rm liq}) dV
+
+    where:
+      - :math:`V_{\\rm tot}` is the total reactor volume
+      - :math:`D` is the bubble diameter
+      - :math:`\\alpha_{\\rm liq}` is the liquid phase volume fraction
+      - :math:`V` is the volume of the cell where :math:`\\alpha_{\\rm liq}` is measured
 
     Parameters
     ----------
@@ -322,7 +328,7 @@ def compute_superficial_velocity(
     field_dict: dict = {},
 ) -> tuple[float, dict]:
     """
-    Calculate superficial velocity in a given direction at a given time
+    Calculate superficial velocity (in m/s) in a given direction at a given time
 
     Parameters
     ----------
@@ -344,7 +350,7 @@ def compute_superficial_velocity(
     Returns
     ----------
     sup_vel: float
-        Superficial velocity
+        Superficial velocity (in m/s)
     field_dict : dict
         Dictionary of fields read
     """
@@ -413,7 +419,13 @@ def compute_ave_y_liq(
     Calculate liquid volume averaged mass fraction of a species at a given time
 
     .. math::
-       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} Y dV_{\rm liq}
+       \\frac{1}{V_{\\rm liq, tot}} \int_{V_{\\rm liq}} Y dV_{\\rm liq}
+
+    where:
+      - :math:`V_{\\rm liq, tot}` is the toal volume of liquid
+      - :math:`Y` is the species mass fraction
+      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`D` is measured
+
 
     Parameters
     ----------
@@ -491,7 +503,14 @@ def compute_ave_conc_liq(
     Calculate liquid volume averaged concentration of a species at a given time
 
     .. math::
-       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} \rho_{\rm liq} Y / W dV_{\rm liq}
+       \\frac{1}{V_{\\rm liq, tot}} \int_{V_{\\rm liq}} \\rho_{\\rm liq} Y / W dV_{\\rm liq}
+
+    where:
+      - :math:`V_{\\rm liq, tot}` is the toal volume of liquid
+      - :math:`\\rho_{\\rm liq}` is the liquid density
+      - :math:`Y` is the species mass fraction
+      - :math:`W` is the species molar mass
+      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`D` is measured
 
     Parameters
     ----------
@@ -591,7 +610,14 @@ def compute_ave_bubble_diam(
     Calculate averaged bubble diameter over the liquid volume
 
     .. math::
-       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} D dV
+
+       \\frac{1}{V_{\\rm liq, tot}} \\int_{V_{\\rm liq}} D dV
+
+    where:
+      - :math:`V_{\\rm liq, tot}` is the toal volume of liquid
+      - :math:`D` is the bubble diameter
+      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`D` is measured
+
 
     Parameters
     ----------
