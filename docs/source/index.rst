@@ -29,6 +29,7 @@ We provide a solver ``birdmultiphaseEulerFoam`` that contains custom models adde
    uq
    python_interface
    tutorials
+   bird
    contribute
    references
    troubleshoot

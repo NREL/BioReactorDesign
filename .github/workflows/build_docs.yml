@@ -29,7 +29,6 @@ jobs:
 
       - name: Build documentation
         run: |
-          sphinx-apidoc -o docs/source bird
           cd docs
           make html
 
