@@ -31,14 +31,14 @@ jobs:
           pip install --upgrade pip
           pip install pytest
           pip install pytest-cov
-          pip install -e .
+          pip install .
 
       - name: Generate coverage report
         run: |
           pytest --cov=./ --cov-report=xml:coverage.xml          
       - name: Upload coverage to Codecov
         
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
