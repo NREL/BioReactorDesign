@@ -16,12 +16,12 @@ def readMesh(filename: str) -> np.ndarray:
     filename: str
         meshCellCentres_X.obj filename
 
-    returns
-    ----------
+    Returns
+    -------
     cell_centers: np.ndarray
         Array (N,3) representing the cell centers (N is number of cells)
-
     """
+
     assert "meshCellCentres" in filename
     assert ".obj" in filename
     cell_centers = np.loadtxt(filename, usecols=(1, 2, 3))
@@ -39,13 +39,12 @@ def ofvec2arr(vec: str) -> np.ndarray:
         Must start with "("
         Must end with ")"
 
-    returns
-    ----------
+    Returns
+    -------
     vec_array: np.ndarray
         Array (3,) representing the vector
-
-
     """
+
     vec = vec.strip()
     assert vec[0] == "("
     assert vec[-1] == ")"
@@ -64,8 +63,8 @@ def is_comment(line: str) -> bool:
     line: str
         Line of file
 
-    returns
-    ----------
+    Returns
+    -------
     is_comment: bool
         True if line is a comment
         False if line is not a comment
@@ -93,8 +92,8 @@ def read_meta_data(filename: str, mode: str | None = None) -> dict:
         If "vector", expects a vector field
         If None, obtained from field header
 
-    returns
-    ----------
+    Returns
+    -------
     meta_data: dict
         Dictionary that contain info about the scalar field
             ============= =====================================================
@@ -204,8 +203,8 @@ def readOFScal(
         meta data dictionary
         If None, it is read from filename
 
-    returns
-    ----------
+    Returns
+    -------
     data: dict
         Dictionary that contain info about the scalar field
             ======== =====================================================
@@ -213,7 +212,7 @@ def readOFScal(
             ======== =====================================================
             field    For nonuniform fields, array of size the number of cells (*np.ndarray*).
                      For uniform fields with a specified n_cells,
-                          array of size the number of cells (*np.ndarray*).
+                     array of size the number of cells (*np.ndarray*).
                      For uniform fields, a scalar value (*float*)
             name     Name of the scalar field (*str*)
             n_cells  Number of computational cells (*int*)
@@ -294,8 +293,8 @@ def readOFVec(
         meta data dictionary
         If None, it is read from filename
 
-    returns
-    ----------
+    Returns
+    -------
     data: dict
         Dictionary that contain info about the scalar field
             ======== =====================================================
@@ -303,7 +302,7 @@ def readOFVec(
             ======== =====================================================
             field    For nonuniform fields, array of size the number of cells by 3 (*np.ndarray*).
                      For uniform fields with a specified n_cells,
-                          array of size the number of cells by 3 (*np.ndarray*).
+                     array of size the number of cells by 3 (*np.ndarray*).
                      For uniform fields, a scalar value (*float*)
             name     Name of the field (*str*)
             n_cells  Number of computational cells (*int*)
@@ -390,8 +389,8 @@ def readOF(
         If None, it is read from filename
 
 
-    returns
-    ----------
+    Returns
+    -------
     data: dict
         Dictionary that contain info about the scalar field
             ======== =====================================================
@@ -399,7 +398,7 @@ def readOF(
             ======== =====================================================
             field    For nonuniform fields, array of size the number of cells (*np.ndarray*).
                      For uniform fields with a specified n_cells,
-                          array of size the number of cells (*np.ndarray*).
+                     array of size the number of cells (*np.ndarray*).
                      For uniform fields, a scalar value (*float*)
             name     Name of the field (*str*)
             n_cells  Number of computational cells (*int*)
@@ -471,8 +470,8 @@ def getCaseTimes(
     remove_zero : bool
         Whether to remove zero from the time folder list
 
-    returns
-    ----------
+    Returns
+    -------
     time_float_sorted: list[float]
         List of time folder values in ascending order
     time_str_sorted: list[str]
@@ -590,6 +589,7 @@ def parse_tokens(tokens: list[str]) -> dict:
     ----------
     parsed: dict
         A nested dictionary that represents the OpenFOAM dictionary.
+
     """
 
     def parse_block(index: int) -> tuple:
@@ -687,7 +687,7 @@ def read_openfoam_dict(filename: str) -> dict:
         OpenFOAM dictionary filename
 
     Returns
-    ----------
+    -------
     dict_of: dict
         A Python dictionary representing the structure of the OpenFOAM dictionary.
     """
