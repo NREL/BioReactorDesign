@@ -9,4 +9,6 @@ wallBoilingProperty/wallBoilingProperty.C
 
 adjustTimeStepToNucleation/adjustTimeStepToNucleation.C
 
+disengagement/disengagement.C
+
 LIB = $(FOAM_USER_LIBBIN)/libbirdmultiphaseEulerFunctionObjects
