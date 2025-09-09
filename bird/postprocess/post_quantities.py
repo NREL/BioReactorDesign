@@ -186,6 +186,7 @@ def _field_filter(
     elif field_type.lower() == "vector":
         if isinstance(field, np.ndarray):
             if field.shape == (3,):
+                # Uniform field
                 filtered_field = field
             else:
                 filtered_field = field[ind]
