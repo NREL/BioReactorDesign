@@ -5,7 +5,7 @@ from bird.utilities.ofio import *
 logger = logging.getLogger(__name__)
 
 
-def read_field(
+def _read_field(
     case_folder: str,
     time_folder: str,
     field_name: str,
@@ -48,7 +48,7 @@ def read_field(
     return field, field_dict
 
 
-def read_cell_volume(
+def _read_cell_volume(
     case_folder: str,
     time_folder: str,
     n_cells: int | None = None,
@@ -81,7 +81,7 @@ def read_cell_volume(
         "n_cells": n_cells,
     }
     try:
-        cell_volume, field_dict = read_field(
+        cell_volume, field_dict = _read_field(
             field_name="V", field_dict=field_dict, **kwargs_vol
         )
     except FileNotFoundError:
@@ -96,7 +96,7 @@ def read_cell_volume(
     return cell_volume, field_dict
 
 
-def read_cell_centers(
+def _read_cell_centers(
     case_folder: str,
     cell_centers_file: str,
     field_dict: dict = {},
@@ -148,7 +148,61 @@ def read_cell_centers(
     return cell_centers, field_dict
 
 
-def get_ind_liq(
+def _field_filter(
+    field: float | np.ndarray, ind: np.ndarray, field_type: str
+) -> float | np.ndarray:
+    """
+    Filter field by index. Handle uniform and non uniform fields
+
+    Parameters
+    ----------
+    field: float | np.ndarray
+        Field to filter
+    ind: np.ndarray
+        Cell indices to keep
+    field_type : str
+        Type of the field ("scalar" or "vector")
+
+    Returns
+    ----------
+    filtered_field: float | np.ndarray
+        Field filtered by cell indices
+
+    """
+    if field_type.lower() == "scalar":
+        if isinstance(field, np.ndarray):
+            if len(field.shape) > 1:
+                err_msg = f"Scalar field shape {field.shape} but expected a flat array"
+                raise ValueError(err_msg)
+            filtered_field = field[ind]
+        elif isinstance(field, float):
+            # Uniform field
+            filtered_field = field
+        else:
+            err_msg = f"Got field type {type(field)}."
+            err_msg += " Expected float of np.ndarray for scalar field"
+            raise TypeError(err_msg)
+
+    elif field_type.lower() == "vector":
+        if isinstance(field, np.ndarray):
+            if field.shape == (3,):
+                filtered_field = field
+            else:
+                filtered_field = field[ind]
+        else:
+            err_msg = f"Got field type {type(field)}."
+            err_msg += " Expected np.ndarray for vector field"
+            raise TypeError(err_msg)
+
+    else:
+        msg = f"Field type ({field_type}) not recognized"
+        msg += " Supported field types are 'scalar' and 'vector'"
+        raise NotImplementedError(msg)
+
+    return filtered_field
+
+
+def _get_ind_liq(
     case_folder: str | None = None,
     time_folder: str | None = None,
     n_cells: int | None = None,
@@ -184,9 +238,11 @@ def get_ind_liq(
         "n_cells": n_cells,
     }
 
+    logger.warning("Assuming that alpha_liq > 0.5 denotes pure liquid")
+
     # Compute indices of pure liquid
     if not ("ind_liq" in field_dict) or field_dict["ind_liq"] is None:
-        alpha_liq, field_dict = read_field(
+        alpha_liq, field_dict = _read_field(
             case_folder,
             time_folder,
             field_name="alpha.liquid",
@@ -201,7 +257,7 @@ def get_ind_liq(
     return ind_liq, field_dict
 
 
-def get_ind_gas(
+def _get_ind_gas(
     case_folder: str | None = None,
     time_folder: str | None = None,
     n_cells: int | None = None,
@@ -237,9 +293,11 @@ def get_ind_gas(
         "n_cells": n_cells,
     }
 
+    logger.warning("Assuming that alpha_liq <= 0.5 denotes pure gas")
+
     # Compute indices of pure liquid
     if not ("ind_gas" in field_dict) or field_dict["ind_gas"] is None:
-        alpha_liq = read_field(
+        alpha_liq = _read_field(
             case_folder,
             time_folder,
             field_name="alpha.liquid",
@@ -304,23 +362,17 @@ def compute_gas_holdup(
         "n_cells": n_cells,
     }
 
-    alpha_liq, field_dict = read_field(
+    alpha_liq, field_dict = _read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
-    ind_liq, field_dict = get_ind_liq(field_dict=field_dict, **kwargs)
-    cell_volume, field_dict = read_cell_volume(
+    ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
+    cell_volume, field_dict = _read_cell_volume(
         field_dict=field_dict, **kwargs_vol
     )
 
-    # Only compute over the liquid
-    if isinstance(alpha_liq, np.ndarray):
-        alpha_liq = alpha_liq[ind_liq]
-    else:
-        raise TypeError
-    if isinstance(cell_volume, np.ndarray):
-        cell_volume = cell_volume[ind_liq]
-    else:
-        raise TypeError
+    # Only compute over the pure liquid
+    alpha_liq = _field_filter(alpha_liq, ind=ind_liq, field_type="scalar")
+    cell_volume = _field_filter(cell_volume, ind=ind_liq, field_type="scalar")
 
     # Calculate
     gas_holdup = np.sum((1 - alpha_liq) * cell_volume) / np.sum(cell_volume)
@@ -376,18 +428,18 @@ def compute_superficial_velocity(
         "time_folder": volume_time,
         "n_cells": n_cells,
     }
-    alpha_gas, field_dict = read_field(
+    alpha_gas, field_dict = _read_field(
         field_name="alpha.gas", field_dict=field_dict, **kwargs
     )
-    U_gas, field_dict = read_field(
+    U_gas, field_dict = _read_field(
         field_name="U.gas", field_dict=field_dict, **kwargs
     )
     U_gas = U_gas[:, direction]
 
-    cell_volume, field_dict = read_cell_volume(
+    cell_volume, field_dict = _read_cell_volume(
         field_dict=field_dict, **kwargs_vol
     )
-    cell_centers, field_dict = read_cell_centers(
+    cell_centers, field_dict = _read_cell_centers(
         case_folder=case_folder,
         cell_centers_file=cell_centers_file,
         field_dict=field_dict,
@@ -404,18 +456,11 @@ def compute_superficial_velocity(
     )
 
     # Only compute in the middle
-    if isinstance(alpha_gas, np.ndarray):
-        alpha_gas = alpha_gas[ind_middle]
-    else:
-        raise TypeError
-    if isinstance(cell_volume, np.ndarray):
-        cell_volume = cell_volume[ind_middle]
-    else:
-        raise TypeError
-    if isinstance(U_gas, np.ndarray):
-        U_gas = U_gas[ind_middle]
-    else:
-        raise TypeError
+    alpha_gas = _field_filter(alpha_gas, ind=ind_middle, field_type="scalar")
+    cell_volume = _field_filter(
+        cell_volume, ind=ind_middle, field_type="scalar"
+    )
+    U_gas = _field_filter(U_gas, ind=ind_middle, field_type="vector")
 
     # Compute
     sup_vel = np.sum(U_gas * alpha_gas * cell_volume) / np.sum(cell_volume)
@@ -440,7 +485,7 @@ def compute_ave_y_liq(
     where:
       - :math:`V_{\\rm liq, tot}` is the toal volume of liquid
       - :math:`Y` is the species mass fraction
-      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`D` is measured
+      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`Y` is measured
 
 
     Parameters
@@ -477,31 +522,22 @@ def compute_ave_y_liq(
         "time_folder": volume_time,
         "n_cells": n_cells,
     }
-    alpha_liq, field_dict = read_field(
+    alpha_liq, field_dict = _read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
-    y_liq, field_dict = read_field(
+    y_liq, field_dict = _read_field(
         field_name=f"{spec_name}.liquid", field_dict=field_dict, **kwargs
     )
-    ind_liq, field_dict = get_ind_liq(field_dict=field_dict, **kwargs)
+    ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
-    cell_volume, field_dict = read_cell_volume(
+    cell_volume, field_dict = _read_cell_volume(
         field_dict=field_dict, **kwargs_vol
     )
 
     # Only compute over the liquid
-    if isinstance(alpha_liq, np.ndarray):
-        alpha_liq = alpha_liq[ind_liq]
-    else:
-        raise TypeError
-    if isinstance(cell_volume, np.ndarray):
-        cell_volume = cell_volume[ind_liq]
-    else:
-        raise TypeError
-    if isinstance(y_liq, np.ndarray):
-        y_liq = y_liq[ind_liq]
-    else:
-        raise TypeError
+    alpha_liq = _field_filter(alpha_liq, ind=ind_liq, field_type="scalar")
+    cell_volume = _field_filter(cell_volume, ind=ind_liq, field_type="scalar")
+    y_liq = _field_filter(y_liq, ind=ind_liq, field_type="scalar")
 
     # Calculate
     liq_ave_y = np.sum(alpha_liq * y_liq * cell_volume) / np.sum(
@@ -532,7 +568,7 @@ def compute_ave_conc_liq(
       - :math:`\\rho_{\\rm liq}` is the liquid density
       - :math:`Y` is the species mass fraction
       - :math:`W` is the species molar mass
-      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`D` is measured
+      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`Y` is measured
 
     Parameters
     ----------
@@ -565,6 +601,7 @@ def compute_ave_conc_liq(
         f"Computing concentration for {spec_name} with molecular weight {mol_weight:.4g} kg/mol"
     )
     if rho_val is not None:
+        rho_val = float(rho_val)
         logger.debug(f"Assuming liquid density {rho_val} kg/m3")
 
     # Read relevant fields
@@ -578,15 +615,15 @@ def compute_ave_conc_liq(
         "time_folder": volume_time,
         "n_cells": n_cells,
     }
-    alpha_liq, field_dict = read_field(
+    alpha_liq, field_dict = _read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
-    y_liq, field_dict = read_field(
+    y_liq, field_dict = _read_field(
         field_name=f"{spec_name}.liquid", field_dict=field_dict, **kwargs
     )
-    ind_liq, field_dict = get_ind_liq(field_dict=field_dict, **kwargs)
+    ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
-    cell_volume, field_dict = read_cell_volume(
+    cell_volume, field_dict = _read_cell_volume(
         field_dict=field_dict, **kwargs_vol
     )
 
@@ -603,22 +640,10 @@ def compute_ave_conc_liq(
         rho_liq = field_dict["rho_liq"]
 
     # Only compute over the liquid
-    if isinstance(y_liq, np.ndarray):
-        y_liq = y_liq[ind_liq]
-    else:
-        raise TypeError
-    if isinstance(alpha_liq, np.ndarray):
-        alpha_liq = alpha_liq[ind_liq]
-    else:
-        raise TypeError
-    if isinstance(alpha_liq, np.ndarray):
-        cell_volume = cell_volume[ind_liq]
-    else:
-        raise TypeError
-    if isinstance(rho_liq, np.ndarray):
-        rho_liq = rho_liq[ind_liq]
-    else:
-        raise TypeError
+    alpha_liq = _field_filter(alpha_liq, ind=ind_liq, field_type="scalar")
+    cell_volume = _field_filter(cell_volume, ind=ind_liq, field_type="scalar")
+    y_liq = _field_filter(y_liq, ind=ind_liq, field_type="scalar")
+    rho_liq = _field_filter(rho_liq, ind=ind_liq, field_type="scalar")
 
     conc_loc = rho_liq * y_liq / mol_weight
 
@@ -641,7 +666,7 @@ def compute_ave_bubble_diam(
 
     .. math::
 
-       \\frac{1}{V_{\\rm liq, tot}} \\int_{V_{\\rm liq}} `d_{\\rm gas}` dV
+       \\frac{1}{V_{\\rm liq, tot}} \\int_{V_{\\rm liq}} d_{\\rm gas} dV
 
     where:
       - :math:`V_{\\rm liq, tot}` is the toal volume of liquid
@@ -681,31 +706,22 @@ def compute_ave_bubble_diam(
         "time_folder": volume_time,
         "n_cells": n_cells,
     }
-    alpha_liq, field_dict = read_field(
+    alpha_liq, field_dict = _read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
-    d_gas, field_dict = read_field(
+    d_gas, field_dict = _read_field(
         field_name="d.gas", field_dict=field_dict, **kwargs
     )
-    ind_liq, field_dict = get_ind_liq(field_dict=field_dict, **kwargs)
+    ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
-    cell_volume, field_dict = read_cell_volume(
+    cell_volume, field_dict = _read_cell_volume(
         field_dict=field_dict, **kwargs_vol
     )
 
     # Only compute over the liquid
-    if isinstance(d_gas, np.ndarray):
-        d_gas = d_gas[ind_liq]
-    else:
-        raise TypeError
-    if isinstance(alpha_liq, np.ndarray):
-        alpha_liq = alpha_liq[ind_liq]
-    else:
-        raise TypeError
-    if isinstance(alpha_liq, np.ndarray):
-        cell_volume = cell_volume[ind_liq]
-    else:
-        raise TypeError
+    alpha_liq = _field_filter(alpha_liq, ind=ind_liq, field_type="scalar")
+    cell_volume = _field_filter(cell_volume, ind=ind_liq, field_type="scalar")
+    d_gas = _field_filter(d_gas, ind=ind_liq, field_type="scalar")
 
     # Calculate
     diam = np.sum(d_gas * alpha_liq * cell_volume) / np.sum(
