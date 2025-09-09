@@ -76,8 +76,6 @@ Compute mean statistics with uncertainty
 Averaging a discretized time-series signal is used in many contexts to characterize bio reactors (to compute averaged holdup or species concentrations). Averaging is subject to statistical error and we provide tools to manage it. 
 
 The run the illustrative example we consider here:
-First enable ``setup_logging(level="DEBUG")`` in ``bird/__init__.py``.
-Second, run
 
 .. code-block:: console
 
