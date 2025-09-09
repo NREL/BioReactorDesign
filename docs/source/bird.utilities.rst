@@ -52,10 +52,3 @@ bird.utilities.stl\_plotting module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: bird.utilities
-   :members:
-   :undoc-members:
-   :show-inheritance:
