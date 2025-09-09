@@ -28,7 +28,7 @@ def readMesh(filename: str) -> np.ndarray:
     return cell_centers
 
 
-def ofvec2arr(vec: str) -> np.ndarray:
+def _ofvec2arr(vec: str) -> np.ndarray:
     """
     Converts a vector written as a string into a numpy array
 
@@ -54,7 +54,7 @@ def ofvec2arr(vec: str) -> np.ndarray:
     return vec_array
 
 
-def is_comment(line: str) -> bool:
+def _is_comment(line: str) -> bool:
     """
     Checks if line is a comment
 
@@ -79,7 +79,7 @@ def is_comment(line: str) -> bool:
     return is_comment
 
 
-def read_meta_data(filename: str, mode: str | None = None) -> dict:
+def _read_meta_data(filename: str, mode: str | None = None) -> dict:
     """
     Read meta data from field outputted by OpenFOAM in ASCII format
 
@@ -115,17 +115,19 @@ def read_meta_data(filename: str, mode: str | None = None) -> dict:
         iline = 0
         while not header_done:
             line = f.readline()
-            if not is_comment(line):
+            if not _is_comment(line):
                 # Get field type
                 if (line.strip().startswith("class")) and (";" in line):
                     sline = line.strip().split()
                     field_type = sline[1][:-1]
-                    if field_type == "volVectorField":
+                    if field_type.lower() == "volvectorfield":
                         field_type = "vector"
-                    elif field_type == "volScalarField":
+                    elif field_type.lower() == "volscalarfield":
                         field_type = "scalar"
                     else:
-                        raise NotImplementedError
+                        err_msg = f"Field type {field_type} not recognized"
+                        err_msg = "Only 'volVectorField' and 'volScalarField' are supported"
+                        raise NotImplementedError(err_msg)
                     if mode is not None:
                         assert field_type == mode
                     meta_data["type"] = field_type
@@ -144,7 +146,7 @@ def read_meta_data(filename: str, mode: str | None = None) -> dict:
                         comment = True
                         while comment:
                             count_line = f.readline().strip()
-                            if not is_comment(count_line):
+                            if not _is_comment(count_line):
                                 comment = False
                         try:
                             n_cells = int(count_line)
@@ -156,20 +158,20 @@ def read_meta_data(filename: str, mode: str | None = None) -> dict:
                             )
                     elif "uniform" in line:
                         meta_data["uniform"] = True
-                        if meta_data["type"] == "scalar":
+                        if meta_data["type"].lower() == "scalar":
                             sline = line.split()
                             unif_value = float(sline[-1].strip(";"))
-                        elif meta_data["type"] == "vector":
+                        elif meta_data["type"].lower() == "vector":
                             sline = line.split()
                             for ientry, entry in enumerate(sline):
                                 if ";" in entry:
                                     ind_end = ientry
                                     break
                             line_cropped = " ".join(sline[2 : ientry + 1])
-                            unif_value = ofvec2arr(line_cropped.strip(";"))
+                            unif_value = _ofvec2arr(line_cropped.strip(";"))
                         else:
                             raise NotImplementedError(
-                                f"Mode {mode} is unknown"
+                                f"Mode {mode} is unknown (must be 'scalar', 'vector' or None)"
                             )
                         meta_data["uniform_value"] = unif_value
                         header_done = True
@@ -223,7 +225,7 @@ def readOFScal(
 
     if meta_data is None:
         # Read meta data
-        meta_data = read_meta_data(filename, mode="scalar")
+        meta_data = _read_meta_data(filename, mode="scalar")
 
     # Set field
     if meta_data["uniform"]:
@@ -313,7 +315,7 @@ def readOFVec(
 
     if meta_data is None:
         # Read meta data
-        meta_data = read_meta_data(filename, mode="vector")
+        meta_data = _read_meta_data(filename, mode="vector")
 
     # Set field
     if meta_data["uniform"]:
@@ -407,7 +409,7 @@ def readOF(
     """
     if meta_data is None:
         # Read meta data
-        meta_data = read_meta_data(filename)
+        meta_data = _read_meta_data(filename)
     if meta_data["type"] == "scalar":
         return readOFScal(filename=filename, meta_data=meta_data)
     if meta_data["type"] == "vector":
@@ -522,7 +524,7 @@ def getMeshTime(casePath: str) -> str:
             return time_mesh
 
 
-def remove_comments(text: str) -> str:
+def _remove_comments(text: str) -> str:
     """
     Remove C++-style comments (// and /*) from the input and markers like #{ #}
 
@@ -550,7 +552,7 @@ def remove_comments(text: str) -> str:
     return text
 
 
-def tokenize(text: str) -> list[str]:
+def _tokenize(text: str) -> list[str]:
     """
     Add spaces around special characters (brace and semicolons) to make them separate tokens
 
@@ -559,7 +561,7 @@ def tokenize(text: str) -> list[str]:
     text: str
         The cleaned (comment-free) OpenFOAM-style text.
 
-    Returns:
+    Returns
     ----------
     token_list: list[str]
         List of tokens.
@@ -575,7 +577,7 @@ def tokenize(text: str) -> list[str]:
     return token_list
 
 
-def parse_tokens(tokens: list[str]) -> dict:
+def _parse_tokens(tokens: list[str]) -> dict:
     """
     Parse OpenFOAM tokens into a nested Python dictionary.
     Special handling for `code { ... }` blocks to be stored as raw strings.
@@ -583,7 +585,7 @@ def parse_tokens(tokens: list[str]) -> dict:
     Parameters
     ----------
     tokens: list[str]
-        A list of tokens produced by `tokenize`.
+        A list of tokens produced by `_tokenize`.
 
     Returns
     ----------
@@ -693,9 +695,9 @@ def read_openfoam_dict(filename: str) -> dict:
     """
     with open(filename, "r+") as f:
         text = f.read()
-    text = remove_comments(text)
-    tokens = tokenize(text)
-    foam_dict = parse_tokens(tokens)
+    text = _remove_comments(text)
+    tokens = _tokenize(text)
+    foam_dict = _parse_tokens(tokens)
     return foam_dict
 
 
