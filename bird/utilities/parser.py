@@ -8,7 +8,7 @@ from ruamel.yaml import YAML
 logger = logging.getLogger(__name__)
 
 
-def check_for_tabs_in_yaml(file_path: str) -> None:
+def _check_for_tabs_in_yaml(file_path: str) -> None:
     """
     Checks if a YAML file contains any tab characters.
     Raises a ValueError if tabs found.
@@ -71,7 +71,7 @@ def parse_yaml(file_path: str) -> dict:
         raise FileNotFoundError(file_path)
 
     # Make sure the yaml file does not contain tabs
-    check_for_tabs_in_yaml(file_path)
+    _check_for_tabs_in_yaml(file_path)
 
     # Parse
     yaml = YAML(typ="safe")
