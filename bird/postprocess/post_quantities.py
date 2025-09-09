@@ -265,13 +265,12 @@ def compute_gas_holdup(
     Calculate volume averaged gas hold up at a given time
 
     .. math::
-       \\frac{1}{V_{\\rm tot}} \int_{V} (1-\\alpha_{\\rm liq}) dV
+       \\frac{1}{V_{\\rm liq, tot}} \int_{V_{\\rm liq}} (1-\\alpha_{\\rm liq}) dV
 
     where:
-      - :math:`V_{\\rm tot}` is the total reactor volume
-      - :math:`D` is the bubble diameter
+      - :math:`V_{\\rm liq, tot}` is the total volume of liquid
       - :math:`\\alpha_{\\rm liq}` is the liquid phase volume fraction
-      - :math:`V` is the volume of the cell where :math:`\\alpha_{\\rm liq}` is measured
+      - :math:`V` is the volume of the cells where :math:`\\alpha_{\\rm liq}` is measured
 
     Parameters
     ----------
@@ -293,7 +292,6 @@ def compute_gas_holdup(
     field_dict : dict
         Dictionary of fields read
     """
-
     # Read relevant fields
     kwargs = {
         "case_folder": case_folder,
@@ -305,12 +303,24 @@ def compute_gas_holdup(
         "time_folder": volume_time,
         "n_cells": n_cells,
     }
+
     alpha_liq, field_dict = read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
+    ind_liq, field_dict = get_ind_liq(field_dict=field_dict, **kwargs)
     cell_volume, field_dict = read_cell_volume(
         field_dict=field_dict, **kwargs_vol
     )
+
+    # Only compute over the liquid
+    if isinstance(alpha_liq, np.ndarray):
+        alpha_liq = alpha_liq[ind_liq]
+    else:
+        raise TypeError
+    if isinstance(cell_volume, np.ndarray):
+        cell_volume = cell_volume[ind_liq]
+    else:
+        raise TypeError
 
     # Calculate
     gas_holdup = np.sum((1 - alpha_liq) * cell_volume) / np.sum(cell_volume)
@@ -396,10 +406,16 @@ def compute_superficial_velocity(
     # Only compute in the middle
     if isinstance(alpha_gas, np.ndarray):
         alpha_gas = alpha_gas[ind_middle]
+    else:
+        raise TypeError
     if isinstance(cell_volume, np.ndarray):
         cell_volume = cell_volume[ind_middle]
+    else:
+        raise TypeError
     if isinstance(U_gas, np.ndarray):
         U_gas = U_gas[ind_middle]
+    else:
+        raise TypeError
 
     # Compute
     sup_vel = np.sum(U_gas * alpha_gas * cell_volume) / np.sum(cell_volume)
@@ -476,10 +492,16 @@ def compute_ave_y_liq(
     # Only compute over the liquid
     if isinstance(alpha_liq, np.ndarray):
         alpha_liq = alpha_liq[ind_liq]
+    else:
+        raise TypeError
     if isinstance(cell_volume, np.ndarray):
         cell_volume = cell_volume[ind_liq]
+    else:
+        raise TypeError
     if isinstance(y_liq, np.ndarray):
         y_liq = y_liq[ind_liq]
+    else:
+        raise TypeError
 
     # Calculate
     liq_ave_y = np.sum(alpha_liq * y_liq * cell_volume) / np.sum(
@@ -583,12 +605,20 @@ def compute_ave_conc_liq(
     # Only compute over the liquid
     if isinstance(y_liq, np.ndarray):
         y_liq = y_liq[ind_liq]
+    else:
+        raise TypeError
     if isinstance(alpha_liq, np.ndarray):
         alpha_liq = alpha_liq[ind_liq]
+    else:
+        raise TypeError
     if isinstance(alpha_liq, np.ndarray):
         cell_volume = cell_volume[ind_liq]
+    else:
+        raise TypeError
     if isinstance(rho_liq, np.ndarray):
         rho_liq = rho_liq[ind_liq]
+    else:
+        raise TypeError
 
     conc_loc = rho_liq * y_liq / mol_weight
 
@@ -611,12 +641,12 @@ def compute_ave_bubble_diam(
 
     .. math::
 
-       \\frac{1}{V_{\\rm liq, tot}} \\int_{V_{\\rm liq}} D dV
+       \\frac{1}{V_{\\rm liq, tot}} \\int_{V_{\\rm liq}} `d_{\\rm gas}` dV
 
     where:
       - :math:`V_{\\rm liq, tot}` is the toal volume of liquid
-      - :math:`D` is the bubble diameter
-      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`D` is measured
+      - :math:`d_{\\rm gas}` is the bubble diameter
+      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`d_{\\rm gas}` is measured
 
 
     Parameters
@@ -666,10 +696,16 @@ def compute_ave_bubble_diam(
     # Only compute over the liquid
     if isinstance(d_gas, np.ndarray):
         d_gas = d_gas[ind_liq]
+    else:
+        raise TypeError
     if isinstance(alpha_liq, np.ndarray):
         alpha_liq = alpha_liq[ind_liq]
+    else:
+        raise TypeError
     if isinstance(alpha_liq, np.ndarray):
         cell_volume = cell_volume[ind_liq]
+    else:
+        raise TypeError
 
     # Calculate
     diam = np.sum(d_gas * alpha_liq * cell_volume) / np.sum(
