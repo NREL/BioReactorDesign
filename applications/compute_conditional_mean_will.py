@@ -84,9 +84,10 @@ def radial_mean(
     vert_ind: int | None = 1,
     window_ave=1,
     n_bins=32,
-)->dict:
+) -> dict:
     """
     Compute radial conditional average
+    The conditional average is averaged over space and over time (using the window_ave number of times)
     """
     if caseFolder is None:
         caseFolder = os.path.join(
@@ -201,6 +202,43 @@ def radial_mean(
     return fields_conds
 
 
+def make_plot(fields_cond: dict, heights: list[float], field_names=list[str]):
+
+    from prettyPlot.plotting import plt, pretty_labels
+
+    fig, axs = plt.subplots(
+        nrows=len(field_names),
+        ncols=len(heights),
+        figsize=(4 * len(heights), 4 * len(field_names)),
+    )
+
+    for ifield, field_name in enumerate(field_names):
+        for iheight, height in enumerate(heights):
+            height_name = height2str(height)
+            if len(field_names) == 1:
+                ax = axs[iheight]
+            else:
+                ax = axs[ifield, iheight]
+
+            ax.plot(
+                fields_cond[field_name][height_name]["radius"],
+                fields_cond[field_name][height_name]["val"],
+                color="k",
+                linewidth=3,
+            )
+            pretty_labels(
+                "radius[m]",
+                f"{field_name}",
+                title=f"z={height_name}m",
+                fontname="Times",
+                fontsize=16,
+                ax=ax,
+                grid=False,
+            )
+
+    plt.show()
+
+
 if __name__ == "__main__":
 
     # compute
@@ -213,115 +251,9 @@ if __name__ == "__main__":
         n_bins=32,
     )
 
-    from prettyPlot.plotting import plt, pretty_labels
     # plot
-    fig, axs = plt.subplots(nrows=2, ncols=3, figsize=(8, 8))
-    height_name = height2str(5.2)
-    ax = axs[0, 0]
-    ax.plot(
-        fields_cond["CO2.liquid"][height_name]["radius"],
-        fields_cond["CO2.liquid"][height_name]["val"],
-        color="k",
-        linewidth=3,
+    make_plot(
+        fields_cond=fields_cond,
+        heights=[5.2, 6.2, 6.3],
+        field_names=["CO2.liquid", "alpha.gas"],
     )
-    pretty_labels(
-        "radius[m]",
-        r"$y_{CO2, liq}$",
-        title=f"z={height_name}m",
-        fontname="Times",
-        fontsize=16,
-        ax=ax,
-        grid=False,
-    )
-
-    height_name = height2str(6.2)
-    ax = axs[0, 1]
-    ax.plot(
-        fields_cond["CO2.liquid"][height_name]["radius"],
-        fields_cond["CO2.liquid"][height_name]["val"],
-        color="k",
-        linewidth=3,
-    )
-    pretty_labels(
-        "radius[m]",
-        r"$y_{CO2, liq}$",
-        title=f"z={height_name}m",
-        fontname="Times",
-        fontsize=16,
-        ax=ax,
-        grid=False,
-    )
-
-    height_name = height2str(6.3)
-    ax = axs[0, 2]
-    ax.plot(
-        fields_cond["CO2.liquid"][height_name]["radius"],
-        fields_cond["CO2.liquid"][height_name]["val"],
-        color="k",
-        linewidth=3,
-    )
-    pretty_labels(
-        "radius[m]",
-        r"$y_{CO2, liq}$",
-        title=f"z={height_name}m",
-        fontname="Times",
-        fontsize=16,
-        ax=ax,
-        grid=False,
-    )
-
-    height_name = height2str(5.2)
-    ax = axs[1, 0]
-    ax.plot(
-        fields_cond["alpha.gas"][height_name]["radius"],
-        fields_cond["alpha.gas"][height_name]["val"],
-        color="k",
-        linewidth=3,
-    )
-    pretty_labels(
-        "radius[m]",
-        r"$\alpha_{gas}$",
-        title=f"z={height_name}m",
-        fontname="Times",
-        fontsize=16,
-        ax=ax,
-        grid=False,
-    )
-
-    height_name = height2str(6.2)
-    ax = axs[1, 1]
-    ax.plot(
-        fields_cond["alpha.gas"][height_name]["radius"],
-        fields_cond["alpha.gas"][height_name]["val"],
-        color="k",
-        linewidth=3,
-    )
-    pretty_labels(
-        "radius[m]",
-        r"$\alpha_{gas}$",
-        title=f"z={height_name}m",
-        fontname="Times",
-        fontsize=16,
-        ax=ax,
-        grid=False,
-    )
-
-    height_name = height2str(6.3)
-    ax = axs[1, 2]
-    ax.plot(
-        fields_cond["alpha.gas"][height_name]["radius"],
-        fields_cond["alpha.gas"][height_name]["val"],
-        color="k",
-        linewidth=3,
-    )
-    pretty_labels(
-        "radius[m]",
-        r"$\alpha_{gas}$",
-        title=f"z={height_name}m",
-        fontname="Times",
-        fontsize=16,
-        ax=ax,
-        grid=False,
-    )
-
-    plt.show()
