@@ -24,7 +24,7 @@ def _read_field(
     field_name: str
         Name of the field file to read
     n_cells : int | None
-        Number of cells in the domain
+        Number of cells in the domain.
         If None, it will deduced from the field reading
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
@@ -63,10 +63,10 @@ def _read_cell_volume(
     case_folder: str
         Path to case folder
     time_folder: str | None
-        Name of time folder to analyze
+        Name of time folder to analyze.
         If None, assume it is 0
     n_cells : int | None
-        Number of cells in the domain
+        Number of cells in the domain.
         If None, it will deduced from the field reading
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
@@ -227,7 +227,7 @@ def _get_ind_liq(
     time_folder: str
         Name of time folder to analyze
     n_cells : int | None
-        Number of cells in the domain
+        Number of cells in the domain.
         If None, it will deduced from the field reading
     field_name: str
         Name of the field file to read
@@ -283,7 +283,7 @@ def _get_ind_gas(
     time_folder: str
         Name of time folder to analyze
     n_cells : int | None
-        Number of cells in the domain
+        Number of cells in the domain.
         If None, it will deduced from the field reading
     field_name: str
         Name of the field file to read
@@ -340,10 +340,10 @@ def _get_ind_height(
     case_folder: str
         Path to case folder
     direction :  int | None
-        Direction along which to calculate the superficial velocity
+        Direction along which to calculate the superficial velocity.
         If None, assume y direction
     tolerance : float
-        Include cells where height is in [height - tolerance , height + tolerance]
+        Include cells where height is in [height - tolerance , height + tolerance].
         If None, it will be 2 times the axial mesh size
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
@@ -444,10 +444,10 @@ def compute_gas_holdup(
     time_folder: str
         Name of time folder to analyze
     n_cells : int | None
-        Number of cells in the domain
+        Number of cells in the domain.
         If None, it will deduced from the field reading
     volume_time : str | None
-        Time folder to read to get the cell volumes
+        Time folder to read to get the cell volumes.
         If None, assumes it is 0
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
@@ -504,13 +504,13 @@ def compute_superficial_gas_velocity(
     Calculate superficial gas velocity (in m/s) in a given direction at a given time
 
     .. math::
-       \\frac{1}{V_{\\rm height, tot}} \int_{V_{\\rm height}}  U_{\\rm gas} \\alpha_{\\rm gas}) dV
+       \\frac{1}{V_{\\rm height, tot}} \int_{V_{\\rm height}}  U_{\\rm gas} \\alpha_{\\rm gas} dV
 
     where:
       - :math:`V_{\\rm height, tot}` is the total volume of cells near the axial location considered
       - :math:`\\alpha_{\\rm gas}` is the gas phase volume fraction
       - :math:`U_{\\rm gas}` is the gas phase velocity along the axial direction
-      - :math:`V_{\\rm height}` is the local volume of the cells where :math:`U_{\\rm gas} \\alpha_{\\rm gas})` is measured
+      - :math:`V_{\\rm height}` is the local volume of the cells where :math:`U_{\\rm gas} \\alpha_{\\rm gas})` is measured (near the axial location considered)
 
     Parameters
     ----------
@@ -519,18 +519,18 @@ def compute_superficial_gas_velocity(
     time_folder: str
         Name of time folder to analyze
     n_cells : int | None
-        Number of cells in the domain
+        Number of cells in the domain.
         If None, it will deduced from the field reading
     volume_time : str | None
-        Time folder to read to get the cell volumes
+        Time folder to read to get the cell volumes.
         If None, assumes it is 0
     direction :  int | None
-        Direction along which to calculate the superficial velocity
+        Direction along which to calculate the superficial velocity.
         If None, assume y direction
     cell_centers_file : str
         Filename of cell center data
     height: float | None
-        Axial location at which to compute the superficial velocity
+        Axial location at which to compute the superficial velocity.
         If None, use the mid point of the liquid domain along the axial direction
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
@@ -637,10 +637,10 @@ def compute_ave_y_liq(
     time_folder: str
         Name of time folder to analyze
     n_cells : int | None
-        Number of cells in the domain
+        Number of cells in the domain.
         If None, it will deduced from the field reading
     volume_time : str | None
-        Time folder to read to get the cell volumes
+        Time folder to read to get the cell volumes.
         If None, assumes it is 0
     spec_name : str
         Name of the species
@@ -721,10 +721,10 @@ def compute_ave_conc_liq(
     time_folder: str
         Name of time folder to analyze
     n_cells : int | None
-        Number of cells in the domain
+        Number of cells in the domain.
         If None, it will deduced from the field reading
     volume_time : str | None
-        Time folder to read to get the cell volumes
+        Time folder to read to get the cell volumes.
         If None, assumes it is 0
     spec_name : str
         Name of the species
@@ -827,10 +827,10 @@ def compute_ave_bubble_diam(
     time_folder: str
         Name of time folder to analyze
     n_cells : int | None
-        Number of cells in the domain
+        Number of cells in the domain.
         If None, it will deduced from the field reading
     volume_time : str | None
-        Time folder to read to get the cell volumes
+        Time folder to read to get the cell volumes.
         If None, assumes it is 0
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
