@@ -44,7 +44,7 @@ gh, field_dict = compute_gas_holdup(
 )
 print("fields stored = ", list(field_dict.keys()))
 print(f"Gas Holdup = {gh:.4g}")
-sup_vel, field_dict = compute_superficial_velocity(
+sup_vel, field_dict = compute_superficial_gas_velocity(
     volume_time="1", field_dict=field_dict, **kwargs
 )
 print("fields stored = ", list(field_dict.keys()))
