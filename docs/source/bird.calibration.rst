@@ -1,8 +1,6 @@
 bird.calibration package
 ========================
 
-Submodules
-----------
 
 bird.calibration.param\_nn module
 ---------------------------------
@@ -20,10 +18,3 @@ bird.calibration.scaling module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: bird.calibration
-   :members:
-   :undoc-members:
-   :show-inheritance:

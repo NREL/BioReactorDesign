@@ -1,9 +1,6 @@
 bird.meshing package
 ====================
 
-Submodules
-----------
-
 bird.meshing.block\_cyl\_mesh module
 ------------------------------------
 
@@ -28,10 +25,3 @@ bird.meshing.stirred\_tank\_mesh module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: bird.meshing
-   :members:
-   :undoc-members:
-   :show-inheritance:

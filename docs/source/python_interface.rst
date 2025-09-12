@@ -52,7 +52,7 @@ Reading cell centers
 
 A mesh object file can be generated with the OpenFOAM command  ``writeMeshObj -case {case_folder}``
 The file can then be read with the function ``readMesh`` from ``bird.utilities.ofio``. 
-Again, this is used in ``bird.postprocess.post_quantities`` in the ``compute_superficial_velocity`` function.
+Again, this is used in ``bird.postprocess.post_quantities`` in the ``compute_superficial_gas_velocity`` function.
 
 
 

@@ -30,10 +30,8 @@ def compute_cond_mean(
     window_ave = min(window_ave, len(time_str_sorted))
 
     fields_cond = {}
-    fields_cond_tmp = {}
     for name in field_name_list:
         fields_cond[name] = {}
-        fields_cond_tmp[name] = {}
 
     logger.info(f"Case : {case_path}")
 

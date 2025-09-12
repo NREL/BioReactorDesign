@@ -1,9 +1,6 @@
 bird.postprocess package
 ========================
 
-Submodules
-----------
-
 bird.postprocess.conditional\_mean module
 -----------------------------------------
 
@@ -44,10 +41,3 @@ bird.postprocess.stats module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: bird.postprocess
-   :members:
-   :undoc-members:
-   :show-inheritance:

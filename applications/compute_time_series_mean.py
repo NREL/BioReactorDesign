@@ -5,6 +5,9 @@ import numpy as np
 from bird.postprocess.stats import calc_mean
 
 logger = logging.getLogger(__name__)
+from bird.logging_config import setup_logging
+
+setup_logging(level="DEBUG")
 
 
 def main():
