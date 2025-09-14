@@ -5,50 +5,6 @@ from bird.utilities.ofio import *
 logger = logging.getLogger(__name__)
 
 
-def _read_field(
-    case_folder: str,
-    time_folder: str,
-    field_name: str,
-    n_cells: int | None = None,
-    field_dict: dict = {},
-) -> tuple[np.ndarray | float, dict]:
-    """
-    Read field at a given time and store it in dictionary for later reuse
-
-    Parameters
-    ----------
-    case_folder: str
-        Path to case folder
-    time_folder: str
-        Name of time folder to analyze
-    field_name: str
-        Name of the field file to read
-    n_cells : int | None
-        Number of cells in the domain.
-        If None, it will deduced from the field reading
-    field_dict : dict
-        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
-
-    Returns
-    ----------
-    field : np.ndarray | float
-        Field read
-    field_dict : dict
-        Dictionary of fields read
-    """
-
-    if not (field_name in field_dict) or field_dict[field_name] is None:
-        # Read field if it had not been read before
-        field_file = os.path.join(case_folder, time_folder, field_name)
-        field = readOF(field_file, n_cells=n_cells)["field"]
-        field_dict[field_name] = field
-    else:
-        # Get field from dict if it has been read before
-        field = field_dict[field_name]
-
-    return field, field_dict
-
-
 def _field_filter(
     field: float | np.ndarray, ind: np.ndarray, field_type: str
 ) -> float | np.ndarray:
@@ -145,7 +101,7 @@ def _get_ind_liq(
 
     # Compute indices of pure liquid
     if not ("ind_liq" in field_dict) or field_dict["ind_liq"] is None:
-        alpha_liq, field_dict = _read_field(
+        alpha_liq, field_dict = read_field(
             case_folder,
             time_folder,
             field_name="alpha.liquid",
@@ -201,7 +157,7 @@ def _get_ind_gas(
 
     # Compute indices of pure liquid
     if not ("ind_gas" in field_dict) or field_dict["ind_gas"] is None:
-        alpha_liq = _read_field(
+        alpha_liq = read_field(
             case_folder,
             time_folder,
             field_name="alpha.liquid",
@@ -285,7 +241,7 @@ def _get_ind_height(
                     axial_cell_centers[ind_height_unique + 1]
                     - axial_cell_centers[ind_height_unique - 1]
                 )
-            logger.warning(
+            logger.debug(
                 f"Tolerance for conditional height not set, assuming {tolerance:.2g}"
             )
 
@@ -365,7 +321,7 @@ def compute_gas_holdup(
         "n_cells": n_cells,
     }
 
-    alpha_liq, field_dict = _read_field(
+    alpha_liq, field_dict = read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
@@ -448,10 +404,10 @@ def compute_superficial_gas_velocity(
         "time_folder": volume_time,
         "n_cells": n_cells,
     }
-    alpha_gas, field_dict = _read_field(
+    alpha_gas, field_dict = read_field(
         field_name="alpha.gas", field_dict=field_dict, **kwargs
     )
-    U_gas, field_dict = _read_field(
+    U_gas, field_dict = read_field(
         field_name="U.gas", field_dict=field_dict, **kwargs
     )
 
@@ -559,10 +515,10 @@ def compute_ave_y_liq(
         "time_folder": volume_time,
         "n_cells": n_cells,
     }
-    alpha_liq, field_dict = _read_field(
+    alpha_liq, field_dict = read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
-    y_liq, field_dict = _read_field(
+    y_liq, field_dict = read_field(
         field_name=f"{spec_name}.liquid", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
@@ -654,10 +610,10 @@ def compute_ave_conc_liq(
         "time_folder": volume_time,
         "n_cells": n_cells,
     }
-    alpha_liq, field_dict = _read_field(
+    alpha_liq, field_dict = read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
-    y_liq, field_dict = _read_field(
+    y_liq, field_dict = read_field(
         field_name=f"{spec_name}.liquid", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
@@ -747,10 +703,10 @@ def compute_ave_bubble_diam(
         "time_folder": volume_time,
         "n_cells": n_cells,
     }
-    alpha_liq, field_dict = _read_field(
+    alpha_liq, field_dict = read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
-    d_gas, field_dict = _read_field(
+    d_gas, field_dict = read_field(
         field_name="d.gas", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)

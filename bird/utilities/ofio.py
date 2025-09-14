@@ -415,6 +415,48 @@ def readOF(
     if meta_data["type"] == "vector":
         return readOFVec(filename=filename, meta_data=meta_data)
 
+def read_field(
+    case_folder: str,
+    time_folder: str,
+    field_name: str,
+    n_cells: int | None = None,
+    field_dict: dict = {},
+) -> tuple[np.ndarray | float, dict]:
+    """
+    Read field at a given time and store it in dictionary for later reuse
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str
+        Name of time folder to analyze
+    field_name: str
+        Name of the field file to read
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+        
+    Returns
+    ----------
+    field : np.ndarray | float
+        Field read
+    field_dict : dict
+        Dictionary of fields read
+    """ 
+    
+    if not (field_name in field_dict) or field_dict[field_name] is None:
+        # Read field if it had not been read before
+        field_file = os.path.join(case_folder, time_folder, field_name)
+        field = readOF(field_file, n_cells=n_cells)["field"]
+        field_dict[field_name] = field
+    else:
+        # Get field from dict if it has been read before
+        field = field_dict[field_name]
+
+    return field, field_dict
 
 def readSizeGroups(file):
     sizeGroup = {}
@@ -881,15 +923,11 @@ def read_cell_volumes(
 
     Returns
     ----------
-    cell_volume : np.ndarray | float
-        cell volume read from file
+    cell_volumes : np.ndarray | float
+        Field of cell volumes
     field_dict : dict
         Dictionary of fields read
     """
-
-    if time_folder is None:
-        logger.warning("Assuming that volume was written at time 0")
-        time_folder = "0"
 
     kwargs_vol = {
         "case_folder": case_folder,
@@ -901,10 +939,10 @@ def read_cell_volumes(
         if time_folder is None:
             # Find the time at which the volume was printed
             time_folder = _get_volume_time(case_folder)
+            kwargs_vol["time_folder"] = time_folder
         try:
-            cell_volume, field_dict = _read_field(
-                field_name="V", field_dict=field_dict, **kwargs_vol
-            )
+            cell_volumes, field_dict = read_field(field_name= "V", field_dict=field_dict, **kwargs_vol)
+            
         except FileNotFoundError:
             error_msg = f"Could not find {os.path.join(case_folder, time_folder, 'V')}\n"
             time_float, time_str = get_case_times(case_folder)
@@ -914,6 +952,6 @@ def read_cell_volumes(
             raise FileNotFoundError(error_msg)
     else:
         # Get field from dict if it has been read before
-        cell_volume = field_dict["V"]
+        cell_volumes = field_dict["V"]
 
-    return cell_volume, field_dict
+    return cell_volumes, field_dict

@@ -19,9 +19,9 @@ Currently internal scalar and vector fields can be read using the python interfa
 
 We are open to implementing 1. and 2. if need be. Implementing 3. is possible but will be more involved.
 
-The main function interface to read openFOAM fields is ``readOF`` in ``bird.utilities.ofio``
+The main function interface to read openFOAM fields is ``read_field`` in ``bird.utilities.ofio``
 
-The function only reads fields written in ASCII format and decided based on the header whether the field is a scalar or a vector. In the case of scalar, ``readOF`` returns a (N,) numpy array, where N is the number of computational cells. In the case of a vector, ``readOF`` returns a (N,3) numpy array.
+The function only reads fields written in ASCII format and decided based on the header whether the field is a scalar or a vector. In the case of scalar, ``read_field`` returns a (N,) numpy array, where N is the number of computational cells. In the case of a vector, ``read_field`` returns a (N,3) numpy array.
 
 If a uniform field is read, the number of cells may not be available from the field file and the function returns a float (equal to the uniform internal field value). If a numpy array is needed, the user can specify the number of cells in the field as an input.
 
@@ -43,7 +43,7 @@ Reading cell volumes
 ^^^^^^^^^^^^^^^
 
 A cell volume field can be generated using the following OpenFOAM command ``postProcess -func writeCellVolumes -time {time_folder} -case {case_folder}``
-It will generate a file ``{time_folder}/V`` which can be read with the ``readOF`` function of ``bird``.
+It will generate a file ``{time_folder}/V`` which can be read with the ``read_field`` function of ``bird``.
 This workflow is used in ``bird.postprocess.post_quantitities``, for example in the ``compute_gas_holdup`` function.
 
  

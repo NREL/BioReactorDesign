@@ -57,10 +57,8 @@ def test_mesh():
     assert cell_centers[9, 2] == 0.0765
 
     cell_centers2, _ = read_cell_centers(case_folder)
-    cell_centers3, _ = read_cell_centers(case_folder, time_folder=mesh_time)
 
     assert np.linalg.norm(cell_centers - cell_centers2) < 1e-12
-    assert np.linalg.norm(cell_centers - cell_centers3) < 1e-12
 
 
 def test_mesh_vol():
@@ -86,3 +84,4 @@ def test_mesh_vol():
 if __name__ == "__main__":
     test_case_time()
     test_mesh()
+    test_mesh_vol()

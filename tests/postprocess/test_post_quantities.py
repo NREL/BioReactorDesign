@@ -30,7 +30,7 @@ def test_compute_gh():
 
     # Make sure None arguments are correctly handled
     n_cells = len(field_dict["alpha.liquid"])
-    time_folder = kwargs["time_folder"]
+    time_folder = "79"
     gh1, _ = compute_gas_holdup(
         case_folder=case_folder, time_folder=time_folder
     )
@@ -224,7 +224,7 @@ def test_ave_conc_liq():
 
 
 if __name__ == "__main__":
-    test_compute_superficial_gas_velocity()
+    #test_compute_superficial_gas_velocity()
     test_compute_gh()
-    test_ave_y_liq()
-    test_ave_conc_liq()
+    #test_ave_y_liq()
+    #test_ave_conc_liq()
