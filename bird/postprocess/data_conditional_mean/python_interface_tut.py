@@ -2,7 +2,7 @@
 from bird.utilities.ofio import *
 
 # Read cell centers
-cell_centers = readMesh("meshCellCentres_1.obj")
+cell_centers, _ = read_cell_centers(".")
 print("cell centers shape = ", cell_centers.shape)
 
 # Read relevant fields at time 80

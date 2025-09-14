@@ -33,10 +33,8 @@ def readInletArea():
 
 
 def getLiqVol():
-    cellCentres = readMesh(os.path.join(".", f"meshCellCentres_0.obj"))
-    volume_field = readOFScal(os.path.join("0", "V"), len(cellCentres))[
-        "field"
-    ]
+    cellCentres, _ = read_cell_centers(".")
+    volume_field, _ = read_cell_volumes(".")
     alpha_field = readOFScal(
         os.path.join("0", "alpha.liquid"), len(cellCentres)
     )["field"]

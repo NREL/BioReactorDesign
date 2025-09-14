@@ -28,7 +28,7 @@ To read the cells centers
 .. code-block:: python
 
    from bird.utilities.ofio import *   
-   cell_centers = readMesh("meshCellCentres_1.obj") 
+   cell_centers = read_cell_centers(case_folder=".")
 
 ``cell_centers`` is a :math:`(N,3)` numpy array that contains the cell center coordinates (:math:`N` is the number of cells in the domain)
 

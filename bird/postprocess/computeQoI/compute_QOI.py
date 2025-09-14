@@ -79,9 +79,7 @@ case_path = args.caseFolder
 var_name_list = args.var_list
 time_float_sorted, time_str_sorted = getCaseTimes(case_path)
 mesh_time_str = getMeshTime(case_path)
-cellCentres = readMesh(
-    os.path.join(case_path, f"meshCellCentres_{mesh_time_str}.obj")
-)
+cellCentres, _ = read_cell_centers(case_path)
 nCells = len(cellCentres)
 diff_val_list = args.diff_val_list
 diff_name_list = args.diff_name_list

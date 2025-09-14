@@ -39,7 +39,7 @@ if os.path.isfile(os.path.join(dataFolder, case_name, "conv.npz")):
     sys.exit("WARNING: History already created, Skipping")
 
 time_float_sorted, time_str_sorted = getCaseTimes(case_path, remove_zero=True)
-cellCentres = readMesh(os.path.join(case_path, f"meshCellCentres_0.obj"))
+cellCentres, _ = read_cell_centers(".")
 nCells = len(cellCentres)
 
 

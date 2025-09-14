@@ -22,9 +22,7 @@ def compute_cond_mean(
 ):
     time_float_sorted, time_str_sorted = getCaseTimes(case_path)
     mesh_time_str = getMeshTime(case_path)
-    cellCentres = readMesh(
-        os.path.join(case_path, f"meshCellCentres_{mesh_time_str}.obj")
-    )
+    cellCentres = read_cell_centers(case_path)
     nCells = len(cellCentres)
     assert len(diff_val_list) == len(diff_name_list)
     window_ave = min(window_ave, len(time_str_sorted))

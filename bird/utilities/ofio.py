@@ -7,7 +7,7 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
-def readMesh(filename: str) -> np.ndarray:
+def _read_mesh(filename: str) -> np.ndarray:
     """
     Reads cell center location from meshCellCentres_X.obj
 
@@ -502,7 +502,7 @@ def getCaseTimes(
     return time_float_sorted, time_str_sorted
 
 
-def getMeshTime(casePath: str) -> str:
+def _get_mesh_time(casePath: str) -> str | None:
     """
     Get the time at which the mesh was printed
 
@@ -513,16 +513,44 @@ def getMeshTime(casePath: str) -> str:
 
     Returns
     ----------
-    time_mesh: str
-        The name of the time at which "meshFaceCentresXXX" was created
+    time_mesh: str | None
+        The name of the time at which "meshCellCentresXXX" was created
+        If None, nothing was found
     """
 
     files_tmp = os.listdir(casePath)
+    time_mesh = None
     for entry in files_tmp:
         if "meshCellCentres" in entry:
             time_mesh = entry[16:-4]
-            return time_mesh
 
+    return time_mesh
+
+def _get_volume_time(casePath: str) -> str | None:
+    """
+    Get the time at which the volume was printed
+
+    Parameters
+    ----------
+    casePath: str
+        Path to case folder
+
+    Returns
+    ----------
+    time_volume: str | None
+        The name of the time at which "V" was created
+        If None, nothing was found
+    """
+
+    time_float, time_str = getCaseTimes(casePath)
+    time_volume = None
+    for entry in time_str:
+        if os.path.exists(os.path.join(casePath, entry, "V")):
+            logger.debug(f"Volume time found to be {entry}")
+            time_volume = entry
+            break
+
+    return time_volume
 
 def _remove_comments(text: str) -> str:
     """
@@ -764,3 +792,134 @@ def write_openfoam_dict(data: dict, filename: str, indent: int = 0) -> None:
         f.write(
             "// ************************************************************************* //\n"
         )
+
+
+
+def read_cell_centers(
+    case_folder: str,
+    cell_centers_file: str | None = None,
+    field_dict: dict = {},
+) -> tuple[np.ndarray, dict]:
+    """
+    Read field of cell centers and store it in dictionary for later reuse
+        
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    cell_centers_file : str
+        Filename of cell center data
+        If None, find the cell center file automoatically
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+        
+    Returns
+    ----------
+    cell_centers : np.ndarray
+        cell centers read from file
+    field_dict : dict
+        Dictionary of fields read
+    """     
+                
+    if (    
+        not ("cell_centers" in field_dict)
+        or field_dict["cell_centers"] is None
+    ):          
+        if cell_centers_file is None:
+            # try to find the mesh time
+            mesh_time = _get_mesh_time(case_folder)   
+            if mesh_time is not None:
+                cell_centers_file = f"meshCellCentres_{mesh_time}.obj"
+            
+        try:
+            cell_centers = _read_mesh(
+                os.path.join(case_folder, cell_centers_file)
+            )
+            field_dict["cell_centers"] = cell_centers
+    
+        except FileNotFoundError:
+
+            error_msg = f"Could not find {cell_centers_file}"
+            error_msg += "You can generate it with\n\t"
+            error_msg += f"`writeMeshObj -case {case_folder}`\n"
+            time_float, time_str = getCaseTimes(case_folder)
+            correct_ph = f"meshCellCentres_{time_str[0]}.obj"
+            if not correct_path == cell_centers_file:
+                error_msg += (
+                    f"And adjust the cell center file path to {correct_path}"
+                )
+            logger.error(error_msg)
+            raise FileNotFoundError(error_msg)
+    else:
+        cell_centers = field_dict["cell_centers"]
+
+    return cell_centers, field_dict
+
+
+
+def read_cell_volumes(
+    case_folder: str,
+    time_folder: str | None = None,
+    n_cells: int | None = None,
+    field_dict: dict = {},
+) -> tuple[np.ndarray | float, dict]:
+    """
+    Read volume at a given time and store it in dictionary for later reuse
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str | None
+        Name of time folder to analyze.
+        If None, it will be found automatically
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    cell_volume : np.ndarray | float
+        cell volume read from file
+    field_dict : dict
+        Dictionary of fields read
+    """
+
+    if time_folder is None:
+        logger.warning("Assuming that volume was written at time 0")
+        time_folder = "0"
+
+    kwargs_vol = {
+        "case_folder": case_folder,
+        "time_folder": time_folder,
+        "n_cells": n_cells,
+    }
+
+    if (
+        not ("V" in field_dict)
+        or field_dict["V"] is None
+    ):
+        if time_folder is None:
+            # Find the time at which the volume was printed
+            time_folder = _get_volume_time(case_folder)     
+        try:
+            cell_volume, field_dict = _read_field(
+                field_name="V", field_dict=field_dict, **kwargs_vol
+            )
+        except FileNotFoundError:
+            error_msg = (
+                f"Could not find {os.path.join(case_folder, time_folder, 'V')}\n"
+            )
+            time_float, time_str = getCaseTimes(case_folder)        
+            error_msg += "You can generate V with\n\t"
+            error_msg += f"`postProcess -func writeCellVolumes -time {time_str[0]} -case {case_folder}`"
+            logger.error(error_msg)
+            raise FileNotFoundError(error_msg)
+    else:
+        # Get field from dict if it has been read before
+        cell_volume = field_dict['V']
+
+
+    return cell_volume, field_dict
