@@ -459,7 +459,7 @@ def readSizeGroups(file):
     return sizeGroup, binGroup
 
 
-def getCaseTimes(
+def get_case_times(
     casePath: str, remove_zero: bool = False
 ) -> tuple[list[float], list[str]]:
     """
@@ -542,7 +542,7 @@ def _get_volume_time(casePath: str) -> str | None:
         If None, nothing was found
     """
 
-    time_float, time_str = getCaseTimes(casePath)
+    time_float, time_str = get_case_times(casePath)
     time_volume = None
     for entry in time_str:
         if os.path.exists(os.path.join(casePath, entry, "V")):
@@ -842,7 +842,7 @@ def read_cell_centers(
             error_msg = f"Could not find {cell_centers_file}"
             error_msg += "You can generate it with\n\t"
             error_msg += f"`writeMeshObj -case {case_folder}`\n"
-            time_float, time_str = getCaseTimes(case_folder)
+            time_float, time_str = get_case_times(case_folder)
             correct_ph = f"meshCellCentres_{time_str[0]}.obj"
             if not correct_path == cell_centers_file:
                 error_msg += (
@@ -912,7 +912,7 @@ def read_cell_volumes(
             error_msg = (
                 f"Could not find {os.path.join(case_folder, time_folder, 'V')}\n"
             )
-            time_float, time_str = getCaseTimes(case_folder)        
+            time_float, time_str = get_case_times(case_folder)        
             error_msg += "You can generate V with\n\t"
             error_msg += f"`postProcess -func writeCellVolumes -time {time_str[0]} -case {case_folder}`"
             logger.error(error_msg)

@@ -20,7 +20,7 @@ def compute_cond_mean(
     diff_val_list=[],
     diff_name_list=[],
 ):
-    time_float_sorted, time_str_sorted = getCaseTimes(case_path)
+    time_float_sorted, time_str_sorted = get_case_times(case_path)
     cell_centers, _ = read_cell_centers(case_path)
     nCells = len(cell_centers)
     assert len(diff_val_list) == len(diff_name_list)

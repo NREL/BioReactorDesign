@@ -38,7 +38,7 @@ dataFolder = args.data_folder
 if os.path.isfile(os.path.join(dataFolder, case_name, "conv.npz")):
     sys.exit("WARNING: History already created, Skipping")
 
-time_float_sorted, time_str_sorted = getCaseTimes(case_path, remove_zero=True)
+time_float_sorted, time_str_sorted = get_case_times(case_path, remove_zero=True)
 cell_centers, _ = read_cell_centers(case_path)
 nCells = len(cell_centers)
 

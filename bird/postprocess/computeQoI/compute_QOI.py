@@ -77,7 +77,7 @@ args = parser.parse_args()
 
 case_path = args.caseFolder
 var_name_list = args.var_list
-time_float_sorted, time_str_sorted = getCaseTimes(case_path)
+time_float_sorted, time_str_sorted = get_case_times(case_path)
 cell_centers, _ = read_cell_centers(case_path)
 nCells = len(cell_centers)
 diff_val_list = args.diff_val_list

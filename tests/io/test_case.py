@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from bird.utilities.ofio import getCaseTimes, _get_mesh_time, _read_mesh, read_cell_centers, _get_volume_time, read_cell_volumes
+from bird.utilities.ofio import get_case_times, _get_mesh_time, _read_mesh, read_cell_centers, _get_volume_time, read_cell_volumes
 
 
 def test_case_time():
@@ -19,7 +19,7 @@ def test_case_time():
         "data_conditional_mean",
     )
     # Read non uniform field
-    time_float, time_str = getCaseTimes(caseFolder)
+    time_float, time_str = get_case_times(caseFolder)
     assert np.linalg.norm(np.array(time_float) - np.array([1, 79, 80])) < 1e-6
     assert time_str == ["1", "79", "80"]
 
