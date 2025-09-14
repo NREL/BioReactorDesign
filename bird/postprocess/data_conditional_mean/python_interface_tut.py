@@ -1,26 +1,33 @@
 # Import the relevant IO functions
+# Set case folder
+from pathlib import Path
+
 from bird.utilities.ofio import *
 
+case_folder = os.path.join(
+    Path(__file__).parent,
+)
+
 # Read cell centers
-cell_centers = readMesh("meshCellCentres_1.obj")
+cell_centers, _ = read_cell_centers(case_folder)
 print("cell centers shape = ", cell_centers.shape)
 
 # Read relevant fields at time 80
-co2_gas = readOF("80/CO2.gas")
-alpha_gas = readOF("80/alpha.gas")
-u_liq = readOF("80/U.liquid")
-print("cell CO2 gas shape = ", co2_gas["field"].shape)
-print("cell alpha gas shape = ", alpha_gas["field"].shape)
-print("cell u liq shape = ", u_liq["field"].shape)
+co2_gas, _ = read_field(case_folder, "80", field_name="CO2.gas")
+alpha_gas, _ = read_field(case_folder, "80", field_name="alpha.gas")
+u_liq, _ = read_field(case_folder, "80", field_name="U.liquid")
+print("cell CO2 gas shape = ", co2_gas.shape)
+print("cell alpha gas shape = ", alpha_gas.shape)
+print("cell u liq shape = ", u_liq.shape)
 
 # Compute conditional average of co2_gas and alpha_gas over y
 from bird.utilities.mathtools import conditional_average
 
 y_co2_gas_cond, co2_gas_cond = conditional_average(
-    cell_centers[:, 1], co2_gas["field"], nbins=32
+    cell_centers[:, 1], co2_gas, nbins=32
 )
 y_alpha_gas_cond, alpha_gas_cond = conditional_average(
-    cell_centers[:, 1], alpha_gas["field"], nbins=32
+    cell_centers[:, 1], alpha_gas, nbins=32
 )
 
 # Plot
@@ -38,24 +45,23 @@ plt.show()
 # Compute reactor quantities
 from bird.postprocess.post_quantities import *
 
-kwargs = {"case_folder": ".", "time_folder": "80"}
+kwargs = {"case_folder": case_folder, "time_folder": "80"}
 gh, field_dict = compute_gas_holdup(
-    volume_time="1", field_dict={"cell_centers": cell_centers}, **kwargs
+    field_dict={"cell_centers": cell_centers}, **kwargs
 )
 print("fields stored = ", list(field_dict.keys()))
 print(f"Gas Holdup = {gh:.4g}")
 sup_vel, field_dict = compute_superficial_gas_velocity(
-    volume_time="1", field_dict=field_dict, **kwargs
+    field_dict=field_dict, **kwargs
 )
 print("fields stored = ", list(field_dict.keys()))
 print(f"Superficial velocity = {sup_vel:.4g} m/s")
 y_ave_co2, field_dict = compute_ave_y_liq(
-    volume_time="1", spec_name="CO2", field_dict=field_dict, **kwargs
+    spec_name="CO2", field_dict=field_dict, **kwargs
 )
 print("fields stored = ", list(field_dict.keys()))
 print(f"Reactor averaged YCO2 = {y_ave_co2:.4g}")
 c_ave_co2, field_dict = compute_ave_conc_liq(
-    volume_time="1",
     spec_name="CO2",
     mol_weight=0.04401,
     rho_val=1000,
@@ -64,8 +70,6 @@ c_ave_co2, field_dict = compute_ave_conc_liq(
 )
 print("fields stored = ", list(field_dict.keys()))
 print(f"Reactor averaged [CO2] = {c_ave_co2:.4g} mol/m3")
-diam, field_dict = compute_ave_bubble_diam(
-    volume_time="1", field_dict=field_dict, **kwargs
-)
+diam, field_dict = compute_ave_bubble_diam(field_dict=field_dict, **kwargs)
 print("fields stored = ", list(field_dict.keys()))
 print(f"Reactor averaged bubble diameter = {diam:.4g} m")

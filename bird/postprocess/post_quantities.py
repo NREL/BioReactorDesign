@@ -5,157 +5,6 @@ from bird.utilities.ofio import *
 logger = logging.getLogger(__name__)
 
 
-def _read_field(
-    case_folder: str,
-    time_folder: str,
-    field_name: str,
-    n_cells: int | None = None,
-    field_dict: dict = {},
-) -> tuple[np.ndarray | float, dict]:
-    """
-    Read field at a given time and store it in dictionary for later reuse
-
-    Parameters
-    ----------
-    case_folder: str
-        Path to case folder
-    time_folder: str
-        Name of time folder to analyze
-    field_name: str
-        Name of the field file to read
-    n_cells : int | None
-        Number of cells in the domain.
-        If None, it will deduced from the field reading
-    field_dict : dict
-        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
-
-    Returns
-    ----------
-    field : np.ndarray | float
-        Field read
-    field_dict : dict
-        Dictionary of fields read
-    """
-
-    if not (field_name in field_dict) or field_dict[field_name] is None:
-        # Read field if it had not been read before
-        field_file = os.path.join(case_folder, time_folder, field_name)
-        field = readOF(field_file, n_cells=n_cells)["field"]
-        field_dict[field_name] = field
-    else:
-        # Get field from dict if it has been read before
-        field = field_dict[field_name]
-
-    return field, field_dict
-
-
-def _read_cell_volume(
-    case_folder: str,
-    time_folder: str | None = None,
-    n_cells: int | None = None,
-    field_dict: dict = {},
-) -> tuple[np.ndarray | float, dict]:
-    """
-    Read volume at a given time and store it in dictionary for later reuse
-
-    Parameters
-    ----------
-    case_folder: str
-        Path to case folder
-    time_folder: str | None
-        Name of time folder to analyze.
-        If None, assume it is 0
-    n_cells : int | None
-        Number of cells in the domain.
-        If None, it will deduced from the field reading
-    field_dict : dict
-        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
-
-    Returns
-    ----------
-    cell_volume : np.ndarray | float
-        cell volume read from file
-    field_dict : dict
-        Dictionary of fields read
-    """
-
-    if time_folder is None:
-        logger.warning("Assuming that volume was written at time 0")
-        time_folder = "0"
-
-    kwargs_vol = {
-        "case_folder": case_folder,
-        "time_folder": time_folder,
-        "n_cells": n_cells,
-    }
-    try:
-        cell_volume, field_dict = _read_field(
-            field_name="V", field_dict=field_dict, **kwargs_vol
-        )
-    except FileNotFoundError:
-        error_msg = (
-            f"Could not find {os.path.join(case_folder, time_folder, 'V')}\n"
-        )
-        error_msg += "You can generate V with\n\t"
-        error_msg += f"`postProcess -func writeCellVolumes -time {time_folder} -case {case_folder}`"
-        logger.error(error_msg)
-        raise FileNotFoundError(error_msg)
-
-    return cell_volume, field_dict
-
-
-def _read_cell_centers(
-    case_folder: str,
-    cell_centers_file: str,
-    field_dict: dict = {},
-) -> tuple[np.ndarray, dict]:
-    """
-    Read volume at a given time and store it in dictionary for later reuse
-
-    Parameters
-    ----------
-    case_folder: str
-        Path to case folder
-    cell_centers_file : str
-        Filename of cell center data
-    field_dict : dict
-        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
-
-    Returns
-    ----------
-    cell_centers : np.ndarray
-        cell centers read from file
-    field_dict : dict
-        Dictionary of fields read
-    """
-
-    if (
-        not ("cell_centers" in field_dict)
-        or field_dict["cell_centers"] is None
-    ):
-        try:
-            cell_centers = readMesh(
-                os.path.join(case_folder, cell_centers_file)
-            )
-            field_dict["cell_centers"] = cell_centers
-        except FileNotFoundError:
-            error_msg = f"Could not find {cell_centers_file}"
-            error_msg += "You can generate it with\n\t"
-            error_msg += f"`writeMeshObj -case {case_folder}`\n"
-            time_float, time_str = getCaseTimes(case_folder)
-            correct_ph = f"meshCellCentres_{time_str[0]}.obj"
-            if not correct_path == cell_centers_file:
-                error_msg += (
-                    f"And adjust the cell center file path to {correct_path}"
-                )
-            logger.error(error_msg)
-            raise FileNotFoundError(error_msg)
-    else:
-        cell_centers = field_dict["cell_centers"]
-
-    return cell_centers, field_dict
-
-
 def _field_filter(
     field: float | np.ndarray, ind: np.ndarray, field_type: str
 ) -> float | np.ndarray:
@@ -252,7 +101,7 @@ def _get_ind_liq(
 
     # Compute indices of pure liquid
     if not ("ind_liq" in field_dict) or field_dict["ind_liq"] is None:
-        alpha_liq, field_dict = _read_field(
+        alpha_liq, field_dict = read_field(
             case_folder,
             time_folder,
             field_name="alpha.liquid",
@@ -308,7 +157,7 @@ def _get_ind_gas(
 
     # Compute indices of pure liquid
     if not ("ind_gas" in field_dict) or field_dict["ind_gas"] is None:
-        alpha_liq = _read_field(
+        alpha_liq = read_field(
             case_folder,
             time_folder,
             field_name="alpha.liquid",
@@ -328,6 +177,7 @@ def _get_ind_height(
     case_folder: str,
     direction: int | None = None,
     tolerance: float | None = None,
+    cell_centers_file: str | None = None,
     field_dict: dict = {},
 ) -> tuple[np.ndarray | float, dict]:
     """
@@ -345,6 +195,9 @@ def _get_ind_height(
     tolerance : float
         Include cells where height is in [height - tolerance , height + tolerance].
         If None, it will be 2 times the axial mesh size
+    cell_centers_file : str | None
+        Filename of cell center data
+        If None, finds cell center file automatically
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
@@ -358,9 +211,9 @@ def _get_ind_height(
 
     if not (f"ind_height_{height:.2g}" in field_dict):
 
-        cell_centers, field_dict = _read_cell_centers(
+        cell_centers, field_dict = read_cell_centers(
             case_folder=case_folder,
-            cell_centers_file=None,
+            cell_centers_file=cell_centers_file,
             field_dict=field_dict,
         )
 
@@ -392,7 +245,7 @@ def _get_ind_height(
                     axial_cell_centers[ind_height_unique + 1]
                     - axial_cell_centers[ind_height_unique - 1]
                 )
-            logger.warning(
+            logger.debug(
                 f"Tolerance for conditional height not set, assuming {tolerance:.2g}"
             )
 
@@ -448,7 +301,7 @@ def compute_gas_holdup(
         If None, it will deduced from the field reading
     volume_time : str | None
         Time folder to read to get the cell volumes.
-        If None, assumes it is 0
+        If None, finds volume time automatically
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
@@ -472,11 +325,11 @@ def compute_gas_holdup(
         "n_cells": n_cells,
     }
 
-    alpha_liq, field_dict = _read_field(
+    alpha_liq, field_dict = read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
-    cell_volume, field_dict = _read_cell_volume(
+    cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
     )
 
@@ -496,7 +349,7 @@ def compute_superficial_gas_velocity(
     n_cells: int | None = None,
     volume_time: str | None = None,
     direction: int | None = None,
-    cell_centers_file: str = "meshCellCentres_0.obj",
+    cell_centers_file: str | None = None,
     height: float | None = None,
     field_dict: dict = {},
 ) -> tuple[float, dict]:
@@ -523,12 +376,13 @@ def compute_superficial_gas_velocity(
         If None, it will deduced from the field reading
     volume_time : str | None
         Time folder to read to get the cell volumes.
-        If None, assumes it is 0
+        If None, finds volume time automatically
     direction :  int | None
         Direction along which to calculate the superficial velocity.
         If None, assume y direction
-    cell_centers_file : str
+    cell_centers_file : str | None
         Filename of cell center data
+        If None, finds cell center file automatically
     height: float | None
         Axial location at which to compute the superficial velocity.
         If None, use the mid point of the liquid domain along the axial direction
@@ -555,10 +409,10 @@ def compute_superficial_gas_velocity(
         "time_folder": volume_time,
         "n_cells": n_cells,
     }
-    alpha_gas, field_dict = _read_field(
+    alpha_gas, field_dict = read_field(
         field_name="alpha.gas", field_dict=field_dict, **kwargs
     )
-    U_gas, field_dict = _read_field(
+    U_gas, field_dict = read_field(
         field_name="U.gas", field_dict=field_dict, **kwargs
     )
 
@@ -570,10 +424,10 @@ def compute_superficial_gas_velocity(
 
     U_gas_axial = U_gas[:, direction]
 
-    cell_volume, field_dict = _read_cell_volume(
+    cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
     )
-    cell_centers, field_dict = _read_cell_centers(
+    cell_centers, field_dict = read_cell_centers(
         case_folder=case_folder,
         cell_centers_file=cell_centers_file,
         field_dict=field_dict,
@@ -641,7 +495,7 @@ def compute_ave_y_liq(
         If None, it will deduced from the field reading
     volume_time : str | None
         Time folder to read to get the cell volumes.
-        If None, assumes it is 0
+        If None, finds volume time automatically
     spec_name : str
         Name of the species
     field_dict : dict
@@ -666,15 +520,15 @@ def compute_ave_y_liq(
         "time_folder": volume_time,
         "n_cells": n_cells,
     }
-    alpha_liq, field_dict = _read_field(
+    alpha_liq, field_dict = read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
-    y_liq, field_dict = _read_field(
+    y_liq, field_dict = read_field(
         field_name=f"{spec_name}.liquid", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
-    cell_volume, field_dict = _read_cell_volume(
+    cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
     )
 
@@ -725,7 +579,7 @@ def compute_ave_conc_liq(
         If None, it will deduced from the field reading
     volume_time : str | None
         Time folder to read to get the cell volumes.
-        If None, assumes it is 0
+        If None, finds volume time automatically
     spec_name : str
         Name of the species
     mol_weight : float
@@ -761,15 +615,15 @@ def compute_ave_conc_liq(
         "time_folder": volume_time,
         "n_cells": n_cells,
     }
-    alpha_liq, field_dict = _read_field(
+    alpha_liq, field_dict = read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
-    y_liq, field_dict = _read_field(
+    y_liq, field_dict = read_field(
         field_name=f"{spec_name}.liquid", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
-    cell_volume, field_dict = _read_cell_volume(
+    cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
     )
 
@@ -780,7 +634,7 @@ def compute_ave_conc_liq(
             field_dict["rho_liq"] = rho_val
         else:
             rho_liq_file = os.path.join(case_folder, time_folder, "rhom")
-            rho_liq = readOFScal(rho_liq_file, n_cells)["field"]
+            rho_liq = _readOFScal(rho_liq_file, n_cells)["field"]
             field_dict["rho_liq"] = rho_liq
     else:
         rho_liq = field_dict["rho_liq"]
@@ -831,7 +685,7 @@ def compute_ave_bubble_diam(
         If None, it will deduced from the field reading
     volume_time : str | None
         Time folder to read to get the cell volumes.
-        If None, assumes it is 0
+        If None, finds volume time automatically
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
@@ -854,15 +708,15 @@ def compute_ave_bubble_diam(
         "time_folder": volume_time,
         "n_cells": n_cells,
     }
-    alpha_liq, field_dict = _read_field(
+    alpha_liq, field_dict = read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
-    d_gas, field_dict = _read_field(
+    d_gas, field_dict = read_field(
         field_name="d.gas", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
-    cell_volume, field_dict = _read_cell_volume(
+    cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
     )
 

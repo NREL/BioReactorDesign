@@ -28,6 +28,19 @@ def test_compute_gh():
         time_folder="79", field_dict=field_dict, **kwargs
     )
 
+    # Make sure None arguments are correctly handled
+    n_cells = len(field_dict["alpha.liquid"])
+    time_folder = "79"
+    gh1, _ = compute_gas_holdup(
+        case_folder=case_folder, time_folder=time_folder
+    )
+    gh2, _ = compute_gas_holdup(
+        case_folder=case_folder, n_cells=n_cells, time_folder=time_folder
+    )
+
+    assert abs(gh1 - gh) < 1e-12
+    assert abs(gh2 - gh) < 1e-12
+
 
 def test_compute_diam():
     """
@@ -50,6 +63,19 @@ def test_compute_diam():
     diam, field_dict = compute_ave_bubble_diam(
         time_folder="79", field_dict=field_dict, **kwargs
     )
+
+    # Make sure None arguments are correctly handled
+    n_cells = len(field_dict["d.gas"])
+    time_folder = "79"
+    diam1, _ = compute_ave_bubble_diam(
+        case_folder=case_folder, time_folder=time_folder
+    )
+    diam2, _ = compute_ave_bubble_diam(
+        case_folder=case_folder, n_cells=n_cells, time_folder=time_folder
+    )
+
+    assert abs(diam1 - diam) < 1e-12
+    assert abs(diam2 - diam) < 1e-12
 
 
 def test_compute_superficial_gas_velocity():
@@ -75,6 +101,22 @@ def test_compute_superficial_gas_velocity():
     sup_vel, field_dict = compute_superficial_gas_velocity(
         time_folder="79", field_dict=field_dict, **kwargs
     )
+
+    # Make sure None arguments are correctly handled
+    n_cells = len(field_dict["V"])
+    time_folder = "79"
+    sup_vel1, _ = compute_superficial_gas_velocity(
+        case_folder=case_folder, time_folder=time_folder, direction=1
+    )
+    sup_vel2, _ = compute_superficial_gas_velocity(
+        case_folder=case_folder,
+        n_cells=n_cells,
+        time_folder=time_folder,
+        direction=1,
+    )
+
+    assert abs(sup_vel1 - sup_vel) < 1e-12
+    assert abs(sup_vel2 - sup_vel) < 1e-12
 
 
 def test_ave_y_liq():
@@ -105,6 +147,22 @@ def test_ave_y_liq():
     ave_y_h2, field_dict = compute_ave_y_liq(
         spec_name="H2", field_dict=field_dict, **kwargs
     )
+
+    # Make sure None arguments are correctly handled
+    n_cells = len(field_dict["H2.liquid"])
+    time_folder = kwargs["time_folder"]
+    ave_y_h21, _ = compute_ave_y_liq(
+        case_folder=case_folder, time_folder=time_folder, spec_name="H2"
+    )
+    ave_y_h22, _ = compute_ave_y_liq(
+        case_folder=case_folder,
+        n_cells=n_cells,
+        time_folder=time_folder,
+        spec_name="H2",
+    )
+
+    assert abs(ave_y_h21 - ave_y_h2) < 1e-12
+    assert abs(ave_y_h22 - ave_y_h2) < 1e-12
 
 
 def test_ave_conc_liq():
@@ -144,10 +202,29 @@ def test_ave_conc_liq():
         field_dict=field_dict,
         **kwargs,
     )
+    # Make sure None arguments are correctly handled
+    n_cells = len(field_dict["H2.liquid"])
+    time_folder = kwargs["time_folder"]
+    ave_conc_h21, _ = compute_ave_conc_liq(
+        case_folder=case_folder,
+        time_folder=time_folder,
+        spec_name="H2",
+        mol_weight=2.01594 * 1e-3,
+    )
+    ave_conc_h22, _ = compute_ave_conc_liq(
+        case_folder=case_folder,
+        time_folder=time_folder,
+        spec_name="H2",
+        mol_weight=2.01594 * 1e-3,
+        n_cells=n_cells,
+    )
+
+    assert abs(ave_conc_h21 - ave_conc_h2) < 1e-12
+    assert abs(ave_conc_h22 - ave_conc_h2) < 1e-12
 
 
 if __name__ == "__main__":
     test_compute_superficial_gas_velocity()
     test_compute_gh()
-    test_ave_y_liq()
-    test_ave_conc_liq()
+    # test_ave_y_liq()
+    # test_ave_conc_liq()
