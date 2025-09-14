@@ -1,8 +1,9 @@
 # Import the relevant IO functions
-from bird.utilities.ofio import *
-
 # Set case folder
 from pathlib import Path
+
+from bird.utilities.ofio import *
+
 case_folder = os.path.join(
     Path(__file__).parent,
 )
@@ -69,8 +70,6 @@ c_ave_co2, field_dict = compute_ave_conc_liq(
 )
 print("fields stored = ", list(field_dict.keys()))
 print(f"Reactor averaged [CO2] = {c_ave_co2:.4g} mol/m3")
-diam, field_dict = compute_ave_bubble_diam(
-    field_dict=field_dict, **kwargs
-)
+diam, field_dict = compute_ave_bubble_diam(field_dict=field_dict, **kwargs)
 print("fields stored = ", list(field_dict.keys()))
 print(f"Reactor averaged bubble diameter = {diam:.4g} m")

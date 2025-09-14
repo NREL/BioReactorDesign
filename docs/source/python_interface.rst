@@ -28,7 +28,7 @@ If a uniform field is read, the number of cells may not be available from the fi
 Reuse instead of re-read
 ~~~~~~~~~~~~~~~~~~~~
 
-The ``read_field`` function uses ``readOF`` and takes a dictionary ``field_dict`` as input which is used to avoid reading multiple times the same field. For example, if one wants to compute the reactor-averaged concentration of a species, and then the reactor-averaged mass fraction of a species, the same mass fraction field will be used in both cases. As fields are read, ``field_dict`` will store the mass fraction field and recognize that the same field is needed.
+The ``read_field`` function uses ``_readOF`` and takes a dictionary ``field_dict`` as input which is used to avoid reading multiple times the same field. For example, if one wants to compute the reactor-averaged concentration of a species, and then the reactor-averaged mass fraction of a species, the same mass fraction field will be used in both cases. As fields are read, ``field_dict`` will store the mass fraction field and recognize that the same field is needed.
 
 It is up to the user to reinitialize ``field_dict``. For example, if the reactor-averaged mass fraction needs to be computed at time ``1`` and then at time ``2``, the user needs to pass an empty dictionary (or nothing) to ``read_field`` before reading the fields at time ``2``. Otherwise, ``read_field`` will assume that the mass fraction field is the same between time ``1`` and time ``2``.
 

@@ -177,6 +177,7 @@ def _get_ind_height(
     case_folder: str,
     direction: int | None = None,
     tolerance: float | None = None,
+    cell_centers_file: str | None = None,
     field_dict: dict = {},
 ) -> tuple[np.ndarray | float, dict]:
     """
@@ -194,6 +195,9 @@ def _get_ind_height(
     tolerance : float
         Include cells where height is in [height - tolerance , height + tolerance].
         If None, it will be 2 times the axial mesh size
+    cell_centers_file : str | None
+        Filename of cell center data
+        If None, finds cell center file automatically
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
@@ -209,7 +213,7 @@ def _get_ind_height(
 
         cell_centers, field_dict = read_cell_centers(
             case_folder=case_folder,
-            cell_centers_file=None,
+            cell_centers_file=cell_centers_file,
             field_dict=field_dict,
         )
 
@@ -345,7 +349,7 @@ def compute_superficial_gas_velocity(
     n_cells: int | None = None,
     volume_time: str | None = None,
     direction: int | None = None,
-    cell_centers_file: str = "meshCellCentres_0.obj",
+    cell_centers_file: str | None = None,
     height: float | None = None,
     field_dict: dict = {},
 ) -> tuple[float, dict]:
@@ -376,8 +380,9 @@ def compute_superficial_gas_velocity(
     direction :  int | None
         Direction along which to calculate the superficial velocity.
         If None, assume y direction
-    cell_centers_file : str
+    cell_centers_file : str | None
         Filename of cell center data
+        If None, finds cell center file automatically
     height: float | None
         Axial location at which to compute the superficial velocity.
         If None, use the mid point of the liquid domain along the axial direction
@@ -629,7 +634,7 @@ def compute_ave_conc_liq(
             field_dict["rho_liq"] = rho_val
         else:
             rho_liq_file = os.path.join(case_folder, time_folder, "rhom")
-            rho_liq = readOFScal(rho_liq_file, n_cells)["field"]
+            rho_liq = _readOFScal(rho_liq_file, n_cells)["field"]
             field_dict["rho_liq"] = rho_liq
     else:
         rho_liq = field_dict["rho_liq"]

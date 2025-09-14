@@ -66,7 +66,7 @@ def test_compute_diam():
 
     # Make sure None arguments are correctly handled
     n_cells = len(field_dict["d.gas"])
-    time_folder = kwargs["time_folder"]
+    time_folder = "79"
     diam1, _ = compute_ave_bubble_diam(
         case_folder=case_folder, time_folder=time_folder
     )
@@ -104,7 +104,7 @@ def test_compute_superficial_gas_velocity():
 
     # Make sure None arguments are correctly handled
     n_cells = len(field_dict["V"])
-    time_folder = kwargs["time_folder"]
+    time_folder = "79"
     sup_vel1, _ = compute_superficial_gas_velocity(
         case_folder=case_folder, time_folder=time_folder, direction=1
     )
@@ -224,7 +224,7 @@ def test_ave_conc_liq():
 
 
 if __name__ == "__main__":
-    #test_compute_superficial_gas_velocity()
+    test_compute_superficial_gas_velocity()
     test_compute_gh()
-    #test_ave_y_liq()
-    #test_ave_conc_liq()
+    # test_ave_y_liq()
+    # test_ave_conc_liq()

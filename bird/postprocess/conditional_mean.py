@@ -43,7 +43,9 @@ def compute_cond_mean(
 
         for filename, name in zip(field_file, field_name_list):
             val_dict = {}
-            field_tmp = readOFScal(filename, nCells)["field"]
+            field_tmp, _ = read_field(
+                case_folder, time_folder, field_name=field_name
+            )
             vert_axis, field_cond_tmp = conditional_average(
                 cell_centers[:, vert_ind], field_tmp, nbins=n_bins
             )
