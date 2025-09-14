@@ -40,4 +40,5 @@ BIRD_CASE_GEN_DATA_DIR = os.path.join(BIRD_PRE_DIR, "data_case_gen")
 BIRD_INV_DIR = os.path.join(BIRD_DIR, "inverse_modeling")
 
 from bird.logging_config import setup_logging
+
 logger = setup_logging(level="INFO")

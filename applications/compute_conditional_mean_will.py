@@ -1,9 +1,11 @@
 import os
+
 import numpy as np
-from bird.utilities.mathtools import conditional_average
-from bird.utilities.ofio import read_field, read_cell_centers, get_case_times 
 
 from bird import logger
+from bird.utilities.mathtools import conditional_average
+from bird.utilities.ofio import get_case_times, read_cell_centers, read_field
+
 logger.setLevel("DEBUG")
 
 from pathlib import Path
@@ -16,7 +18,9 @@ def height2str(height: float) -> str:
     return f"{height:.2g}"
 
 
-def compute_radius_field(cell_centers: np.ndarray, vert_ind: int) -> np.ndarray:
+def compute_radius_field(
+    cell_centers: np.ndarray, vert_ind: int
+) -> np.ndarray:
     """
     Compute radius from cell centres. The radius goes negative to make it look like brooks and chen
     """
@@ -152,7 +156,9 @@ def radial_mean(
         # Read
         for filename, field_name in zip(field_file, field_names):
             val_dict = {}
-            field_tmp, _ = read_field(case_folder, time_folder, field_name, n_cells=nCells)
+            field_tmp, _ = read_field(
+                case_folder, time_folder, field_name, n_cells=nCells
+            )
             if len(field_tmp.shape) == 2 and field_tmp.shape[1] == 3:
                 # You read a velocity I'm assuming you need the axial one
                 field_tmp = field_tmp[:, vert_ind]

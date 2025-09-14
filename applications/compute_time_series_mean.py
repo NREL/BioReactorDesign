@@ -1,9 +1,10 @@
 import numpy as np
 
+from bird import logger
 from bird.postprocess.stats import calc_mean
 
-from bird import logger
 logger.setLevel(level="DEBUG")
+
 
 def main():
 

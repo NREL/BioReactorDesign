@@ -2,10 +2,9 @@ import os
 
 import numpy as np
 
+from bird import logger
 from bird.meshing._mesh_tools import *
 from bird.utilities.parser import parse_json, parse_yaml
-
-from bird import logger
 
 
 def assemble_geom(input_file, topo_file):

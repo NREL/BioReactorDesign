@@ -3,11 +3,10 @@ import pickle
 
 from prettyPlot.plotting import plt
 
+from bird import logger
 from bird.postprocess.post_quantities import *
 from bird.utilities.mathtools import *
 from bird.utilities.ofio import *
-
-from bird import logger
 
 
 def compute_cond_mean(

@@ -3,10 +3,9 @@ import os
 import numpy as np
 import stl
 
+from bird import logger
 from bird.preprocess.stl_patch.stl_shapes import *
 from bird.utilities.parser import parse_json
-
-from bird import logger
 
 
 def check_input(input_dict):

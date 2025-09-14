@@ -3,6 +3,7 @@ from scipy.optimize import minimize
 
 from bird import logger
 
+
 def bounded_constraint(x):
     xend = 1 - np.sum(x)
     cons = 0

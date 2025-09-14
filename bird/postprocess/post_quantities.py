@@ -1,8 +1,7 @@
 import numpy as np
 
-from bird.utilities.ofio import *
-
 from bird import logger
+from bird.utilities.ofio import *
 
 
 def _field_filter(

@@ -2,10 +2,9 @@ import json
 
 import numpy as np
 
+from bird import logger
 from bird.meshing.block_rect_mesh import from_block_rect_to_seg
 from bird.preprocess.stl_patch.stl_mesh import STLMesh
-
-from bird import logger
 
 
 def make_polygon(rad, nvert, center, normal_dir):
