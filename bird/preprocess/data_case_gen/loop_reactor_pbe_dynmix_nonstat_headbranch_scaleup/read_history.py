@@ -54,11 +54,7 @@ field_dict = {}
 for itime, time in enumerate(time_float_sorted):
     time_folder = time_str_sorted[itime]
     print(f"\tTime : {time_folder}")
-    if not field_dict == {}:
-        new_field_dict = {}
-        if "V" in field_dict:
-            new_field_dict["V"] = field_dict["V"]
-        field_dict = new_field_dict
+    _, field_dict = read_cell_volumes(case_folder)
     gh_history[itime], field_dict = compute_gas_holdup(
         case_folder,
         time_str_sorted[itime],
