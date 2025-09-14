@@ -31,6 +31,7 @@ def readInletArea():
         lines = f.readlines()
     return float(lines[4].split()[-1])
 
+
 def getLiqVol():
     cell_centers, _ = read_cell_centers(".")
     volume_field, _ = read_cell_volumes(".")

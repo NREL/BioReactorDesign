@@ -95,9 +95,7 @@ for name in var_name_list:
     variables_conv[name]["y"] = []
 
 
-def get_var(
-    case_folder, time_folder, cell_centers, nCells, val_dict, name
-):
+def get_var(case_folder, time_folder, cell_centers, nCells, val_dict, name):
     if name.lower() == "gh":
         var, val_dict = compute_gas_holdup(
             case_folder,

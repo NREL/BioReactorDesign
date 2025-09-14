@@ -526,6 +526,7 @@ def _get_mesh_time(case_folder: str) -> str | None:
 
     return time_mesh
 
+
 def _get_volume_time(case_folder: str) -> str | None:
     """
     Get the time at which the volume was printed
@@ -551,6 +552,7 @@ def _get_volume_time(case_folder: str) -> str | None:
             break
 
     return time_volume
+
 
 def _remove_comments(text: str) -> str:
     """
@@ -794,7 +796,6 @@ def write_openfoam_dict(data: dict, filename: str, indent: int = 0) -> None:
         )
 
 
-
 def read_cell_centers(
     case_folder: str,
     cell_centers_file: str | None = None,
@@ -802,7 +803,7 @@ def read_cell_centers(
 ) -> tuple[np.ndarray, dict]:
     """
     Read field of cell centers and store it in dictionary for later reuse
-        
+
     Parameters
     ----------
     case_folder: str
@@ -812,31 +813,31 @@ def read_cell_centers(
         If None, find the cell center file automoatically
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
-        
+
     Returns
     ----------
     cell_centers : np.ndarray
         cell centers read from file
     field_dict : dict
         Dictionary of fields read
-    """     
-                
-    if (    
+    """
+
+    if (
         not ("cell_centers" in field_dict)
         or field_dict["cell_centers"] is None
-    ):          
+    ):
         if cell_centers_file is None:
             # try to find the mesh time
-            mesh_time = _get_mesh_time(case_folder)   
+            mesh_time = _get_mesh_time(case_folder)
             if mesh_time is not None:
                 cell_centers_file = f"meshCellCentres_{mesh_time}.obj"
-            
+
         try:
             cell_centers = _read_mesh(
                 os.path.join(case_folder, cell_centers_file)
             )
             field_dict["cell_centers"] = cell_centers
-    
+
         except FileNotFoundError:
 
             error_msg = f"Could not find {cell_centers_file}"
@@ -854,7 +855,6 @@ def read_cell_centers(
         cell_centers = field_dict["cell_centers"]
 
     return cell_centers, field_dict
-
 
 
 def read_cell_volumes(
@@ -897,29 +897,23 @@ def read_cell_volumes(
         "n_cells": n_cells,
     }
 
-    if (
-        not ("V" in field_dict)
-        or field_dict["V"] is None
-    ):
+    if not ("V" in field_dict) or field_dict["V"] is None:
         if time_folder is None:
             # Find the time at which the volume was printed
-            time_folder = _get_volume_time(case_folder)     
+            time_folder = _get_volume_time(case_folder)
         try:
             cell_volume, field_dict = _read_field(
                 field_name="V", field_dict=field_dict, **kwargs_vol
             )
         except FileNotFoundError:
-            error_msg = (
-                f"Could not find {os.path.join(case_folder, time_folder, 'V')}\n"
-            )
-            time_float, time_str = get_case_times(case_folder)        
+            error_msg = f"Could not find {os.path.join(case_folder, time_folder, 'V')}\n"
+            time_float, time_str = get_case_times(case_folder)
             error_msg += "You can generate V with\n\t"
             error_msg += f"`postProcess -func writeCellVolumes -time {time_str[0]} -case {case_folder}`"
             logger.error(error_msg)
             raise FileNotFoundError(error_msg)
     else:
         # Get field from dict if it has been read before
-        cell_volume = field_dict['V']
-
+        cell_volume = field_dict["V"]
 
     return cell_volume, field_dict

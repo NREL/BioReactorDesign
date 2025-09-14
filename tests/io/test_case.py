@@ -3,7 +3,14 @@ from pathlib import Path
 
 import numpy as np
 
-from bird.utilities.ofio import get_case_times, _get_mesh_time, _read_mesh, read_cell_centers, _get_volume_time, read_cell_volumes
+from bird.utilities.ofio import (
+    _get_mesh_time,
+    _get_volume_time,
+    _read_mesh,
+    get_case_times,
+    read_cell_centers,
+    read_cell_volumes,
+)
 
 
 def test_case_time():
@@ -51,9 +58,9 @@ def test_mesh():
 
     cell_centers2, _ = read_cell_centers(case_folder)
     cell_centers3, _ = read_cell_centers(case_folder, time_folder=mesh_time)
-   
-    assert np.linalg.norm(cell_centers-cell_centers2) < 1e-12
-    assert np.linalg.norm(cell_centers-cell_centers3) < 1e-12
+
+    assert np.linalg.norm(cell_centers - cell_centers2) < 1e-12
+    assert np.linalg.norm(cell_centers - cell_centers3) < 1e-12
 
 
 def test_mesh_vol():
@@ -73,7 +80,8 @@ def test_mesh_vol():
     volumes, _ = read_cell_volumes(case_folder)
     volumes2, _ = read_cell_volumes(case_folder, time_folder=vol_time)
 
-    assert np.linalg.norm(volumes-volumes2) < 1e-12
+    assert np.linalg.norm(volumes - volumes2) < 1e-12
+
 
 if __name__ == "__main__":
     test_case_time()

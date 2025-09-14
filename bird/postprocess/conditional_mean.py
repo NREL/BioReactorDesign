@@ -37,7 +37,9 @@ def compute_cond_mean(
         logger.debug(f"\tReading Time : {time_folder}")
         field_file = []
         for field_name in field_name_list:
-            field_file.append(os.path.join(case_folder, time_folder, field_name))
+            field_file.append(
+                os.path.join(case_folder, time_folder, field_name)
+            )
 
         for filename, name in zip(field_file, field_name_list):
             val_dict = {}
