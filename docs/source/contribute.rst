@@ -18,7 +18,8 @@ You can automatically enforce the formatting guidelines with
 
 Tests
 ------------
-Please ensure your contribution passes the tests in the CI (``.github/worklows/ci.yml``)
+Please ensure your contribution passes the tests in the CI (``.github/worklows/ci.yml``).
+
 To run the unit tests
 
 .. code-block:: console
@@ -45,4 +46,4 @@ Demonstrating and documenting your contribution
 ------------
 We prefer the use of docstrings and type hinting. A good example to follow are functions in ``bird/utilities/ofio.py``.
  
-If you add a new capability, please make sure to add relevant unit tests in the ``tests/`` folder. A good example to follow are tests ``tests/io``
+If you add a new capability, please make sure to add relevant unit tests in the ``tests/`` folder. A good example to follow are tests ``tests/io``.

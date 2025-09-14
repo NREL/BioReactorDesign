@@ -43,7 +43,7 @@ Reading cell volumes
 ^^^^^^^^^^^^^^^
 
 A cell volume field can be generated using the following OpenFOAM command ``postProcess -func writeCellVolumes -time {time_folder} -case {case_folder}``
-It will generate a file ``{time_folder}/V`` which can be read with the ``read_field`` function of ``bird``.
+It will generate a file ``{time_folder}/V`` which can be read with the ``read_cell_volumes`` function of ``bird.utilities.ofio``.
 This workflow is used in ``bird.postprocess.post_quantitities``, for example in the ``compute_gas_holdup`` function.
 
  
