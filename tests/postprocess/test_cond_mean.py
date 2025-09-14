@@ -12,7 +12,7 @@ from bird.postprocess.conditional_mean import (
 
 
 def test_compute_cond():
-    caseFolder = os.path.join(
+    case_folder = os.path.join(
         Path(__file__).parent,
         "..",
         "..",
@@ -30,17 +30,17 @@ def test_compute_cond():
         "alpha.gas",
         "d.gas",
     ]
-    fields_cond = compute_cond_mean(caseFolder, 1, fields_list, 2, n_bins=32)
+    fields_cond = compute_cond_mean(case_folder, 1, fields_list, 2, n_bins=32)
 
     # Output to temporary directory and delete when done
     with tempfile.TemporaryDirectory() as tmpdirname:
         save_cond(os.path.join(tmpdirname, "cond.pkl"), fields_cond)
 
     cond = {}
-    cond[caseFolder] = fields_cond
+    cond[case_folder] = fields_cond
     for field_name in fields_list:
         fig = plt.figure()
-        plot_name = sequencePlot(cond, [caseFolder], field_name)
+        plot_name = sequencePlot(cond, [case_folder], field_name)
         pretty_labels(plot_name, "y [m]", 14)
         plt.close()
 

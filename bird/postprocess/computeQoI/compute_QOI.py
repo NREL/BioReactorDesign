@@ -75,10 +75,10 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-case_path = args.caseFolder
+case_folder = args.caseFolder
 var_name_list = args.var_list
-time_float_sorted, time_str_sorted = get_case_times(case_path)
-cell_centers, _ = read_cell_centers(case_path)
+time_float_sorted, time_str_sorted = get_case_times(case_folder)
+cell_centers, _ = read_cell_centers(case_folder)
 nCells = len(cell_centers)
 diff_val_list = args.diff_val_list
 diff_name_list = args.diff_name_list
@@ -96,25 +96,25 @@ for name in var_name_list:
 
 
 def get_var(
-    case_path, time_folder, cell_centers, nCells, val_dict, name
+    case_folder, time_folder, cell_centers, nCells, val_dict, name
 ):
     if name.lower() == "gh":
         var, val_dict = compute_gas_holdup(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
             field_dict=val_dict,
         )
     elif name.lower() == "d":
         var, val_dict = compute_ave_bubble_diam(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
             field_dict=val_dict,
         )
     elif name.lower() == "co2_liq":
         var, val_dict = compute_ave_y_liq(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
             spec_name="CO2",
@@ -122,7 +122,7 @@ def get_var(
         )
     elif name.lower() == "co_liq":
         var, val_dict = compute_ave_y_liq(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
             spec_name="CO",
@@ -130,7 +130,7 @@ def get_var(
         )
     elif name.lower() == "h2_liq":
         var, val_dict = compute_ave_y_liq(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
             spec_name="H2",
@@ -138,7 +138,7 @@ def get_var(
         )
     elif name.lower() == "c_co2_liq":
         var, val_dict = compute_ave_conc_liq(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
             spec_name="CO2",
@@ -147,7 +147,7 @@ def get_var(
         )
     elif name.lower() == "c_co_liq":
         var, val_dict = compute_ave_conc_liq(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
             spec_name="CO",
@@ -156,7 +156,7 @@ def get_var(
         )
     elif name.lower() == "c_h2_liq":
         var, val_dict = compute_ave_conc_liq(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
             spec_name="H2",
@@ -169,7 +169,7 @@ def get_var(
     return var, val_dict
 
 
-print(f"Case : {case_path}")
+print(f"Case : {case_folder}")
 
 print(f"Window Ave")
 for i_ave in range(window_ave):
@@ -179,7 +179,7 @@ for i_ave in range(window_ave):
     val_dict = {}
     for name in var_name_list:
         var, val_dict = get_var(
-            case_path,
+            case_folder,
             time_folder,
             cell_centers,
             nCells,
@@ -201,7 +201,7 @@ for i_conv in range(window_conv):
     val_dict = {}
     for name in var_name_list:
         var, val_dict = get_var(
-            case_path,
+            case_folder,
             time_folder,
             cell_centers,
             nCells,
@@ -212,7 +212,7 @@ for i_conv in range(window_conv):
         variables_conv[name]["y"] += [var]
 
 
-with open(os.path.join(case_path, "qoi.pkl"), "wb") as f:
+with open(os.path.join(case_folder, "qoi.pkl"), "wb") as f:
     pickle.dump(variables, f)
-with open(os.path.join(case_path, "qoi_conv.pkl"), "wb") as f:
+with open(os.path.join(case_folder, "qoi_conv.pkl"), "wb") as f:
     pickle.dump(variables_conv, f)

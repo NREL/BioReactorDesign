@@ -460,14 +460,14 @@ def readSizeGroups(file):
 
 
 def get_case_times(
-    casePath: str, remove_zero: bool = False
+    case_folder: str, remove_zero: bool = False
 ) -> tuple[list[float], list[str]]:
     """
     Get list of all time folders from an OpenFOAM case
 
     Parameters
     ----------
-    casePath: str
+    case_folder: str
         Path to case folder
     remove_zero : bool
         Whether to remove zero from the time folder list
@@ -481,7 +481,7 @@ def get_case_times(
 
     """
     # Read Time
-    times_tmp = os.listdir(casePath)
+    times_tmp = os.listdir(case_folder)
     # remove non floats
     for i, entry in reversed(list(enumerate(times_tmp))):
         try:
@@ -502,13 +502,13 @@ def get_case_times(
     return time_float_sorted, time_str_sorted
 
 
-def _get_mesh_time(casePath: str) -> str | None:
+def _get_mesh_time(case_folder: str) -> str | None:
     """
     Get the time at which the mesh was printed
 
     Parameters
     ----------
-    casePath: str
+    case_folder: str
         Path to case folder
 
     Returns
@@ -518,7 +518,7 @@ def _get_mesh_time(casePath: str) -> str | None:
         If None, nothing was found
     """
 
-    files_tmp = os.listdir(casePath)
+    files_tmp = os.listdir(case_folder)
     time_mesh = None
     for entry in files_tmp:
         if "meshCellCentres" in entry:
@@ -526,13 +526,13 @@ def _get_mesh_time(casePath: str) -> str | None:
 
     return time_mesh
 
-def _get_volume_time(casePath: str) -> str | None:
+def _get_volume_time(case_folder: str) -> str | None:
     """
     Get the time at which the volume was printed
 
     Parameters
     ----------
-    casePath: str
+    case_folder: str
         Path to case folder
 
     Returns
@@ -542,10 +542,10 @@ def _get_volume_time(casePath: str) -> str | None:
         If None, nothing was found
     """
 
-    time_float, time_str = get_case_times(casePath)
+    time_float, time_str = get_case_times(case_folder)
     time_volume = None
     for entry in time_str:
-        if os.path.exists(os.path.join(casePath, entry, "V")):
+        if os.path.exists(os.path.join(case_folder, entry, "V")):
             logger.debug(f"Volume time found to be {entry}")
             time_volume = entry
             break

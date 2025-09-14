@@ -32,14 +32,14 @@ args, unknown = parser.parse_known_args()
 
 case_root = "."  # "../"
 case_name = args.case_name  # "12_hole_sparger_snappyRefine_700rpm_opt_coeff"
-case_path = "."
+case_folder = "."
 dataFolder = args.data_folder
 
 if os.path.isfile(os.path.join(dataFolder, case_name, "conv.npz")):
     sys.exit("WARNING: History already created, Skipping")
 
-time_float_sorted, time_str_sorted = get_case_times(case_path, remove_zero=True)
-cell_centers, _ = read_cell_centers(case_path)
+time_float_sorted, time_str_sorted = get_case_times(case_folder, remove_zero=True)
+cell_centers, _ = read_cell_centers(case_folder)
 nCells = len(cell_centers)
 
 
@@ -49,7 +49,7 @@ h2_history = np.zeros(len(time_str_sorted))
 c_h2_history = np.zeros(len(time_str_sorted))
 gh_history = np.zeros(len(time_str_sorted))
 liqvol_history = np.zeros(len(time_str_sorted))
-print(f"case_path = {case_path}")
+print(f"case_folder = {case_folder}")
 field_dict = {}
 for itime, time in enumerate(time_float_sorted):
     time_folder = time_str_sorted[itime]
@@ -60,31 +60,31 @@ for itime, time in enumerate(time_float_sorted):
             new_field_dict["V"] = field_dict["V"]
         field_dict = new_field_dict
     gh_history[itime], field_dict = compute_gas_holdup(
-        case_path,
+        case_folder,
         time_str_sorted[itime],
         field_dict=field_dict,
     )
     co2_history[itime], field_dict = compute_ave_y_liq(
-        case_path,
+        case_folder,
         time_str_sorted[itime],
         spec_name="CO2",
         field_dict=field_dict,
     )
     h2_history[itime], field_dict = compute_ave_y_liq(
-        case_path,
+        case_folder,
         time_str_sorted[itime],
         spec_name="H2",
         field_dict=field_dict,
     )
     c_co2_history[itime], field_dict = compute_ave_conc_liq(
-        case_path,
+        case_folder,
         time_str_sorted[itime],
         spec_name="CO2",
         mol_weight=0.04401,
         field_dict=field_dict,
     )
     c_h2_history[itime], field_dict = compute_ave_conc_liq(
-        case_path,
+        case_folder,
         time_str_sorted[itime],
         spec_name="H2",
         mol_weight=0.002016,
