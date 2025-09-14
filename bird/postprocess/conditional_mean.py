@@ -21,9 +21,8 @@ def compute_cond_mean(
     diff_name_list=[],
 ):
     time_float_sorted, time_str_sorted = getCaseTimes(case_path)
-    mesh_time_str = getMeshTime(case_path)
-    cellCentres = read_cell_centers(case_path)
-    nCells = len(cellCentres)
+    cell_centers, _ = read_cell_centers(case_path)
+    nCells = len(cell_centers)
     assert len(diff_val_list) == len(diff_name_list)
     window_ave = min(window_ave, len(time_str_sorted))
 
@@ -44,7 +43,7 @@ def compute_cond_mean(
             val_dict = {}
             field_tmp = readOFScal(filename, nCells)["field"]
             vert_axis, field_cond_tmp = conditional_average(
-                cellCentres[:, vert_ind], field_tmp, nbins=n_bins
+                cell_centers[:, vert_ind], field_tmp, nbins=n_bins
             )
             if i_ave == 0:
                 fields_cond[name]["val"] = field_cond_tmp / window_ave

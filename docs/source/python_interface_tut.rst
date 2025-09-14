@@ -108,28 +108,27 @@ Several of these quantities, will require reading and processing the same fields
    # Compute Gas hold up
    kwargs = {"case_folder": ".", "time_folder": "80"}
    gh, field_dict = compute_gas_holdup(
-       volume_time="1", field_dict={"cell_centers": cell_centers}, **kwargs
+       field_dict={"cell_centers": cell_centers}, **kwargs
    )
    print("fields stored = ", list(field_dict.keys()))
    print(f"Gas Holdup = {gh:.4g}")
    
    # Compute superficial velocity
    sup_vel, field_dict = compute_superficial_gas_velocity(
-       volume_time="1", field_dict=field_dict, **kwargs
+       field_dict=field_dict, **kwargs
    )
    print("fields stored = ", list(field_dict.keys()))
    print(f"Superficial velocity = {sup_vel:.4g} m/s")
    
    # Compute reactor-averaged CO2 mass fraction
    y_ave_co2, field_dict = compute_ave_y_liq(
-       volume_time="1", spec_name="CO2", field_dict=field_dict, **kwargs
+       spec_name="CO2", field_dict=field_dict, **kwargs
    )
    print("fields stored = ", list(field_dict.keys()))
    print(f"Reactor averaged YCO2 = {y_ave_co2:.4g}")
    
    # Compute reactor-averaged CO2 concentration
    c_ave_co2, field_dict = compute_ave_conc_liq(
-       volume_time="1",
        spec_name="CO2",
        mol_weight=0.04401,
        rho_val=1000,
@@ -141,7 +140,7 @@ Several of these quantities, will require reading and processing the same fields
    
    # Compute reactor-averaged bubble diameter
    diam, field_dict = compute_ave_bubble_diam(
-       volume_time="1", field_dict=field_dict, **kwargs
+       field_dict=field_dict, **kwargs
    )
    print("fields stored = ", list(field_dict.keys()))
    print(f"Reactor averaged bubble diameter = {diam:.4g} m")

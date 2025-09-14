@@ -37,7 +37,7 @@ def test_mesh():
         "data_conditional_mean",
     )
     # Read non uniform field
-    mesh_time = getMeshTime(caseFolder)
+    mesh_time = _get_mesh_time(caseFolder)
     mesh_file = os.path.join(caseFolder, f"meshCellCentres_{mesh_time}.obj")
     cell_centers = _read_mesh(mesh_file)
 

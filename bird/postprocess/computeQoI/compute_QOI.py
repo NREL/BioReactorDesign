@@ -78,9 +78,8 @@ args = parser.parse_args()
 case_path = args.caseFolder
 var_name_list = args.var_list
 time_float_sorted, time_str_sorted = getCaseTimes(case_path)
-mesh_time_str = getMeshTime(case_path)
-cellCentres, _ = read_cell_centers(case_path)
-nCells = len(cellCentres)
+cell_centers, _ = read_cell_centers(case_path)
+nCells = len(cell_centers)
 diff_val_list = args.diff_val_list
 diff_name_list = args.diff_name_list
 assert len(diff_val_list) == len(diff_name_list)
@@ -97,16 +96,13 @@ for name in var_name_list:
 
 
 def get_var(
-    case_path, time_folder, mesh_time_str, cellCentres, nCells, val_dict, name
+    case_path, time_folder, cell_centers, nCells, val_dict, name
 ):
-    localFolder = os.path.join(case_path, time_folder)
-    localFolder_vol = os.path.join(case_path, mesh_time_str)
     if name.lower() == "gh":
         var, val_dict = compute_gas_holdup(
             case_path,
             time_folder,
             nCells,
-            volume_time="0",
             field_dict=val_dict,
         )
     elif name.lower() == "d":
@@ -114,7 +110,6 @@ def get_var(
             case_path,
             time_folder,
             nCells,
-            volume_time="0",
             field_dict=val_dict,
         )
     elif name.lower() == "co2_liq":
@@ -122,7 +117,6 @@ def get_var(
             case_path,
             time_folder,
             nCells,
-            volume_time="0",
             spec_name="CO2",
             field_dict=val_dict,
         )
@@ -131,7 +125,6 @@ def get_var(
             case_path,
             time_folder,
             nCells,
-            volume_time="0",
             spec_name="CO",
             field_dict=val_dict,
         )
@@ -140,7 +133,6 @@ def get_var(
             case_path,
             time_folder,
             nCells,
-            volume_time="0",
             spec_name="H2",
             field_dict=val_dict,
         )
@@ -149,7 +141,6 @@ def get_var(
             case_path,
             time_folder,
             nCells,
-            volume_time="0",
             spec_name="CO2",
             mol_weight=44.00995 * 1e-3,
             field_dict=val_dict,
@@ -159,7 +150,6 @@ def get_var(
             case_path,
             time_folder,
             nCells,
-            volume_time="0",
             spec_name="CO",
             mol_weight=28.01055 * 1e-3,
             field_dict=val_dict,
@@ -169,7 +159,6 @@ def get_var(
             case_path,
             time_folder,
             nCells,
-            volume_time="0",
             spec_name="H2",
             mol_weight=2.01594 * 1e-3,
             field_dict=val_dict,
@@ -192,8 +181,7 @@ for i_ave in range(window_ave):
         var, val_dict = get_var(
             case_path,
             time_folder,
-            mesh_time_str,
-            cellCentres,
+            cell_centers,
             nCells,
             val_dict=val_dict,
             name=name,
@@ -215,8 +203,7 @@ for i_conv in range(window_conv):
         var, val_dict = get_var(
             case_path,
             time_folder,
-            mesh_time_str,
-            cellCentres,
+            cell_centers,
             nCells,
             val_dict=val_dict,
             name=name,

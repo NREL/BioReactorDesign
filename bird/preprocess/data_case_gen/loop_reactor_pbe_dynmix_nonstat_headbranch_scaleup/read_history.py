@@ -39,8 +39,8 @@ if os.path.isfile(os.path.join(dataFolder, case_name, "conv.npz")):
     sys.exit("WARNING: History already created, Skipping")
 
 time_float_sorted, time_str_sorted = getCaseTimes(case_path, remove_zero=True)
-cellCentres, _ = read_cell_centers(case_path)
-nCells = len(cellCentres)
+cell_centers, _ = read_cell_centers(case_path)
+nCells = len(cell_centers)
 
 
 co2_history = np.zeros(len(time_str_sorted))
@@ -62,31 +62,23 @@ for itime, time in enumerate(time_float_sorted):
     gh_history[itime], field_dict = compute_gas_holdup(
         case_path,
         time_str_sorted[itime],
-        nCells,
-        volume_time="0",
         field_dict=field_dict,
     )
     co2_history[itime], field_dict = compute_ave_y_liq(
         case_path,
         time_str_sorted[itime],
-        nCells,
-        volume_time="0",
         spec_name="CO2",
         field_dict=field_dict,
     )
     h2_history[itime], field_dict = compute_ave_y_liq(
         case_path,
         time_str_sorted[itime],
-        nCells,
-        volume_time="0",
         spec_name="H2",
         field_dict=field_dict,
     )
     c_co2_history[itime], field_dict = compute_ave_conc_liq(
         case_path,
         time_str_sorted[itime],
-        nCells,
-        volume_time="0",
         spec_name="CO2",
         mol_weight=0.04401,
         field_dict=field_dict,
@@ -94,8 +86,6 @@ for itime, time in enumerate(time_float_sorted):
     c_h2_history[itime], field_dict = compute_ave_conc_liq(
         case_path,
         time_str_sorted[itime],
-        nCells,
-        volume_time="0",
         spec_name="H2",
         mol_weight=0.002016,
         field_dict=field_dict,

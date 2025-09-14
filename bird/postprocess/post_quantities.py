@@ -251,7 +251,7 @@ def _get_ind_height(
 
     if not (f"ind_height_{height:.2g}" in field_dict):
 
-        cell_centers, field_dict = _read_cell_centers(
+        cell_centers, field_dict = read_cell_centers(
             case_folder=case_folder,
             cell_centers_file=None,
             field_dict=field_dict,
@@ -341,7 +341,7 @@ def compute_gas_holdup(
         If None, it will deduced from the field reading
     volume_time : str | None
         Time folder to read to get the cell volumes.
-        If None, assumes it is 0
+        If None, finds volume time automatically
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
@@ -369,7 +369,7 @@ def compute_gas_holdup(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
-    cell_volume, field_dict = _read_cell_volume(
+    cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
     )
 
@@ -416,7 +416,7 @@ def compute_superficial_gas_velocity(
         If None, it will deduced from the field reading
     volume_time : str | None
         Time folder to read to get the cell volumes.
-        If None, assumes it is 0
+        If None, finds volume time automatically
     direction :  int | None
         Direction along which to calculate the superficial velocity.
         If None, assume y direction
@@ -463,10 +463,10 @@ def compute_superficial_gas_velocity(
 
     U_gas_axial = U_gas[:, direction]
 
-    cell_volume, field_dict = _read_cell_volume(
+    cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
     )
-    cell_centers, field_dict = _read_cell_centers(
+    cell_centers, field_dict = read_cell_centers(
         case_folder=case_folder,
         cell_centers_file=cell_centers_file,
         field_dict=field_dict,
@@ -534,7 +534,7 @@ def compute_ave_y_liq(
         If None, it will deduced from the field reading
     volume_time : str | None
         Time folder to read to get the cell volumes.
-        If None, assumes it is 0
+        If None, finds volume time automatically
     spec_name : str
         Name of the species
     field_dict : dict
@@ -567,7 +567,7 @@ def compute_ave_y_liq(
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
-    cell_volume, field_dict = _read_cell_volume(
+    cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
     )
 
@@ -618,7 +618,7 @@ def compute_ave_conc_liq(
         If None, it will deduced from the field reading
     volume_time : str | None
         Time folder to read to get the cell volumes.
-        If None, assumes it is 0
+        If None, finds volume time automatically
     spec_name : str
         Name of the species
     mol_weight : float
@@ -662,7 +662,7 @@ def compute_ave_conc_liq(
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
-    cell_volume, field_dict = _read_cell_volume(
+    cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
     )
 
@@ -724,7 +724,7 @@ def compute_ave_bubble_diam(
         If None, it will deduced from the field reading
     volume_time : str | None
         Time folder to read to get the cell volumes.
-        If None, assumes it is 0
+        If None, finds volume time automatically
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
@@ -755,7 +755,7 @@ def compute_ave_bubble_diam(
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
-    cell_volume, field_dict = _read_cell_volume(
+    cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
     )
 
