@@ -1,10 +1,7 @@
-import logging
-
 import numpy as np
 from scipy.optimize import minimize
 
-logger = logging.getLogger(__name__)
-
+from bird import logger
 
 def bounded_constraint(x):
     xend = 1 - np.sum(x)

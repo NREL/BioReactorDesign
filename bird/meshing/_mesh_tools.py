@@ -1,8 +1,6 @@
-import logging
-
 import numpy as np
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def make_walls_from_topo(topo_dict: dict) -> dict:

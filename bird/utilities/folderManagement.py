@@ -1,8 +1,7 @@
-import logging
 import os
 import re
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def makeRecursiveFolder(path):

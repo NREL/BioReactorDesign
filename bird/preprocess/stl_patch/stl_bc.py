@@ -1,4 +1,3 @@
-import logging
 import os
 
 import numpy as np
@@ -7,7 +6,7 @@ import stl
 from bird.preprocess.stl_patch.stl_shapes import *
 from bird.utilities.parser import parse_json
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def check_input(input_dict):

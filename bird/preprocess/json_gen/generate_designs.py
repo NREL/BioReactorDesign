@@ -1,4 +1,3 @@
-import logging
 import os
 import pickle
 import shutil
@@ -8,8 +7,7 @@ import numpy as np
 from bird import BIRD_CASE_DIR
 from bird.preprocess.json_gen.design_io import *
 
-logger = logging.getLogger(__name__)
-
+from bird import logger
 
 def id2simfolder(sim_id: int) -> str:
     """

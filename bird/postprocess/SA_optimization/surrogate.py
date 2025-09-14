@@ -14,9 +14,8 @@ from tensorflow.keras.models import Model as tfModel
 from tensorflow.keras.models import Sequential
 
 warnings.filterwarnings("ignore")
-import logging
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def check_data_shape(X: np.ndarray, y: np.ndarray) -> None:

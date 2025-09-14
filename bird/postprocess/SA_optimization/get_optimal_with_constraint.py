@@ -1,4 +1,3 @@
-import logging
 import os
 import random
 
@@ -15,7 +14,7 @@ from bird.postprocess.SA_optimization.surrogate import (
     tune_rf,
 )
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def simulated_annealing_surrogate(

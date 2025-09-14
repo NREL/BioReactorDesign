@@ -1,12 +1,11 @@
 import json
-import logging
 
 import numpy as np
 
 from bird.meshing.block_rect_mesh import from_block_rect_to_seg
 from bird.preprocess.stl_patch.stl_mesh import STLMesh
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def make_polygon(rad, nvert, center, normal_dir):

@@ -2,7 +2,7 @@ import numpy as np
 
 from bird.utilities.ofio import *
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def _field_filter(

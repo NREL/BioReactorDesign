@@ -1,11 +1,10 @@
 import json
-import logging
 import os
 from pathlib import Path
 
 from ruamel.yaml import YAML
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def _check_for_tabs_in_yaml(file_path: str) -> None:

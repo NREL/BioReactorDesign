@@ -1,4 +1,3 @@
-import logging
 import os
 
 import numpy as np
@@ -6,7 +5,7 @@ import numpy as np
 from bird.meshing._mesh_tools import *
 from bird.utilities.parser import parse_json, parse_yaml
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def assemble_geom(input_file, topo_file):

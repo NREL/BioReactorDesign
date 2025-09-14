@@ -16,7 +16,6 @@ class ConditionalFormatter(logging.Formatter):
 
 def setup_logging(logfile: str | None = None, level=logging.INFO):
     """Setup logging"""
-
     logger = logging.getLogger()
     logger.setLevel(level)
 
@@ -32,3 +31,5 @@ def setup_logging(logfile: str | None = None, level=logging.INFO):
         fh = logging.FileHandler(Path(logfile))
         fh.setFormatter(formatter)
         logger.addHandler(fh)
+
+    return logger

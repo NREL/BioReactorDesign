@@ -1,4 +1,3 @@
-import logging
 import os
 import pickle
 
@@ -8,7 +7,7 @@ from bird.postprocess.post_quantities import *
 from bird.utilities.mathtools import *
 from bird.utilities.ofio import *
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def compute_cond_mean(

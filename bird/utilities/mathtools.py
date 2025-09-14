@@ -1,8 +1,6 @@
-import logging
-
 import numpy as np
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def conditional_average(

@@ -1,8 +1,6 @@
-import logging
-
 from prettyPlot.plotting import plt, pretty_labels, pretty_legend
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def label_conv(input_string):

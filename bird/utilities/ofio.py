@@ -1,10 +1,9 @@
-import logging
 import os
 import re
 
 import numpy as np
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def _read_mesh(filename: str) -> np.ndarray:

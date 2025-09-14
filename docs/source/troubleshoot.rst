@@ -9,8 +9,8 @@ At the top of your script
 
 .. code-block:: python
 
-   from bird.logging_config import setup_logging
-   setup_logging(level="DEBUG")
+   from bird import logger
+   logger.setLevel(level="DEBUG")
 
 
 Unrecognized drag and mass transfer model
