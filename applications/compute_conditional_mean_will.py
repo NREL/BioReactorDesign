@@ -3,6 +3,7 @@ import os
 import numpy as np
 
 from bird import logger
+from bird.postprocess.post_quantities import _get_ind_slice
 from bird.utilities.mathtools import conditional_average
 from bird.utilities.ofio import get_case_times, read_cell_centers, read_field
 
@@ -14,6 +15,7 @@ from pathlib import Path
 def height2str(height: float) -> str:
     """
     Convert height value to a str
+    This is used as a key to access specific height info from dicts
     """
     return f"{height:.2g}"
 
@@ -23,6 +25,7 @@ def compute_radius_field(
 ) -> np.ndarray:
     """
     Compute radius from cell centres. The radius goes negative to make it look like brooks and chen
+    You might want to review this
     """
     if vert_ind == 0:
         radius = np.sqrt(cell_centers[:, 1] ** 2 + cell_centers[:, 2] ** 2)
@@ -43,43 +46,19 @@ def compute_radius_field(
 
 
 def get_heights_ind(
+    case_folder: str,
     heights: list[float],
-    cell_centers: np.ndarray,
     vert_ind: int,
-    tolerance=None,
 ) -> list[np.ndarray]:
     """
     get the cell center indexes that correspond to the height you care about
+    Uses the bird _get_ind_slice function looped over all the heights you want
     """
-
-    if tolerance is None:
-        A = np.unique(cell_centers[:, vert_ind])
-        n_vert = len(A)
-        amp_vert = A.max() - A.min()
-        tolerance = 2 * amp_vert / (n_vert)
-        logger.warning(
-            f"Tolerance for conditional height not set, assuming {tolerance:.2g}"
-        )
-
     ind_heights = {}
     for height in heights:
-        if height < A.min() or height > A.max():
-            raise ValueError(
-                f"Height {height} is outside the mesh bounds [{A.min()}, {A.max()}]"
-            )
-
-        ind_heights[height2str(height)] = np.argwhere(
-            abs(cell_centers[:, vert_ind] - height) <= tolerance
+        ind_heights[height2str(height)], _ = _get_ind_slice(
+            case_folder, location=height, direction=vert_ind
         )
-        n_cells_height = len(ind_heights[height2str(height)])
-        logger.debug(
-            f"found {n_cells_height} cells around height {height2str(height)}"
-        )
-        if n_cells_height == 0:
-            raise ValueError(
-                f"No cell found for height {height2str(height)}, increase tolerance or check if height {height2str(height)} is valid"
-            )
-
     return ind_heights
 
 
@@ -111,7 +90,6 @@ def radial_mean(
 
     # Get cell centers
     cell_centers, _ = read_cell_centers(case_folder)
-    nCells = len(cell_centers)
     window_ave = min(window_ave, len(time_str_sorted))
 
     # Get the cell indices that correspond to the height you care about
@@ -122,10 +100,9 @@ def radial_mean(
             logger.warning(msg)
             vert_ind = 1
         ind_heights = get_heights_ind(
+            case_folder=case_folder,
             heights=heights,
-            cell_centers=cell_centers,
             vert_ind=vert_ind,
-            tolerance=None,
         )
 
     # Create a radius field (to condition against)
@@ -153,12 +130,10 @@ def radial_mean(
                 os.path.join(case_folder, time_folder, field_name)
             )
 
-        # Read
+        # Read all the fields you want
         for filename, field_name in zip(field_file, field_names):
             val_dict = {}
-            field_tmp, _ = read_field(
-                case_folder, time_folder, field_name, n_cells=nCells
-            )
+            field_tmp, _ = read_field(case_folder, time_folder, field_name)
             if len(field_tmp.shape) == 2 and field_tmp.shape[1] == 3:
                 # You read a velocity I'm assuming you need the axial one
                 field_tmp = field_tmp[:, vert_ind]
@@ -178,7 +153,7 @@ def radial_mean(
                         radius[inds], field_tmp[inds], nbins=n_bins
                     )
 
-            # Do window averaging
+            # Do window averaging (accumulate window averaged quantity into fields_conds)
             if i_ave == 0:
                 if heights is None:
                     fields_conds[field_name]["val"] = (
@@ -260,6 +235,7 @@ if __name__ == "__main__":
     )
 
     # plot
+    # use logger level info to avoid annoying debug messages from matlplotlib
     logger.setLevel("INFO")
     make_plot(
         fields_cond=fields_cond,

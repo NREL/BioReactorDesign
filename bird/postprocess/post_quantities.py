@@ -171,28 +171,30 @@ def _get_ind_gas(
     return ind_gas, field_dict
 
 
-def _get_ind_height(
-    height: float,
+def _get_ind_slice(
     case_folder: str,
+    location: float,
     direction: int | None = None,
     tolerance: float | None = None,
     cell_centers_file: str | None = None,
     field_dict: dict = {},
 ) -> tuple[np.ndarray | float, dict]:
     """
-    Get indices of pure gas cells (where alpha.liquid <= 0.5)
+    Get indices of cells along a slice given by a direction and a location
 
     Parameters
     ----------
-    height: float
-        Axial location where to pick the cells
     case_folder: str
         Path to case folder
-    direction :  int | None
+    location: float
+        Axial location where to pick the cells
+        If outside mesh bounds, will raise an error
+    direction :  int
         Direction along which to calculate the superficial velocity.
+        Must be in [0, 1, 2].
         If None, assume y direction
     tolerance : float
-        Include cells where height is in [height - tolerance , height + tolerance].
+        Include cells where location is in [location - tolerance , location + tolerance].
         If None, it will be 2 times the axial mesh size
     cell_centers_file : str | None
         Filename of cell center data
@@ -202,13 +204,13 @@ def _get_ind_height(
 
     Returns
     ----------
-    ind_height : np.ndarray
-        indices of cells at the desired height
+    ind_location : np.ndarray
+        indices of cells along the desired slice
     field_dict : dict
         Dictionary of fields read
     """
 
-    if not (f"ind_height_{height:.2g}" in field_dict):
+    if not (f"ind_location_{location:.2g}" in field_dict):
 
         cell_centers, field_dict = read_cell_centers(
             case_folder=case_folder,
@@ -222,53 +224,55 @@ def _get_ind_height(
             )
             direction = 1
 
+        assert direction in [0, 1, 2]
+
         axial_cell_centers = np.sort(np.unique(cell_centers[:, direction]))
         if (
-            height < axial_cell_centers.min()
-            or height > axial_cell_centers.max()
+            location < axial_cell_centers.min()
+            or location > axial_cell_centers.max()
         ):
             raise ValueError(
-                f"Height {height:.2g} outside the mesh [{axial_cell_centers.min()}, {axial_cell_centers.max()}]"
+                f"Location {location:.2g} outside the mesh [{axial_cell_centers.min()}, {axial_cell_centers.max()}]"
             )
 
         if tolerance is None:
-            ind_height_unique = np.argmin(abs(axial_cell_centers - height))
-            if ind_height_unique == 0:
+            ind_location_unique = np.argmin(abs(axial_cell_centers - location))
+            if ind_location_unique == 0:
                 tolerance = 2 * (axial_cell_centers[1] - axial_cell_centers[0])
-            elif ind_height_unique == len(axial_cell_centers) - 1:
+            elif ind_location_unique == len(axial_cell_centers) - 1:
                 tolerance = 2 * (
                     axial_cell_centers[-1] - axial_cell_centers[-2]
                 )
             else:
                 tolerance = (
-                    axial_cell_centers[ind_height_unique + 1]
-                    - axial_cell_centers[ind_height_unique - 1]
+                    axial_cell_centers[ind_location_unique + 1]
+                    - axial_cell_centers[ind_location_unique - 1]
                 )
             logger.debug(
-                f"Tolerance for conditional height not set, assuming {tolerance:.2g}"
+                f"Tolerance for slice location not set, assuming {tolerance:.2g}"
             )
 
         # Do the actual filtering
-        ind_height = np.argwhere(
-            abs(cell_centers[:, direction] - height) <= tolerance
+        ind_location = np.argwhere(
+            abs(cell_centers[:, direction] - location) <= tolerance
         )
 
-        n_cells_height = len(ind_height)
+        n_cells_location = len(ind_location)
 
-        if n_cells_height == 0:
+        if n_cells_location == 0:
             raise ValueError(
-                f"No cell found for height {height:.2g}, increase tolerance or check if height {height:.2g} is valid"
+                f"No cell found for location {location:.2g}, increase tolerance or check if location {location:.2g} is valid"
             )
 
         logger.debug(
-            f"Found {n_cells_height} cells around height {height:.2g}"
+            f"Found {n_cells_location} cells around location {location:.2g}"
         )
-        field_dict[f"ind_height_{height:.2g}"] = ind_height
+        field_dict[f"ind_location_{location:.2g}"] = ind_location
 
     else:
-        ind_height = field_dict[f"ind_height_{height:.2g}"]
+        ind_location = field_dict[f"ind_location_{location:.2g}"]
 
-    return ind_height, field_dict
+    return ind_location, field_dict
 
 
 def compute_gas_holdup(
@@ -439,9 +443,9 @@ def compute_superficial_gas_velocity(
         min_dir = np.amin(cell_centers[ind_liq, direction])
         height = (max_dir + min_dir) / 2
 
-    ind_middle, field_dict = _get_ind_height(
-        height=height,
+    ind_middle, field_dict = _get_ind_slice(
         case_folder=case_folder,
+        location=height,
         direction=direction,
         field_dict=field_dict,
     )
