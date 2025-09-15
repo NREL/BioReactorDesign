@@ -41,5 +41,4 @@ BIRD_INV_DIR = os.path.join(BIRD_DIR, "inverse_modeling")
 
 from bird.logging_config import setup_logging
 
-setup_logging(level="INFO")
-# setup_logging(level="DEBUG")
+logger = setup_logging(level="INFO")

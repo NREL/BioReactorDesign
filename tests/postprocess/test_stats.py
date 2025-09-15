@@ -1,12 +1,10 @@
-import logging
 import os
 
 import numpy as np
 import pytest
 
+from bird import logger
 from bird.postprocess.stats import calc_mean
-
-logger = logging.getLogger(__name__)
 
 
 def test_mean_stats_uniform():

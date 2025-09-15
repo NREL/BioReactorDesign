@@ -1,9 +1,8 @@
-import logging
 import sys
 
 import numpy as np
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def _check1D(signal: np.ndarray):

@@ -1,4 +1,3 @@
-import logging
 import os
 import random
 
@@ -8,14 +7,13 @@ import pandas as pd
 from prettyPlot.plotting import *
 from sklearn.preprocessing import OneHotEncoder
 
+from bird import logger
 from bird.postprocess.SA_optimization.surrogate import (
     Surrogate_wrapper,
     tune_nn,
     tune_rbf,
     tune_rf,
 )
-
-logger = logging.getLogger(__name__)
 
 
 def simulated_annealing_surrogate(

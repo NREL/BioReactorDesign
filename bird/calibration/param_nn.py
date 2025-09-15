@@ -1,5 +1,4 @@
 import argparse
-import logging
 import os
 import time
 
@@ -13,7 +12,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from tensorflow.keras import initializers, layers, optimizers, regularizers
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 def flexible_activation(x, activation):

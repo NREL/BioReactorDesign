@@ -1,13 +1,12 @@
-import logging
 import os
 import re
 
 import numpy as np
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
-def readMesh(filename: str) -> np.ndarray:
+def _read_mesh(filename: str) -> np.ndarray:
     """
     Reads cell center location from meshCellCentres_X.obj
 
@@ -28,7 +27,7 @@ def readMesh(filename: str) -> np.ndarray:
     return cell_centers
 
 
-def ofvec2arr(vec: str) -> np.ndarray:
+def _ofvec2arr(vec: str) -> np.ndarray:
     """
     Converts a vector written as a string into a numpy array
 
@@ -54,7 +53,7 @@ def ofvec2arr(vec: str) -> np.ndarray:
     return vec_array
 
 
-def is_comment(line: str) -> bool:
+def _is_comment(line: str) -> bool:
     """
     Checks if line is a comment
 
@@ -79,7 +78,7 @@ def is_comment(line: str) -> bool:
     return is_comment
 
 
-def read_meta_data(filename: str, mode: str | None = None) -> dict:
+def _read_meta_data(filename: str, mode: str | None = None) -> dict:
     """
     Read meta data from field outputted by OpenFOAM in ASCII format
 
@@ -115,17 +114,19 @@ def read_meta_data(filename: str, mode: str | None = None) -> dict:
         iline = 0
         while not header_done:
             line = f.readline()
-            if not is_comment(line):
+            if not _is_comment(line):
                 # Get field type
                 if (line.strip().startswith("class")) and (";" in line):
                     sline = line.strip().split()
                     field_type = sline[1][:-1]
-                    if field_type == "volVectorField":
+                    if field_type.lower() == "volvectorfield":
                         field_type = "vector"
-                    elif field_type == "volScalarField":
+                    elif field_type.lower() == "volscalarfield":
                         field_type = "scalar"
                     else:
-                        raise NotImplementedError
+                        err_msg = f"Field type {field_type} not recognized"
+                        err_msg = "Only 'volVectorField' and 'volScalarField' are supported"
+                        raise NotImplementedError(err_msg)
                     if mode is not None:
                         assert field_type == mode
                     meta_data["type"] = field_type
@@ -144,7 +145,7 @@ def read_meta_data(filename: str, mode: str | None = None) -> dict:
                         comment = True
                         while comment:
                             count_line = f.readline().strip()
-                            if not is_comment(count_line):
+                            if not _is_comment(count_line):
                                 comment = False
                         try:
                             n_cells = int(count_line)
@@ -156,20 +157,20 @@ def read_meta_data(filename: str, mode: str | None = None) -> dict:
                             )
                     elif "uniform" in line:
                         meta_data["uniform"] = True
-                        if meta_data["type"] == "scalar":
+                        if meta_data["type"].lower() == "scalar":
                             sline = line.split()
                             unif_value = float(sline[-1].strip(";"))
-                        elif meta_data["type"] == "vector":
+                        elif meta_data["type"].lower() == "vector":
                             sline = line.split()
                             for ientry, entry in enumerate(sline):
                                 if ";" in entry:
                                     ind_end = ientry
                                     break
                             line_cropped = " ".join(sline[2 : ientry + 1])
-                            unif_value = ofvec2arr(line_cropped.strip(";"))
+                            unif_value = _ofvec2arr(line_cropped.strip(";"))
                         else:
                             raise NotImplementedError(
-                                f"Mode {mode} is unknown"
+                                f"Mode {mode} is unknown (must be 'scalar', 'vector' or None)"
                             )
                         meta_data["uniform_value"] = unif_value
                         header_done = True
@@ -182,7 +183,7 @@ def read_meta_data(filename: str, mode: str | None = None) -> dict:
     return meta_data
 
 
-def readOFScal(
+def _readOFScal(
     filename: str,
     n_cells: int | None = None,
     n_header: int | None = None,
@@ -223,7 +224,7 @@ def readOFScal(
 
     if meta_data is None:
         # Read meta data
-        meta_data = read_meta_data(filename, mode="scalar")
+        meta_data = _read_meta_data(filename, mode="scalar")
 
     # Set field
     if meta_data["uniform"]:
@@ -272,7 +273,7 @@ def readOFScal(
     }
 
 
-def readOFVec(
+def _readOFVec(
     filename: str,
     n_cells: int | None = None,
     n_header: int | None = None,
@@ -313,7 +314,7 @@ def readOFVec(
 
     if meta_data is None:
         # Read meta data
-        meta_data = read_meta_data(filename, mode="vector")
+        meta_data = _read_meta_data(filename, mode="vector")
 
     # Set field
     if meta_data["uniform"]:
@@ -367,7 +368,7 @@ def readOFVec(
     }
 
 
-def readOF(
+def _readOF(
     filename: str,
     n_cells: int | None = None,
     n_header: int | None = None,
@@ -407,11 +408,55 @@ def readOF(
     """
     if meta_data is None:
         # Read meta data
-        meta_data = read_meta_data(filename)
+        meta_data = _read_meta_data(filename)
     if meta_data["type"] == "scalar":
-        return readOFScal(filename=filename, meta_data=meta_data)
+        return _readOFScal(filename=filename, meta_data=meta_data)
     if meta_data["type"] == "vector":
-        return readOFVec(filename=filename, meta_data=meta_data)
+        return _readOFVec(filename=filename, meta_data=meta_data)
+
+
+def read_field(
+    case_folder: str,
+    time_folder: str,
+    field_name: str,
+    n_cells: int | None = None,
+    field_dict: dict = {},
+) -> tuple[np.ndarray | float, dict]:
+    """
+    Read field at a given time and store it in dictionary for later reuse
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str
+        Name of time folder to analyze
+    field_name: str
+        Name of the field file to read
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    field : np.ndarray | float
+        Field read
+    field_dict : dict
+        Dictionary of fields read
+    """
+
+    if not (field_name in field_dict) or field_dict[field_name] is None:
+        # Read field if it had not been read before
+        field_file = os.path.join(case_folder, time_folder, field_name)
+        field = _readOF(field_file, n_cells=n_cells)["field"]
+        field_dict[field_name] = field
+    else:
+        # Get field from dict if it has been read before
+        field = field_dict[field_name]
+
+    return field, field_dict
 
 
 def readSizeGroups(file):
@@ -457,15 +502,15 @@ def readSizeGroups(file):
     return sizeGroup, binGroup
 
 
-def getCaseTimes(
-    casePath: str, remove_zero: bool = False
+def get_case_times(
+    case_folder: str, remove_zero: bool = False
 ) -> tuple[list[float], list[str]]:
     """
     Get list of all time folders from an OpenFOAM case
 
     Parameters
     ----------
-    casePath: str
+    case_folder: str
         Path to case folder
     remove_zero : bool
         Whether to remove zero from the time folder list
@@ -479,7 +524,7 @@ def getCaseTimes(
 
     """
     # Read Time
-    times_tmp = os.listdir(casePath)
+    times_tmp = os.listdir(case_folder)
     # remove non floats
     for i, entry in reversed(list(enumerate(times_tmp))):
         try:
@@ -500,29 +545,59 @@ def getCaseTimes(
     return time_float_sorted, time_str_sorted
 
 
-def getMeshTime(casePath: str) -> str:
+def _get_mesh_time(case_folder: str) -> str | None:
     """
     Get the time at which the mesh was printed
 
     Parameters
     ----------
-    casePath: str
+    case_folder: str
         Path to case folder
 
     Returns
     ----------
-    time_mesh: str
-        The name of the time at which "meshFaceCentresXXX" was created
+    time_mesh: str | None
+        The name of the time at which "meshCellCentresXXX" was created
+        If None, nothing was found
     """
 
-    files_tmp = os.listdir(casePath)
+    files_tmp = os.listdir(case_folder)
+    time_mesh = None
     for entry in files_tmp:
         if "meshCellCentres" in entry:
             time_mesh = entry[16:-4]
-            return time_mesh
+
+    return time_mesh
 
 
-def remove_comments(text: str) -> str:
+def _get_volume_time(case_folder: str) -> str | None:
+    """
+    Get the time at which the volume was printed
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+
+    Returns
+    ----------
+    time_volume: str | None
+        The name of the time at which "V" was created
+        If None, nothing was found
+    """
+
+    time_float, time_str = get_case_times(case_folder)
+    time_volume = None
+    for entry in time_str:
+        if os.path.exists(os.path.join(case_folder, entry, "V")):
+            logger.debug(f"Volume time found to be {entry}")
+            time_volume = entry
+            break
+
+    return time_volume
+
+
+def _remove_comments(text: str) -> str:
     """
     Remove C++-style comments (// and /*) from the input and markers like #{ #}
 
@@ -550,7 +625,7 @@ def remove_comments(text: str) -> str:
     return text
 
 
-def tokenize(text: str) -> list[str]:
+def _tokenize(text: str) -> list[str]:
     """
     Add spaces around special characters (brace and semicolons) to make them separate tokens
 
@@ -559,7 +634,7 @@ def tokenize(text: str) -> list[str]:
     text: str
         The cleaned (comment-free) OpenFOAM-style text.
 
-    Returns:
+    Returns
     ----------
     token_list: list[str]
         List of tokens.
@@ -575,7 +650,7 @@ def tokenize(text: str) -> list[str]:
     return token_list
 
 
-def parse_tokens(tokens: list[str]) -> dict:
+def _parse_tokens(tokens: list[str]) -> dict:
     """
     Parse OpenFOAM tokens into a nested Python dictionary.
     Special handling for `code { ... }` blocks to be stored as raw strings.
@@ -583,7 +658,7 @@ def parse_tokens(tokens: list[str]) -> dict:
     Parameters
     ----------
     tokens: list[str]
-        A list of tokens produced by `tokenize`.
+        A list of tokens produced by `_tokenize`.
 
     Returns
     ----------
@@ -693,9 +768,9 @@ def read_openfoam_dict(filename: str) -> dict:
     """
     with open(filename, "r+") as f:
         text = f.read()
-    text = remove_comments(text)
-    tokens = tokenize(text)
-    foam_dict = parse_tokens(tokens)
+    text = _remove_comments(text)
+    tokens = _tokenize(text)
+    foam_dict = _parse_tokens(tokens)
     return foam_dict
 
 
@@ -762,3 +837,124 @@ def write_openfoam_dict(data: dict, filename: str, indent: int = 0) -> None:
         f.write(
             "// ************************************************************************* //\n"
         )
+
+
+def read_cell_centers(
+    case_folder: str,
+    cell_centers_file: str | None = None,
+    field_dict: dict = {},
+) -> tuple[np.ndarray, dict]:
+    """
+    Read field of cell centers and store it in dictionary for later reuse
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    cell_centers_file : str
+        Filename of cell center data
+        If None, find the cell center file automoatically
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    cell_centers : np.ndarray
+        cell centers read from file
+    field_dict : dict
+        Dictionary of fields read
+    """
+
+    if (
+        not ("cell_centers" in field_dict)
+        or field_dict["cell_centers"] is None
+    ):
+        if cell_centers_file is None:
+            # try to find the mesh time
+            mesh_time = _get_mesh_time(case_folder)
+            if mesh_time is not None:
+                cell_centers_file = f"meshCellCentres_{mesh_time}.obj"
+
+        try:
+            cell_centers = _read_mesh(
+                os.path.join(case_folder, cell_centers_file)
+            )
+            field_dict["cell_centers"] = cell_centers
+
+        except FileNotFoundError:
+
+            error_msg = f"Could not find {cell_centers_file}"
+            error_msg += "You can generate it with\n\t"
+            error_msg += f"`writeMeshObj -case {case_folder}`\n"
+            time_float, time_str = get_case_times(case_folder)
+            correct_path = f"meshCellCentres_{time_str[0]}.obj"
+            if not correct_path == cell_centers_file:
+                error_msg += (
+                    f"And adjust the cell center file path to {correct_path}"
+                )
+            logger.error(error_msg)
+            raise FileNotFoundError(error_msg)
+    else:
+        cell_centers = field_dict["cell_centers"]
+
+    return cell_centers, field_dict
+
+
+def read_cell_volumes(
+    case_folder: str,
+    time_folder: str | None = None,
+    n_cells: int | None = None,
+    field_dict: dict = {},
+) -> tuple[np.ndarray | float, dict]:
+    """
+    Read volume at a given time and store it in dictionary for later reuse
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str | None
+        Name of time folder to analyze.
+        If None, it will be found automatically
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    cell_volumes : np.ndarray | float
+        Field of cell volumes
+    field_dict : dict
+        Dictionary of fields read
+    """
+
+    kwargs_vol = {
+        "case_folder": case_folder,
+        "time_folder": time_folder,
+        "n_cells": n_cells,
+    }
+
+    if not ("V" in field_dict) or field_dict["V"] is None:
+        if time_folder is None:
+            # Find the time at which the volume was printed
+            time_folder = _get_volume_time(case_folder)
+            kwargs_vol["time_folder"] = time_folder
+        try:
+            cell_volumes, field_dict = read_field(
+                field_name="V", field_dict=field_dict, **kwargs_vol
+            )
+
+        except FileNotFoundError:
+            error_msg = f"Could not find {os.path.join(case_folder, time_folder, 'V')}\n"
+            time_float, time_str = get_case_times(case_folder)
+            error_msg += "You can generate V with\n\t"
+            error_msg += f"`postProcess -func writeCellVolumes -time {time_str[0]} -case {case_folder}`"
+            logger.error(error_msg)
+            raise FileNotFoundError(error_msg)
+    else:
+        # Get field from dict if it has been read before
+        cell_volumes = field_dict["V"]
+
+    return cell_volumes, field_dict

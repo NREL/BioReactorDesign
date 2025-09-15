@@ -1,6 +1,17 @@
 Troubleshoot
 =====
 
+Activate debug logs
+------------
+
+When troubleshooting issues in BiRD, we recommend making sure to switch the log level to ``DEBUG``
+At the top of your script
+
+.. code-block:: python
+
+   from bird import logger
+   logger.setLevel(level="DEBUG")
+
 
 Unrecognized drag and mass transfer model
 ------------

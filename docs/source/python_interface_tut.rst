@@ -27,8 +27,14 @@ To read the cells centers
 
 .. code-block:: python
 
+   # Set case folder
+   from pathlib import Path
+   case_folder = os.path.join(
+       Path(__file__).parent,
+   )
+
    from bird.utilities.ofio import *   
-   cell_centers = readMesh("meshCellCentres_1.obj") 
+   cell_centers = read_cell_centers(case_folder=case_folder)
 
 ``cell_centers`` is a :math:`(N,3)` numpy array that contains the cell center coordinates (:math:`N` is the number of cells in the domain)
 
@@ -37,14 +43,14 @@ If we want to read the gas volume fraction ``alpha.gas``, the mass fraction of C
 
 .. code-block:: python
 
-   co2_gas = readOF("80/CO2.gas")
-   alpha_gas = readOF("80/alpha.gas")
-   u_liq = readOF("80/U.liquid")
-   print("cell CO2 gas shape = ", co2_gas["field"].shape)
-   print("cell alpha gas shape = ", alpha_gas["field"].shape)
-   print("cell u liq shape = ", u_liq["field"].shape)
+   co2_gas, _ = read_field(case_folder, "80", field_name="CO2.gas")
+   alpha_gas, _ = read_field(case_folder, "80", field_name="alpha.gas")
+   u_liq, _ = read_field(case_folder, "80", field_name="U.liquid")
+   print("cell CO2 gas shape = ", co2_gas.shape)
+   print("cell alpha gas shape = ", alpha_gas.shape)
+   print("cell u liq shape = ", u_liq.shape)
 
-The function ``readOF`` generates a dictionary of values and automatically detects whether the field is a vector or a scalar field.
+The function ``read_field`` automatically detects whether the field is a vector or a scalar field.
 
 
 
@@ -58,10 +64,10 @@ With cells center locations and the internal fields, one can use python function
    from bird.utilities.mathtools import conditional_average
 
    y_co2_gas_cond, co2_gas_cond = conditional_average(
-       cell_centers[:, 1], co2_gas["field"], nbins=32
+       cell_centers[:, 1], co2_gas, nbins=32
    )
    y_alpha_gas_cond, alpha_gas_cond = conditional_average(
-       cell_centers[:, 1], alpha_gas["field"], nbins=32
+       cell_centers[:, 1], alpha_gas, nbins=32
    )
    
    from prettyPlot.plotting import *
@@ -106,30 +112,29 @@ Several of these quantities, will require reading and processing the same fields
    from bird.postprocess.post_quantities import *
 
    # Compute Gas hold up
-   kwargs = {"case_folder": ".", "time_folder": "80"}
+   kwargs = {"case_folder": case_folder, "time_folder": "80"}
    gh, field_dict = compute_gas_holdup(
-       volume_time="1", field_dict={"cell_centers": cell_centers}, **kwargs
+       field_dict={"cell_centers": cell_centers}, **kwargs
    )
    print("fields stored = ", list(field_dict.keys()))
    print(f"Gas Holdup = {gh:.4g}")
    
    # Compute superficial velocity
-   sup_vel, field_dict = compute_superficial_velocity(
-       volume_time="1", field_dict=field_dict, **kwargs
+   sup_vel, field_dict = compute_superficial_gas_velocity(
+       field_dict=field_dict, **kwargs
    )
    print("fields stored = ", list(field_dict.keys()))
    print(f"Superficial velocity = {sup_vel:.4g} m/s")
    
    # Compute reactor-averaged CO2 mass fraction
    y_ave_co2, field_dict = compute_ave_y_liq(
-       volume_time="1", spec_name="CO2", field_dict=field_dict, **kwargs
+       spec_name="CO2", field_dict=field_dict, **kwargs
    )
    print("fields stored = ", list(field_dict.keys()))
    print(f"Reactor averaged YCO2 = {y_ave_co2:.4g}")
    
    # Compute reactor-averaged CO2 concentration
    c_ave_co2, field_dict = compute_ave_conc_liq(
-       volume_time="1",
        spec_name="CO2",
        mol_weight=0.04401,
        rho_val=1000,
@@ -141,7 +146,7 @@ Several of these quantities, will require reading and processing the same fields
    
    # Compute reactor-averaged bubble diameter
    diam, field_dict = compute_ave_bubble_diam(
-       volume_time="1", field_dict=field_dict, **kwargs
+       field_dict=field_dict, **kwargs
    )
    print("fields stored = ", list(field_dict.keys()))
    print(f"Reactor averaged bubble diameter = {diam:.4g} m")
@@ -153,15 +158,15 @@ This should generate the following
 
 .. code-block:: console
 
-   fields stored =  ['cell_centers', 'alpha.liquid', 'V']
-   Gas Holdup = 0.3041
-   fields stored =  ['cell_centers', 'alpha.liquid', 'V', 'alpha.gas', 'U.gas']
-   Superficial velocity = 0.08241 m/s
-   fields stored =  ['cell_centers', 'alpha.liquid', 'V', 'alpha.gas', 'U.gas', 'CO2.liquid', 'ind_liq']
+   fields stored =  ['cell_centers', 'alpha.liquid', 'ind_liq', 'V']
+   Gas Holdup = 0.2401
+   fields stored =  ['cell_centers', 'alpha.liquid', 'ind_liq', 'V', 'alpha.gas', 'U.gas', 'ind_height_4.6']
+   Superficial velocity = 0.07774 m/s
+   fields stored =  ['cell_centers', 'alpha.liquid', 'ind_liq', 'V', 'alpha.gas', 'U.gas', 'ind_height_4.6', 'CO2.liquid']
    Reactor averaged YCO2 = 0.0002948
-   fields stored =  ['cell_centers', 'alpha.liquid', 'V', 'alpha.gas', 'U.gas', 'CO2.liquid', 'ind_liq', 'rho_liq']
+   fields stored =  ['cell_centers', 'alpha.liquid', 'ind_liq', 'V', 'alpha.gas', 'U.gas', 'ind_height_4.6', 'CO2.liquid', 'rho_liq']
    Reactor averaged [CO2] = 6.698 mol/m3
-   fields stored =  ['cell_centers', 'alpha.liquid', 'V', 'alpha.gas', 'U.gas', 'CO2.liquid', 'ind_liq', 'rho_liq', 'd.gas']
+   fields stored =  ['cell_centers', 'alpha.liquid', 'ind_liq', 'V', 'alpha.gas', 'U.gas', 'ind_height_4.6', 'CO2.liquid', 'rho_liq', 'd.gas']
    Reactor averaged bubble diameter = 0.008497 m
 
 

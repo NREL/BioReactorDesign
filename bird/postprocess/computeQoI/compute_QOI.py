@@ -75,14 +75,11 @@ parser.add_argument(
 args = parser.parse_args()
 
 
-case_path = args.caseFolder
+case_folder = args.caseFolder
 var_name_list = args.var_list
-time_float_sorted, time_str_sorted = getCaseTimes(case_path)
-mesh_time_str = getMeshTime(case_path)
-cellCentres = readMesh(
-    os.path.join(case_path, f"meshCellCentres_{mesh_time_str}.obj")
-)
-nCells = len(cellCentres)
+time_float_sorted, time_str_sorted = get_case_times(case_folder)
+cell_centers, _ = read_cell_centers(case_folder)
+nCells = len(cell_centers)
 diff_val_list = args.diff_val_list
 diff_name_list = args.diff_name_list
 assert len(diff_val_list) == len(diff_name_list)
@@ -98,80 +95,68 @@ for name in var_name_list:
     variables_conv[name]["y"] = []
 
 
-def get_var(
-    case_path, time_folder, mesh_time_str, cellCentres, nCells, val_dict, name
-):
-    localFolder = os.path.join(case_path, time_folder)
-    localFolder_vol = os.path.join(case_path, mesh_time_str)
+def get_var(case_folder, time_folder, cell_centers, nCells, val_dict, name):
     if name.lower() == "gh":
         var, val_dict = compute_gas_holdup(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
-            volume_time="0",
             field_dict=val_dict,
         )
     elif name.lower() == "d":
         var, val_dict = compute_ave_bubble_diam(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
-            volume_time="0",
             field_dict=val_dict,
         )
     elif name.lower() == "co2_liq":
         var, val_dict = compute_ave_y_liq(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
-            volume_time="0",
             spec_name="CO2",
             field_dict=val_dict,
         )
     elif name.lower() == "co_liq":
         var, val_dict = compute_ave_y_liq(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
-            volume_time="0",
             spec_name="CO",
             field_dict=val_dict,
         )
     elif name.lower() == "h2_liq":
         var, val_dict = compute_ave_y_liq(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
-            volume_time="0",
             spec_name="H2",
             field_dict=val_dict,
         )
     elif name.lower() == "c_co2_liq":
         var, val_dict = compute_ave_conc_liq(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
-            volume_time="0",
             spec_name="CO2",
             mol_weight=44.00995 * 1e-3,
             field_dict=val_dict,
         )
     elif name.lower() == "c_co_liq":
         var, val_dict = compute_ave_conc_liq(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
-            volume_time="0",
             spec_name="CO",
             mol_weight=28.01055 * 1e-3,
             field_dict=val_dict,
         )
     elif name.lower() == "c_h2_liq":
         var, val_dict = compute_ave_conc_liq(
-            case_path,
+            case_folder,
             time_folder,
             nCells,
-            volume_time="0",
             spec_name="H2",
             mol_weight=2.01594 * 1e-3,
             field_dict=val_dict,
@@ -182,7 +167,7 @@ def get_var(
     return var, val_dict
 
 
-print(f"Case : {case_path}")
+print(f"Case : {case_folder}")
 
 print(f"Window Ave")
 for i_ave in range(window_ave):
@@ -192,10 +177,9 @@ for i_ave in range(window_ave):
     val_dict = {}
     for name in var_name_list:
         var, val_dict = get_var(
-            case_path,
+            case_folder,
             time_folder,
-            mesh_time_str,
-            cellCentres,
+            cell_centers,
             nCells,
             val_dict=val_dict,
             name=name,
@@ -215,10 +199,9 @@ for i_conv in range(window_conv):
     val_dict = {}
     for name in var_name_list:
         var, val_dict = get_var(
-            case_path,
+            case_folder,
             time_folder,
-            mesh_time_str,
-            cellCentres,
+            cell_centers,
             nCells,
             val_dict=val_dict,
             name=name,
@@ -227,7 +210,7 @@ for i_conv in range(window_conv):
         variables_conv[name]["y"] += [var]
 
 
-with open(os.path.join(case_path, "qoi.pkl"), "wb") as f:
+with open(os.path.join(case_folder, "qoi.pkl"), "wb") as f:
     pickle.dump(variables, f)
-with open(os.path.join(case_path, "qoi_conv.pkl"), "wb") as f:
+with open(os.path.join(case_folder, "qoi_conv.pkl"), "wb") as f:
     pickle.dump(variables_conv, f)

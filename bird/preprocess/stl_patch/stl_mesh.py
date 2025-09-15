@@ -1,10 +1,8 @@
-import logging
-
 import numpy as np
 import stl
 from scipy.spatial import Delaunay
 
-logger = logging.getLogger(__name__)
+from bird import logger
 
 
 class STLMesh:

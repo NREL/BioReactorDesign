@@ -4,22 +4,6 @@ bird.utilities package
 Submodules
 ----------
 
-bird.utilities.folderManagement module
---------------------------------------
-
-.. automodule:: bird.utilities.folderManagement
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bird.utilities.label\_plot module
----------------------------------
-
-.. automodule:: bird.utilities.label_plot
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 bird.utilities.mathtools module
 -------------------------------
 
@@ -52,10 +36,3 @@ bird.utilities.stl\_plotting module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: bird.utilities
-   :members:
-   :undoc-members:
-   :show-inheritance:

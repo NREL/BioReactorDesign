@@ -1,14 +1,11 @@
-import logging
 import os
 import pickle
 import shutil
 
 import numpy as np
 
-from bird import BIRD_CASE_DIR
+from bird import BIRD_CASE_DIR, logger
 from bird.preprocess.json_gen.design_io import *
-
-logger = logging.getLogger(__name__)
 
 
 def id2simfolder(sim_id: int) -> str:
