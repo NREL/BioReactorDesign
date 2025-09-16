@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 
 from prettyPlot.plotting import plt, pretty_labels
@@ -38,6 +39,7 @@ def test_compute_gh():
         case_folder=case_folder, n_cells=n_cells, time_folder=time_folder
     )
 
+    # Results need to be exactly the same
     assert abs(gh1 - gh) < 1e-12
     assert abs(gh2 - gh) < 1e-12
 
@@ -74,6 +76,7 @@ def test_compute_diam():
         case_folder=case_folder, n_cells=n_cells, time_folder=time_folder
     )
 
+    # Results need to be exactly the same
     assert abs(diam1 - diam) < 1e-12
     assert abs(diam2 - diam) < 1e-12
 
@@ -114,16 +117,33 @@ def test_compute_superficial_gas_velocity():
         time_folder=time_folder,
         direction=1,
     )
+
+    # Results need to be exactly the same
+    assert abs(sup_vel1 - sup_vel) < 1e-12
+    assert abs(sup_vel2 - sup_vel) < 1e-12
+
+    # Do the calculation with paraview
     sup_vel3, _ = compute_superficial_gas_velocity(
         case_folder=case_folder,
         time_folder=time_folder,
         direction=1,
         use_pv=True,
     )
-
-    assert abs(sup_vel1 - sup_vel) < 1e-12
-    assert abs(sup_vel2 - sup_vel) < 1e-12
+    # Make sure different methods agree with less than 1% error
     assert abs((sup_vel3 - sup_vel2) / sup_vel2) < 0.01
+
+    # Make sure that we don't use paraview if not possible
+    polyMesh_dir = os.path.join(case_folder, "constant", "polyMesh")
+    shutil.move(os.path.join(polyMesh_dir, "faces"), ".")
+    sup_vel4, _ = compute_superficial_gas_velocity(
+        case_folder=case_folder,
+        time_folder=time_folder,
+        direction=1,
+        use_pv=True,
+    )
+    # Results need to be exactly the same
+    assert abs(sup_vel4 - sup_vel) < 1e-12
+    shutil.move("faces", polyMesh_dir)
 
 
 def test_ave_y_liq():
@@ -168,6 +188,7 @@ def test_ave_y_liq():
         spec_name="H2",
     )
 
+    # Results need to be exactly the same
     assert abs(ave_y_h21 - ave_y_h2) < 1e-12
     assert abs(ave_y_h22 - ave_y_h2) < 1e-12
 
@@ -226,6 +247,7 @@ def test_ave_conc_liq():
         n_cells=n_cells,
     )
 
+    # Results need to be exactly the same
     assert abs(ave_conc_h21 - ave_conc_h2) < 1e-12
     assert abs(ave_conc_h22 - ave_conc_h2) < 1e-12
 
