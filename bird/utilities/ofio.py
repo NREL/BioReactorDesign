@@ -420,7 +420,7 @@ def read_field(
     time_folder: str,
     field_name: str,
     n_cells: int | None = None,
-    field_dict: dict = {},
+    field_dict: dict | None = None,
 ) -> tuple[np.ndarray | float, dict]:
     """
     Read field at a given time and store it in dictionary for later reuse
@@ -436,7 +436,7 @@ def read_field(
     n_cells : int | None
         Number of cells in the domain.
         If None, it will deduced from the field reading
-    field_dict : dict
+    field_dict : dict | None
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
     Returns
@@ -446,7 +446,9 @@ def read_field(
     field_dict : dict
         Dictionary of fields read
     """
-
+    if field_dict is None:
+        field_dict = {}
+ 
     if not (field_name in field_dict) or field_dict[field_name] is None:
         # Read field if it had not been read before
         field_file = os.path.join(case_folder, time_folder, field_name)
@@ -842,7 +844,7 @@ def write_openfoam_dict(data: dict, filename: str, indent: int = 0) -> None:
 def read_cell_centers(
     case_folder: str,
     cell_centers_file: str | None = None,
-    field_dict: dict = {},
+    field_dict: dict | None = None,
 ) -> tuple[np.ndarray, dict]:
     """
     Read field of cell centers and store it in dictionary for later reuse
@@ -854,7 +856,7 @@ def read_cell_centers(
     cell_centers_file : str
         Filename of cell center data
         If None, find the cell center file automoatically
-    field_dict : dict
+    field_dict : dict | None
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
     Returns
@@ -864,6 +866,8 @@ def read_cell_centers(
     field_dict : dict
         Dictionary of fields read
     """
+    if field_dict is None:
+        field_dict = {}
 
     if (
         not ("cell_centers" in field_dict)
@@ -904,7 +908,7 @@ def read_cell_volumes(
     case_folder: str,
     time_folder: str | None = None,
     n_cells: int | None = None,
-    field_dict: dict = {},
+    field_dict: dict | None = None,
 ) -> tuple[np.ndarray | float, dict]:
     """
     Read volume at a given time and store it in dictionary for later reuse
@@ -919,7 +923,7 @@ def read_cell_volumes(
     n_cells : int | None
         Number of cells in the domain.
         If None, it will deduced from the field reading
-    field_dict : dict
+    field_dict : dict | None
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
     Returns
@@ -929,6 +933,8 @@ def read_cell_volumes(
     field_dict : dict
         Dictionary of fields read
     """
+    if field_dict is None:
+        field_dict = {}
 
     kwargs_vol = {
         "case_folder": case_folder,
