@@ -282,16 +282,16 @@ def compute_gas_holdup(
     volume_time: str | None = None,
     field_dict: dict = {},
 ) -> tuple[float, dict]:
-    """
+    r"""
     Calculate volume averaged gas hold up at a given time
 
     .. math::
-       \\frac{1}{V_{\\rm liq, tot}} \int_{V_{\\rm liq}} (1-\\alpha_{\\rm liq}) dV
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} (1-\alpha_{\rm liq}) dV
 
     where:
-      - :math:`V_{\\rm liq, tot}` is the total volume of liquid
-      - :math:`\\alpha_{\\rm liq}` is the liquid phase volume fraction
-      - :math:`V` is the volume of the cells where :math:`\\alpha_{\\rm liq}` is measured
+      - :math:`V_{\rm liq, tot}` is the total volume of liquid
+      - :math:`\alpha_{\rm liq}` is the liquid phase volume fraction
+      - :math:`V` is the volume of the cells where :math:`\alpha_{\rm liq}` is measured
 
     Parameters
     ----------
@@ -356,17 +356,17 @@ def compute_superficial_gas_velocity(
     height: float | None = None,
     field_dict: dict = {},
 ) -> tuple[float, dict]:
-    """
+    r"""
     Calculate superficial gas velocity (in m/s) in a given direction at a given time
 
     .. math::
-       \\frac{1}{V_{\\rm height, tot}} \int_{V_{\\rm height}}  U_{\\rm gas} \\alpha_{\\rm gas} dV
+       \frac{1}{V_{\rm height, tot}} \int_{V_{\rm height}}  U_{\rm gas} \alpha_{\rm gas} dV
 
     where:
-      - :math:`V_{\\rm height, tot}` is the total volume of cells near the axial location considered
-      - :math:`\\alpha_{\\rm gas}` is the gas phase volume fraction
-      - :math:`U_{\\rm gas}` is the gas phase velocity along the axial direction
-      - :math:`V_{\\rm height}` is the local volume of the cells where :math:`U_{\\rm gas} \\alpha_{\\rm gas})` is measured (near the axial location considered)
+      - :math:`V_{\rm height, tot}` is the total volume of cells near the axial location considered
+      - :math:`\alpha_{\rm gas}` is the gas phase volume fraction
+      - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction
+      - :math:`V_{\rm height}` is the local volume of the cells where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered)
 
     Parameters
     ----------
@@ -475,16 +475,16 @@ def compute_ave_y_liq(
     spec_name: str = "CO2",
     field_dict={},
 ) -> tuple[float, dict]:
-    """
+    r"""
     Calculate liquid volume averaged mass fraction of a species at a given time
 
     .. math::
-       \\frac{1}{V_{\\rm liq, tot}} \int_{V_{\\rm liq}} Y dV_{\\rm liq}
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} Y dV_{\rm liq}
 
     where:
-      - :math:`V_{\\rm liq, tot}` is the toal volume of liquid
+      - :math:`V_{\rm liq, tot}` is the toal volume of liquid
       - :math:`Y` is the species mass fraction
-      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`Y` is measured
+      - :math:`V_{\rm liq}` is the volume of liquid where :math:`Y` is measured
 
 
     Parameters
@@ -558,18 +558,18 @@ def compute_ave_conc_liq(
     rho_val: float | None = 1000,
     field_dict={},
 ) -> tuple[float, dict]:
-    """
+    r"""
     Calculate liquid volume averaged concentration of a species at a given time
 
     .. math::
-       \\frac{1}{V_{\\rm liq, tot}} \int_{V_{\\rm liq}} \\rho_{\\rm liq} Y / W dV_{\\rm liq}
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} \rho_{\rm liq} Y / W dV_{\rm liq}
 
     where:
-      - :math:`V_{\\rm liq, tot}` is the toal volume of liquid
-      - :math:`\\rho_{\\rm liq}` is the liquid density
+      - :math:`V_{\rm liq, tot}` is the toal volume of liquid
+      - :math:`\rho_{\rm liq}` is the liquid density
       - :math:`Y` is the species mass fraction
       - :math:`W` is the species molar mass
-      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`Y` is measured
+      - :math:`V_{\rm liq}` is the volume of liquid where :math:`Y` is measured
 
     Parameters
     ----------
@@ -664,17 +664,17 @@ def compute_ave_bubble_diam(
     volume_time: str | None = None,
     field_dict={},
 ) -> tuple[float, dict]:
-    """
+    r"""
     Calculate averaged bubble diameter over the liquid volume
 
     .. math::
 
-       \\frac{1}{V_{\\rm liq, tot}} \\int_{V_{\\rm liq}} d_{\\rm gas} dV
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} d_{\rm gas} dV
 
     where:
-      - :math:`V_{\\rm liq, tot}` is the toal volume of liquid
-      - :math:`d_{\\rm gas}` is the bubble diameter
-      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`d_{\\rm gas}` is measured
+      - :math:`V_{\rm liq, tot}` is the toal volume of liquid
+      - :math:`d_{\rm gas}` is the bubble diameter
+      - :math:`V_{\rm liq}` is the volume of liquid where :math:`d_{\rm gas}` is measured
 
 
     Parameters
