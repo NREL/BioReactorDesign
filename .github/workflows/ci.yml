@@ -129,7 +129,6 @@ jobs:
         python-version: ['3.10']
         os: ['ubuntu-22.04']
     defaults:
-      defaults:
       run:
         shell: bash -l {0}
         working-directory: ${{github.workspace}}
