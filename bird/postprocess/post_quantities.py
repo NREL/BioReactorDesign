@@ -1,10 +1,9 @@
 import numpy as np
+import vtk.numpy_interface.dataset_adapter as dsa
+from paraview import simple as pv
 
 from bird import logger
 from bird.utilities.ofio import *
-from paraview import simple as pv
-import vtk.numpy_interface.dataset_adapter as dsa
-
 
 
 def _field_filter(
@@ -289,7 +288,7 @@ def compute_gas_holdup(
     time_folder: str,
     n_cells: int | None = None,
     volume_time: str | None = None,
-    field_dict: dict | None =None,
+    field_dict: dict | None = None,
 ) -> tuple[float, dict]:
     r"""
     Calculate volume averaged gas hold up at a given time
@@ -435,48 +434,66 @@ def compute_superficial_gas_velocity(
     if direction not in [0, 1, 2]:
         raise ValueError(f"Direction ({direction}) must be in [0, 1, 2]")
 
-
     if use_pv:
         try:
-            assert os.path.isdir(os.path.join(case_folder, "constant", "polyMesh"))
-            assert os.path.isfile(os.path.join(case_folder, "constant", "polyMesh", "points"))
-            assert os.path.isfile(os.path.join(case_folder, "constant", "polyMesh", "faces"))
-            assert os.path.isfile(os.path.join(case_folder, "constant", "polyMesh", "owner"))
-            assert os.path.isfile(os.path.join(case_folder, "constant", "polyMesh", "neighbour"))
-            assert os.path.isfile(os.path.join(case_folder, "constant", "polyMesh", "boundary"))
+            assert os.path.isdir(
+                os.path.join(case_folder, "constant", "polyMesh")
+            )
+            assert os.path.isfile(
+                os.path.join(case_folder, "constant", "polyMesh", "points")
+            )
+            assert os.path.isfile(
+                os.path.join(case_folder, "constant", "polyMesh", "faces")
+            )
+            assert os.path.isfile(
+                os.path.join(case_folder, "constant", "polyMesh", "owner")
+            )
+            assert os.path.isfile(
+                os.path.join(case_folder, "constant", "polyMesh", "neighbour")
+            )
+            assert os.path.isfile(
+                os.path.join(case_folder, "constant", "polyMesh", "boundary")
+            )
         except AssertionError:
-            logger.warning("Using ParaView requires to make a complete polyMesh, will not use ParaView")
+            logger.warning(
+                "Using ParaView requires to make a complete polyMesh, will not use ParaView"
+            )
             use_pv = False
 
     if use_pv:
         logger.debug("Using paraview for superficial velocity calculation")
-        # Clean paraview pipelin
+        # Clean paraview pipeline
         for f in pv.GetSources().values():
             pv.Delete(f)
 
         # Set up openfoam case
-        ofreader = pv.OpenFOAMReader(FileName = case_folder)
-        ofreader.CaseType = 'Reconstructed Case'
+        ofreader = pv.OpenFOAMReader(FileName=case_folder)
+        ofreader.CaseType = "Reconstructed Case"
         t = np.array(ofreader.TimestepValues)
         assert t.size > 0
 
         # Find the time to process
-        time_pv_ind = np.argmin(abs(t-float(time_folder)))
-        assert abs(t[time_pv_ind]-float(time_folder)) < 1e-12
-        pv.UpdatePipeline(time = t[time_pv_ind])
+        time_pv_ind = np.argmin(abs(t - float(time_folder)))
+        assert abs(t[time_pv_ind] - float(time_folder)) < 1e-12
+        pv.UpdatePipeline(time=t[time_pv_ind])
 
         # Get liquid phase field
         logger.warning("Assuming that alpha_liq > 0.5 denotes pure liquid")
-        liquidthreshold = pv.Threshold(Input=ofreader, Scalars=['CELLS', 'alpha.liquid'],\
-                                       LowerThreshold=0.5,UpperThreshold=1.0,ThresholdMethod='Between')
+        liquidthreshold = pv.Threshold(
+            Input=ofreader,
+            Scalars=["CELLS", "alpha.liquid"],
+            LowerThreshold=0.5,
+            UpperThreshold=1.0,
+            ThresholdMethod="Between",
+        )
 
         # Find extent of the liquid phase
         ofvtkdata = pv.servermanager.Fetch(liquidthreshold)
-        ofdata = dsa.WrapDataObject( ofvtkdata)
+        ofdata = dsa.WrapDataObject(ofvtkdata)
         ofpts = np.array(ofdata.Points.Arrays[0])
-        ptsmin_lt = ofpts.min(axis=0) # minimum values of the three axes
-        ptsmax_lt = ofpts.max(axis=0) # maximum values of the three axes
-       
+        ptsmin_lt = ofpts.min(axis=0)  # minimum values of the three axes
+        ptsmax_lt = ofpts.max(axis=0)  # maximum values of the three axes
+
         # Compute gas velocity in the liquid phase
         if direction == 0:
             u_gas_str = "U.gas_X"
@@ -485,32 +502,35 @@ def compute_superficial_gas_velocity(
         elif direction == 2:
             u_gas_str = "U.gas_Z"
 
-        pv_calc  = pv.Calculator(Input=ofreader, AttributeType='Cell Data',\
-                                 ResultArrayName='vflowrate',\
-                                 Function=f'"alpha.gas"*"{u_gas_str}"')
-        
+        pv_calc = pv.Calculator(
+            Input=ofreader,
+            AttributeType="Cell Data",
+            ResultArrayName="vflowrate",
+            Function=f'"alpha.gas"*"{u_gas_str}"',
+        )
+
         # create a new slice in the middle of the liquid domain
-        slice_location = 0.5*(ptsmax_lt[direction]+ptsmin_lt[direction])
+        slice_location = 0.5 * (ptsmax_lt[direction] + ptsmin_lt[direction])
         pv_slice = pv.Slice(Input=pv_calc)
 
         origin = [0.0] * 3
         normal = [0.0] * 3
         origin[direction] = slice_location
         normal[direction] = 1.0
-        
+
         pv_slice.SliceType.Origin = origin
         pv_slice.SliceType.Normal = normal
-        
+
         # integrate variables along the slice
         pv_int = pv.IntegrateVariables(Input=pv_slice)
-       
+
         # calculate superficial vel
         pv.UpdatePipeline(time=t[time_pv_ind])
-        pv_dat = dsa.WrapDataObject( pv.servermanager.Fetch(pv_int) )
-        vfrate  = pv_dat.CellData['vflowrate'].item()
-        area = pv_dat.CellData['Area'].item()
+        pv_dat = dsa.WrapDataObject(pv.servermanager.Fetch(pv_int))
+        vfrate = pv_dat.CellData["vflowrate"].item()
+        area = pv_dat.CellData["Area"].item()
 
-        sup_vel = vfrate/area
+        sup_vel = vfrate / area
 
     else:
         kwargs_vol = {
@@ -556,7 +576,9 @@ def compute_superficial_gas_velocity(
         )
 
         # Filter fields to the right location
-        alpha_gas = _field_filter(alpha_gas, ind=ind_middle, field_type="scalar")
+        alpha_gas = _field_filter(
+            alpha_gas, ind=ind_middle, field_type="scalar"
+        )
         cell_volume = _field_filter(
             cell_volume, ind=ind_middle, field_type="scalar"
         )
@@ -578,7 +600,7 @@ def compute_ave_y_liq(
     n_cells: int | None = None,
     volume_time: str | None = None,
     spec_name: str = "CO2",
-    field_dict: dict|None=None,
+    field_dict: dict | None = None,
 ) -> tuple[float, dict]:
     r"""
     Calculate liquid volume averaged mass fraction of a species at a given time
@@ -663,7 +685,7 @@ def compute_ave_conc_liq(
     spec_name: str = "CO2",
     mol_weight: float = 0.04401,
     rho_val: float | None = 1000,
-    field_dict:dict|None=None,
+    field_dict: dict | None = None,
 ) -> tuple[float, dict]:
     r"""
     Calculate liquid volume averaged concentration of a species at a given time
@@ -771,7 +793,7 @@ def compute_ave_bubble_diam(
     time_folder: str,
     n_cells: int | None = None,
     volume_time: str | None = None,
-    field_dict:dict|None=None,
+    field_dict: dict | None = None,
 ) -> tuple[float, dict]:
     r"""
     Calculate averaged bubble diameter over the liquid volume

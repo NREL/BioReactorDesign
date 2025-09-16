@@ -448,7 +448,7 @@ def read_field(
     """
     if field_dict is None:
         field_dict = {}
- 
+
     if not (field_name in field_dict) or field_dict[field_name] is None:
         # Read field if it had not been read before
         field_file = os.path.join(case_folder, time_folder, field_name)
