@@ -88,7 +88,7 @@ def test_compute_superficial_gas_velocity():
         "..",
         "bird",
         "postprocess",
-        "data_conditional_mean",
+        "data_conditional_mean/",
     )
     kwargs = {
         "case_folder": case_folder,
@@ -114,9 +114,16 @@ def test_compute_superficial_gas_velocity():
         time_folder=time_folder,
         direction=1,
     )
+    sup_vel3, _ = compute_superficial_gas_velocity(
+        case_folder=case_folder,
+        time_folder=time_folder,
+        direction=1,
+        use_pv=True,
+    )
 
     assert abs(sup_vel1 - sup_vel) < 1e-12
     assert abs(sup_vel2 - sup_vel) < 1e-12
+    assert abs((sup_vel3 - sup_vel2) / sup_vel2) < 0.01
 
 
 def test_ave_y_liq():
