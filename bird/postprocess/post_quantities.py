@@ -372,7 +372,7 @@ def compute_superficial_gas_velocity(
     r"""
     Calculate superficial gas velocity (in m/s) in a given direction at a given time
 
-    with use_pv==False
+    Without the paraview operations (`use_pv==False`)
 
     .. math::
        \frac{1}{V_{\rm height, tot}} \int_{V_{\rm height}}  U_{\rm gas} \alpha_{\rm gas} dV
@@ -383,10 +383,11 @@ def compute_superficial_gas_velocity(
       - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction
       - :math:`V_{\rm height}` is the local volume of the cells where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered)
 
-    with use_pv==True
+
+    With paraview operations (`use_pv==True`)
 
     .. math::
-       \frac{1}{S_{\rm height}} \int_{S_{\rm height}}  U_{\rm gas} \alpha_{\rm gas} dS
+       \frac{1}{S_{\rm height, tot}} \int_{S_{\rm height}}  U_{\rm gas} \alpha_{\rm gas} dS
 
     where:
       - :math:`S_{\rm height, tot}` is the total area of the slice at the axial location considered and normal tot the direction considered
