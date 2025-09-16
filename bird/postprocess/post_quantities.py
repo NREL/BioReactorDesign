@@ -384,7 +384,7 @@ def compute_superficial_gas_velocity(
       - :math:`V_{\rm height}` is the local volume of the cells where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered)
 
 
-    With paraview operations (`use_pv==True`)
+    With the paraview operations (`use_pv==True`)
 
     .. math::
        \frac{1}{S_{\rm height, tot}} \int_{S_{\rm height}}  U_{\rm gas} \alpha_{\rm gas} dS
