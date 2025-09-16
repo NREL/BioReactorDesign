@@ -11,6 +11,10 @@ jobs:
  
   build_deploy_docs:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+        working-directory: ${{github.workspace}}
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:

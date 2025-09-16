@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
+        shell: bash -l {0}
         working-directory: ${{github.workspace}}
     steps:
       - name: Checkout
