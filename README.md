@@ -13,7 +13,7 @@ bash run.sh
 ## Installation of python package for developers
 
 ```bash
-conda create --name bird python=3.10
+conda create -c conda-forge --name bird python=3.10 paraview
 conda activate bird
 git clone https://github.com/NREL/BioReactorDesign.git
 cd BioReactorDesign
@@ -23,7 +23,7 @@ pip install -e .
 ## Installation of python package for users
 
 ```bash
-conda create --name bird python=3.10
+conda create -c conda-forge --name bird python=3.10 paraview
 conda activate bird
 pip install nrel-bird=={version}
 ```
