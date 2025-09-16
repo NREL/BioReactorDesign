@@ -425,7 +425,12 @@ def compute_superficial_gas_velocity(
         )
         direction = 1
 
-    U_gas_axial = U_gas[:, direction]
+    if U_gas.shape == (3,):
+        # Uniform field
+        U_gas_axial = U_gas[direction]
+    else:
+        # Non-uniform field
+        U_gas_axial = U_gas[:, direction]
 
     cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
