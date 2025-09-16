@@ -372,6 +372,8 @@ def compute_superficial_gas_velocity(
     r"""
     Calculate superficial gas velocity (in m/s) in a given direction at a given time
 
+    with use_pv==False
+
     .. math::
        \frac{1}{V_{\rm height, tot}} \int_{V_{\rm height}}  U_{\rm gas} \alpha_{\rm gas} dV
 
@@ -380,6 +382,18 @@ def compute_superficial_gas_velocity(
       - :math:`\alpha_{\rm gas}` is the gas phase volume fraction
       - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction
       - :math:`V_{\rm height}` is the local volume of the cells where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered)
+
+    with use_pv==True
+
+    .. math::
+       \frac{1}{S_{\rm height}} \int_{S_{\rm height}}  U_{\rm gas} \alpha_{\rm gas} dS
+
+    where:
+      - :math:`S_{\rm height, tot}` is the total area of the slice at the axial location considered and normal tot the direction considered
+      - :math:`\alpha_{\rm gas}` is the gas phase volume fraction
+      - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction
+      - :math:`S_{\rm height}` is the local area of the slice where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered)
+
 
     Parameters
     ----------
@@ -510,7 +524,13 @@ def compute_superficial_gas_velocity(
         )
 
         # create a new slice in the middle of the liquid domain
-        slice_location = 0.5 * (ptsmax_lt[direction] + ptsmin_lt[direction])
+        if height is None:
+            slice_location = 0.5 * (
+                ptsmax_lt[direction] + ptsmin_lt[direction]
+            )
+        else:
+            slice_location = height
+
         pv_slice = pv.Slice(Input=pv_calc)
 
         origin = [0.0] * 3
