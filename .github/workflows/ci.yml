@@ -30,6 +30,7 @@ jobs:
         os: ['ubuntu-latest']
     defaults:
       run:
+        shell: bash -l {0}
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
@@ -56,17 +57,30 @@ jobs:
         os: ['ubuntu-latest', 'macos-latest']
     defaults:
       run:
+        shell: bash -l {0}
         working-directory: ${{github.workspace}}
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: test-env
+          python-version: ${{matrix.python-version}}
+          channels: conda-forge
+          channel-priority: strict
+
       - name: Install dependencies
         run: |
+          conda install -y -c conda-forge paraview
           pip install --upgrade pip
           pip install .
           pip install pytest
+
       - name: Test
         run: pytest .
 
@@ -80,17 +94,29 @@ jobs:
         os: ['ubuntu-latest']
     defaults:
       run:
+        shell: bash -l {0}
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: test-env
+          python-version: ${{matrix.python-version}}
+          channels: conda-forge
+          channel-priority: strict
+
       - name: Install dependencies
         run: |
+          conda install -y -c conda-forge paraview
           pip install --upgrade pip
           pip install nrel-bird
           pip install pytest
+
       - name: Test
         run: pytest .
 
@@ -104,6 +130,7 @@ jobs:
         os: ['ubuntu-22.04']
     defaults:
       run:
+        shell: bash -l {0}
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
@@ -113,10 +140,21 @@ jobs:
       - uses: gerlero/setup-openfoam@v1
         with:
           openfoam-version: 9
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: test-env
+          python-version: ${{matrix.python-version}}
+          channels: conda-forge
+          channel-priority: strict
+
       - name: Install dependencies
         run: |
+          conda install -y -c conda-forge paraview
           pip install --upgrade pip
           pip install .
+
       - name: Compile solver
         run: |
           cd OFsolvers/birdmultiphaseEulerFoam

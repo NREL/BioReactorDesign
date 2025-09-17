@@ -1,4 +1,6 @@
 import numpy as np
+import vtk.numpy_interface.dataset_adapter as dsa
+from paraview import simple as pv
 
 from bird import logger
 from bird.utilities.ofio import *
@@ -63,7 +65,7 @@ def _get_ind_liq(
     case_folder: str,
     time_folder: str,
     n_cells: int | None = None,
-    field_dict: dict = {},
+    field_dict: dict | None = None,
 ) -> tuple[np.ndarray | float, dict]:
     """
     Get indices of pure liquid cells (where alpha.liquid > 0.5)
@@ -79,7 +81,7 @@ def _get_ind_liq(
         If None, it will deduced from the field reading
     field_name: str
         Name of the field file to read
-    field_dict : dict
+    field_dict : dict | None
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
     Returns
@@ -89,6 +91,8 @@ def _get_ind_liq(
     field_dict : dict
         Dictionary of fields read
     """
+    if field_dict is None:
+        return None
 
     kwargs = {
         "case_folder": case_folder,
@@ -119,7 +123,7 @@ def _get_ind_gas(
     case_folder: str,
     time_folder: str,
     n_cells: int | None = None,
-    field_dict: dict = {},
+    field_dict: dict | None = None,
 ) -> tuple[np.ndarray | float, dict]:
     """
     Get indices of pure gas cells (where alpha.liquid <= 0.5)
@@ -135,7 +139,7 @@ def _get_ind_gas(
         If None, it will deduced from the field reading
     field_name: str
         Name of the field file to read
-    field_dict : dict
+    field_dict : dict | None
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
     Returns
@@ -145,6 +149,8 @@ def _get_ind_gas(
     field_dict : dict
         Dictionary of fields read
     """
+    if field_dict is None:
+        field_dict = {}
 
     kwargs = {
         "case_folder": case_folder,
@@ -177,7 +183,7 @@ def _get_ind_slice(
     direction: int | None = None,
     tolerance: float | None = None,
     cell_centers_file: str | None = None,
-    field_dict: dict = {},
+    field_dict: dict | None = None,
 ) -> tuple[np.ndarray | float, dict]:
     """
     Get indices of cells along a slice given by a direction and a location
@@ -209,6 +215,8 @@ def _get_ind_slice(
     field_dict : dict
         Dictionary of fields read
     """
+    if field_dict is None:
+        field_dict = {}
 
     if not (f"ind_location_{location:.2g}" in field_dict):
 
@@ -280,18 +288,18 @@ def compute_gas_holdup(
     time_folder: str,
     n_cells: int | None = None,
     volume_time: str | None = None,
-    field_dict: dict = {},
+    field_dict: dict | None = None,
 ) -> tuple[float, dict]:
-    """
+    r"""
     Calculate volume averaged gas hold up at a given time
 
     .. math::
-       \\frac{1}{V_{\\rm liq, tot}} \int_{V_{\\rm liq}} (1-\\alpha_{\\rm liq}) dV
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} (1-\alpha_{\rm liq}) dV
 
     where:
-      - :math:`V_{\\rm liq, tot}` is the total volume of liquid
-      - :math:`\\alpha_{\\rm liq}` is the liquid phase volume fraction
-      - :math:`V` is the volume of the cells where :math:`\\alpha_{\\rm liq}` is measured
+      - :math:`V_{\rm liq, tot}` is the total volume of liquid
+      - :math:`\alpha_{\rm liq}` is the liquid phase volume fraction
+      - :math:`V` is the volume of the cells where :math:`\alpha_{\rm liq}` is measured
 
     Parameters
     ----------
@@ -305,7 +313,7 @@ def compute_gas_holdup(
     volume_time : str | None
         Time folder to read to get the cell volumes.
         If None, finds volume time automatically
-    field_dict : dict
+    field_dict : dict | None
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
     Returns
@@ -315,6 +323,10 @@ def compute_gas_holdup(
     field_dict : dict
         Dictionary of fields read
     """
+
+    if field_dict is None:
+        field_dict = {}
+
     # Read relevant fields
     kwargs = {
         "case_folder": case_folder,
@@ -354,19 +366,35 @@ def compute_superficial_gas_velocity(
     direction: int | None = None,
     cell_centers_file: str | None = None,
     height: float | None = None,
-    field_dict: dict = {},
+    use_pv: bool = False,
+    field_dict: dict | None = None,
 ) -> tuple[float, dict]:
-    """
+    r"""
     Calculate superficial gas velocity (in m/s) in a given direction at a given time
 
+    Without the paraview operations (`use_pv==False`)
+
     .. math::
-       \\frac{1}{V_{\\rm height, tot}} \int_{V_{\\rm height}}  U_{\\rm gas} \\alpha_{\\rm gas} dV
+       \frac{1}{V_{\rm height, tot}} \int_{V_{\rm height}}  U_{\rm gas} \alpha_{\rm gas} dV
 
     where:
-      - :math:`V_{\\rm height, tot}` is the total volume of cells near the axial location considered
-      - :math:`\\alpha_{\\rm gas}` is the gas phase volume fraction
-      - :math:`U_{\\rm gas}` is the gas phase velocity along the axial direction
-      - :math:`V_{\\rm height}` is the local volume of the cells where :math:`U_{\\rm gas} \\alpha_{\\rm gas})` is measured (near the axial location considered)
+      - :math:`V_{\rm height, tot}` is the total volume of cells near the axial location considered
+      - :math:`\alpha_{\rm gas}` is the gas phase volume fraction
+      - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction
+      - :math:`V_{\rm height}` is the local volume of the cells where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered)
+
+
+    With the paraview operations (`use_pv==True`)
+
+    .. math::
+       \frac{1}{S_{\rm height, tot}} \int_{S_{\rm height}}  U_{\rm gas} \alpha_{\rm gas} dS
+
+    where:
+      - :math:`S_{\rm height, tot}` is the total area of the slice at the axial location considered and normal tot the direction considered
+      - :math:`\alpha_{\rm gas}` is the gas phase volume fraction
+      - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction
+      - :math:`S_{\rm height}` is the local area of the slice where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered)
+
 
     Parameters
     ----------
@@ -389,7 +417,10 @@ def compute_superficial_gas_velocity(
     height: float | None
         Axial location at which to compute the superficial velocity.
         If None, use the mid point of the liquid domain along the axial direction
-    field_dict : dict
+    use_pv: bool
+        Use paraview to create a slice in the middle of the reactor
+        Default to False
+    field_dict : dict | None
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
     Returns
@@ -400,69 +431,186 @@ def compute_superficial_gas_velocity(
         Dictionary of fields read
     """
 
+    if field_dict is None:
+        field_dict = {}
+
     # Read relevant fields
     kwargs = {
         "case_folder": case_folder,
         "time_folder": time_folder,
         "n_cells": n_cells,
     }
-
-    kwargs_vol = {
-        "case_folder": case_folder,
-        "time_folder": volume_time,
-        "n_cells": n_cells,
-    }
-    alpha_gas, field_dict = read_field(
-        field_name="alpha.gas", field_dict=field_dict, **kwargs
-    )
-    U_gas, field_dict = read_field(
-        field_name="U.gas", field_dict=field_dict, **kwargs
-    )
-
     if direction is None:
         logger.warning(
             "Assuming that superficial velocity is along the y direction"
         )
         direction = 1
 
-    U_gas_axial = U_gas[:, direction]
+    if direction not in [0, 1, 2]:
+        raise ValueError(f"Direction ({direction}) must be in [0, 1, 2]")
 
-    cell_volume, field_dict = read_cell_volumes(
-        field_dict=field_dict, **kwargs_vol
-    )
-    cell_centers, field_dict = read_cell_centers(
-        case_folder=case_folder,
-        cell_centers_file=cell_centers_file,
-        field_dict=field_dict,
-    )
+    if use_pv:
+        try:
+            assert os.path.isdir(
+                os.path.join(case_folder, "constant", "polyMesh")
+            )
+            assert os.path.isfile(
+                os.path.join(case_folder, "constant", "polyMesh", "points")
+            )
+            assert os.path.isfile(
+                os.path.join(case_folder, "constant", "polyMesh", "faces")
+            )
+            assert os.path.isfile(
+                os.path.join(case_folder, "constant", "polyMesh", "owner")
+            )
+            assert os.path.isfile(
+                os.path.join(case_folder, "constant", "polyMesh", "neighbour")
+            )
+            assert os.path.isfile(
+                os.path.join(case_folder, "constant", "polyMesh", "boundary")
+            )
+        except AssertionError:
+            logger.warning(
+                "Using ParaView requires to make a complete polyMesh, will not use ParaView"
+            )
+            use_pv = False
 
-    if height is None:
-        # Find all cells in the middle of the liquid domain
-        ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
-        max_dir = np.amax(cell_centers[ind_liq, direction])
-        min_dir = np.amin(cell_centers[ind_liq, direction])
-        height = (max_dir + min_dir) / 2
+    if use_pv:
+        logger.debug("Using paraview for superficial velocity calculation")
+        # Clean paraview pipeline
+        for f in pv.GetSources().values():
+            pv.Delete(f)
 
-    ind_middle, field_dict = _get_ind_slice(
-        case_folder=case_folder,
-        location=height,
-        direction=direction,
-        field_dict=field_dict,
-    )
+        # Set up openfoam case
+        ofreader = pv.OpenFOAMReader(FileName=case_folder)
+        ofreader.CaseType = "Reconstructed Case"
+        t = np.array(ofreader.TimestepValues)
+        assert t.size > 0
 
-    # Filter fields to the right location
-    alpha_gas = _field_filter(alpha_gas, ind=ind_middle, field_type="scalar")
-    cell_volume = _field_filter(
-        cell_volume, ind=ind_middle, field_type="scalar"
-    )
-    U_gas_axial = _field_filter(
-        U_gas_axial, ind=ind_middle, field_type="scalar"
-    )
+        # Find the time to process
+        time_pv_ind = np.argmin(abs(t - float(time_folder)))
+        assert abs(t[time_pv_ind] - float(time_folder)) < 1e-12
+        pv.UpdatePipeline(time=t[time_pv_ind])
 
-    # Compute
-    sup_vel = np.sum(U_gas_axial * alpha_gas * cell_volume) / np.sum(
-        cell_volume
-    )
+        # Get liquid phase field
+        logger.warning("Assuming that alpha_liq > 0.5 denotes pure liquid")
+        liquidthreshold = pv.Threshold(
+            Input=ofreader,
+            Scalars=["CELLS", "alpha.liquid"],
+            LowerThreshold=0.5,
+            UpperThreshold=1.0,
+            ThresholdMethod="Between",
+        )
+
+        # Find extent of the liquid phase
+        ofvtkdata = pv.servermanager.Fetch(liquidthreshold)
+        ofdata = dsa.WrapDataObject(ofvtkdata)
+        ofpts = np.array(ofdata.Points.Arrays[0])
+        ptsmin_lt = ofpts.min(axis=0)  # minimum values of the three axes
+        ptsmax_lt = ofpts.max(axis=0)  # maximum values of the three axes
+
+        # Compute gas velocity in the liquid phase
+        if direction == 0:
+            u_gas_str = "U.gas_X"
+        elif direction == 1:
+            u_gas_str = "U.gas_Y"
+        elif direction == 2:
+            u_gas_str = "U.gas_Z"
+
+        pv_calc = pv.Calculator(
+            Input=ofreader,
+            AttributeType="Cell Data",
+            ResultArrayName="vflowrate",
+            Function=f'"alpha.gas"*"{u_gas_str}"',
+        )
+
+        # create a new slice in the middle of the liquid domain
+        if height is None:
+            slice_location = 0.5 * (
+                ptsmax_lt[direction] + ptsmin_lt[direction]
+            )
+        else:
+            slice_location = height
+
+        pv_slice = pv.Slice(Input=pv_calc)
+
+        origin = [0.0] * 3
+        normal = [0.0] * 3
+        origin[direction] = slice_location
+        normal[direction] = 1.0
+
+        pv_slice.SliceType.Origin = origin
+        pv_slice.SliceType.Normal = normal
+
+        # integrate variables along the slice
+        pv_int = pv.IntegrateVariables(Input=pv_slice)
+
+        # calculate superficial vel
+        pv.UpdatePipeline(time=t[time_pv_ind])
+        pv_dat = dsa.WrapDataObject(pv.servermanager.Fetch(pv_int))
+        vfrate = pv_dat.CellData["vflowrate"].item()
+        area = pv_dat.CellData["Area"].item()
+
+        sup_vel = vfrate / area
+
+    else:
+        kwargs_vol = {
+            "case_folder": case_folder,
+            "time_folder": volume_time,
+            "n_cells": n_cells,
+        }
+        alpha_gas, field_dict = read_field(
+            field_name="alpha.gas", field_dict=field_dict, **kwargs
+        )
+        U_gas, field_dict = read_field(
+            field_name="U.gas", field_dict=field_dict, **kwargs
+        )
+
+        if U_gas.shape == (3,):
+            # Uniform field
+            U_gas_axial = U_gas[direction]
+        else:
+            # Non-uniform field
+            U_gas_axial = U_gas[:, direction]
+
+        cell_volume, field_dict = read_cell_volumes(
+            field_dict=field_dict, **kwargs_vol
+        )
+        cell_centers, field_dict = read_cell_centers(
+            case_folder=case_folder,
+            cell_centers_file=cell_centers_file,
+            field_dict=field_dict,
+        )
+
+        if height is None:
+            # Find all cells in the middle of the liquid domain
+            ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
+            max_dir = np.amax(cell_centers[ind_liq, direction])
+            min_dir = np.amin(cell_centers[ind_liq, direction])
+            height = (max_dir + min_dir) / 2
+
+        ind_middle, field_dict = _get_ind_slice(
+            case_folder=case_folder,
+            location=height,
+            direction=direction,
+            field_dict=field_dict,
+        )
+
+        # Filter fields to the right location
+        alpha_gas = _field_filter(
+            alpha_gas, ind=ind_middle, field_type="scalar"
+        )
+        cell_volume = _field_filter(
+            cell_volume, ind=ind_middle, field_type="scalar"
+        )
+        U_gas_axial = _field_filter(
+            U_gas_axial, ind=ind_middle, field_type="scalar"
+        )
+
+        # Compute
+        sup_vel = np.sum(U_gas_axial * alpha_gas * cell_volume) / np.sum(
+            cell_volume
+        )
 
     return sup_vel, field_dict
 
@@ -473,18 +621,18 @@ def compute_ave_y_liq(
     n_cells: int | None = None,
     volume_time: str | None = None,
     spec_name: str = "CO2",
-    field_dict={},
+    field_dict: dict | None = None,
 ) -> tuple[float, dict]:
-    """
+    r"""
     Calculate liquid volume averaged mass fraction of a species at a given time
 
     .. math::
-       \\frac{1}{V_{\\rm liq, tot}} \int_{V_{\\rm liq}} Y dV_{\\rm liq}
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} Y dV_{\rm liq}
 
     where:
-      - :math:`V_{\\rm liq, tot}` is the toal volume of liquid
+      - :math:`V_{\rm liq, tot}` is the toal volume of liquid
       - :math:`Y` is the species mass fraction
-      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`Y` is measured
+      - :math:`V_{\rm liq}` is the volume of liquid where :math:`Y` is measured
 
 
     Parameters
@@ -501,7 +649,7 @@ def compute_ave_y_liq(
         If None, finds volume time automatically
     spec_name : str
         Name of the species
-    field_dict : dict
+    field_dict : dict | None
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
     Returns
@@ -511,6 +659,8 @@ def compute_ave_y_liq(
     field_dict : dict
         Dictionary of fields read
     """
+    if field_dict is None:
+        field_dict = {}
 
     # Read relevant fields
     kwargs = {
@@ -556,20 +706,20 @@ def compute_ave_conc_liq(
     spec_name: str = "CO2",
     mol_weight: float = 0.04401,
     rho_val: float | None = 1000,
-    field_dict={},
+    field_dict: dict | None = None,
 ) -> tuple[float, dict]:
-    """
+    r"""
     Calculate liquid volume averaged concentration of a species at a given time
 
     .. math::
-       \\frac{1}{V_{\\rm liq, tot}} \int_{V_{\\rm liq}} \\rho_{\\rm liq} Y / W dV_{\\rm liq}
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} \rho_{\rm liq} Y / W dV_{\rm liq}
 
     where:
-      - :math:`V_{\\rm liq, tot}` is the toal volume of liquid
-      - :math:`\\rho_{\\rm liq}` is the liquid density
+      - :math:`V_{\rm liq, tot}` is the toal volume of liquid
+      - :math:`\rho_{\rm liq}` is the liquid density
       - :math:`Y` is the species mass fraction
       - :math:`W` is the species molar mass
-      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`Y` is measured
+      - :math:`V_{\rm liq}` is the volume of liquid where :math:`Y` is measured
 
     Parameters
     ----------
@@ -599,6 +749,8 @@ def compute_ave_conc_liq(
     field_dict : dict
         Dictionary of fields read
     """
+    if field_dict is None:
+        field_dict = {}
 
     logger.debug(
         f"Computing concentration for {spec_name} with molecular weight {mol_weight:.4g} kg/mol"
@@ -662,19 +814,19 @@ def compute_ave_bubble_diam(
     time_folder: str,
     n_cells: int | None = None,
     volume_time: str | None = None,
-    field_dict={},
+    field_dict: dict | None = None,
 ) -> tuple[float, dict]:
-    """
+    r"""
     Calculate averaged bubble diameter over the liquid volume
 
     .. math::
 
-       \\frac{1}{V_{\\rm liq, tot}} \\int_{V_{\\rm liq}} d_{\\rm gas} dV
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} d_{\rm gas} dV
 
     where:
-      - :math:`V_{\\rm liq, tot}` is the toal volume of liquid
-      - :math:`d_{\\rm gas}` is the bubble diameter
-      - :math:`V_{\\rm liq}` is the volume of liquid where :math:`d_{\\rm gas}` is measured
+      - :math:`V_{\rm liq, tot}` is the toal volume of liquid
+      - :math:`d_{\rm gas}` is the bubble diameter
+      - :math:`V_{\rm liq}` is the volume of liquid where :math:`d_{\rm gas}` is measured
 
 
     Parameters
@@ -699,6 +851,8 @@ def compute_ave_bubble_diam(
     field_dict : dict
         Dictionary of fields read
     """
+    if field_dict is None:
+        field_dict = {}
 
     # Read relevant fields
     kwargs = {
