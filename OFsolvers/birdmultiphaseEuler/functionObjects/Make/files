@@ -11,4 +11,6 @@ adjustTimeStepToNucleation/adjustTimeStepToNucleation.C
 
 disengagement/disengagement.C
 
+kLA/kLA.C
+
 LIB = $(FOAM_USER_LIBBIN)/libbirdmultiphaseEulerFunctionObjects
