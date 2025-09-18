@@ -340,6 +340,79 @@ Foam::heatTransferSystem::heatTransfer() const
     return eqnsPtr;
 }
 
+Foam::autoPtr<Foam::HashPtrTable<Foam::fvScalarMatrix>>
+Foam::heatTransferSystem::heatTransferT() const
+{
+    autoPtr<HashPtrTable<fvScalarMatrix>> eqnsPtr
+    (
+        new HashPtrTable<fvScalarMatrix>()
+    );
+    HashPtrTable<fvScalarMatrix>& eqns = eqnsPtr();
+
+    forAll(fluid_.phases(), phasei)
+    {
+        const phaseModel& phase = fluid_.phases()[phasei];
+
+        eqns.insert
+        (
+            phase.name(),
+            new fvScalarMatrix(phase.thermo().he(), dimEnergy/dimTime)
+        );
+    }
+
+    forAllConstIter(modelsTable, models_, modelIter)
+    {
+        const phaseInterface interface(fluid_, modelIter.key());
+
+        const volScalarField H(modelIter()->K());
+
+        forAllConstIter(phaseInterface, interface, iter)
+        {
+            const phaseModel& phase = iter();
+            const phaseModel& otherPhase = iter.otherPhase();
+
+            const volScalarField Hstabilised
+            (
+                iter.otherPhase()
+               /max(iter.otherPhase(), iter.otherPhase().residualAlpha())
+               *H
+            );
+
+            *eqns[phase.name()] +=
+                Hstabilised*otherPhase.thermo().T() - fvm::Sp(Hstabilised, phase.thermo().T());
+        }
+    }
+
+    forAllConstIter(sidedModelsTable, sidedModels_, sidedModelIter)
+    {
+        const phaseInterface interface(fluid_, sidedModelIter.key());
+
+        Pair<volScalarField> Hs
+        (
+            sidedModelIter()->KinThe(interface.phase1()),
+            sidedModelIter()->KinThe(interface.phase2())
+        );
+
+        const volScalarField HEff
+        (
+            Hs.first()*Hs.second()/(Hs.first() + Hs.second())
+        );
+
+        forAllConstIter(phaseInterface, interface, iter)
+        {
+            const phaseModel& phase = iter();
+            const phaseModel& otherPhase = iter.otherPhase();
+
+            const volScalarField& H = Hs[iter.index()];
+
+            *eqns[phase.name()] +=
+                HEff*otherPhase.thermo().T() - fvm::Sp(HEff, phase.thermo().T());
+        }
+    }
+
+    return eqnsPtr;
+}
+
 
 bool Foam::heatTransferSystem::read()
 {

@@ -83,8 +83,17 @@ void Foam::solvers::birdmultiphaseEuler::compositionPredictor()
 
 void Foam::solvers::birdmultiphaseEuler::energyPredictor()
 {
-    autoPtr<HashPtrTable<fvScalarMatrix>> heatTransferPtr =
-        heatTransferSystem_.heatTransfer();
+    autoPtr<HashPtrTable<fvScalarMatrix>> heatTransferPtr;
+    
+    if ( useTemperaturePredictor )
+    {
+        heatTransferPtr = heatTransferSystem_.heatTransferT();
+    }
+    else
+    {
+        heatTransferPtr = heatTransferSystem_.heatTransfer();
+    }
+    
     HashPtrTable<fvScalarMatrix>& heatTransfer =
         heatTransferPtr();
 
@@ -100,17 +109,64 @@ void Foam::solvers::birdmultiphaseEuler::energyPredictor()
         const volScalarField& alpha = phase;
         const volScalarField& rho = phase.rho();
 
+        
+        if( useTemperaturePredictor )
+        {
+
+            volScalarField& he = phase.thermo().he();
+            volScalarField& T = phase.thermo().T();
+            const volScalarField Told = T;
+            
+            if ( rhoCpvs[thermalPhasei].empty() )
+            {
+                rhoCpvs.set
+                (
+                    thermalPhasei,
+                    rho*phase.thermo().Cpv()
+                );
+            }
+            else
+            {
+                volScalarField& rhoCpv = rhoCpvs[thermalPhasei];
+                rhoCpv =  rho*phase.thermo().Cpv();
+            }
+            
+           
+            fvScalarMatrix TEqn
+            (
+                fvm::ddt(rhoCpvs[thermalPhasei], T)
+            ==
+                *heatTransfer[phase.name()]
+            );
+
+            TEqn.relax();
+            TEqn.solve();
+            fvConstraints().constrain(phase.thermo().T());
+
+            he += phase.thermo().Cpv() * (T - Told);
+            he.correctBoundaryConditions();
+        }
+
         fvScalarMatrix EEqn
         (
             phase.heEqn()
          ==
-            *heatTransfer[phase.name()]
-          + *popBalHeatTransfer[phase.name()]
+           *popBalHeatTransfer[phase.name()]
           + fvModels().source(alpha, rho, phase.thermo().he())
         );
 
         EEqn.relax();
         fvConstraints().constrain(EEqn);
+   
+        if ( useTemperaturePredictor )
+        {
+            solve( EEqn == fvc::ddt(rho, phase.thermo().he()) );
+        }
+        else
+        {
+            solve( EEqn == *heatTransfer[phase.name()] );
+        }
+
         EEqn.solve();
         fvConstraints().constrain(phase.thermo().he());
     }

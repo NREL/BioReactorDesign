@@ -91,6 +91,8 @@ protected:
         //  Defaults to false
         Switch dragCorrection;
 
+        Switch useTemperaturePredictor;
+
         //- Number of energy correctors
         //  Used to improve stability of phase-change simulations
         //  Defaults to 1
@@ -229,6 +231,8 @@ public:
 
         //- Reference to the mass-flux field
         const surfaceScalarField& phi;
+
+        PtrList<volScalarField> rhoCpvs;
 
 
     //- Runtime type information

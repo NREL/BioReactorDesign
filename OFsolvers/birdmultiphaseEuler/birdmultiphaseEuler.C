@@ -117,6 +117,11 @@ Foam::solvers::birdmultiphaseEuler::birdmultiphaseEuler(fvMesh& mesh)
         pimple.dict().lookupOrDefault<Switch>("dragCorrection", false)
     ),
 
+    useTemperaturePredictor
+    (
+        pimple.dict().lookupOrDefault<Switch>("temperaturePredictor", true)
+    ),
+
     nEnergyCorrectors
     (
         pimple.dict().lookupOrDefault<int>("nEnergyCorrectors", 1)
@@ -198,7 +203,8 @@ Foam::solvers::birdmultiphaseEuler::birdmultiphaseEuler(fvMesh& mesh)
     heatTransfer(heatTransferSystem_),
     p(p_),
     p_rgh(p_rgh_),
-    phi(phi_)
+    phi(phi_),
+    rhoCpvs(fluid.thermalPhases().size())
 {
     // Read the controls
     read();

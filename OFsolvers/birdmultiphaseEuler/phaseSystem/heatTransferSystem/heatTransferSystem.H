@@ -150,6 +150,7 @@ public:
 
         //- Return the heat transfer matrices
         autoPtr<HashPtrTable<fvScalarMatrix>> heatTransfer() const;
+        autoPtr<HashPtrTable<fvScalarMatrix>> heatTransferT() const;
 
         //- Read base phaseProperties dictionary
         virtual bool read();
