@@ -64,7 +64,7 @@ def _field_filter(
 def _get_ind_liq(
     case_folder: str,
     time_folder: str,
-    threshold: float=0.5,
+    threshold: float = 0.5,
     n_cells: int | None = None,
     field_dict: dict | None = None,
 ) -> tuple[np.ndarray | float, dict]:
@@ -107,7 +107,9 @@ def _get_ind_liq(
     assert threshold <= 1
     assert threshold >= 0
 
-    logger.warning(f"Assuming that alpha_liq > {threshold} denotes pure liquid")
+    logger.warning(
+        f"Assuming that alpha_liq > {threshold} denotes pure liquid"
+    )
 
     # Compute indices of pure liquid
     if not ("ind_liq" in field_dict) or field_dict["ind_liq"] is None:
@@ -129,7 +131,7 @@ def _get_ind_liq(
 def _get_ind_gas(
     case_folder: str,
     time_folder: str,
-    threshold: float=0.5,
+    threshold: float = 0.5,
     n_cells: int | None = None,
     field_dict: dict | None = None,
 ) -> tuple[np.ndarray | float, dict]:
@@ -311,9 +313,9 @@ def compute_gas_holdup(
        \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} (1-\alpha_{\rm liq}) dV
 
     where:
-      - :math:`V_{\rm liq, tot}` is the total volume of liquid in :math:`m^3` 
-      - :math:`\alpha_{\rm liq}` is the liquid phase volume fraction 
-      - :math:`V` is the volume of the cells where :math:`\alpha_{\rm liq}` is measured in :math:`m^3` 
+      - :math:`V_{\rm liq, tot}` is the total volume of liquid in :math:`m^3`
+      - :math:`\alpha_{\rm liq}` is the liquid phase volume fraction
+      - :math:`V` is the volume of the cells where :math:`\alpha_{\rm liq}` is measured in :math:`m^3`
 
     Parameters
     ----------
@@ -392,10 +394,10 @@ def compute_superficial_gas_velocity(
        \frac{1}{V_{\rm height, tot}} \int_{V_{\rm height}}  U_{\rm gas} \alpha_{\rm gas} dV
 
     where:
-      - :math:`V_{\rm height, tot}` is the total volume of cells near the axial location considered in :math:`m^3` 
+      - :math:`V_{\rm height, tot}` is the total volume of cells near the axial location considered in :math:`m^3`
       - :math:`\alpha_{\rm gas}` is the gas phase volume fraction
-      - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction in :math:`m.s^{-1}` 
-      - :math:`V_{\rm height}` is the local volume of the cells where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered) in :math:`m^3` 
+      - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction in :math:`m.s^{-1}`
+      - :math:`V_{\rm height}` is the local volume of the cells where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered) in :math:`m^3`
 
 
     With the paraview operations (`use_pv==True`)
@@ -404,10 +406,10 @@ def compute_superficial_gas_velocity(
        \frac{1}{S_{\rm height, tot}} \int_{S_{\rm height}}  U_{\rm gas} \alpha_{\rm gas} dS
 
     where:
-      - :math:`S_{\rm height, tot}` is the total area of the slice at the axial location considered and normal tot the direction considered in :math:`m^2` 
+      - :math:`S_{\rm height, tot}` is the total area of the slice at the axial location considered and normal tot the direction considered in :math:`m^2`
       - :math:`\alpha_{\rm gas}` is the gas phase volume fraction
-      - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction in :math:`m.s^{-1}` 
-      - :math:`S_{\rm height}` is the local area of the slice where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered) in :math:`m^2` 
+      - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction in :math:`m.s^{-1}`
+      - :math:`S_{\rm height}` is the local area of the slice where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered) in :math:`m^2`
 
 
     Parameters
@@ -838,9 +840,9 @@ def compute_ave_bubble_diam(
        \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} d_{\rm gas} dV
 
     where:
-      - :math:`V_{\rm liq, tot}` is the toal volume of liquid in :math:`m^3` 
-      - :math:`d_{\rm gas}` is the bubble diameter in :math:`m` 
-      - :math:`V_{\rm liq}` is the volume of liquid where :math:`d_{\rm gas}` is measured in :math:`m^3` 
+      - :math:`V_{\rm liq, tot}` is the toal volume of liquid in :math:`m^3`
+      - :math:`d_{\rm gas}` is the bubble diameter in :math:`m`
+      - :math:`V_{\rm liq}` is the volume of liquid where :math:`d_{\rm gas}` is measured in :math:`m^3`
 
 
     Parameters
@@ -933,9 +935,9 @@ def compute_instantaneous_kla(
       - :math:`\alpha_{\rm gas}` is the volume fraction of gas
       - :math:`\mu_{\rm liq}` is the liquid viscosity in :math:`kg.m^{-1}.s^{-1}`
       - :math:`\rho_{\rm liq}` is the liquid density in :math:`kg.m^{-3}`
-      - :math:`D_{\rm spec}` is the species diffusivity 
+      - :math:`D_{\rm spec}` is the species diffusivity in :math:`m^2.s^{-1}`
       - :math:`|U_{\rm gas}-U_{\rm liq}|` is the magnitude of the slip velocity in :math:`m.s^{-1}`
-      - :math:`V_{\rm liq}` is the volume of liquid in :math:`m^3` 
+      - :math:`V_{\rm liq}` is the volume of liquid in :math:`m^3`
 
      .. math::
 
@@ -943,9 +945,9 @@ def compute_instantaneous_kla(
 
      .. math::
 
-       C^*_{\rm spec} = \rho_{\rm gas} Y_{\rm spec, gas} He_{\rm spec} / W_{\rm spec}     
+       C^*_{\rm spec} = \rho_{\rm gas} Y_{\rm spec, gas} He_{\rm spec} / W_{\rm spec}
 
-     and 
+     and
       - :math:`C^{*}_{\rm spec}` is the saturation concentration of species spec in :math:`mol.m^{-3}`
       - :math:`\rho_{\rm gas}` is the density of the gas in :math:`kg.m^{-3}`
       - :math:`Y_{\rm spec, gas}` is the mass fraction of species spec in the gas phase
@@ -1018,7 +1020,9 @@ def compute_instantaneous_kla(
             raise KeyError(err_msg)
 
     # Get liquid domain
-    ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, threshold=0.4, **kwargs)
+    ind_liq, field_dict = _get_ind_liq(
+        field_dict=field_dict, threshold=0.4, **kwargs
+    )
 
     # Read all the fields
     alpha_gas, field_dict = read_field(
