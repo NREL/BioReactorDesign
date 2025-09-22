@@ -888,3 +888,156 @@ def compute_ave_bubble_diam(
     )
 
     return diam, field_dict
+
+
+def compute_instantaneous_kla(
+    case_folder: str,
+    time_folder: str,
+    species_names: list[str],
+    n_cells: int | None = None,
+    volume_time: str | None = None,
+    field_dict: dict | None = None,
+) -> tuple[dict, dict, dict]:
+    r"""
+    Calculate kLa from instantaneous data (rather than doing a fit over time)
+
+    .. math::
+
+
+    where:
+
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str
+        Name of time folder to analyze
+    species_names: list[str]
+        List of species name for which to compute kla
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    volume_time : str | None
+        Time folder to read to get the cell volumes.
+        If None, finds volume time automatically
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    kla_spec: dict
+        Instantaneous volume averaged kLa for each species
+        Keys are species names
+        Values are the kLa values
+    cstar_spec: dict
+        Instantaneous volume averaged cstar for each species
+        Keys are species names
+        Values are the cstar values
+    field_dict : dict
+        Dictionary of fields read
+    """
+    if field_dict is None:
+        field_dict = {}
+
+    # Read relevant fields
+    kwargs = {
+        "case_folder": case_folder,
+        "time_folder": time_folder,
+        "n_cells": n_cells,
+    }
+    kwargs_vol = {
+        "case_folder": case_folder,
+        "time_folder": volume_time,
+        "n_cells": n_cells,
+    }
+
+    globalVars = read_global_vars(case_folder=case_folder, cross_ref=True)
+
+    # Get liquid domain
+    ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
+
+    # Read all the fields
+    alpha_gas, field_dict = read_field(
+        field_name="alpha.gas", field_dict=field_dict, **kwargs
+    )
+    rho_liq, field_dict = read_field(
+        field_name="thermo:rho.liquid", field_dict=field_dict, **kwargs
+    )
+    rho_gas, field_dict = read_field(
+        field_name="thermo:rho.gas", field_dict=field_dict, **kwargs
+    )
+    U_gas, field_dict = read_field(
+        field_name="U.gas", field_dict=field_dict, **kwargs
+    )
+    U_liq, field_dict = read_field(
+        field_name="U.liquid", field_dict=field_dict, **kwargs
+    )
+    d_gas, field_dict = read_field(
+        field_name="d.gas", field_dict=field_dict, **kwargs
+    )
+    mu_liq, field_dict = read_field(
+        field_name="thermo:mu.liquid", field_dict=field_dict, **kwargs
+    )
+    species_gas = {}
+    for species_name in species_names:
+        species_gas[species_name], field_dict = read_field(
+            field_name=f"{species_name}.gas", field_dict=field_dict, **kwargs
+        )
+
+    # Only compute over the liquid
+    alpha_gas = _field_filter(alpha_gas, ind=ind_liq, field_type="scalar")
+    rho_liq = _field_filter(rho_liq, ind=ind_liq, field_type="scalar")
+    rho_gas = _field_filter(rho_gas, ind=ind_liq, field_type="scalar")
+    U_gas = _field_filter(U_gas, ind=ind_liq, field_type="vector")
+    U_liq = _field_filter(U_liq, ind=ind_liq, field_type="vector")
+    d_gas = _field_filter(d_gas, ind=ind_liq, field_type="scalar")
+    mu_liq = _field_filter(mu_liq, ind=ind_liq, field_type="scalar")
+    for species_name in species_names:
+        species_gas[species_name] = _field_filter(
+            species_gas[species_name], ind=ind_liq, field_type="scalar"
+        )
+    mag_U_diff = np.sqrt(
+        (U_gas[:, 0] - U_liq[:, 0]) ** 2
+        + (U_gas[:, 1] - U_liq[:, 1]) ** 2
+        + (U_gas[:, 2] - U_liq[:, 2]) ** 2
+    )
+
+    # Compute kLa
+    Re = rho_liq * mag_U_diff * d_gas / mu_liq
+    kla_spec_field = {}
+    for species_name in species_names:
+        kla_spec_field[species_name] = (
+            1.13
+            * (Re**0.5)
+            * (((mu_liq / rho_liq) / globalVars[f"D_{species_name}"]) ** 0.5)
+            * (globalVars[f"D_{species_name}"] / d_gas)
+            * (6.0 / d_gas)
+            * alpha_gas
+            * 3600
+        )
+    cstar_spec_field = {}
+    for species_name in species_names:
+        cstar_spec_field[species_name] = (
+            rho_gas * species_gas[species_name]
+        ) / (
+            globalVars[f"Mw_{species_name}"] * globalVars[f"He_{species_name}"]
+        )
+
+    # Do volume average
+    cell_volume, field_dict = read_cell_volumes(
+        field_dict=field_dict, **kwargs_vol
+    )
+    cell_volume = _field_filter(cell_volume, ind=ind_liq, field_type="scalar")
+
+    kla_spec = {}
+    cstar_spec = {}
+    for species_name in species_names:
+        kla_spec[species_name] = np.sum(
+            cell_volume * kla_spec_field[species_name]
+        ) / np.sum(cell_volume)
+        cstar_spec[species_name] = np.sum(
+            cell_volume * cstar_spec_field[species_name]
+        ) / np.sum(cell_volume)
+
+    return kla_spec, cstar_spec, field_dict

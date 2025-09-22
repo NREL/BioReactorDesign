@@ -18,7 +18,9 @@ def test_read_global_vars():
         "loop_reactor_mixing",
     )
     # Read globalVars from case_folder path
-    globalVars_dict = read_global_vars(case_folder=case_folder)
+    globalVars_dict = read_global_vars(
+        case_folder=case_folder, cross_ref=False
+    )
     assert globalVars_dict["T0"] == 300
     assert (
         globalVars_dict["muMixLiq"]
@@ -40,7 +42,8 @@ def test_read_global_vars():
 
     # Read globalVars from globalVars filename
     globalVars_dict = read_global_vars(
-        filename=os.path.join(case_folder, "constant", "globalVars")
+        filename=os.path.join(case_folder, "constant", "globalVars"),
+        cross_ref=False,
     )
     assert globalVars_dict["T0"] == 300
     assert (
@@ -80,6 +83,27 @@ def test_read_global_vars():
         globalVars_dict = read_global_vars(case_folder="garbage")
     except FileNotFoundError:
         pass
+
+    # Test cross referencing
+    globalVars_dict = read_global_vars(case_folder=case_folder)
+    assert (
+        abs(abs(globalVars_dict["muMixLiq"] - 0.0008540578) / 0.0008540578)
+        < 1e-3
+    )
+    assert (
+        abs(
+            abs(globalVars_dict["D_CO2"] - 2.1437176189840984e-09)
+            / 2.1437176189840984e-09
+        )
+        < 1e-3
+    )
+    assert (
+        abs(
+            abs(globalVars_dict["He_CO2"] - 0.789805140591798)
+            / 0.789805140591798
+        )
+        < 1e-3
+    )
 
 
 if __name__ == "__main__":

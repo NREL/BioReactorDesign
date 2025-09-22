@@ -1,3 +1,4 @@
+import math
 import os
 import re
 
@@ -966,9 +967,78 @@ def read_cell_volumes(
     return cell_volumes, field_dict
 
 
+def _cross_reference_global_vars(
+    globalVars_dict: dict,
+) -> dict:
+    """
+    Resolve cross referencing in the globalVars dictionary read
+    so that all the values are float
+    """
+
+    cross_referenced_globalVars_dict = globalVars_dict.copy()
+
+    # capture $Variable references
+    var_pattern = re.compile(r"\$([A-Za-z0-9_]+)")
+
+    for key, value in globalVars_dict.items():
+        # Check if we need to do cross referencing
+        if isinstance(value, str) and value.startswith("#calc"):
+
+            # Extract expression inside quotes
+            expr = value.split('"', 1)[1].rsplit('"', 1)[0]
+
+            # Replace $Var with its numeric value from globalVars_dict
+            def repl(match):
+                varname = match.group(1)
+                if varname not in cross_referenced_globalVars_dict:
+                    raise KeyError(
+                        f"Variable '{varname}' not found for expression {expr}"
+                    )
+                return str(cross_referenced_globalVars_dict[varname])
+
+            expr = var_pattern.sub(repl, expr)
+
+            # Replace 'Foam::pow' with 'math.pow'
+            if "Foam::pow" in expr:
+                expr = expr.replace("Foam::pow", "math.pow")
+
+            if "pow" in expr:
+                indstr = [m.start() for m in re.finditer("pow", expr)]
+                new_expr = expr
+                count_replace = 0
+                for ind in indstr:
+                    if not "mat" in new_expr[ind - 6 : ind + 3]:
+                        tmp = new_expr
+                        new_expr = (
+                            tmp[: ind + 5 * count_replace]
+                            + "math.pow"
+                            + tmp[ind + 5 * count_replace + 3 :]
+                        )
+                        count_replace += 1
+                expr = new_expr
+            # Replace 'exp' with 'math.exp'
+            expr = expr.replace("exp", "math.exp")
+
+            try:
+                result = eval(expr, {"math": math})
+            except Exception as e:
+                raise RuntimeError(
+                    f"Error evaluating globalVars expression for {key}: {expr}"
+                ) from e
+
+            # Convert to int if whole number
+            if isinstance(result, float) and result.is_integer():
+                result = int(result)
+
+            cross_referenced_globalVars_dict[key] = result
+
+    return cross_referenced_globalVars_dict
+
+
 def read_global_vars(
     case_folder: str | None = None,
     filename: str | None = None,
+    cross_ref: bool = True,
 ) -> dict:
     """
     Read globarVars into a python dictionary
@@ -981,6 +1051,8 @@ def read_global_vars(
     filename: str | None
         Path to the globalVars file
         If None, using case_folder
+    cross_ref: bool
+        Do cross referencing to remove all the #calc stuff
 
     Returns
     ----------
@@ -1034,5 +1106,8 @@ def read_global_vars(
                     globalVars_dict[key] = val
                 except ValueError:
                     globalVars_dict[key] = value
+    if cross_ref:
+        # Remove the #calc stuff
+        globalVars_dict = _cross_reference_global_vars(globalVars_dict)
 
     return globalVars_dict
