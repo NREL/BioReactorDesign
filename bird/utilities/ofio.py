@@ -1041,7 +1041,7 @@ def read_global_vars(
     cross_ref: bool = True,
 ) -> dict:
     """
-    Read globarVars into a python dictionary
+    Read globalVars into a python dictionary
 
     Parameters
     ----------
@@ -1052,7 +1052,9 @@ def read_global_vars(
         Path to the globalVars file
         If None, using case_folder
     cross_ref: bool
-        Do cross referencing to remove all the #calc stuff
+        Do cross referencing or no
+        If True, all the `#calc` values from the python dict are replaced by their numeral values
+        If False, all the `#calc` values are stored as string
 
     Returns
     ----------
