@@ -964,3 +964,75 @@ def read_cell_volumes(
         cell_volumes = field_dict["V"]
 
     return cell_volumes, field_dict
+
+
+def read_global_vars(
+    case_folder: str | None = None,
+    filename: str | None = None,
+) -> dict:
+    """
+    Read globarVars into a python dictionary
+
+    Parameters
+    ----------
+    case_folder: str | None
+        Path to case folder
+        If None, using filename
+    filename: str | None
+        Path to the globalVars file
+        If None, using case_folder
+
+    Returns
+    ----------
+    globalVars_dict : dict
+        Dictionary that contains the globals vars variable values
+    """
+
+    # Set the filename to read
+    if case_folder is None:
+        if filename is None or not os.path.isfile(filename):
+            error_msg = f"Global Vars file ({filename}) not found, but is needed if case folder not specified"
+            raise FileNotFoundError(error_msg)
+    else:
+        if not os.path.exists(case_folder):
+            error_msg = f"Case folder ({case_folder}) not found, but is needed if global vars filename not specified"
+            raise FileNotFoundError(error_msg)
+        filename = os.path.join(case_folder, "constant", "globalVars")
+
+    logger.debug(f"Reading {filename}")
+
+    # Now read globalVars
+    globalVars_dict = {}
+    with open(filename, "r") as f:
+        for line in f:
+            # Remove comments
+            line = line.split("//", 1)[0].strip()
+            if not line:
+                continue  # skip empty/comment-only lines
+
+            # Ensure it ends with ;
+            if not line.endswith(";"):
+                continue
+            line = line[:-1].strip()  # remove trailing ;
+
+            # Split key and value
+            parts = line.split(None, 1)  # split on first whitespace
+            if len(parts) != 2:
+                continue
+            key, value = parts
+            logger.debug(f"\tReading {key}")
+
+            # Keep calc expressions as-is
+            if value.startswith("#calc"):
+                globalVars_dict[key] = value
+            else:
+                # Try numeric conversion otherwise store value as str
+                try:
+                    val = float(value)
+                    if val.is_integer():
+                        val = int(val)
+                    globalVars_dict[key] = val
+                except ValueError:
+                    globalVars_dict[key] = value
+
+    return globalVars_dict
