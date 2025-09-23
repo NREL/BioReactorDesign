@@ -915,7 +915,11 @@ def compute_instantaneous_kla(
     field_dict: dict | None = None,
 ) -> tuple[dict, dict, dict]:
     r"""
-    Calculate kLa and saturation concentration (Cstar) from instantaneous data (rather than doing a fit over time)
+    Calculate :math:`kLa_{\rm spec}` and saturation concentration (:math:`C^*_{\rm spec}`) for a list of species from instantaneous data (rather than doing a fit over time).
+
+    :math:`kLa_{\rm spec}` for the species computed from Eq 7 and 8 in "Computational fluid dynamics study of full-scale aerobic bioreactors: Evaluation of gas–liquid mass transfer, oxygen uptake, and dynamic oxygen distribution", M. J. Rahimi, H. Sitaraman, D. Humbird, J. J. Stickel, Chem. Eng. Research and Design, Vol. 139, pp 293-295, 2018.
+
+
 
     .. math::
 
@@ -923,11 +927,15 @@ def compute_instantaneous_kla(
 
     .. math::
 
-       kLa_{\rm spec} = (1.13\times 3600) Re^{1/2} \frac{\mu_{\rm liq}}{D_{\rm spec}^{1/2} \rho_{\rm liq}} \frac{D_{\rm spec}}{d_{\rm gas}} \frac{6}{d_{\rm gas}} \alpha_{\rm gas}
+       kLa_{\rm spec} = 3600 \sqrt{\frac{4 D_{\rm spec} |u_{\rm slip}|}{\pi d_{\rm gas}}} \frac{6 \alpha_{\rm gas}}{d_{\rm gas}}
 
     .. math::
 
-       Re = \frac{\rho_{\rm liq} |U_{\rm gas}-U_{\rm liq}| d_{\rm gas}}{\mu_{\rm liq}}
+       kLa_{\rm spec} = (\frac{2}{\pi^{1/2}} \times 3600) Re^{1/2} \frac{\mu_{\rm liq}^{1/2}}{D_{\rm spec}^{1/2} \rho_{\rm liq}^{1/2}} \frac{D_{\rm spec}}{d_{\rm gas}} \frac{6}{d_{\rm gas}} \alpha_{\rm gas}
+
+    .. math::
+
+       Re = \frac{\rho_{\rm liq} |u_{\rm slip}| d_{\rm gas}}{\mu_{\rm liq}}
 
     where:
       - :math:`kLa_{\rm spec}` is the mass transfer rate in :math:`h^{-1}`
@@ -935,13 +943,15 @@ def compute_instantaneous_kla(
       - :math:`\alpha_{\rm gas}` is the volume fraction of gas
       - :math:`\mu_{\rm liq}` is the liquid viscosity in :math:`kg.m^{-1}.s^{-1}`
       - :math:`\rho_{\rm liq}` is the liquid density in :math:`kg.m^{-3}`
-      - :math:`D_{\rm spec}` is the species diffusivity in :math:`m^2.s^{-1}`
-      - :math:`|U_{\rm gas}-U_{\rm liq}|` is the magnitude of the slip velocity in :math:`m.s^{-1}`
+      - :math:`D_{\rm spec}` is the species molecular diffusivity in :math:`m^2.s^{-1}`
+      - :math:`|u_{\rm slip}|` is the magnitude of the slip velocity in :math:`m.s^{-1}`
       - :math:`V_{\rm liq}` is the volume of liquid in :math:`m^3`
 
      .. math::
 
        \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} C^*_{\rm spec} dV
+
+    :math:`C^*_{\rm spec}` computed from Eq 10 in "Computational fluid dynamics study of full-scale aerobic bioreactors: Evaluation of gas–liquid mass transfer, oxygen uptake, and dynamic oxygen distribution", M. J. Rahimi, H. Sitaraman, D. Humbird, J. J. Stickel, Chem. Eng. Research and Design, Vol. 139, pp 293-295, 2018.
 
      .. math::
 
@@ -1020,9 +1030,7 @@ def compute_instantaneous_kla(
             raise KeyError(err_msg)
 
     # Get liquid domain
-    ind_liq, field_dict = _get_ind_liq(
-        field_dict=field_dict, threshold=0.4, **kwargs
-    )
+    ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
     # Read all the fields
     alpha_gas, field_dict = read_field(
@@ -1054,6 +1062,7 @@ def compute_instantaneous_kla(
 
     # Only compute over the liquid
     alpha_gas = _field_filter(alpha_gas, ind=ind_liq, field_type="scalar")
+    alpha_liq = _field_filter(alpha_liq, ind=ind_liq, field_type="scalar")
     rho_liq = _field_filter(rho_liq, ind=ind_liq, field_type="scalar")
     rho_gas = _field_filter(rho_gas, ind=ind_liq, field_type="scalar")
     U_gas = _field_filter(U_gas, ind=ind_liq, field_type="vector")
@@ -1076,13 +1085,13 @@ def compute_instantaneous_kla(
     kla_spec_field = {}
     for species_name in species_names:
         kla_spec_field[species_name] = (
-            1.13
+            (2 / np.pi**0.5)
+            * 3600
             * (Re**0.5)
             * (((mu_liq / rho_liq) / globalVars[f"D_{species_name}"]) ** 0.5)
             * (globalVars[f"D_{species_name}"] / d_gas)
             * (6.0 / d_gas)
             * alpha_gas
-            * 3600
         )
     cstar_spec_field = {}
     for species_name in species_names:
@@ -1102,10 +1111,10 @@ def compute_instantaneous_kla(
     cstar_spec = {}
     for species_name in species_names:
         kla_spec[species_name] = np.sum(
-            cell_volume * kla_spec_field[species_name]
-        ) / np.sum(cell_volume)
+            cell_volume * alpha_liq * kla_spec_field[species_name]
+        ) / np.sum(cell_volume * alpha_liq)
         cstar_spec[species_name] = np.sum(
-            cell_volume * cstar_spec_field[species_name]
-        ) / np.sum(cell_volume)
+            cell_volume * alpha_liq * cstar_spec_field[species_name]
+        ) / np.sum(cell_volume * alpha_liq)
 
     return kla_spec, cstar_spec, field_dict
