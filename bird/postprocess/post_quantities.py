@@ -64,11 +64,13 @@ def _field_filter(
 def _get_ind_liq(
     case_folder: str,
     time_folder: str,
+    threshold: float = 0.5,
     n_cells: int | None = None,
     field_dict: dict | None = None,
 ) -> tuple[np.ndarray | float, dict]:
     """
-    Get indices of pure liquid cells (where alpha.liquid > 0.5)
+    Get indices of pure liquid cells (where alpha.liquid > threshold)
+    Threshold is 0.5 by default
 
     Parameters
     ----------
@@ -76,6 +78,9 @@ def _get_ind_liq(
         Path to case folder
     time_folder: str
         Name of time folder to analyze
+    threshold: float
+        Liquid is when alpha_liq > threshold
+        Assumes threshold = 0.5 by default
     n_cells : int | None
         Number of cells in the domain.
         If None, it will deduced from the field reading
@@ -99,8 +104,12 @@ def _get_ind_liq(
         "time_folder": time_folder,
         "n_cells": n_cells,
     }
+    assert threshold <= 1
+    assert threshold >= 0
 
-    logger.warning("Assuming that alpha_liq > 0.5 denotes pure liquid")
+    logger.warning(
+        f"Assuming that alpha_liq > {threshold} denotes pure liquid"
+    )
 
     # Compute indices of pure liquid
     if not ("ind_liq" in field_dict) or field_dict["ind_liq"] is None:
@@ -111,7 +120,7 @@ def _get_ind_liq(
             n_cells=n_cells,
             field_dict=field_dict,
         )
-        ind_liq = np.argwhere(alpha_liq > 0.5)
+        ind_liq = np.argwhere(alpha_liq > threshold)[:, 0]
         field_dict["ind_liq"] = ind_liq
     else:
         ind_liq = field_dict["ind_liq"]
@@ -122,11 +131,13 @@ def _get_ind_liq(
 def _get_ind_gas(
     case_folder: str,
     time_folder: str,
+    threshold: float = 0.5,
     n_cells: int | None = None,
     field_dict: dict | None = None,
 ) -> tuple[np.ndarray | float, dict]:
     """
-    Get indices of pure gas cells (where alpha.liquid <= 0.5)
+    Get indices of pure gas cells (where alpha.liquid <= threshold)
+    Threshold is 0.5 by default
 
     Parameters
     ----------
@@ -134,6 +145,9 @@ def _get_ind_gas(
         Path to case folder
     time_folder: str
         Name of time folder to analyze
+    threshold: float
+        Gas is when alpha_liq <= threshold
+        Assumes threshold = 0.5 by default
     n_cells : int | None
         Number of cells in the domain.
         If None, it will deduced from the field reading
@@ -157,8 +171,10 @@ def _get_ind_gas(
         "time_folder": time_folder,
         "n_cells": n_cells,
     }
+    assert threshold <= 1
+    assert threshold >= 0
 
-    logger.warning("Assuming that alpha_liq <= 0.5 denotes pure gas")
+    logger.warning(f"Assuming that alpha_liq <= {threshold} denotes pure gas")
 
     # Compute indices of pure liquid
     if not ("ind_gas" in field_dict) or field_dict["ind_gas"] is None:
@@ -169,7 +185,7 @@ def _get_ind_gas(
             n_cells=n_cells,
             field_dict=field_dict,
         )
-        ind_gas = np.argwhere(alpha_liq <= 0.5)
+        ind_gas = np.argwhere(alpha_liq <= threshold)
         field_dict["ind_gas"] = ind_gas
     else:
         ind_gas = field_dict["ind_gas"]
@@ -297,9 +313,9 @@ def compute_gas_holdup(
        \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} (1-\alpha_{\rm liq}) dV
 
     where:
-      - :math:`V_{\rm liq, tot}` is the total volume of liquid
+      - :math:`V_{\rm liq, tot}` is the total volume of liquid in :math:`m^3`
       - :math:`\alpha_{\rm liq}` is the liquid phase volume fraction
-      - :math:`V` is the volume of the cells where :math:`\alpha_{\rm liq}` is measured
+      - :math:`V` is the volume of the cells where :math:`\alpha_{\rm liq}` is measured in :math:`m^3`
 
     Parameters
     ----------
@@ -378,10 +394,10 @@ def compute_superficial_gas_velocity(
        \frac{1}{V_{\rm height, tot}} \int_{V_{\rm height}}  U_{\rm gas} \alpha_{\rm gas} dV
 
     where:
-      - :math:`V_{\rm height, tot}` is the total volume of cells near the axial location considered
+      - :math:`V_{\rm height, tot}` is the total volume of cells near the axial location considered in :math:`m^3`
       - :math:`\alpha_{\rm gas}` is the gas phase volume fraction
-      - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction
-      - :math:`V_{\rm height}` is the local volume of the cells where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered)
+      - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction in :math:`m.s^{-1}`
+      - :math:`V_{\rm height}` is the local volume of the cells where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered) in :math:`m^3`
 
 
     With the paraview operations (`use_pv==True`)
@@ -390,10 +406,10 @@ def compute_superficial_gas_velocity(
        \frac{1}{S_{\rm height, tot}} \int_{S_{\rm height}}  U_{\rm gas} \alpha_{\rm gas} dS
 
     where:
-      - :math:`S_{\rm height, tot}` is the total area of the slice at the axial location considered and normal tot the direction considered
+      - :math:`S_{\rm height, tot}` is the total area of the slice at the axial location considered and normal tot the direction considered in :math:`m^2`
       - :math:`\alpha_{\rm gas}` is the gas phase volume fraction
-      - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction
-      - :math:`S_{\rm height}` is the local area of the slice where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered)
+      - :math:`U_{\rm gas}` is the gas phase velocity along the axial direction in :math:`m.s^{-1}`
+      - :math:`S_{\rm height}` is the local area of the slice where :math:`U_{\rm gas} \alpha_{\rm gas}` is measured (near the axial location considered) in :math:`m^2`
 
 
     Parameters
@@ -824,9 +840,9 @@ def compute_ave_bubble_diam(
        \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} d_{\rm gas} dV
 
     where:
-      - :math:`V_{\rm liq, tot}` is the toal volume of liquid
-      - :math:`d_{\rm gas}` is the bubble diameter
-      - :math:`V_{\rm liq}` is the volume of liquid where :math:`d_{\rm gas}` is measured
+      - :math:`V_{\rm liq, tot}` is the toal volume of liquid in :math:`m^3`
+      - :math:`d_{\rm gas}` is the bubble diameter in :math:`m`
+      - :math:`V_{\rm liq}` is the volume of liquid where :math:`d_{\rm gas}` is measured in :math:`m^3`
 
 
     Parameters
@@ -888,3 +904,217 @@ def compute_ave_bubble_diam(
     )
 
     return diam, field_dict
+
+
+def compute_instantaneous_kla(
+    case_folder: str,
+    time_folder: str,
+    species_names: list[str],
+    n_cells: int | None = None,
+    volume_time: str | None = None,
+    field_dict: dict | None = None,
+) -> tuple[dict, dict, dict]:
+    r"""
+    Calculate :math:`kLa_{\rm spec}` and saturation concentration (:math:`C^*_{\rm spec}`) for a list of species from instantaneous data (rather than doing a fit over time).
+
+    :math:`kLa_{\rm spec}` for the species computed from Eq 7 and 8 in "Computational fluid dynamics study of full-scale aerobic bioreactors: Evaluation of gas–liquid mass transfer, oxygen uptake, and dynamic oxygen distribution", M. J. Rahimi, H. Sitaraman, D. Humbird, J. J. Stickel, Chem. Eng. Research and Design, Vol. 139, pp 293-295, 2018.
+
+
+
+    .. math::
+
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} kLa_{\rm spec} dV
+
+    .. math::
+
+       kLa_{\rm spec} = 3600 \sqrt{\frac{4 D_{\rm spec} |u_{\rm slip}|}{\pi d_{\rm gas}}} \frac{6 \alpha_{\rm gas}}{d_{\rm gas}}
+
+    .. math::
+
+       kLa_{\rm spec} = (\frac{2}{\pi^{1/2}} \times 3600) Re^{1/2} \frac{\mu_{\rm liq}^{1/2}}{D_{\rm spec}^{1/2} \rho_{\rm liq}^{1/2}} \frac{D_{\rm spec}}{d_{\rm gas}} \frac{6}{d_{\rm gas}} \alpha_{\rm gas}
+
+    .. math::
+
+       Re = \frac{\rho_{\rm liq} |u_{\rm slip}| d_{\rm gas}}{\mu_{\rm liq}}
+
+    where:
+      - :math:`kLa_{\rm spec}` is the mass transfer rate in :math:`h^{-1}`
+      - :math:`d_{\rm gas}` is the bubble diameter in :math:`m`
+      - :math:`\alpha_{\rm gas}` is the volume fraction of gas
+      - :math:`\mu_{\rm liq}` is the liquid viscosity in :math:`kg.m^{-1}.s^{-1}`
+      - :math:`\rho_{\rm liq}` is the liquid density in :math:`kg.m^{-3}`
+      - :math:`D_{\rm spec}` is the species molecular diffusivity in :math:`m^2.s^{-1}`
+      - :math:`|u_{\rm slip}|` is the magnitude of the slip velocity in :math:`m.s^{-1}`
+      - :math:`V_{\rm liq}` is the volume of liquid in :math:`m^3`
+
+     .. math::
+
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} C^*_{\rm spec} dV
+
+    :math:`C^*_{\rm spec}` computed from Eq 10 in "Computational fluid dynamics study of full-scale aerobic bioreactors: Evaluation of gas–liquid mass transfer, oxygen uptake, and dynamic oxygen distribution", M. J. Rahimi, H. Sitaraman, D. Humbird, J. J. Stickel, Chem. Eng. Research and Design, Vol. 139, pp 293-295, 2018.
+
+     .. math::
+
+       C^*_{\rm spec} = \rho_{\rm gas} Y_{\rm spec, gas} He_{\rm spec} / W_{\rm spec}
+
+     and
+      - :math:`C^{*}_{\rm spec}` is the saturation concentration of species spec in :math:`mol.m^{-3}`
+      - :math:`\rho_{\rm gas}` is the density of the gas in :math:`kg.m^{-3}`
+      - :math:`Y_{\rm spec, gas}` is the mass fraction of species spec in the gas phase
+      - :math:`He_{\rm spec}` is the Henry's constant of species spec
+      - :math:`W_{\rm spec}` is the molar mass of species spec in :math:`kg.mol^{-1}`
+
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str
+        Name of time folder to analyze
+    species_names: list[str]
+        List of species name for which to compute kla
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    volume_time : str | None
+        Time folder to read to get the cell volumes.
+        If None, finds volume time automatically
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    kla_spec: dict
+        Instantaneous volume averaged kLa for each species
+        Keys are species names
+        Values are the kLa values
+    cstar_spec: dict
+        Instantaneous volume averaged cstar for each species
+        Keys are species names
+        Values are the cstar values
+    field_dict : dict
+        Dictionary of fields read
+    """
+    if field_dict is None:
+        field_dict = {}
+
+    # Read relevant fields
+    kwargs = {
+        "case_folder": case_folder,
+        "time_folder": time_folder,
+        "n_cells": n_cells,
+    }
+    kwargs_vol = {
+        "case_folder": case_folder,
+        "time_folder": volume_time,
+        "n_cells": n_cells,
+    }
+
+    # Read globarVars into a python dict
+    # Replace all the #calc entries with their numeral values
+    globalVars = read_global_vars(case_folder=case_folder, cross_ref=True)
+
+    # Check that global vars has the values we want and provide a useful error message otherwise
+    for species_name in species_names:
+        if not f"He_{species_name}" in globalVars:
+            err_msg = f"He_{species_name} was not found in globalVars."
+            err_msg += f'\nIf you add it, it should be looking like #calc "$H_{species_name}_298 * exp($DH_{species_name} *(1. / $T0 - 1./298.15))";'
+            raise KeyError(err_msg)
+        if not f"Mw_{species_name}" in globalVars:
+            err_msg = f"Mw_{species_name} was not found in globalVars."
+            err_msg += "\nIf you add it, it should be [kg/mol]"
+            raise KeyError(err_msg)
+        if not f"D_{species_name}" in globalVars:
+            err_msg = f"D_{species_name} was not found in globalVars."
+            err_msg += f'\nIf you add it, it should be looking like #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_{species_name},0.6)";'
+            raise KeyError(err_msg)
+
+    # Get liquid domain
+    ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
+
+    # Read all the fields
+    alpha_gas, field_dict = read_field(
+        field_name="alpha.gas", field_dict=field_dict, **kwargs
+    )
+    rho_liq, field_dict = read_field(
+        field_name="thermo:rho.liquid", field_dict=field_dict, **kwargs
+    )
+    rho_gas, field_dict = read_field(
+        field_name="thermo:rho.gas", field_dict=field_dict, **kwargs
+    )
+    U_gas, field_dict = read_field(
+        field_name="U.gas", field_dict=field_dict, **kwargs
+    )
+    U_liq, field_dict = read_field(
+        field_name="U.liquid", field_dict=field_dict, **kwargs
+    )
+    d_gas, field_dict = read_field(
+        field_name="d.gas", field_dict=field_dict, **kwargs
+    )
+    mu_liq, field_dict = read_field(
+        field_name="thermo:mu.liquid", field_dict=field_dict, **kwargs
+    )
+    species_gas = {}
+    for species_name in species_names:
+        species_gas[species_name], field_dict = read_field(
+            field_name=f"{species_name}.gas", field_dict=field_dict, **kwargs
+        )
+
+    # Only compute over the liquid
+    alpha_gas = _field_filter(alpha_gas, ind=ind_liq, field_type="scalar")
+    alpha_liq = 1 - alpha_gas
+    rho_liq = _field_filter(rho_liq, ind=ind_liq, field_type="scalar")
+    rho_gas = _field_filter(rho_gas, ind=ind_liq, field_type="scalar")
+    U_gas = _field_filter(U_gas, ind=ind_liq, field_type="vector")
+    U_liq = _field_filter(U_liq, ind=ind_liq, field_type="vector")
+    d_gas = _field_filter(d_gas, ind=ind_liq, field_type="scalar")
+    mu_liq = _field_filter(mu_liq, ind=ind_liq, field_type="scalar")
+    for species_name in species_names:
+        species_gas[species_name] = _field_filter(
+            species_gas[species_name], ind=ind_liq, field_type="scalar"
+        )
+
+    mag_U_diff = np.sqrt(
+        (U_gas[:, 0] - U_liq[:, 0]) ** 2
+        + (U_gas[:, 1] - U_liq[:, 1]) ** 2
+        + (U_gas[:, 2] - U_liq[:, 2]) ** 2
+    )
+
+    # Compute kLa
+    Re = rho_liq * mag_U_diff * d_gas / mu_liq
+    kla_spec_field = {}
+    for species_name in species_names:
+        kla_spec_field[species_name] = (
+            (2 / np.pi**0.5)
+            * 3600
+            * (Re**0.5)
+            * (((mu_liq / rho_liq) / globalVars[f"D_{species_name}"]) ** 0.5)
+            * (globalVars[f"D_{species_name}"] / d_gas)
+            * (6.0 / d_gas)
+            * alpha_gas
+        )
+    cstar_spec_field = {}
+    for species_name in species_names:
+        cstar_spec_field[species_name] = (
+            rho_gas
+            * species_gas[species_name]
+            * globalVars[f"He_{species_name}"]
+        ) / globalVars[f"Mw_{species_name}"]
+
+    # Do volume average
+    cell_volume, field_dict = read_cell_volumes(
+        field_dict=field_dict, **kwargs_vol
+    )
+    cell_volume = _field_filter(cell_volume, ind=ind_liq, field_type="scalar")
+
+    kla_spec = {}
+    cstar_spec = {}
+    for species_name in species_names:
+        kla_spec[species_name] = np.sum(
+            cell_volume * alpha_liq * kla_spec_field[species_name]
+        ) / np.sum(cell_volume * alpha_liq)
+        cstar_spec[species_name] = np.sum(
+            cell_volume * alpha_liq * cstar_spec_field[species_name]
+        ) / np.sum(cell_volume * alpha_liq)
+
+    return kla_spec, cstar_spec, field_dict

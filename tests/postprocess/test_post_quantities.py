@@ -252,6 +252,63 @@ def test_ave_conc_liq():
     assert abs(ave_conc_h22 - ave_conc_h2) < 1e-12
 
 
+def test_instantaneous_kla():
+    """
+    Test for instantaneous kla calculation
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+    )
+    field_dict = {}
+    kla_spec1, cstar_spec1, _ = compute_instantaneous_kla(
+        species_names=["CO2", "CO", "H2"],
+        case_folder=case_folder,
+        time_folder="79",
+        n_cells=None,
+        volume_time="1",
+    )
+    kla_spec2, cstar_spec2, _ = compute_instantaneous_kla(
+        species_names=["CO2"],
+        case_folder=case_folder,
+        time_folder="79",
+        n_cells=None,
+        volume_time="1",
+    )
+    # Make sure list of species allows to compute what we expect
+    assert abs(kla_spec2["CO2"] - kla_spec1["CO2"]) / kla_spec1["CO2"] < 1e-6
+    assert (
+        abs(cstar_spec2["CO2"] - cstar_spec1["CO2"]) / cstar_spec1["CO2"]
+        < 1e-6
+    )
+    kla_spec3, cstar_spec3, _ = compute_instantaneous_kla(
+        species_names=["CO2"],
+        case_folder=case_folder,
+        time_folder="79",
+    )
+    # Make sure None arguments are correctly handled
+    assert abs(kla_spec3["CO2"] - kla_spec1["CO2"]) / kla_spec1["CO2"] < 1e-6
+    assert (
+        abs(cstar_spec3["CO2"] - cstar_spec1["CO2"]) / cstar_spec1["CO2"]
+        < 1e-6
+    )
+    kla_spec4, cstar_spec4, _ = compute_instantaneous_kla(
+        species_names=["CO2"],
+        case_folder=case_folder,
+        time_folder="80",
+    )
+    # Make sure values change over time
+    assert abs(kla_spec4["CO2"] - kla_spec1["CO2"]) / kla_spec1["CO2"] > 1e-6
+    assert (
+        abs(cstar_spec4["CO2"] - cstar_spec1["CO2"]) / cstar_spec1["CO2"]
+        > 1e-6
+    )
+
+
 if __name__ == "__main__":
     test_compute_superficial_gas_velocity()
     test_compute_gh()
