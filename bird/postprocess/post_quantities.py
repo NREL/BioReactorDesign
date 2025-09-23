@@ -1062,7 +1062,7 @@ def compute_instantaneous_kla(
 
     # Only compute over the liquid
     alpha_gas = _field_filter(alpha_gas, ind=ind_liq, field_type="scalar")
-    alpha_liq = _field_filter(alpha_liq, ind=ind_liq, field_type="scalar")
+    alpha_liq = 1 - alpha_gas
     rho_liq = _field_filter(rho_liq, ind=ind_liq, field_type="scalar")
     rho_gas = _field_filter(rho_gas, ind=ind_liq, field_type="scalar")
     U_gas = _field_filter(U_gas, ind=ind_liq, field_type="vector")

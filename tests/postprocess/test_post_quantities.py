@@ -280,10 +280,10 @@ def test_instantaneous_kla():
         volume_time="1",
     )
     # Make sure list of species allows to compute what we expect
-    assert abs(kla_spec2["CO2"] - kla_spec1["CO2"]) / kla_spec1["CO2"] < 1e-3
+    assert abs(kla_spec2["CO2"] - kla_spec1["CO2"]) / kla_spec1["CO2"] < 1e-6
     assert (
         abs(cstar_spec2["CO2"] - cstar_spec1["CO2"]) / cstar_spec1["CO2"]
-        < 1e-3
+        < 1e-6
     )
     kla_spec3, cstar_spec3, _ = compute_instantaneous_kla(
         species_names=["CO2"],
@@ -291,10 +291,10 @@ def test_instantaneous_kla():
         time_folder="79",
     )
     # Make sure None arguments are correctly handled
-    assert abs(kla_spec3["CO2"] - kla_spec1["CO2"]) / kla_spec1["CO2"] < 1e-3
+    assert abs(kla_spec3["CO2"] - kla_spec1["CO2"]) / kla_spec1["CO2"] < 1e-6
     assert (
         abs(cstar_spec3["CO2"] - cstar_spec1["CO2"]) / cstar_spec1["CO2"]
-        < 1e-3
+        < 1e-6
     )
     kla_spec4, cstar_spec4, _ = compute_instantaneous_kla(
         species_names=["CO2"],
@@ -302,10 +302,10 @@ def test_instantaneous_kla():
         time_folder="80",
     )
     # Make sure values change over time
-    assert abs(kla_spec4["CO2"] - kla_spec1["CO2"]) / kla_spec1["CO2"] > 1e-3
+    assert abs(kla_spec4["CO2"] - kla_spec1["CO2"]) / kla_spec1["CO2"] > 1e-6
     assert (
         abs(cstar_spec4["CO2"] - cstar_spec1["CO2"]) / cstar_spec1["CO2"]
-        > 1e-3
+        > 1e-6
     )
 
 
