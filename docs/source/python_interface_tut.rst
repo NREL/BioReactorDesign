@@ -14,7 +14,7 @@ The tutorial assumes you have created and activated the ``bird`` environment and
 
 The case and the data correspond to a coflowing bubble column.
 
-This tutorial is code-along, meaning to that you can execute the commands listed in the code-blocks. You can also execute the entirety of the tutorial in ``$DCM_CASE/python_interface_tut.py``
+This tutorial is code-along, meaning to that you can execute the commands listed in the code-blocks. You can also execute the entirety of the tutorial by doing ``python ${BIRD_HOME}/../tutorial_cases/postprocess/python_interface_tut.py``
 
 Reading fields
 ------------
@@ -103,6 +103,7 @@ A typical example is that one would want to compute at time 80
 2. superficial velocity (``sup_vel``)
 3. reactor volume averaged mass fraction of CO2 in the liquid phase (``y_ave_co2``)
 4. reactor volume averaged concentration of CO2 in the liquid phase (``c_ave_co2``)
+4. reactor volume averaged kLa for CO2 and saturation concentration for CO2 (``kla`` and ``cstar``)
 5. Reactor averaged bubble diameter (``diam``)
 
 Several of these quantities, will require reading and processing the same fields. For example, both ``y_ave_co2`` and ``c_ave_co2`` require to read ``CO2.liquid``. To avoid re-reading the same fields, we store the fields in ``field_dict`` that allows to reuse fields when possible.
@@ -143,7 +144,16 @@ Several of these quantities, will require reading and processing the same fields
    )
    print("fields stored = ", list(field_dict.keys()))
    print(f"Reactor averaged [CO2] = {c_ave_co2:.4g} mol/m3")
-   
+
+   kla, cstar, field_dict = compute_instantaneous_kla(
+       species_names=["CO2"],
+       field_dict=field_dict,
+       **kwargs,
+   )
+   print("fields stored = ", list(field_dict.keys()))
+   print(f"Reactor averaged kLa = {kla['CO2']:.4g} h-1")
+   print(f"Reactor averaged cstar_co2 = {cstar['CO2']:.4g} mol/m3")   
+ 
    # Compute reactor-averaged bubble diameter
    diam, field_dict = compute_ave_bubble_diam(
        field_dict=field_dict, **kwargs
@@ -166,7 +176,10 @@ This should generate the following
    Reactor averaged YCO2 = 0.0002948
    fields stored =  ['cell_centers', 'alpha.liquid', 'ind_liq', 'V', 'alpha.gas', 'U.gas', 'ind_height_4.6', 'CO2.liquid', 'rho_liq']
    Reactor averaged [CO2] = 6.698 mol/m3
-   fields stored =  ['cell_centers', 'alpha.liquid', 'ind_liq', 'V', 'alpha.gas', 'U.gas', 'ind_height_4.6', 'CO2.liquid', 'rho_liq', 'd.gas']
+   fields stored =  ['cell_centers', 'alpha.liquid', 'ind_liq', 'V', 'alpha.gas', 'U.gas', 'ind_location_4.6', 'CO2.liquid', 'rho_liq', 'thermo:rho.liquid', 'thermo:rho.gas', 'U.liquid', 'd.gas', 'thermo:mu.liquid', 'CO2.gas']
+   Reactor averaged kLa = 258.4 h-1
+   Reactor averaged cstar_co2 = 6.878 mol/m3
+   fields stored =  ['cell_centers', 'alpha.liquid', 'ind_liq', 'V', 'alpha.gas', 'U.gas', 'ind_location_4.6', 'CO2.liquid', 'rho_liq', 'thermo:rho.liquid', 'thermo:rho.gas', 'U.liquid', 'd.gas', 'thermo:mu.liquid', 'CO2.gas']
    Reactor averaged bubble diameter = 0.008497 m
 
 
