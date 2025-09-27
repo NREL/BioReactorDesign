@@ -1111,8 +1111,8 @@ def compute_instantaneous_kla(
     cstar_spec = {}
     for species_name in species_names:
         kla_spec[species_name] = np.sum(
-            cell_volume * alpha_liq * kla_spec_field[species_name]
-        ) / np.sum(cell_volume * alpha_liq)
+            cell_volume * kla_spec_field[species_name]
+        ) / np.sum(cell_volume)
         cstar_spec[species_name] = np.sum(
             cell_volume * alpha_liq * cstar_spec_field[species_name]
         ) / np.sum(cell_volume * alpha_liq)

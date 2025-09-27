@@ -6,6 +6,11 @@ from bird.utilities.ofio import *
 
 case_folder = os.path.join(
     Path(__file__).parent,
+    "..",
+    "..",
+    "bird",
+    "postprocess",
+    "data_conditional_mean",
 )
 
 # Read cell centers
@@ -70,6 +75,14 @@ c_ave_co2, field_dict = compute_ave_conc_liq(
 )
 print("fields stored = ", list(field_dict.keys()))
 print(f"Reactor averaged [CO2] = {c_ave_co2:.4g} mol/m3")
+kla, cstar, field_dict = compute_instantaneous_kla(
+    species_names=["CO2"],
+    field_dict=field_dict,
+    **kwargs,
+)
+print("fields stored = ", list(field_dict.keys()))
+print(f"Reactor averaged kLa = {kla['CO2']:.4g} h-1")
+print(f"Reactor averaged cstar_co2 = {cstar['CO2']:.4g} mol/m3")
 diam, field_dict = compute_ave_bubble_diam(field_dict=field_dict, **kwargs)
 print("fields stored = ", list(field_dict.keys()))
 print(f"Reactor averaged bubble diameter = {diam:.4g} m")
