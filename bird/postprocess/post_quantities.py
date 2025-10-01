@@ -1057,7 +1057,7 @@ def compute_instantaneous_kla(
             field_name="d.gas", field_dict=field_dict, **kwargs
         )
     except FileNotFoundError:
-        d_gas = constant_diameter
+        d_gas = constant_bubble_diameter
     mu_liq, field_dict = read_field(
         field_name="thermo:mu.liquid", field_dict=field_dict, **kwargs
     )
