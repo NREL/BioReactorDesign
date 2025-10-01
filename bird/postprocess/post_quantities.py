@@ -884,9 +884,7 @@ def compute_ave_bubble_diam(
     alpha_liq, field_dict = read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
-    d_gas, field_dict = read_bubble_diameter(
-        field_name="d.gas", field_dict=field_dict, **kwargs
-    )
+    d_gas, field_dict = read_bubble_diameter(field_dict=field_dict, **kwargs)
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
     cell_volume, field_dict = read_cell_volumes(
@@ -998,7 +996,7 @@ def compute_instantaneous_kla(
     if field_dict is None:
         field_dict = {}
 
-    if isinstance(species_names, "str"):
+    if isinstance(species_names, str):
         species_names = [species_names]
 
     # Read relevant fields
@@ -1051,9 +1049,7 @@ def compute_instantaneous_kla(
     U_liq, field_dict = read_field(
         field_name="U.liquid", field_dict=field_dict, **kwargs
     )
-    d_gas, field_dict = read_bubble_diameter(
-        field_name="d.gas", field_dict=field_dict, **kwargs
-    )
+    d_gas, field_dict = read_bubble_diameter(field_dict=field_dict, **kwargs)
     mu_liq, field_dict = read_field(
         field_name="thermo:mu.liquid", field_dict=field_dict, **kwargs
     )
