@@ -884,7 +884,7 @@ def compute_ave_bubble_diam(
     alpha_liq, field_dict = read_field(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
-    d_gas, field_dict = read_field(
+    d_gas, field_dict = read_bubble_diameter(
         field_name="d.gas", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
@@ -909,10 +909,9 @@ def compute_ave_bubble_diam(
 def compute_instantaneous_kla(
     case_folder: str,
     time_folder: str,
-    species_names: list[str],
+    species_names: str | list[str],
     n_cells: int | None = None,
     volume_time: str | None = None,
-    constant_bubble_diameter: float | None = None,
     field_dict: dict | None = None,
 ) -> tuple[dict, dict, dict]:
     r"""
@@ -972,7 +971,7 @@ def compute_instantaneous_kla(
         Path to case folder
     time_folder: str
         Name of time folder to analyze
-    species_names: list[str]
+    species_names: str | list[str]
         List of species name for which to compute kla
     n_cells : int | None
         Number of cells in the domain.
@@ -980,9 +979,6 @@ def compute_instantaneous_kla(
     volume_time : str | None
         Time folder to read to get the cell volumes.
         If None, finds volume time automatically
-    constant_bubble_diameter : float | None
-        Constant bubble diameter value (in m) to handle missing d.gas
-        If None, reads d.gas
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
@@ -1001,6 +997,9 @@ def compute_instantaneous_kla(
     """
     if field_dict is None:
         field_dict = {}
+
+    if isinstance(species_names, "str"):
+        species_names = [species_names]
 
     # Read relevant fields
     kwargs = {
@@ -1052,12 +1051,9 @@ def compute_instantaneous_kla(
     U_liq, field_dict = read_field(
         field_name="U.liquid", field_dict=field_dict, **kwargs
     )
-    try:
-        d_gas, field_dict = read_field(
-            field_name="d.gas", field_dict=field_dict, **kwargs
-        )
-    except FileNotFoundError:
-        d_gas = constant_bubble_diameter
+    d_gas, field_dict = read_bubble_diameter(
+        field_name="d.gas", field_dict=field_dict, **kwargs
+    )
     mu_liq, field_dict = read_field(
         field_name="thermo:mu.liquid", field_dict=field_dict, **kwargs
     )

@@ -967,6 +967,84 @@ def read_cell_volumes(
     return cell_volumes, field_dict
 
 
+def read_bubble_diameter(
+    case_folder: str,
+    time_folder: str | None = None,
+    n_cells: int | None = None,
+    field_dict: dict | None = None,
+) -> tuple[np.ndarray | float, dict]:
+    """
+    Read bubble diameter at a given time and store it in dictionary for later reuse.
+    A specific function is constructed so that if d.gas is not available, the bubble
+    diameter is read from phaseProperties.
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str | None
+        Name of time folder to analyze.
+        If None, it will be found automatically
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    field_dict : dict | None
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    cell_volumes : np.ndarray | float
+        Field of cell volumes
+    field_dict : dict
+        Dictionary of fields read
+    """
+
+    if field_dict is None:
+        field_dict = {}
+
+    kwargs = {
+        "case_folder": case_folder,
+        "time_folder": time_folder,
+        "n_cells": n_cells,
+    }
+
+    if not ("d.gas" in field_dict) or field_dict["d.gas"] is None:
+        try:
+            d_gas, field_dict = read_field(
+                field_name="d.gas", field_dict=field_dict, **kwargs
+            )
+
+        except FileNotFoundError as err:
+            logger.debug(
+                "Could not find d.gas, checking if bubble size model is constant"
+            )
+            # d.gas does not exist, it might be because a constant bubble diameter model is used
+            phaseProperties_dict = read_openfoam_dict(
+                os.path.join(case_folder, "constant", "phaseProperties")
+            )
+            # If the bubble size model is not constant, raise original error
+            if (
+                not phaseProperties_dict["gas"]["diameterModel"].lower()
+                == "constant"
+            ):
+                logger.error(
+                    f"Bubble size model is not constant ({phaseProperties_dict['gas']['diameterModel']}), yet could not find d.gas"
+                )
+                raise FileNotFoundError(err)
+            else:
+                # Get the constant bubble diameter
+                logger.debug("Reading bubble diameter from phaseProperties")
+                d_gas = float(
+                    phaseProperties_dict["gas"]["constantCoeffs"]["d"]
+                )
+
+    else:
+        # Get field from dict if it has been read before
+        d_gas = field_dict["d.gas"]
+
+    return d_gas, field_dict
+
+
 def _cross_reference_global_vars(
     globalVars_dict: dict,
 ) -> dict:
