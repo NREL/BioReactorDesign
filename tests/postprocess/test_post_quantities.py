@@ -307,6 +307,17 @@ def test_instantaneous_kla():
         abs(cstar_spec4["CO2"] - cstar_spec1["CO2"]) / cstar_spec1["CO2"]
         > 1e-6
     )
+    kla_spec5, cstar_spec5, _ = compute_instantaneous_kla(
+        species_names="CO2",
+        case_folder=case_folder,
+        time_folder="80",
+    )
+    # Make sure values change over time
+    assert abs(kla_spec5["CO2"] - kla_spec1["CO2"]) / kla_spec1["CO2"] > 1e-6
+    assert (
+        abs(cstar_spec5["CO2"] - cstar_spec1["CO2"]) / cstar_spec1["CO2"]
+        > 1e-6
+    )
 
 
 if __name__ == "__main__":
