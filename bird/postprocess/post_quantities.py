@@ -981,7 +981,7 @@ def compute_instantaneous_kla(
         Time folder to read to get the cell volumes.
         If None, finds volume time automatically
     constant_bubble_diameter : float | None
-        Constant bubble diameter value to handle missing d.gas
+        Constant bubble diameter value (in m) to handle missing d.gas
         If None, reads d.gas
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
