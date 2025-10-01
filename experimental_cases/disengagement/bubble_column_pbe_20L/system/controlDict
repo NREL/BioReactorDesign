@@ -53,6 +53,12 @@ maxDeltaT       0.0005;
 
 functions
 {
+
+    #includeFunc    writeObjects(d.gas)
+    #includeFunc    writeObjects(thermo:rho.gas)
+    #includeFunc    writeObjects(thermo:rho.liquid)
+    #includeFunc    writeObjects(thermo:mu.gas)
+    #includeFunc    writeObjects(thermo:mu.liquid)
     disengagement
     {
         type            disengagement;
