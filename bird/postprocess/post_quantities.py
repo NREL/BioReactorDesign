@@ -912,6 +912,7 @@ def compute_instantaneous_kla(
     species_names: list[str],
     n_cells: int | None = None,
     volume_time: str | None = None,
+    constant_bubble_diameter: float | None = None,
     field_dict: dict | None = None,
 ) -> tuple[dict, dict, dict]:
     r"""
@@ -979,6 +980,9 @@ def compute_instantaneous_kla(
     volume_time : str | None
         Time folder to read to get the cell volumes.
         If None, finds volume time automatically
+    constant_bubble_diameter : float | None
+        Constant bubble diameter value to handle missing d.gas
+        If None, reads d.gas
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
@@ -1048,9 +1052,12 @@ def compute_instantaneous_kla(
     U_liq, field_dict = read_field(
         field_name="U.liquid", field_dict=field_dict, **kwargs
     )
-    d_gas, field_dict = read_field(
-        field_name="d.gas", field_dict=field_dict, **kwargs
-    )
+    try:
+        d_gas, field_dict = read_field(
+            field_name="d.gas", field_dict=field_dict, **kwargs
+        )
+    except FileNotFoundError:
+        d_gas = constant_diameter
     mu_liq, field_dict = read_field(
         field_name="thermo:mu.liquid", field_dict=field_dict, **kwargs
     )
