@@ -1159,11 +1159,11 @@ def compute_fitted_kla(
     kla_spec: dict
         Instantaneous volume averaged kLa for each species
         Keys are species names
-        Values are the kLa values
+        Values are dictionaries with key 'mean' (mean kLa value) and 'std' (1 standard deviation for the kLa value)
     cstar_spec: dict
         Instantaneous volume averaged cstar for each species
         Keys are species names
-        Values are the cstar values
+        Values are dictionaries with key 'mean' (mean cstar value) and 'std' (1 standard deviation for the cstar value)
     field_dict : dict
         Dictionary of fields read
     """
