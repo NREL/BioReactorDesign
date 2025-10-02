@@ -27,13 +27,13 @@ def check_phase_name(phase: str):
         raise NotImplementedError(error_msg)
 
 
-def get_species_name(case_dir: str, phase: str = "gas") -> list[str]:
+def get_species_name(case_folder: str, phase: str = "gas") -> list[str]:
     """
     Get list of species name in a phase
 
     Parameters
     ----------
-    case_dir: str
+    case_folder: str
         Path to OpenFOAM case
     phase: str
         Name of phase where to find the species
@@ -47,7 +47,9 @@ def get_species_name(case_dir: str, phase: str = "gas") -> list[str]:
     logger.debug(f"Finding species in phase '{phase}'")
 
     thermo_properties = read_openfoam_dict(
-        os.path.join(case_dir, "constant", f"thermophysicalProperties.{phase}")
+        os.path.join(
+            case_folder, "constant", f"thermophysicalProperties.{phase}"
+        )
     )
 
     try:
@@ -447,22 +449,24 @@ def update_liq_thermo_prop(
     return thermo_properties
 
 
-def write_species_properties(case_dir: str, phase: str = "gas") -> None:
+def write_species_properties(case_folder: str, phase: str = "gas") -> None:
     """
     Write thermo properties open foam dict
 
     Parameters
     ----------
-    case_dir: str
+    case_folder: str
         Path to OpenFOAM case
     phase: str
         Name of phase where to find the species
     """
-    logger.debug(f"Writing properties for phase '{phase}' in case {case_dir}")
-    species_name = get_species_name(case_dir=case_dir, phase=phase)
+    logger.debug(
+        f"Writing properties for phase '{phase}' in case {case_folder}"
+    )
+    species_name = get_species_name(case_folder=case_folder, phase=phase)
     species_prop = get_species_properties(species_name)
     thermo_properties_file = os.path.join(
-        case_dir, "constant", f"thermophysicalProperties.{phase}"
+        case_folder, "constant", f"thermophysicalProperties.{phase}"
     )
     thermo_properties = read_openfoam_dict(thermo_properties_file)
     pair_species_keys = get_species_key_pair(
@@ -477,7 +481,7 @@ def write_species_properties(case_dir: str, phase: str = "gas") -> None:
             thermo_properties, species_prop, pair_species_keys
         )
     filename = os.path.join(
-        case_dir, "constant", f"thermophysicalProperties.{phase}"
+        case_folder, "constant", f"thermophysicalProperties.{phase}"
     )
     write_openfoam_dict(thermo_properties_update, filename=filename)
 
@@ -485,8 +489,8 @@ def write_species_properties(case_dir: str, phase: str = "gas") -> None:
 if __name__ == "__main__":
     from bird import BIRD_DIR
 
-    case_dir = os.path.join(BIRD_DIR, "../experimental_cases/deckwer17")
-    write_species_properties(case_dir, phase="gas")
-    write_species_properties(case_dir, phase="liquid")
+    case_folder = os.path.join(BIRD_DIR, "../experimental_cases/deckwer17")
+    write_species_properties(case_folder, phase="gas")
+    write_species_properties(case_folder, phase="liquid")
     # fill_global_prop(os.path.join(BIRD_DIR,"../experimental_cases_new/disengagement/bubble_column_pbe_20L/"))
     # fill_global_prop(os.path.join(BIRD_DIR, "../experimental_cases_new/deckwer17"))

@@ -1248,6 +1248,19 @@ def species_name_to_mw(case_folder: str, species_name: str) -> float:
             if name in thermo:
                 mw = float(thermo[name]["specie"]["molWeight"]) * 1e-3
                 break
+        # Handle situation of type ("species1|species2") for the key
+        if mw is None:
+            for name in species_names:
+                for key in thermo:
+                    if name in key:
+                        try:
+                            mw = (
+                                float(thermo[name]["specie"]["molWeight"])
+                                * 1e-3
+                            )
+                            break
+                        except:
+                            pass
         if mw is not None:
             logger.debug(
                 f"Read the {species_name} molecular weight ({mw}) from thermophysicalProperties.liquid"
@@ -1264,6 +1277,19 @@ def species_name_to_mw(case_folder: str, species_name: str) -> float:
             if name in thermo:
                 mw = float(thermo[name]["specie"]["molWeight"]) * 1e-3
                 break
+        # Handle situation of type ("species1|species2") for the key
+        if mw is None:
+            for name in species_names:
+                for key in thermo:
+                    if name in key:
+                        try:
+                            mw = (
+                                float(thermo[name]["specie"]["molWeight"])
+                                * 1e-3
+                            )
+                            break
+                        except:
+                            pass
         if mw is not None:
             logger.debug(
                 f"Read the {species_name} molecular weight ({mw}) from thermophysicalProperties.gas"
