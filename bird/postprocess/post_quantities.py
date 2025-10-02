@@ -695,7 +695,7 @@ def compute_ave_y_liq(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
     y_liq, field_dict = read_field(
-        field_name=f"{spec_name}.liquid", field_dict=field_dict, **kwargs
+        field_name=f"{species_name}.liquid", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
@@ -764,7 +764,7 @@ def compute_ave_conc_liq(
     if field_dict is None:
         field_dict = {}
 
-    mol_weight = _species_name_to_mw(
+    mol_weight = species_name_to_mw(
         case_folder=case_folder, species_name=species_name
     )
     logger.debug(
@@ -1021,7 +1021,7 @@ def compute_instantaneous_kla(
             err_msg = f"D_{species_name} was not found in globalVars."
             err_msg += f'\nIf you add it, it should be looking like #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_{species_name},0.6)";'
             raise KeyError(err_msg)
-        mw_species[species_name] = _species_name_to_mw(
+        mw_species[species_name] = species_name_to_mw(
             case_folder=case_folder, species_name=species_name
         )
 
@@ -1190,7 +1190,7 @@ def compute_fitted_kla(
     # Get Mw of the species
     mw_species = {}
     for species_name in species_names:
-        mw_species[species_name] = _species_name_to_mw(
+        mw_species[species_name] = species_name_to_mw(
             case_folder=case_folder, species_name=species_name
         )
 

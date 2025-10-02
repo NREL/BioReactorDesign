@@ -1193,10 +1193,25 @@ def read_global_vars(
     return globalVars_dict
 
 
-def _species_name_to_mw(case_folder: str, species_name: str) -> float:
-    """
-    Get species molecular weight from thermophysical properties or globalVars
-    Return species molecular weight in kg/mol
+def species_name_to_mw(case_folder: str, species_name: str) -> float:
+    r"""
+    Get molecular weight in :math:`kg/mol` from the species name.
+    In order of availability, the molecular weight is read from the thermophysicalProperties.XXX,
+    and globalVars.
+    If nothing is found in globalVars (last resort) an error is raised.
+    This function is primarily useful to compute concentrations
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    species_name: str
+        The name of the species for which molecular weight is desired
+
+    Returns
+    ----------
+    mw : float
+        The species molecular weight
     """
     thermo_gas_filename = os.path.join(
         case_folder, "constant", "thermophysicalProperties.gas"
@@ -1206,6 +1221,13 @@ def _species_name_to_mw(case_folder: str, species_name: str) -> float:
     )
     globalVars_filename = os.path.join(case_folder, "constant", "globalVars")
 
+    # Handle corner case of len 1 list of strings, and interpret it as string
+    if (
+        isinstance(species_name, list)
+        and len(species_name) == 1
+        and isinstance(species_name[0], str)
+    ):
+        species_name = species_name[0]
     assert isinstance(species_name, str)
 
     # Special case for water
