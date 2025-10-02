@@ -63,12 +63,11 @@ Generates
    	 scenario 2
    	 scenario 3
    For bird/postprocess/data_kla/volume_avg.dat with time index: 0, concentration index: 1
-   	kla = 0.09005 +/- 0.0006387
-   	cstar = 0.3107 +/- 0.0006122
+   	kla = 324 +/- 2.446 [h-1]
+   	cstar = 0.3107 +/- 0.0006522 [mol/m3]
    Without data bootstrap
-   	kla = 0.09014 +/- 0.0005957
-   	cstar = 0.3105 +/- 0.0005472
-
+   	kla = 324.5 +/- 2.075 [h-1]
+   	cstar = 0.3105 +/- 0.0005444 [mol/m3]
 
 Compute mean statistics with uncertainty
 ------------

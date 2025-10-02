@@ -40,7 +40,7 @@ def _field_filter(
             filtered_field = field
         else:
             err_msg = f"Got field type {type(field)}."
-            err_msg += " Expected float of np.ndarray for scalar field"
+            err_msg += " Expected float or np.ndarray for scalar field"
             raise TypeError(err_msg)
 
     elif field_type.lower() == "vector":
@@ -802,7 +802,7 @@ def compute_ave_conc_liq(
         logger.warning(
             f"thermo:rho.liquid not found in {abs_time_path}, assuming it is 1000kg/m3"
         )
-        rho_liq = 1000
+        rho_liq = 1000.0
         field_dict["rho_liq"] = rho_liq
 
     # Only compute over the liquid
@@ -1170,7 +1170,7 @@ def compute_fitted_kla(
     if field_dict is None:
         field_dict = {}
 
-    if isinstance(species_names, "str"):
+    if isinstance(species_names, str):
         species_names = [species_names]
 
     # Read relevant fields
@@ -1205,6 +1205,8 @@ def compute_fitted_kla(
     else:
         mesh_field_dict["V"], _ = read_cell_volumes(case_folder)
 
+    logger.info("Reading the species concentration history")
+
     # Initialize the data structure for concentration
     c_history = {}
     for species_name in species_names:
@@ -1212,7 +1214,7 @@ def compute_fitted_kla(
 
     # Read concentration
     for itime, time_folder in enumerate(time_str_sorted):
-
+        logger.debug(f"Reading {time_folder}")
         # Reinitialize kla field dict
         kla_field_dict = {}
         for key in mesh_field_dict:
@@ -1228,6 +1230,9 @@ def compute_fitted_kla(
             )
         c_history[species_name][itime] = c_liq
 
+    breakpoint()
+
+    logger.info("Doing kla fit")
     # Compute kla
     kla_spec = {}
     cstar_spec = {}
@@ -1236,8 +1241,8 @@ def compute_fitted_kla(
             np.array(time_float_sorted), c_history[species_name]
         )
         kla_spec[species_name] = {
-            "mean": kla_res["kla"],
-            "std": kla_res["kla_err"],
+            "mean": kla_res["kla"] * 3600,
+            "std": kla_res["kla_err"] * 3600,
         }
         cstar_spec[species_name] = {
             "mean": kla_res["cstar"],
