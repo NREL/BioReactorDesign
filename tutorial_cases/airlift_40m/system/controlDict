@@ -51,6 +51,22 @@ maxCo           0.3;
 
 maxDeltaT       1;
 
+functions
+{
+
+    #includeFunc    writeObjects(d.gas)
+    #includeFunc    writeObjects(thermo:rho.gas)
+    #includeFunc    writeObjects(thermo:rho.liquid)
+    #includeFunc    writeObjects(thermo:mu.liquid)
+    #includeFunc    writeObjects(thermo:mu.gas)
+
+}
+//functions
+//{
+//    #includeFunc fieldAverage(U.air, U.water, alpha.air, p)
+//}
+
+
 /*functions
 {
     writeFields

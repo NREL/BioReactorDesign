@@ -51,6 +51,17 @@ maxCo           0.5;
 
 maxDeltaT       1;
 
+
+functions
+{
+
+    #includeFunc    writeObjects(d.gas)
+    #includeFunc    writeObjects(thermo:rho.gas)
+    #includeFunc    writeObjects(thermo:rho.liquid)
+    #includeFunc    writeObjects(thermo:mu.liquid)
+    #includeFunc    writeObjects(thermo:mu.gas)
+}
+
 /*functions
 {
     writeFields

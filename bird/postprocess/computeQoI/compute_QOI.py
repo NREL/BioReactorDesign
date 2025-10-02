@@ -115,7 +115,7 @@ def get_var(case_folder, time_folder, cell_centers, nCells, val_dict, name):
             case_folder,
             time_folder,
             nCells,
-            spec_name="CO2",
+            species_name="CO2",
             field_dict=val_dict,
         )
     elif name.lower() == "co_liq":
@@ -123,7 +123,7 @@ def get_var(case_folder, time_folder, cell_centers, nCells, val_dict, name):
             case_folder,
             time_folder,
             nCells,
-            spec_name="CO",
+            species_name="CO",
             field_dict=val_dict,
         )
     elif name.lower() == "h2_liq":
@@ -131,7 +131,7 @@ def get_var(case_folder, time_folder, cell_centers, nCells, val_dict, name):
             case_folder,
             time_folder,
             nCells,
-            spec_name="H2",
+            species_name="H2",
             field_dict=val_dict,
         )
     elif name.lower() == "c_co2_liq":
@@ -139,8 +139,7 @@ def get_var(case_folder, time_folder, cell_centers, nCells, val_dict, name):
             case_folder,
             time_folder,
             nCells,
-            spec_name="CO2",
-            mol_weight=44.00995 * 1e-3,
+            species_name="CO2",
             field_dict=val_dict,
         )
     elif name.lower() == "c_co_liq":
@@ -148,8 +147,7 @@ def get_var(case_folder, time_folder, cell_centers, nCells, val_dict, name):
             case_folder,
             time_folder,
             nCells,
-            spec_name="CO",
-            mol_weight=28.01055 * 1e-3,
+            species_name="CO",
             field_dict=val_dict,
         )
     elif name.lower() == "c_h2_liq":
@@ -157,8 +155,7 @@ def get_var(case_folder, time_folder, cell_centers, nCells, val_dict, name):
             case_folder,
             time_folder,
             nCells,
-            spec_name="H2",
-            mol_weight=2.01594 * 1e-3,
+            species_name="H2",
             field_dict=val_dict,
         )
     else:

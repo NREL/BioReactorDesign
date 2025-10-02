@@ -166,26 +166,26 @@ def test_ave_y_liq():
     }
     field_dict = {}
     ave_y_co2, field_dict = compute_ave_y_liq(
-        spec_name="CO2", field_dict=field_dict, **kwargs
+        species_name="CO2", field_dict=field_dict, **kwargs
     )
     ave_y_co, field_dict = compute_ave_y_liq(
-        spec_name="CO", field_dict=field_dict, **kwargs
+        species_name="CO", field_dict=field_dict, **kwargs
     )
     ave_y_h2, field_dict = compute_ave_y_liq(
-        spec_name="H2", field_dict=field_dict, **kwargs
+        species_name="H2", field_dict=field_dict, **kwargs
     )
 
     # Make sure None arguments are correctly handled
     n_cells = len(field_dict["H2.liquid"])
     time_folder = kwargs["time_folder"]
     ave_y_h21, _ = compute_ave_y_liq(
-        case_folder=case_folder, time_folder=time_folder, spec_name="H2"
+        case_folder=case_folder, time_folder=time_folder, species_name="H2"
     )
     ave_y_h22, _ = compute_ave_y_liq(
         case_folder=case_folder,
         n_cells=n_cells,
         time_folder=time_folder,
-        spec_name="H2",
+        species_name="H2",
     )
 
     # Results need to be exactly the same
@@ -213,20 +213,17 @@ def test_ave_conc_liq():
     }
     field_dict = {}
     ave_conc_co2, field_dict = compute_ave_conc_liq(
-        spec_name="CO2",
-        mol_weight=44.00995 * 1e-3,
+        species_name="CO2",
         field_dict=field_dict,
         **kwargs,
     )
     ave_conc_co, field_dict = compute_ave_conc_liq(
-        spec_name="CO",
-        mol_weight=28.01055 * 1e-3,
+        species_name="CO",
         field_dict=field_dict,
         **kwargs,
     )
     ave_conc_h2, field_dict = compute_ave_conc_liq(
-        spec_name="H2",
-        mol_weight=2.01594 * 1e-3,
+        species_name="H2",
         field_dict=field_dict,
         **kwargs,
     )
@@ -236,14 +233,12 @@ def test_ave_conc_liq():
     ave_conc_h21, _ = compute_ave_conc_liq(
         case_folder=case_folder,
         time_folder=time_folder,
-        spec_name="H2",
-        mol_weight=2.01594 * 1e-3,
+        species_name="H2",
     )
     ave_conc_h22, _ = compute_ave_conc_liq(
         case_folder=case_folder,
         time_folder=time_folder,
-        spec_name="H2",
-        mol_weight=2.01594 * 1e-3,
+        species_name="H2",
         n_cells=n_cells,
     )
 
@@ -305,6 +300,17 @@ def test_instantaneous_kla():
     assert abs(kla_spec4["CO2"] - kla_spec1["CO2"]) / kla_spec1["CO2"] > 1e-6
     assert (
         abs(cstar_spec4["CO2"] - cstar_spec1["CO2"]) / cstar_spec1["CO2"]
+        > 1e-6
+    )
+    kla_spec5, cstar_spec5, _ = compute_instantaneous_kla(
+        species_names="CO2",
+        case_folder=case_folder,
+        time_folder="80",
+    )
+    # Make sure values change over time
+    assert abs(kla_spec5["CO2"] - kla_spec1["CO2"]) / kla_spec1["CO2"] > 1e-6
+    assert (
+        abs(cstar_spec5["CO2"] - cstar_spec1["CO2"]) / cstar_spec1["CO2"]
         > 1e-6
     )
 

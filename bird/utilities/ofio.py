@@ -7,6 +7,23 @@ import numpy as np
 from bird import logger
 
 
+def _check_phase_name(phase: str):
+    """
+    Check that phase name is valid
+
+    Parameters
+    ----------
+    phase: str
+        Name of phase where to find the species
+    """
+    try:
+        assert phase in ["gas", "liquid"]
+    except AssertionError:
+        error_msg = f"Phase name ('{phase}') is not in ['gas', 'liquid']"
+        logger.error(error_msg)
+        raise NotImplementedError(error_msg)
+
+
 def _read_mesh(filename: str) -> np.ndarray:
     """
     Reads cell center location from meshCellCentres_X.obj
@@ -967,6 +984,236 @@ def read_cell_volumes(
     return cell_volumes, field_dict
 
 
+def read_bubble_diameter(
+    case_folder: str,
+    time_folder: str | None = None,
+    n_cells: int | None = None,
+    field_dict: dict | None = None,
+) -> tuple[np.ndarray | float, dict]:
+    """
+    Read bubble diameter at a given time and store it in dictionary for later reuse.
+    A specific function is constructed so that if d.gas is not available, the bubble
+    diameter is read from phaseProperties.
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str | None
+        Name of time folder to analyze.
+        If None, it will be found automatically
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    field_dict : dict | None
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    cell_volumes : np.ndarray | float
+        Field of cell volumes
+    field_dict : dict
+        Dictionary of fields read
+    """
+
+    if field_dict is None:
+        field_dict = {}
+
+    kwargs = {
+        "case_folder": case_folder,
+        "time_folder": time_folder,
+        "n_cells": n_cells,
+    }
+
+    if not ("d.gas" in field_dict) or field_dict["d.gas"] is None:
+        try:
+            d_gas, field_dict = read_field(
+                field_name="d.gas", field_dict=field_dict, **kwargs
+            )
+
+        except FileNotFoundError as err:
+            logger.debug(
+                "Could not find d.gas, checking if bubble size model is constant"
+            )
+            # d.gas does not exist, it might be because a constant bubble diameter model is used
+            phaseProperties_dict = read_openfoam_dict(
+                os.path.join(case_folder, "constant", "phaseProperties")
+            )
+            # If the bubble size model is not constant, raise original error
+            if (
+                not phaseProperties_dict["gas"]["diameterModel"].lower()
+                == "constant"
+            ):
+                logger.error(
+                    f"Bubble size model is not constant ({phaseProperties_dict['gas']['diameterModel']}), yet could not find d.gas"
+                )
+                raise FileNotFoundError(err)
+            else:
+                # Get the constant bubble diameter
+                logger.debug("Reading bubble diameter from phaseProperties")
+                d_gas = float(
+                    phaseProperties_dict["gas"]["constantCoeffs"]["d"]
+                )
+                field_dict["d.gas"] = d_gas
+    else:
+        # Get field from dict if it has been read before
+        d_gas = field_dict["d.gas"]
+
+    return d_gas, field_dict
+
+
+def get_species_name(case_folder: str, phase: str = "gas") -> list[str]:
+    """
+    Get list of species name in a phase
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to OpenFOAM case
+    phase: str
+        Name of phase where to find the species
+
+    Returns
+    ----------
+    species_name: list[str]
+        List of species name in the phase
+    """
+    _check_phase_name(phase)
+    logger.debug(f"Finding species in phase '{phase}'")
+
+    thermo_properties = read_openfoam_dict(
+        os.path.join(
+            case_folder, "constant", f"thermophysicalProperties.{phase}"
+        )
+    )
+
+    try:
+        species = thermo_properties["species"]
+        if not isinstance(species, list):
+            assert isinstance(species, str)
+            species = [species]
+    except KeyError:
+        species = []
+    try:
+        defaultSpecie = thermo_properties["defaultSpecie"]
+        if not isinstance(defaultSpecie, list):
+            assert isinstance(defaultSpecie, str)
+            defaultSpecie = [defaultSpecie]
+    except KeyError:
+        defaultSpecie = []
+    try:
+        inertSpecie = thermo_properties["inertSpecie"]
+        if not isinstance(inertSpecie, list):
+            assert isinstance(inertSpecie, str)
+            inertSpecie = [inertSpecie]
+    except KeyError:
+        inertSpecie = []
+
+    species_name = list(set(species + defaultSpecie + inertSpecie))
+    logger.debug(f"Species in phase '{phase}' are {species_name}")
+    return species_name
+
+
+def read_mu_liquid(
+    case_folder: str,
+    time_folder: str | None = None,
+    n_cells: int | None = None,
+    field_dict: dict | None = None,
+) -> tuple[np.ndarray | float, dict]:
+    """
+    Read liquid viscosity at a given time and store it in dictionary for later reuse.
+    A specific function is constructed so that if thermo:mu.liquid is not available, the liquid viscosity is read from globalVars
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str | None
+        Name of time folder to analyze.
+        If None, it will be found automatically
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    field_dict : dict | None
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    cell_volumes : np.ndarray | float
+        Field of cell volumes
+    field_dict : dict
+        Dictionary of fields read
+    """
+
+    if field_dict is None:
+        field_dict = {}
+
+    kwargs = {
+        "case_folder": case_folder,
+        "time_folder": time_folder,
+        "n_cells": n_cells,
+    }
+
+    if (
+        not ("thermo:mu.liquid" in field_dict)
+        or field_dict["thermo:mu.liquid"] is None
+    ):
+        try:
+            mu_liq, field_dict = read_field(
+                field_name="thermo:mu.liquid", field_dict=field_dict, **kwargs
+            )
+
+        except FileNotFoundError as err:
+            logger.debug(
+                "Could not find thermo:mu.liquid, checking if it can be read from globalVars"
+            )
+            # thermo:mu.liquid does not exist
+            mu_liq = None
+            globalVars = read_global_vars(case_folder, cross_ref=True)
+            thermo = read_openfoam_dict(
+                os.path.join(
+                    case_folder, "constant", "thermophysicalProperties.liquid"
+                )
+            )
+            liquid_species = get_species_name(case_folder, phase="liquid")
+            main_liq_species = None
+            for species_name in liquid_species:
+                if "water" in liquid_species:
+                    main_liq_species = "water"
+                    break
+                if "WATER" in liquid_species:
+                    main_liq_species = "WATER"
+                    break
+                if "h2o" in liquid_species:
+                    main_liq_species = "h2o"
+                    break
+                if "H2O" in liquid_species:
+                    main_liq_species = "H2O"
+                    break
+            for key in thermo:
+                if main_liq_species in key:
+                    liq_species_prop = thermo[key]
+                    break
+            if liq_species_prop["transport"]["mu"] == "$muMixLiq":
+                # You are using a constant mu
+                mu_liq = globalVars["muMixLiq"]
+            if mu_liq is None:
+                logger.error(
+                    f"Liquid viscosity is not constant, yet could not find thermo:mu.liquid"
+                )
+                raise FileNotFoundError(err)
+            else:
+                # Get the constant bubble diameter
+                logger.debug("Reading liquid viscosity from globalVars")
+                field_dict["thermo:mu.liquid"] = mu_liq
+
+    else:
+        # Get field from dict if it has been read before
+        mu_liq = field_dict["thermo:mu.liquid"]
+
+    return mu_liq, field_dict
+
+
 def _cross_reference_global_vars(
     globalVars_dict: dict,
 ) -> dict:
@@ -1113,3 +1360,126 @@ def read_global_vars(
         globalVars_dict = _cross_reference_global_vars(globalVars_dict)
 
     return globalVars_dict
+
+
+def species_name_to_mw(case_folder: str, species_name: str) -> float:
+    r"""
+    Get molecular weight in :math:`kg/mol` from the species name.
+    In order of availability, the molecular weight is read from the thermophysicalProperties.XXX,
+    and globalVars.
+    If nothing is found in globalVars (last resort) an error is raised.
+    This function is primarily useful to compute concentrations
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    species_name: str
+        The name of the species for which molecular weight is desired
+
+    Returns
+    ----------
+    mw : float
+        The species molecular weight
+    """
+    thermo_gas_filename = os.path.join(
+        case_folder, "constant", "thermophysicalProperties.gas"
+    )
+    thermo_liq_filename = os.path.join(
+        case_folder, "constant", "thermophysicalProperties.liquid"
+    )
+    globalVars_filename = os.path.join(case_folder, "constant", "globalVars")
+
+    # Handle corner case of len 1 list of strings, and interpret it as string
+    if (
+        isinstance(species_name, list)
+        and len(species_name) == 1
+        and isinstance(species_name[0], str)
+    ):
+        species_name = species_name[0]
+    assert isinstance(species_name, str)
+
+    # Special case for water
+    if species_name.lower() in ["water", "h2o"]:
+        species_names = ["water", "h2o", "H2O", "WATER"]
+    else:
+        species_names = [
+            species_name,
+            species_name.upper(),
+            species_name.lower(),
+        ]
+
+    mw = None
+    # Try finding the molecular weight from thermo liquid
+    if os.path.isfile(thermo_liq_filename):
+        thermo = read_openfoam_dict(thermo_liq_filename)
+        for name in species_names:
+            if name in thermo:
+                mw = float(thermo[name]["specie"]["molWeight"]) * 1e-3
+                break
+        # Handle situation of type ("species1|species2") for the key
+        if mw is None:
+            for name in species_names:
+                for key in thermo:
+                    if name in key:
+                        try:
+                            mw = (
+                                float(thermo[name]["specie"]["molWeight"])
+                                * 1e-3
+                            )
+                            break
+                        except:
+                            pass
+        if mw is not None:
+            logger.debug(
+                f"Read the {species_name} molecular weight ({mw}) from thermophysicalProperties.liquid"
+            )
+        else:
+            logger.debug(
+                f"Could not read the {species_name} molecular weight from thermophysicalProperties.liquid"
+            )
+
+    # Try finding the molecular weight from thermo gas
+    if mw is None and os.path.isfile(thermo_gas_filename):
+        thermo = read_openfoam_dict(thermo_gas_filename)
+        for name in species_names:
+            if name in thermo:
+                mw = float(thermo[name]["specie"]["molWeight"]) * 1e-3
+                break
+        # Handle situation of type ("species1|species2") for the key
+        if mw is None:
+            for name in species_names:
+                for key in thermo:
+                    if name in key:
+                        try:
+                            mw = (
+                                float(thermo[name]["specie"]["molWeight"])
+                                * 1e-3
+                            )
+                            break
+                        except:
+                            pass
+        if mw is not None:
+            logger.debug(
+                f"Read the {species_name} molecular weight ({mw}) from thermophysicalProperties.gas"
+            )
+        else:
+            logger.debug(
+                f"Could not read the {species_name} molecular weight from thermophysicalProperties.gas"
+            )
+
+    # Last resort: try finding the molecular weight from thermo gas
+    if mw is None and os.path.isfile(globalVars_filename):
+        globalVars = read_global_vars(case_folder=case_folder, cross_ref=True)
+        for name in species_names:
+            if f"Mw_{name}" in globalVars:
+                mw = float(globalVars[f"Mw_{name}"])
+                break
+        if mw is not None:
+            mw = globalVars[f"Mw_{name}"]
+        else:
+            err_msg = f"Mw_{species_name} was not found in globalVars."
+            err_msg += "\nIf you add it, it should be [kg/mol]"
+            raise KeyError(err_msg)
+
+    return mw

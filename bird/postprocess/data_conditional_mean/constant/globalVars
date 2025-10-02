@@ -10,6 +10,7 @@ He_CO2      0.64;
 Mw_CO2  0.044;//kg/mol
 Mw_CO   0.028;
 Mw_H2   0.002;
+Mw_H2O   0.018;
 //****Liquid properties**************
 CpMixLiq        4181;
 muMixLiq        0.001; // 1 cP  

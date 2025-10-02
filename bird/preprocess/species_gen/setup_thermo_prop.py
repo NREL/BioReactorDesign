@@ -6,75 +6,12 @@ import numpy as np
 from ruamel.yaml import YAML
 
 from bird import BIRD_CONST_DIR, logger
-from bird.utilities.ofio import read_openfoam_dict, write_openfoam_dict
+from bird.utilities.ofio import (
+    get_species_name,
+    read_openfoam_dict,
+    write_openfoam_dict,
+)
 from bird.utilities.parser import parse_yaml
-
-
-def check_phase_name(phase: str):
-    """
-    Check that phase name is valid
-
-    Parameters
-    ----------
-    phase: str
-        Name of phase where to find the species
-    """
-    try:
-        assert phase in ["gas", "liquid"]
-    except AssertionError:
-        error_msg = f"Phase name ('{phase}') is not in ['gas', 'liquid']"
-        logger.error(error_msg)
-        raise NotImplementedError(error_msg)
-
-
-def get_species_name(case_dir: str, phase: str = "gas") -> list[str]:
-    """
-    Get list of species name in a phase
-
-    Parameters
-    ----------
-    case_dir: str
-        Path to OpenFOAM case
-    phase: str
-        Name of phase where to find the species
-
-    Returns
-    ----------
-    species_name: list[str]
-        List of species name in the phase
-    """
-    check_phase_name(phase)
-    logger.debug(f"Finding species in phase '{phase}'")
-
-    thermo_properties = read_openfoam_dict(
-        os.path.join(case_dir, "constant", f"thermophysicalProperties.{phase}")
-    )
-
-    try:
-        species = thermo_properties["species"]
-        if not isinstance(species, list):
-            assert isinstance(species, str)
-            species = [species]
-    except KeyError:
-        species = []
-    try:
-        defaultSpecie = thermo_properties["defaultSpecie"]
-        if not isinstance(defaultSpecie, list):
-            assert isinstance(defaultSpecie, str)
-            defaultSpecie = [defaultSpecie]
-    except KeyError:
-        defaultSpecie = []
-    try:
-        inertSpecie = thermo_properties["inertSpecie"]
-        if not isinstance(inertSpecie, list):
-            assert isinstance(inertSpecie, str)
-            inertSpecie = [inertSpecie]
-    except KeyError:
-        inertSpecie = []
-
-    species_name = list(set(species + defaultSpecie + inertSpecie))
-    logger.debug(f"Species in phase '{phase}' are {species_name}")
-    return species_name
 
 
 def get_species_properties(species_name: list[str]) -> dict:
@@ -447,22 +384,24 @@ def update_liq_thermo_prop(
     return thermo_properties
 
 
-def write_species_properties(case_dir: str, phase: str = "gas") -> None:
+def write_species_properties(case_folder: str, phase: str = "gas") -> None:
     """
     Write thermo properties open foam dict
 
     Parameters
     ----------
-    case_dir: str
+    case_folder: str
         Path to OpenFOAM case
     phase: str
         Name of phase where to find the species
     """
-    logger.debug(f"Writing properties for phase '{phase}' in case {case_dir}")
-    species_name = get_species_name(case_dir=case_dir, phase=phase)
+    logger.debug(
+        f"Writing properties for phase '{phase}' in case {case_folder}"
+    )
+    species_name = get_species_name(case_folder=case_folder, phase=phase)
     species_prop = get_species_properties(species_name)
     thermo_properties_file = os.path.join(
-        case_dir, "constant", f"thermophysicalProperties.{phase}"
+        case_folder, "constant", f"thermophysicalProperties.{phase}"
     )
     thermo_properties = read_openfoam_dict(thermo_properties_file)
     pair_species_keys = get_species_key_pair(
@@ -477,7 +416,7 @@ def write_species_properties(case_dir: str, phase: str = "gas") -> None:
             thermo_properties, species_prop, pair_species_keys
         )
     filename = os.path.join(
-        case_dir, "constant", f"thermophysicalProperties.{phase}"
+        case_folder, "constant", f"thermophysicalProperties.{phase}"
     )
     write_openfoam_dict(thermo_properties_update, filename=filename)
 
@@ -485,8 +424,8 @@ def write_species_properties(case_dir: str, phase: str = "gas") -> None:
 if __name__ == "__main__":
     from bird import BIRD_DIR
 
-    case_dir = os.path.join(BIRD_DIR, "../experimental_cases/deckwer17")
-    write_species_properties(case_dir, phase="gas")
-    write_species_properties(case_dir, phase="liquid")
+    case_folder = os.path.join(BIRD_DIR, "../experimental_cases/deckwer17")
+    write_species_properties(case_folder, phase="gas")
+    write_species_properties(case_folder, phase="liquid")
     # fill_global_prop(os.path.join(BIRD_DIR,"../experimental_cases_new/disengagement/bubble_column_pbe_20L/"))
     # fill_global_prop(os.path.join(BIRD_DIR, "../experimental_cases_new/deckwer17"))

@@ -129,16 +129,14 @@ Several of these quantities, will require reading and processing the same fields
    
    # Compute reactor-averaged CO2 mass fraction
    y_ave_co2, field_dict = compute_ave_y_liq(
-       spec_name="CO2", field_dict=field_dict, **kwargs
+       species_name="CO2", field_dict=field_dict, **kwargs
    )
    print("fields stored = ", list(field_dict.keys()))
    print(f"Reactor averaged YCO2 = {y_ave_co2:.4g}")
    
    # Compute reactor-averaged CO2 concentration
    c_ave_co2, field_dict = compute_ave_conc_liq(
-       spec_name="CO2",
-       mol_weight=0.04401,
-       rho_val=1000,
+       species_name="CO2",
        field_dict=field_dict,
        **kwargs,
    )

@@ -62,14 +62,12 @@ sup_vel, field_dict = compute_superficial_gas_velocity(
 print("fields stored = ", list(field_dict.keys()))
 print(f"Superficial velocity = {sup_vel:.4g} m/s")
 y_ave_co2, field_dict = compute_ave_y_liq(
-    spec_name="CO2", field_dict=field_dict, **kwargs
+    species_name="CO2", field_dict=field_dict, **kwargs
 )
 print("fields stored = ", list(field_dict.keys()))
 print(f"Reactor averaged YCO2 = {y_ave_co2:.4g}")
 c_ave_co2, field_dict = compute_ave_conc_liq(
-    spec_name="CO2",
-    mol_weight=0.04401,
-    rho_val=1000,
+    species_name="CO2",
     field_dict=field_dict,
     **kwargs,
 )

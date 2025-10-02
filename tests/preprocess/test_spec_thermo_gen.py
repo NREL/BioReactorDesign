@@ -5,11 +5,10 @@ from pathlib import Path
 
 from bird.preprocess.species_gen.setup_thermo_prop import (
     get_species_key_pair,
-    get_species_name,
     get_species_properties,
     write_species_properties,
 )
-from bird.utilities.ofio import read_openfoam_dict
+from bird.utilities.ofio import get_species_name, read_openfoam_dict
 
 
 def test_species_thermo_write():
@@ -17,7 +16,7 @@ def test_species_thermo_write():
     Artificially modify the thermo properties and make sure they are written back
     """
 
-    case_dir = os.path.join(
+    case_folder = os.path.join(
         Path(__file__).parent,
         "..",
         "..",
@@ -28,7 +27,7 @@ def test_species_thermo_write():
     # Output to temporary directory and delete when done
     with tempfile.TemporaryDirectory() as tmpdirname:
         shutil.copytree(
-            os.path.join(case_dir, "constant"),
+            os.path.join(case_folder, "constant"),
             os.path.join(tmpdirname, "constant"),
         )
 
@@ -61,33 +60,6 @@ def test_species_thermo_write():
             )
             < 1e-12
         )
-
-
-def test_species_names():
-    """
-    Make sure the species names of all the phases can be identified
-    """
-
-    case_dir = os.path.join(
-        Path(__file__).parent,
-        "..",
-        "..",
-        "tutorial_cases",
-        "bubble_column_20L",
-    )
-
-    gas_spec_names = get_species_name(case_dir, phase="gas")
-
-    assert len(gas_spec_names) == 3
-    assert "O2" in gas_spec_names
-    assert "N2" in gas_spec_names
-    assert "water" in gas_spec_names
-
-    liq_spec_names = get_species_name(case_dir, phase="liquid")
-
-    assert len(liq_spec_names) == 2
-    assert "O2" in liq_spec_names
-    assert "water" in liq_spec_names
 
 
 def test_species_prop():
@@ -150,7 +122,7 @@ def test_species_key_pair():
     Make sure the species names are linked to the correct openfoam dicts
     """
 
-    case_dir = os.path.join(
+    case_folder = os.path.join(
         Path(__file__).parent,
         "..",
         "..",
@@ -158,9 +130,9 @@ def test_species_key_pair():
         "deckwer17",
     )
 
-    liq_spec_names = get_species_name(case_dir, phase="liquid")
+    liq_spec_names = get_species_name(case_folder, phase="liquid")
     thermo_file = os.path.join(
-        case_dir, "constant", "thermophysicalProperties.liquid"
+        case_folder, "constant", "thermophysicalProperties.liquid"
     )
     foam_dict = read_openfoam_dict(thermo_file)
 
