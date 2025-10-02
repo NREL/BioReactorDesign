@@ -4,10 +4,7 @@ from pathlib import Path
 
 import numpy as np
 
-from bird.preprocess.species_gen.setup_thermo_prop import (
-    get_species_name,
-)
-from bird.utilities.ofio import species_name_to_mw
+from bird.utilities.ofio import get_species_name, species_name_to_mw
 
 
 def test_species_mw():
@@ -63,3 +60,30 @@ def test_species_mw():
         os.path.join(case_folder, "thermophysicalProperties.gas_tmp"),
         os.path.join(case_folder, "constant", "thermophysicalProperties.gas"),
     )
+
+
+def test_species_names():
+    """
+    Make sure the species names of all the phases can be identified
+    """
+
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "tutorial_cases",
+        "bubble_column_20L",
+    )
+
+    gas_spec_names = get_species_name(case_folder, phase="gas")
+
+    assert len(gas_spec_names) == 3
+    assert "O2" in gas_spec_names
+    assert "N2" in gas_spec_names
+    assert "water" in gas_spec_names
+
+    liq_spec_names = get_species_name(case_folder, phase="liquid")
+
+    assert len(liq_spec_names) == 2
+    assert "O2" in liq_spec_names
+    assert "water" in liq_spec_names

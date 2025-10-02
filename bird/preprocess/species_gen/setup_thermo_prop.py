@@ -6,77 +6,12 @@ import numpy as np
 from ruamel.yaml import YAML
 
 from bird import BIRD_CONST_DIR, logger
-from bird.utilities.ofio import read_openfoam_dict, write_openfoam_dict
+from bird.utilities.ofio import (
+    get_species_name,
+    read_openfoam_dict,
+    write_openfoam_dict,
+)
 from bird.utilities.parser import parse_yaml
-
-
-def check_phase_name(phase: str):
-    """
-    Check that phase name is valid
-
-    Parameters
-    ----------
-    phase: str
-        Name of phase where to find the species
-    """
-    try:
-        assert phase in ["gas", "liquid"]
-    except AssertionError:
-        error_msg = f"Phase name ('{phase}') is not in ['gas', 'liquid']"
-        logger.error(error_msg)
-        raise NotImplementedError(error_msg)
-
-
-def get_species_name(case_folder: str, phase: str = "gas") -> list[str]:
-    """
-    Get list of species name in a phase
-
-    Parameters
-    ----------
-    case_folder: str
-        Path to OpenFOAM case
-    phase: str
-        Name of phase where to find the species
-
-    Returns
-    ----------
-    species_name: list[str]
-        List of species name in the phase
-    """
-    check_phase_name(phase)
-    logger.debug(f"Finding species in phase '{phase}'")
-
-    thermo_properties = read_openfoam_dict(
-        os.path.join(
-            case_folder, "constant", f"thermophysicalProperties.{phase}"
-        )
-    )
-
-    try:
-        species = thermo_properties["species"]
-        if not isinstance(species, list):
-            assert isinstance(species, str)
-            species = [species]
-    except KeyError:
-        species = []
-    try:
-        defaultSpecie = thermo_properties["defaultSpecie"]
-        if not isinstance(defaultSpecie, list):
-            assert isinstance(defaultSpecie, str)
-            defaultSpecie = [defaultSpecie]
-    except KeyError:
-        defaultSpecie = []
-    try:
-        inertSpecie = thermo_properties["inertSpecie"]
-        if not isinstance(inertSpecie, list):
-            assert isinstance(inertSpecie, str)
-            inertSpecie = [inertSpecie]
-    except KeyError:
-        inertSpecie = []
-
-    species_name = list(set(species + defaultSpecie + inertSpecie))
-    logger.debug(f"Species in phase '{phase}' are {species_name}")
-    return species_name
 
 
 def get_species_properties(species_name: list[str]) -> dict:

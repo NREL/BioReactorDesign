@@ -9,6 +9,7 @@ from bird.utilities.ofio import (
     _readOFScal,
     _readOFVec,
     read_bubble_diameter,
+    read_mu_liquid,
 )
 
 
@@ -184,5 +185,34 @@ def test_read_bubble_diameter():
     assert abs(d_gas[2] - 0.00966694) < 1e-8
 
 
+def test_read_mu_liquid():
+    """
+    Test for reading bubble diameter
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+    )
+    # Read bubble diameter
+    mu_liq, _ = read_mu_liquid(case_folder=case_folder, time_folder="80")
+    assert abs(mu_liq - 0.001) < 1e-8
+    # Read bubble diameter if no d.gas is available
+    # Manufacture a case without d.gas
+    shutil.move(
+        os.path.join(case_folder, "80", "thermo:mu.liquid"),
+        os.path.join(case_folder, "thermo:mu.liquid_tmp"),
+    )
+    mu_liq, _ = read_mu_liquid(case_folder=case_folder, time_folder="80")
+    assert abs(mu_liq - 0.001) < 1e-8
+    shutil.move(
+        os.path.join(case_folder, "thermo:mu.liquid_tmp"),
+        os.path.join(case_folder, "80", "thermo:mu.liquid"),
+    )
+
+
 if __name__ == "__main__":
-    test_read_bubble_diameter()
+    test_read_mu_liquid()

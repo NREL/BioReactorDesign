@@ -1045,9 +1045,7 @@ def compute_instantaneous_kla(
         field_name="U.liquid", field_dict=field_dict, **kwargs
     )
     d_gas, field_dict = read_bubble_diameter(field_dict=field_dict, **kwargs)
-    mu_liq, field_dict = read_field(
-        field_name="thermo:mu.liquid", field_dict=field_dict, **kwargs
-    )
+    mu_liq, field_dict = read_mu_liquid(field_dict=field_dict, **kwargs)
     species_gas = {}
     for species_name in species_names:
         species_gas[species_name], field_dict = read_field(
