@@ -69,7 +69,6 @@ print(f"Reactor averaged YCO2 = {y_ave_co2:.4g}")
 c_ave_co2, field_dict = compute_ave_conc_liq(
     spec_name="CO2",
     mol_weight=0.04401,
-    rho_val=1000,
     field_dict=field_dict,
     **kwargs,
 )

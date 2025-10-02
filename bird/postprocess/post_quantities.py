@@ -5,6 +5,8 @@ from paraview import simple as pv
 from bird import logger
 from bird.utilities.ofio import *
 
+from .kla_utils import compute_kla
+
 
 def _field_filter(
     field: float | np.ndarray, ind: np.ndarray, field_type: str
@@ -721,7 +723,6 @@ def compute_ave_conc_liq(
     volume_time: str | None = None,
     spec_name: str = "CO2",
     mol_weight: float = 0.04401,
-    rho_val: float | None = 1000,
     field_dict: dict | None = None,
 ) -> tuple[float, dict]:
     r"""
@@ -753,8 +754,6 @@ def compute_ave_conc_liq(
         Name of the species
     mol_weight : float
         Molecular weight of species (kg/mol)
-    rho_val : float | None
-        Constant density not available from time folder (kg/m3)
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
@@ -797,18 +796,17 @@ def compute_ave_conc_liq(
     cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
     )
-
-    # Density of liquid is not always printed (special case)
-    if not ("rho_liq" in field_dict) or field_dict["rho_liq"] is None:
-        if rho_val is not None:
-            rho_liq = rho_val
-            field_dict["rho_liq"] = rho_val
-        else:
-            rho_liq_file = os.path.join(case_folder, time_folder, "rhom")
-            rho_liq = _readOFScal(rho_liq_file, n_cells)["field"]
-            field_dict["rho_liq"] = rho_liq
-    else:
-        rho_liq = field_dict["rho_liq"]
+    try:
+        rho_liq, field_dict = read_field(
+            field_name="thermo:rho.liquid", field_dict=field_dict, **kwargs
+        )
+    except FileNotFoundError:
+        abs_time_path = os.path.join(case_folder, time_folder)
+        logger.warning(
+            f"thermo:rho.liquid not found in {abs_time_path}, assuming it is 1000kg/m3"
+        )
+        rho_liq = 1000
+        field_dict["rho_liq"] = rho_liq
 
     # Only compute over the liquid
     alpha_liq = _field_filter(alpha_liq, ind=ind_liq, field_type="scalar")
@@ -1115,5 +1113,139 @@ def compute_instantaneous_kla(
         cstar_spec[species_name] = np.sum(
             cell_volume * alpha_liq * cstar_spec_field[species_name]
         ) / np.sum(cell_volume * alpha_liq)
+
+    return kla_spec, cstar_spec, field_dict
+
+
+def compute_fitted_kla(
+    case_folder: str,
+    species_names: str | list[str],
+    n_cells: int | None = None,
+    volume_time: str | None = None,
+    field_dict: dict | None = None,
+) -> tuple[dict, dict, dict]:
+    r"""
+    Calculate :math:`kLa_{\rm spec}` and saturation concentration (:math:`C^*_{\rm spec}`) for a list of species from time series data (rather than instantaneously).
+
+    Given a time series of concentration of species, the following expression is fitted
+
+    .. math::
+       [spec](t) =  [spec]^* (1 - \operatorname{exp}(-{kLa}_{\rm spec} t)).
+
+    where
+
+      - :math:`kLa_{\rm spec}` is the mass transfer rate of species :math:`\rm spec` in :math:`h^{-1}`
+      - :math:`t` is the time in :math:`s`
+      - :math:`[spec]^*` is the estimated saturation concentration of species :math:`\rm spec` in :math:`mol/m^3`
+      - :math:`[spec](t)` is the instantaneous liquid volume averaged concentration of species :math:`\rm spec` in :math:`mol/m^3`
+
+    Both :math:`[spec]^*` and :math:`kLa_{\rm spec}` are fitted.
+    The fit is done with Markov Chain Monte Carlo which outputs samples of the posterior PDF of :math:`[spec]^*` and :math:`kLa_{\rm spec}`.
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    species_names: str | list[str]
+        List of species name for which to compute kla
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    volume_time : str | None
+        Time folder to read to get the cell volumes.
+        If None, finds volume time automatically
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    kla_spec: dict
+        Instantaneous volume averaged kLa for each species
+        Keys are species names
+        Values are the kLa values
+    cstar_spec: dict
+        Instantaneous volume averaged cstar for each species
+        Keys are species names
+        Values are the cstar values
+    field_dict : dict
+        Dictionary of fields read
+    """
+    if field_dict is None:
+        field_dict = {}
+
+    if isinstance(species_names, "str"):
+        species_names = [species_names]
+
+    # Read relevant fields
+    kwargs = {
+        "case_folder": case_folder,
+        "n_cells": n_cells,
+        "volume_time": volume_time,
+    }
+
+    # Get all the time folders
+    time_float_sorted, time_str_sorted = get_case_times(case_folder)
+
+    # Read globarVars into a python dict
+    # Replace all the #calc entries with their numeral values
+    globalVars = read_global_vars(case_folder=case_folder, cross_ref=True)
+
+    # Check that global vars has the values we want and provide a useful error message otherwise
+    for species_name in species_names:
+        if not f"Mw_{species_name}" in globalVars:
+            err_msg = f"Mw_{species_name} was not found in globalVars."
+            err_msg += "\nIf you add it, it should be [kg/mol]"
+            raise KeyError(err_msg)
+
+    # Initialize the mesh fields
+    mesh_field_dict = {}
+    if "cell_centers" in field_dict:
+        mesh_field_dict["cell_centers"] = field_dict["cell_centers"]
+    else:
+        mesh_field_dict["cell_centers"], _ = read_cell_centers(case_folder)
+    if "V" in field_dict:
+        mesh_field_dict["V"] = field_dict["V"]
+    else:
+        mesh_field_dict["V"], _ = read_cell_volumes(case_folder)
+
+    # Initialize the data structure for concentration
+    c_history = {}
+    for species_name in species_names:
+        c_history[species_name] = np.zeros(len(time_str_sorted))
+
+    # Read concentration
+    for itime, time_folder in enumerate(time_str_sorted):
+
+        # Reinitialize kla field dict
+        kla_field_dict = {}
+        for key in mesh_field_dict:
+            kla_field_dict[key] = mesh_field_dict[key]
+
+        # Compute reactor averaged liquid concentration for all the species
+        for species_name in species_names:
+            c_liq, kla_field_dict = compute_ave_conc_liq(
+                time_folder=time_folder,
+                spec_name=species_name,
+                mol_weight=globalVars[f"Mw_{species_name}"],
+                field_dict=kla_field_dict,
+                **kwargs,
+            )
+        c_history[species_name][itime] = c_liq
+
+    # Compute kla
+    kla_spec = {}
+    cstar_spec = {}
+    for species_name in species_names:
+        kla_res = compute_kla(
+            np.array(time_float_sorted), c_history[species_name]
+        )
+        kla_spec[species_name] = {
+            "mean": kla_res["kla"],
+            "std": kla_res["kla_err"],
+        }
+        cstar_spec[species_name] = {
+            "mean": kla_res["cstar"],
+            "std": kla_res["cstar_err"],
+        }
 
     return kla_spec, cstar_spec, field_dict

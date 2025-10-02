@@ -1,6 +1,8 @@
 import argparse
 import os
 
+import numpy as np
+
 from bird import BIRD_KLA_DATA_DIR
 from bird.postprocess.kla_utils import compute_kla, print_res_dict
 
@@ -55,10 +57,13 @@ if args.no_data_bootstrap:
 else:
     bootstrap = True
 
+data = np.loadtxt(args.data_file)
+data_t = data[:, args.time_index]
+data_c = data[:, args.conc_index]
+
 res_dict = compute_kla(
-    filename=args.data_file,
-    time_ind=args.time_index,
-    conc_ind=args.conc_index,
+    data_t,
+    data_c,
     bootstrap=bootstrap,
     max_chop=args.max_chop,
 )
