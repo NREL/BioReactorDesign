@@ -1191,3 +1191,78 @@ def read_global_vars(
         globalVars_dict = _cross_reference_global_vars(globalVars_dict)
 
     return globalVars_dict
+
+
+def _species_name_to_mw(case_folder: str, species_name: str) -> float:
+    """
+    Get species molecular weight from thermophysical properties or globalVars
+    Return species molecular weight in kg/mol
+    """
+    thermo_gas_filename = os.path.join(
+        case_folder, "constant", "thermophysicalProperties.gas"
+    )
+    thermo_liq_filename = os.path.join(
+        case_folder, "constant", "thermophysicalProperties.liquid"
+    )
+    globalVars_filename = os.path.join(case_folder, "constant", "globalVars")
+
+    assert isinstance(species_name, str)
+
+    # Special case for water
+    if species_name.lower() in ["water", "h2o"]:
+        species_names = ["water", "h2o", "H2O", "WATER"]
+    else:
+        species_names = [
+            species_name,
+            species_name.upper(),
+            species_name.lower(),
+        ]
+
+    mw = None
+    # Try finding the molecular weight from thermo liquid
+    if os.path.isfile(thermo_liq_filename):
+        thermo = read_openfoam_dict(thermo_liq_filename)
+        for name in species_names:
+            if name in thermo:
+                mw = float(thermo[name]["specie"]["molWeight"]) * 1e-3
+                break
+        if mw is not None:
+            logger.debug(
+                f"Read the {species_name} molecular weight ({mw}) from thermophysicalProperties.liquid"
+            )
+        else:
+            logger.debug(
+                f"Could not read the {species_name} molecular weight from thermophysicalProperties.liquid"
+            )
+
+    # Try finding the molecular weight from thermo gas
+    if mw is None and os.path.isfile(thermo_gas_filename):
+        thermo = read_openfoam_dict(thermo_gas_filename)
+        for name in species_names:
+            if name in thermo:
+                mw = float(thermo[name]["specie"]["molWeight"]) * 1e-3
+                break
+        if mw is not None:
+            logger.debug(
+                f"Read the {species_name} molecular weight ({mw}) from thermophysicalProperties.gas"
+            )
+        else:
+            logger.debug(
+                f"Could not read the {species_name} molecular weight from thermophysicalProperties.gas"
+            )
+
+    # Last resort: try finding the molecular weight from thermo gas
+    if mw is None and os.path.isfile(globalVars_filename):
+        globalVars = read_global_vars(case_folder=case_folder, cross_ref=True)
+        for name in species_names:
+            if f"Mw_{name}" in globalVars:
+                mw = float(globalVars[f"Mw_{name}"])
+                break
+        if mw is not None:
+            mw = globalVars[f"Mw_{name}"]
+        else:
+            err_msg = f"Mw_{species_name} was not found in globalVars."
+            err_msg += "\nIf you add it, it should be [kg/mol]"
+            raise KeyError(err_msg)
+
+    return mw

@@ -636,9 +636,9 @@ def compute_superficial_gas_velocity(
 def compute_ave_y_liq(
     case_folder: str,
     time_folder: str,
+    species_name: str = "CO2",
     n_cells: int | None = None,
     volume_time: str | None = None,
-    spec_name: str = "CO2",
     field_dict: dict | None = None,
 ) -> tuple[float, dict]:
     r"""
@@ -665,7 +665,7 @@ def compute_ave_y_liq(
     volume_time : str | None
         Time folder to read to get the cell volumes.
         If None, finds volume time automatically
-    spec_name : str
+    species_name : str
         Name of the species
     field_dict : dict | None
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
@@ -719,10 +719,9 @@ def compute_ave_y_liq(
 def compute_ave_conc_liq(
     case_folder: str,
     time_folder: str,
+    species_name: str = "CO2",
     n_cells: int | None = None,
     volume_time: str | None = None,
-    spec_name: str = "CO2",
-    mol_weight: float = 0.04401,
     field_dict: dict | None = None,
 ) -> tuple[float, dict]:
     r"""
@@ -744,16 +743,14 @@ def compute_ave_conc_liq(
         Path to case folder
     time_folder: str
         Name of time folder to analyze
+    species_name : str
+        Name of the species
     n_cells : int | None
         Number of cells in the domain.
         If None, it will deduced from the field reading
     volume_time : str | None
         Time folder to read to get the cell volumes.
         If None, finds volume time automatically
-    spec_name : str
-        Name of the species
-    mol_weight : float
-        Molecular weight of species (kg/mol)
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
@@ -767,12 +764,12 @@ def compute_ave_conc_liq(
     if field_dict is None:
         field_dict = {}
 
-    logger.debug(
-        f"Computing concentration for {spec_name} with molecular weight {mol_weight:.4g} kg/mol"
+    mol_weight = _species_name_to_mw(
+        case_folder=case_folder, species_name=species_name
     )
-    if rho_val is not None:
-        rho_val = float(rho_val)
-        logger.debug(f"Assuming liquid density {rho_val} kg/m3")
+    logger.debug(
+        f"Computing concentration for {species_name} with molecular weight {mol_weight:.4g} kg/mol"
+    )
 
     # Read relevant fields
     kwargs = {
@@ -789,7 +786,7 @@ def compute_ave_conc_liq(
         field_name="alpha.liquid", field_dict=field_dict, **kwargs
     )
     y_liq, field_dict = read_field(
-        field_name=f"{spec_name}.liquid", field_dict=field_dict, **kwargs
+        field_name=f"{species_name}.liquid", field_dict=field_dict, **kwargs
     )
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
@@ -1014,19 +1011,19 @@ def compute_instantaneous_kla(
     globalVars = read_global_vars(case_folder=case_folder, cross_ref=True)
 
     # Check that global vars has the values we want and provide a useful error message otherwise
+    mw_species = {}
     for species_name in species_names:
         if not f"He_{species_name}" in globalVars:
             err_msg = f"He_{species_name} was not found in globalVars."
             err_msg += f'\nIf you add it, it should be looking like #calc "$H_{species_name}_298 * exp($DH_{species_name} *(1. / $T0 - 1./298.15))";'
             raise KeyError(err_msg)
-        if not f"Mw_{species_name}" in globalVars:
-            err_msg = f"Mw_{species_name} was not found in globalVars."
-            err_msg += "\nIf you add it, it should be [kg/mol]"
-            raise KeyError(err_msg)
         if not f"D_{species_name}" in globalVars:
             err_msg = f"D_{species_name} was not found in globalVars."
             err_msg += f'\nIf you add it, it should be looking like #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_{species_name},0.6)";'
             raise KeyError(err_msg)
+        mw_species[species_name] = _species_name_to_mw(
+            case_folder=case_folder, species_name=species_name
+        )
 
     # Get liquid domain
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
@@ -1096,7 +1093,7 @@ def compute_instantaneous_kla(
             rho_gas
             * species_gas[species_name]
             * globalVars[f"He_{species_name}"]
-        ) / globalVars[f"Mw_{species_name}"]
+        ) / mw_species[species_name]
 
     # Do volume average
     cell_volume, field_dict = read_cell_volumes(
@@ -1190,12 +1187,12 @@ def compute_fitted_kla(
     # Replace all the #calc entries with their numeral values
     globalVars = read_global_vars(case_folder=case_folder, cross_ref=True)
 
-    # Check that global vars has the values we want and provide a useful error message otherwise
+    # Get Mw of the species
+    mw_species = {}
     for species_name in species_names:
-        if not f"Mw_{species_name}" in globalVars:
-            err_msg = f"Mw_{species_name} was not found in globalVars."
-            err_msg += "\nIf you add it, it should be [kg/mol]"
-            raise KeyError(err_msg)
+        mw_species[species_name] = _species_name_to_mw(
+            case_folder=case_folder, species_name=species_name
+        )
 
     # Initialize the mesh fields
     mesh_field_dict = {}
@@ -1225,8 +1222,7 @@ def compute_fitted_kla(
         for species_name in species_names:
             c_liq, kla_field_dict = compute_ave_conc_liq(
                 time_folder=time_folder,
-                spec_name=species_name,
-                mol_weight=globalVars[f"Mw_{species_name}"],
+                species_name=species_name,
                 field_dict=kla_field_dict,
                 **kwargs,
             )

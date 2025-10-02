@@ -65,27 +65,25 @@ for itime, time in enumerate(time_float_sorted):
     co2_history[itime], field_dict = compute_ave_y_liq(
         case_folder,
         time_str_sorted[itime],
-        spec_name="CO2",
+        species_name="CO2",
         field_dict=field_dict,
     )
     h2_history[itime], field_dict = compute_ave_y_liq(
         case_folder,
         time_str_sorted[itime],
-        spec_name="H2",
+        species_name="H2",
         field_dict=field_dict,
     )
     c_co2_history[itime], field_dict = compute_ave_conc_liq(
         case_folder,
         time_str_sorted[itime],
-        spec_name="CO2",
-        mol_weight=0.04401,
+        species_name="CO2",
         field_dict=field_dict,
     )
     c_h2_history[itime], field_dict = compute_ave_conc_liq(
         case_folder,
         time_str_sorted[itime],
-        spec_name="H2",
-        mol_weight=0.002016,
+        species_name="H2",
         field_dict=field_dict,
     )
 
