@@ -1121,7 +1121,7 @@ def read_mu_liquid(
     field_dict: dict | None = None,
 ) -> tuple[np.ndarray | float, dict]:
     """
-    Read mu_liquid at a given time and store it in dictionary for later reuse.
+    Read liquid viscosity at a given time and store it in dictionary for later reuse.
     A specific function is constructed so that if thermo:mu.liquid is not available, the liquid viscosity is read from globalVars
 
     Parameters
