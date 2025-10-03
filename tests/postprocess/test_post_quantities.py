@@ -315,8 +315,62 @@ def test_instantaneous_kla():
     )
 
 
+def test_fitted_kla():
+    """
+    Test for fitted kla calculation
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+    )
+    field_dict = {}
+    # Check that assertion error is sent if too few snapshots
+    try:
+        kla_spec1, cstar_spec1, _ = compute_fitted_kla(
+            species_names=["CO2"],
+            case_folder=case_folder,
+        )
+    except AssertionError:
+        pass
+
+    # Create dummy time folders
+    for time_folder in [str(entry) for entry in range(81, 89)]:
+        shutil.copytree(
+            os.path.join(case_folder, "80"),
+            os.path.join(case_folder, time_folder),
+        )
+    kla_spec1, cstar_spec1, _ = compute_fitted_kla(
+        species_names=["CO2"],
+        case_folder=case_folder,
+        num_warmup=100,
+        num_samples=100,
+    )
+    for time_folder in [str(entry) for entry in range(81, 89)]:
+        shutil.rmtree(os.path.join(case_folder, time_folder))
+
+    # Create dummy time folders to trigger bootstrapping
+    for time_folder in [str(entry) for entry in range(81, 91)]:
+        shutil.copytree(
+            os.path.join(case_folder, "80"),
+            os.path.join(case_folder, time_folder),
+        )
+    kla_spec1, cstar_spec1, _ = compute_fitted_kla(
+        species_names=["CO2"],
+        case_folder=case_folder,
+        num_warmup=100,
+        num_samples=100,
+    )
+    for time_folder in [str(entry) for entry in range(81, 91)]:
+        shutil.rmtree(os.path.join(case_folder, time_folder))
+
+
 if __name__ == "__main__":
-    test_compute_superficial_gas_velocity()
-    test_compute_gh()
+    # test_compute_superficial_gas_velocity()
+    # test_compute_gh()
     # test_ave_y_liq()
     # test_ave_conc_liq()
+    test_fitted_kla()
