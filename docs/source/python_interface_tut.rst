@@ -50,7 +50,7 @@ If we want to read the gas volume fraction ``alpha.gas``, the mass fraction of C
    print("cell alpha gas shape = ", alpha_gas.shape)
    print("cell u liq shape = ", u_liq.shape)
 
-The function ``read_field`` automatically detects whether the field is a vector or a scalar field.
+The function ``read_field`` automatically detects whether the field is a vector or a scalar field. The first returned results in (N,) for a scalar field and (N,3) for a vector field.
 
 
 
