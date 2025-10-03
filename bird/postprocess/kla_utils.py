@@ -147,14 +147,14 @@ def check_data_size(time_obs: np.ndarray, concentration_obs: np.ndarray):
 def compute_kla(
     data_t: np.ndarray,
     data_c: np.ndarray,
+    num_warmup: int = 4000,
+    num_samples: int = 1000,
     max_chop: int | None = None,
     bootstrap: bool = True,
 ) -> dict:
     """
     Main loop to compute kla
     """
-    num_warmup = 4000
-    num_samples = 1000
     rng_key = random.PRNGKey(0)
     rng_key, rng_key_ = random.split(rng_key)
 

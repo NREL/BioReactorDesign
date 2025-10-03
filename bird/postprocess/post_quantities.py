@@ -1117,6 +1117,8 @@ def compute_fitted_kla(
     species_names: str | list[str],
     n_cells: int | None = None,
     volume_time: str | None = None,
+    num_warmup: int = 4000,
+    num_samples: int = 1000,
     field_dict: dict | None = None,
 ) -> tuple[dict, dict, dict]:
     r"""
@@ -1149,6 +1151,12 @@ def compute_fitted_kla(
     volume_time : str | None
         Time folder to read to get the cell volumes.
         If None, finds volume time automatically
+    num_warmup: int
+        Number of MCMC samples in the warmup phase
+        Defaults to 4000
+    num_samples: int
+        Number of posterior MCMC samples generated
+        Defaults to 1000
     field_dict : dict
         Dictionary of fields used to avoid rereading the same fields to calculate different quantities
 
@@ -1228,16 +1236,18 @@ def compute_fitted_kla(
             )
         c_history[species_name][itime] = c_liq
 
-    breakpoint()
-
     logger.info("Doing kla fit")
     # Compute kla
     kla_spec = {}
     cstar_spec = {}
     for species_name in species_names:
         kla_res = compute_kla(
-            np.array(time_float_sorted), c_history[species_name]
+            np.array(time_float_sorted),
+            c_history[species_name],
+            num_warmup=num_warmup,
+            num_samples=num_samples,
         )
+        # Convert to h-1
         kla_spec[species_name] = {
             "mean": kla_res["kla"] * 3600,
             "std": kla_res["kla_err"] * 3600,
