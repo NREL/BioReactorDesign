@@ -53,6 +53,7 @@ interfacialModels/dragModels/dispersedDragModel/dispersedDragModel.C
 interfacialModels/dragModels/Beetstra/Beetstra.C
 interfacialModels/dragModels/segregated/segregated.C
 interfacialModels/dragModels/Ergun/Ergun.C
+interfacialModels/dragModels/Grace/Grace.C
 interfacialModels/dragModels/Gibilaro/Gibilaro.C
 interfacialModels/dragModels/GidaspowErgunWenYu/GidaspowErgunWenYu.C
 interfacialModels/dragModels/GidaspowSchillerNaumann/GidaspowSchillerNaumann.C
