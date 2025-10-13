@@ -1,0 +1,103 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  12
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+libs ( "libbirdmultiphaseEuler.so" );
+
+solver          birdmultiphaseEuler;
+
+startFrom       latestTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         1000000;
+
+deltaT          1;
+
+writeControl    runTime;
+
+writeInterval   100;
+
+purgeWrite      10;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   10;
+
+runTimeModifiable no;
+
+adjustTimeStep  yes;
+
+maxCo           2;
+
+maxDeltaT       1;
+
+
+functions
+{
+    #includeFunc fieldAverage(U.gas, U.liquid, alpha.gas, p, p_rgh, d.gas)
+    #includeFunc    writeObjects(d.gas)
+    
+    disengagement
+    {
+        type            disengagement;
+        libs            ("libbirdmultiphaseEulerFunctionObjects.so");
+
+        //- Properties common to all functionObjects
+        executeControl  runTime;
+        executeInterval 100;
+        writeControl    runTime;
+        writeInterval   100;
+
+        //- Properties specific of this functionobject
+        phase           liquid;
+        inletPhase      gas;
+        inlet           inlet;
+        tolerance       1e-2;
+        nsamples        50;
+        disengage       false;
+    }
+    
+    kLA
+    {
+        type            kLA;
+        libs            ("libbirdmultiphaseEulerFunctionObjects.so");
+
+        //- Properties common to all functionObjects
+        executeControl  runTime;
+        executeInterval 100;
+        writeControl    runTime;
+        writeInterval   100; 
+
+        //- Properties specific of this functionobject
+        continuumPhase  liquid;
+        dispersedPhase   gas;
+        species         CO2;
+        phaseMin        0.5;
+        interfaceMax    0.7;
+
+    }
+}
+
+
+// ************************************************************************* //

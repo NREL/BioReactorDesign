@@ -1,0 +1,14 @@
+VVM 0.5;
+liqVol  0.0165737;
+HtBcol  1.6;
+DiaBcol 0.127;
+LiqHt   1.3335;
+grav 9.81;
+viscousFactor 1;
+N2_in 0;
+O2_in 0.;
+H2_in 0;
+CO2_in 1;
+sigmaLiq 0.072;
+
+

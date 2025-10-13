@@ -1,0 +1,82 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  12
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+ddtSchemes
+{
+    default         localEuler;
+}
+
+gradSchemes
+{
+    default         cellLimited leastSquares 1;
+    grad(U)         cellLimited leastSquares 1;
+
+}
+
+divSchemes
+{
+    default                         none;
+    
+    alphaScheme Gauss upwind; //Gauss vanLeer;
+    UScheme Gauss linearUpwind grad(U);
+    generalDivScheme   Gauss upwind; //Gauss limitedLinear 1'
+
+
+    div(phi,alpha.gas)              $alphaScheme;
+    div(phi,alpha.liquid)            $alphaScheme;
+    div(phir,alpha.liquid,alpha.gas) $alphaScheme;
+    div(phir,alpha.gas,alpha.liquid) $alphaScheme;
+
+    div(alphaRhoPhi,U)      $UScheme;
+    div(phi,U)              $UScheme;
+
+    "div\(alphaRhoPhi,(h|e)\)"  $generalDivScheme;
+    "div\(alphaRhoPhi.*,Yi\)"       $generalDivScheme;
+    "div\(alphaPhi.*,f.*\)"         $generalDivScheme;
+    div(alphaRhoPhi,K)      $generalDivScheme;
+    div(alphaRhoPhi,(p|rho)) $generalDivScheme;
+    div(alphaRhoPhi,k)      $generalDivScheme;
+
+    div((((alpha*rho)*nuEff)*dev2(T(grad(U))))) $generalDivScheme;
+    
+    div(phim,epsilonm) $generalDivScheme;
+    div(phim,km) $generalDivScheme;
+    div(alphaRhoPhi,epsilon) $generalDivScheme;
+}
+
+laplacianSchemes
+{
+    default         Gauss linear limited corrected 0.33;
+}
+
+interpolationSchemes
+{
+    default         linear;
+}
+
+snGradSchemes
+{
+    default         limited corrected 0.33;
+}
+
+wallDist
+{
+    method          Poisson;
+    nRequired       true;
+}
+
+
+// ************************************************************************* //
