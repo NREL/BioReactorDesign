@@ -1,0 +1,119 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 1;
+
+R 0.315;        // "Inner" half-side length (originally 10)
+H 4;        // Pipe length (originally 1000)
+
+// The original geometry uses an outer circle of radius 25 when the
+// pipeRadius = 10. That is a factor of 2.5.
+outerRadius  #calc "2.5 * $R";      // e.g. = 25 if R=10
+outerCorner  #calc "$outerRadius / sqrt(2.0)"; // e.g. ~17.68 if R=10
+
+// Mesh resolution (adjust as desired):
+nInnerXY  10;         // number of cells across inner block in x/y
+nOuterXY  10;         // number of cells across outer ring in x/y
+nAxial    100;        // number of cells along the pipe axis (z)
+
+// Simple grading used in original blocks; modify if desired.
+simpleGradingInner (1 1 1);
+simpleGradingOuter (0.5 1 1);
+
+mR #calc "-$R";
+mouterCorner #calc "-$outerCorner";
+
+
+vertices
+(
+    // Bottom inner square (z=0)
+    ( $mR         $R      0 )  // 0
+    ( $mR        $mR      0 )  // 1
+    (  $R        $mR      0 )  // 2
+    (  $R         $R      0 )  // 3
+
+    // Bottom outer square (z=0)
+    ( $mouterCorner  $outerCorner  0 )  // 4
+    ( $mouterCorner $mouterCorner  0 )  // 5
+    (  $outerCorner $mouterCorner  0 )  // 6
+    (  $outerCorner  $outerCorner  0 )  // 7
+
+    // Top inner square (z=$H)
+    ( $mR         $R      $H )  // 8
+    ( $mR        $mR      $H )  // 9
+    (  $R        $mR      $H )  // 10
+    (  $R         $R      $H )  // 11
+
+    // Top outer square (z=$H)
+    ( $mouterCorner  $outerCorner  $H ) // 12
+    ( $mouterCorner $mouterCorner  $H ) // 13
+    (  $outerCorner $mouterCorner  $H ) // 14
+    (  $outerCorner  $outerCorner  $H ) // 15
+);
+
+
+blocks
+(
+    // Inner block (the "core" square)
+    hex (0 1 2 3   8 9 10 11)
+        ($nInnerXY $nInnerXY $nAxial)
+        simpleGrading $simpleGradingInner
+
+    // Outer ring blocks
+    hex (0 4 5 1   8 12 13 9 )
+        ($nOuterXY $nInnerXY $nAxial)
+        simpleGrading $simpleGradingOuter
+
+    hex (1 5 6 2   9 13 14 10)
+        ($nOuterXY $nInnerXY $nAxial)
+        simpleGrading $simpleGradingOuter
+
+    hex (2 6 7 3   10 14 15 11)
+        ($nOuterXY $nInnerXY $nAxial)
+        simpleGrading $simpleGradingOuter
+
+    hex (3 7 4 0   11 15 12 8 )
+        ($nOuterXY $nInnerXY $nAxial)
+        simpleGrading $simpleGradingOuter
+);
+
+
+edges
+(
+    // Bottom arcs (z=0)
+    arc 4 5 ( #calc "-$outerRadius"  0                 0 )
+    arc 5 6 ( 0                     #calc "-$outerRadius" 0 )
+    arc 6 7 ( #calc  "$outerRadius"  0                 0 )
+    arc 7 4 ( 0                      #calc "$outerRadius" 0 )
+
+    // Top arcs (z=$H)
+    arc 12 13 ( #calc "-$outerRadius"  0              $H )
+    arc 13 14 ( 0                      #calc "-$outerRadius" $H )
+    arc 14 15 ( #calc  "$outerRadius"  0              $H )
+    arc 15 12 ( 0                      #calc "$outerRadius"  $H )
+);
+
+
+patches
+(
+    patch outlet
+    (
+        (8 9 10 11)
+        (8 12 13 9)
+        (9 13 14 10)
+        (10 14 15 11)
+        (11 15 12 8)
+    )
+);
+
+
+mergePatchPairs
+(
+);
+

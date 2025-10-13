@@ -1,0 +1,151 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  12
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    "alpha.*"
+    {
+        nAlphaCorr      1;
+        nAlphaSubCycles 2;
+    }
+
+    bubbles
+    {
+        nCorr                1;
+        tolerance            1e-4;
+        scale                true;
+        solveOnFinalIterOnly true;
+        sourceUpdateInterval 1;
+    }
+
+    MeshPhi
+    {
+        solver          GAMG;
+        smoother        symGaussSeidel;
+        tolerance       1e-5;
+        relTol          0;
+    }
+
+    p_rgh
+    {
+        solver          GAMG;
+        smoother        DIC;
+        tolerance       1e-8;
+        relTol          0;
+        maxIter   20;
+	    minIter 1;
+    }
+
+    p_rghFinal
+    {
+        $p_rgh;
+        relTol          0;
+        maxIter 30;
+    }
+    
+     "pcorr.*"
+    {
+        $p_rghFinal;
+        tolerance       1e-2;
+        relTol          0;
+    }
+
+
+
+    "U.*"
+    {
+        solver          GAMG;
+        smoother        symGaussSeidel;
+        tolerance       1e-8;
+        relTol          0;
+        minIter         1;
+    }
+
+    "e.*"
+    {
+        solver          PBiCGStab;
+        smoother        GaussSeidel;
+        preconditioner  DILU;
+        tolerance       1e-8;
+        relTol          0;
+        minIter         1;
+    }
+    
+    "T.*"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-8;
+        relTol          0;
+        minIter         1;
+    }
+
+    "(k|epsilon|Yi).*"
+    {
+        solver          GAMG;
+	smoother GaussSeidel;
+        preconditioner  DILU;
+        tolerance       1e-9;
+        relTol          0;
+        minIter         1;
+    }
+
+    "yPsi.*"
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-10;
+        relTol          0;
+    }
+    
+    "f.*"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-10;
+        relTol          0;
+    }
+}
+
+PIMPLE
+{
+    nOuterCorrectors 1;
+    nCorrectors      15;
+    nNonOrthogonalCorrectors 0;
+    correctMeshPhi      yes;
+
+    faceMomentum        yes;
+    VmDdtCorrection     yes;
+    dragCorrection      yes;
+    interphaseHeatCorrectionScheme yes;
+}
+
+relaxationFactors
+{
+    fields
+    {
+        p_rgh 0.7;
+    }
+    
+    equations
+    {
+        ".*"            1;
+        "e.*"          0.99;
+    }
+}
+
+
+// ************************************************************************* //
