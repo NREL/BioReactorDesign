@@ -117,9 +117,9 @@ Foam::solvers::birdmultiphaseEuler::birdmultiphaseEuler(fvMesh& mesh)
         pimple.dict().lookupOrDefault<Switch>("dragCorrection", false)
     ),
 
-    useTemperaturePredictor
+    interphaseHeatCorrectionScheme
     (
-        pimple.dict().lookupOrDefault<Switch>("temperaturePredictor", true)
+        pimple.dict().lookupOrDefault<Switch>("interphaseHeatCorrectionScheme", false)
     ),
 
     nEnergyCorrectors

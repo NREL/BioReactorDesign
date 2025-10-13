@@ -91,7 +91,7 @@ protected:
         //  Defaults to false
         Switch dragCorrection;
 
-        Switch useTemperaturePredictor;
+        Switch interphaseHeatCorrectionScheme;
 
         //- Number of energy correctors
         //  Used to improve stability of phase-change simulations

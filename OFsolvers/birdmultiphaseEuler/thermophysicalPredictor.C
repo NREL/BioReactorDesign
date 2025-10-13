@@ -84,16 +84,18 @@ void Foam::solvers::birdmultiphaseEuler::compositionPredictor()
 void Foam::solvers::birdmultiphaseEuler::energyPredictor()
 {
     autoPtr<HashPtrTable<fvScalarMatrix>> heatTransferPtr;
-    
-    if ( useTemperaturePredictor )
+    autoPtr<HashPtrTable<fvScalarMatrix>> heatTransferStabPtr;
+
+    if ( interphaseHeatCorrectionScheme )
     {
         heatTransferPtr = heatTransferSystem_.heatTransferT();
+        heatTransferStabPtr = heatTransferSystem_.heatTransferStabilization();
     }
     else
     {
         heatTransferPtr = heatTransferSystem_.heatTransfer();
     }
-    
+
     HashPtrTable<fvScalarMatrix>& heatTransfer =
         heatTransferPtr();
 
@@ -109,15 +111,46 @@ void Foam::solvers::birdmultiphaseEuler::energyPredictor()
         const volScalarField& alpha = phase;
         const volScalarField& rho = phase.rho();
 
-        
-        if( useTemperaturePredictor )
+        fvScalarMatrix EEqn
+        (
+            phase.heEqn()
+         ==
+           *popBalHeatTransfer[phase.name()]
+          + fvModels().source(alpha, rho, phase.thermo().he())
+        );
+
+        EEqn.relax();
+        fvConstraints().constrain(EEqn);
+
+        if ( interphaseHeatCorrectionScheme )
         {
+            // Add the stabilization term (otherwise OF crashes)
+            HashPtrTable<fvScalarMatrix>& heatTransferStab = heatTransferStabPtr();
+            solve( EEqn == *heatTransferStab[phase.name()] );
+        }
+        else
+        {
+            solve( EEqn == *heatTransfer[phase.name()] );
+        }
+
+        fvConstraints().constrain(phase.thermo().he());
+    }
+
+    fluid_.correctThermo();
+    fluid_.correctContinuityError(populationBalanceSystem_.dmdts());
+
+    if( interphaseHeatCorrectionScheme )
+    {
+        forAll(fluid.thermalPhases(), thermalPhasei)
+        {
+            phaseModel& phase = fluid_.thermalPhases()[thermalPhasei];
+            const volScalarField& alpha = phase;
+            const volScalarField& rho = phase.rho();
 
             volScalarField& he = phase.thermo().he();
             volScalarField& T = phase.thermo().T();
-            const volScalarField Told = T;
-            
-            if ( rhoCpvs[thermalPhasei].empty() )
+
+            if ( !rhoCpvs.set(thermalPhasei) )
             {
                 rhoCpvs.set
                 (
@@ -130,49 +163,34 @@ void Foam::solvers::birdmultiphaseEuler::energyPredictor()
                 volScalarField& rhoCpv = rhoCpvs[thermalPhasei];
                 rhoCpv =  rho*phase.thermo().Cpv();
             }
-            
-           
+
+            // Solve interphase coupling on temperature
             fvScalarMatrix TEqn
             (
-                fvm::ddt(rhoCpvs[thermalPhasei], T)
-            ==
+                 fvm::ddt(rhoCpvs[thermalPhasei], T)
+               - fvc::ddt(rhoCpvs[thermalPhasei], T)
+             ==
                 *heatTransfer[phase.name()]
             );
 
-            TEqn.relax();
             TEqn.solve();
-            fvConstraints().constrain(phase.thermo().T());
+            fvConstraints().constrain(T);
 
-            he += phase.thermo().Cpv() * (T - Told);
+            Info<< phase.name() << " min/max T "
+                << min(T).value()
+                << " - "
+                << max(T).value()
+                << endl;
+
+            // Re-compute enthalpy using new temperature
+            he = phase.thermo().he(p_,T);
             he.correctBoundaryConditions();
+
         }
 
-        fvScalarMatrix EEqn
-        (
-            phase.heEqn()
-         ==
-           *popBalHeatTransfer[phase.name()]
-          + fvModels().source(alpha, rho, phase.thermo().he())
-        );
-
-        EEqn.relax();
-        fvConstraints().constrain(EEqn);
-   
-        if ( useTemperaturePredictor )
-        {
-            solve( EEqn == fvc::ddt(rho, phase.thermo().he()) );
-        }
-        else
-        {
-            solve( EEqn == *heatTransfer[phase.name()] );
-        }
-
-        EEqn.solve();
-        fvConstraints().constrain(phase.thermo().he());
+        // fluid_.correctThermo();
+        // fluid_.correctContinuityError(populationBalanceSystem_.dmdts());
     }
-
-    fluid_.correctThermo();
-    fluid_.correctContinuityError(populationBalanceSystem_.dmdts());
 }
 
 
