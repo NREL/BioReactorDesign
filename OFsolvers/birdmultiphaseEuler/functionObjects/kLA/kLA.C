@@ -76,7 +76,7 @@ void Foam::functionObjects::kLA::writeFileHeader(const label i)
     if (Pstream::master())
     {
         writeCommented(file(), "time");
-        
+
         forAll(species_, specieI)
         {
             word speciesName = species_[specieI];
@@ -95,7 +95,7 @@ bool Foam::functionObjects::kLA::execute()
     const volScalarField& alphac = mesh_.lookupObject<volScalarField>("alpha." + continuumPhase_);
     const scalarField& V = mesh().V();
     const volScalarField& rho = mesh_.lookupObject<volScalarField>("rho." + continuumPhase_);
-    
+
     autoPtr<volScalarField> interface;
 
     if (mesh_.foundObject<volScalarField>("interface." + dispersedPhase_ + continuumPhase_))
@@ -111,7 +111,7 @@ bool Foam::functionObjects::kLA::execute()
     {
         if ( alphac[cellI] < phaseMin_ ) continue;
         if ( !interface.empty() ) { if (interface()[cellI] > interfaceMax_) continue; };
-                    
+
         const scalar liqVol = alphac[cellI]*V[cellI];
         const scalar liqMass = liqVol*rho[cellI];
         totMassLiq += liqMass;
@@ -121,21 +121,21 @@ bool Foam::functionObjects::kLA::execute()
     reduce(totMassLiq, sumOp<scalar>());
     reduce(totVolLiq, sumOp<scalar>());
 
-    
+
     forAll(species_, specieI)
     {
         const label inId {specieI*4};
         const word& specieName = species_[specieI];
 
         const volScalarField& cl = mesh_.lookupObject<volScalarField>(specieName + "." + continuumPhase_);
-        const volScalarField::Internal& SP = mesh_.lookupObject<volScalarField>("phaseChange:mDot" + specieName + "Sp");
-        const volScalarField::Internal& SU = mesh_.lookupObject<volScalarField>("phaseChange:mDot" + specieName + "Su"); 
+        const volScalarField::Internal& SP = mesh_.lookupObject<volScalarField::Internal>("phaseChange:mDot" + specieName + "Sp");
+        const volScalarField::Internal& SU = mesh_.lookupObject<volScalarField::Internal>("phaseChange:mDot" + specieName + "Su"); 
 
         forAll(SP, cellI)
         {
             if ( alphac[cellI] < phaseMin_ ) continue;
             if ( !interface.empty() ) { if (interface()[cellI] > interfaceMax_) continue; };
-                        
+
             const scalar liqVol = alphac[cellI]*V[cellI]/(totVolLiq+1e-32);
             const scalar liqMass = liqVol*rho[cellI]/(totMassLiq+1e-32);
             data_[inId] += cl[cellI] * liqMass;
@@ -144,14 +144,14 @@ bool Foam::functionObjects::kLA::execute()
 //            data_[inId + 3] += liqVol *  SP[cellI] ;
         }
     }
-    
+
     reduce(data_,sumOp<scalarField>());
 
     forAll(species_, specieI)
     {
         data_[specieI*4 + 3] = data_[specieI*4 + 2] / ( data_[specieI*4 + 1] + data_[specieI*4] + 1e-32);
     }
-    
+
     return true;
 }
 
@@ -162,14 +162,14 @@ bool Foam::functionObjects::kLA::write()
     logFiles::write();
 
     if (Pstream::master())
-    {       
+    {
             file() << mesh_.time().name();
             forAll(data_,dI)
             {
                 file() << tab;
                 file() << data_[dI];
             }
-            file() << endl;    
+            file() << endl;
     }
 
     return true;

@@ -25,21 +25,21 @@ Class
     Foam::functionObjects::kLA
 
 Description
-    Computes and phase averaged local and global kLA, as well as the 
-    average concentration and saturation concentration. 
+    Computes and phase averaged local and global kLA, as well as the
+    average concentration and saturation concentration.
 
     Example of function object specification:
     \verbatim
     kLA
     {
         type            kLA;
-        libs            ("libbirdmultiphaseEulerFoamFunctionObjects.so");
+        libs            ("libbirdmultiphaseEulerFunctionObjects.so");
 
         //- Properties common to all functionObjects
         executeControl  runTime;
         executeInterval 0.01;
         writeControl    runTime;
-        writeInterval   0.1; 
+        writeInterval   0.1;
 
         //- Properties specific of this functionobject
         continuumPhase  liquid;
