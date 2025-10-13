@@ -1,0 +1,49 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvModels;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+massSource
+{
+    type            massSource;
+
+//    selectionMode   cellZone;
+//    cellZone        injection;
+
+    selectionMode   points;
+    points
+    (
+        (-0.0481 0.09906 0) // along 1cm (make sure it takes all cells)
+        (-0.0451 0.09906 0)
+        (-0.0431 0.09906 0)
+        (-0.0401 0.09906 0)
+        (-0.0381 0.09906 0)
+//        (0.03 0.01 0)
+//        (0 0.01 0.03 )
+//        (0 0.01 -0.03 )
+    );
+
+    massFlowRate    $mflowRate;
+    phase           gas;
+    rho             thermo:rho.gas;
+
+    fieldValues
+    {
+        U.gas     (0 $ugIn 0);
+    }
+} 
+
+// ************************************************************************* //

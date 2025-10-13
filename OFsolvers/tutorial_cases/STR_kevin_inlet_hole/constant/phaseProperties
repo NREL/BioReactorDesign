@@ -1,0 +1,174 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      phaseProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "$FOAM_CASE/constant/globalVars"
+
+type basicMultiphaseSystem;
+
+phases (gas liquid);
+
+referencePhase liquid;
+
+gas
+{
+    type           purePhaseModel;
+    diameterModel  constant;
+    constantCoeffs
+    {
+        d              2e-3;
+    }
+    residualAlpha   1e-6;
+}
+
+liquid
+{
+    type            purePhaseModel;
+    diameterModel   constant;
+    constantCoeffs
+    {
+        d               1e-4;
+    }
+    residualAlpha   1e-6;
+}
+
+blending
+{
+    default
+    {   
+        type            linear;
+        minFullyContinuousAlpha.gas 0.7;
+        minPartlyContinuousAlpha.gas 0.3;
+        minFullyContinuousAlpha.liquid 0.7;
+        minPartlyContinuousAlpha.liquid 0.3;
+    }
+    drag
+    {
+        type            linear;
+        minFullyContinuousAlpha.gas 0.7;
+        minPartlyContinuousAlpha.gas 0.5;
+        minFullyContinuousAlpha.liquid 0.7;
+        minPartlyContinuousAlpha.liquid 0.5;
+    }
+}
+
+surfaceTension
+(
+    (gas and liquid)
+    {
+        type            constant;
+        sigma           $sigmaLiq;
+    }
+);
+
+interfaceCompression
+();
+
+aspectRatio
+(
+    (gas in liquid)
+    {
+        type            constant;
+        E0              1.0;
+    }
+
+    (liquid in gas)
+    {
+        type            constant;
+        E0              1.0;
+    }
+);
+
+drag
+(
+    (gas in liquid)
+    {
+        type           Grace;
+        residualRe 1e-3;
+        height_lim $LiqHt_limit;
+        height_dir 1;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+    
+    (liquid in gas)
+    {
+        type            SchillerNaumann;
+
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    (gas and liquid)
+    {
+        type            segregated;
+
+        m               0.5;
+        n               8;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+);
+
+virtualMass
+(
+    (gas in liquid)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+    
+    (liquid in gas)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+);
+
+heatTransfer
+(
+    (gas in liquid)
+    {
+        type spherical;
+        residualAlpha 1e-4;
+    }
+
+    (liquid in gas)
+    {
+        type RanzMarshall;
+        residualAlpha 1e-4;
+    }
+);
+
+phaseTransfer
+();
+
+lift
+();
+
+wallLubrication
+();
+
+turbulentDispersion
+();
+
+
+// ************************************************************************* //
