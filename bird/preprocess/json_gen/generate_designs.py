@@ -1,6 +1,7 @@
 import os
 import pickle
 import shutil
+from pathlib import Path
 
 import numpy as np
 
@@ -174,7 +175,7 @@ def generate_small_reactor_cases(
         shutil.rmtree(study_folder)
     except:
         pass
-    os.makedirs(study_folder)
+    Path(study_folder).mkdir(parents=True, exist_ok=True)
     for sim_id in config_dict:
         sim_folder = id2simfolder(sim_id)
         shutil.copytree(
@@ -292,7 +293,7 @@ def generate_scaledup_reactor_cases(
         shutil.rmtree(study_folder)
     except:
         pass
-    os.makedirs(study_folder)
+    Path(study_folder).mkdir(parents=True, exist_ok=True)
     for sim_id in config_dict:
         sim_folder = id2simfolder(sim_id)
         shutil.copytree(

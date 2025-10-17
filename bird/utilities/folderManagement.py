@@ -4,14 +4,6 @@ import re
 from bird import logger
 
 
-def makeRecursiveFolder(path):
-    folder_list = path.split("/")
-    localFolder = ""
-    for folder in folder_list:
-        localFolder = os.path.join(localFolder, folder)
-        os.makedirs(localFolder, exist_ok=True)
-
-
 def getManyFolders(rootFolder, prefix="flat_donut"):
     # Read Time
     fold_tmp = os.listdir(rootFolder)
