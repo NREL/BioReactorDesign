@@ -1,11 +1,11 @@
 import argparse
 import os
 import sys
+from pathlib import Path
 
 import numpy as np
 from prettyPlot.plotting import plt, pretty_labels, pretty_legend
 
-from bird.utilities.folderManagement import *
 from bird.utilities.ofio import *
 
 parser = argparse.ArgumentParser(description="Case folder")
@@ -50,7 +50,7 @@ args = parser.parse_args()
 
 figureFolder = "Figures"
 figureFolder = os.path.join(figureFolder, args.figureFolder)
-makeRecursiveFolder(figureFolder)
+Path(figureFolder).mkdir(exist_ok=True, parents=True)
 
 conv17 = np.load(os.path.join(args.caseFolder17, "convergence_gh.npz"))
 conv19 = np.load(os.path.join(args.caseFolder19, "convergence_gh.npz"))

@@ -1,17 +1,39 @@
 import argparse
-import sys
-
-import numpy as np
-
-sys.path.append("../utilities")
 import os
 import pickle
+import sys
+from pathlib import Path
 
-from folderManagement import *
-from ofio import *
+import numpy as np
 from prettyPlot.plotting import plt, pretty_labels
 
 from bird.utilities.label_plot import label_conv
+from bird.utilities.ofio import *
+
+
+def getManyFolders(rootFolder, prefix="flat_donut"):
+    # Read Time
+    fold_tmp = os.listdir(rootFolder)
+    fold_num = []
+    # remove non floats
+    for i, entry in reversed(list(enumerate(fold_tmp))):
+        if not entry.startswith(prefix) or entry.endswith("N2"):
+            a = fold_tmp.pop(i)
+            # print('removed ', a)
+    for entry in fold_tmp:
+        num = re.findall(r"\d+", entry)
+        if len(num) > 1:
+            msg = f"Cannot find num of folder {entry}."
+            msg += "\nDo not trust the spearman stat"
+            logger.warning(msg)
+        else:
+            fold_num.append(int(num[0]))
+
+    sortedFold = [
+        x for _, x in sorted(zip(fold_num, fold_tmp), key=lambda pair: pair[0])
+    ]
+    return sortedFold
+
 
 parser = argparse.ArgumentParser(description="Plot Qoi")
 parser.add_argument(
@@ -124,9 +146,9 @@ figure_qoiConv_folder = os.path.join(
 )
 
 
-makeRecursiveFolder(figure_qoi_folder)
-makeRecursiveFolder(figure_qoiNP_folder)
-makeRecursiveFolder(figure_qoiConv_folder)
+Path(figure_qoi_folder).mkdir(exist_ok=True, parents=True)
+Path(figure_qoiNP_folder).mkdir(exist_ok=True, parents=True)
+Path(figure_qoiConv_folder).mkdir(exist_ok=True, parents=True)
 var_names = args.var_list
 vmin = args.vmin
 vmax = args.vmax
