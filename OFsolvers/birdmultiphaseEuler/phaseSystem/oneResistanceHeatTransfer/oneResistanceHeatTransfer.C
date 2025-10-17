@@ -168,7 +168,9 @@ void Foam::fv::oneResistanceHeatTransfer::addSup
 
         const volScalarField& Cpv = phase.thermo().Cpv();
 
-        eqn += stabilisedK*(otherT - T + he/Cpv) - fvm::Sp(stabilisedK/Cpv, he);
+        Info << "I was called! (oneResistanceHeatTransfer)\n";
+        //eqn += stabilisedK*(otherT - T + he/Cpv) - fvm::Sp(stabilisedK/Cpv, he);
+        eqn += fvm::Sp(stabilisedK*(otherT - T)/he,he);
     }
 }
 
