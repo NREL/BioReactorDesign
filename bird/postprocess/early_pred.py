@@ -102,7 +102,9 @@ def multi_data_load(data_root, tmax=600, data_files=None, color_files=None):
         A = np.loadtxt(filename)
         data_dict[datf] = {}
         data_dict[datf]["t"] = A[:, 0]
-        data_dict[datf]["y"] = A[:, 5] / (A[:, 4] * 16 / 44 + A[:, 5])
+        data_dict[datf]["y"] = A[:, 5] / np.clip(
+            (A[:, 4] * 16 / 44 + A[:, 5]), a_min=1e-12, a_max=None
+        )
         # chop data before increase and right after t=10s
         increase_ind_arr = np.argwhere(np.diff(data_dict[datf]["y"]) > 0)
         increase_ind = increase_ind_arr[
