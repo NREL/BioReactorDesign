@@ -73,13 +73,14 @@ jobs:
           python-version: ${{matrix.python-version}}
           channels: conda-forge
           channel-priority: strict
-
-      - name: Install dependencies
         run: |
           conda config --set remote_read_timeout_secs 60
           conda config --set remote_connect_timeout_secs 30
-          conda config --set retry_max 10
+          conda config --set remote_max_retries 10
           conda config --set retry_wait_seconds 10
+
+      - name: Install dependencies
+        run: |
           conda install -y -c conda-forge paraview
           pip install --upgrade pip
           pip install .
@@ -113,13 +114,14 @@ jobs:
           python-version: ${{matrix.python-version}}
           channels: conda-forge
           channel-priority: strict
-
-      - name: Install dependencies
         run: |
           conda config --set remote_read_timeout_secs 60
           conda config --set remote_connect_timeout_secs 30
-          conda config --set retry_max 10
+          conda config --set remote_max_retries 10
           conda config --set retry_wait_seconds 10
+
+      - name: Install dependencies
+        run: |
           conda install -y -c conda-forge paraview
           pip install --upgrade pip
           pip install nrel-bird
@@ -156,13 +158,14 @@ jobs:
           python-version: ${{matrix.python-version}}
           channels: conda-forge
           channel-priority: strict
-
-      - name: Install dependencies
         run: |
           conda config --set remote_read_timeout_secs 60
           conda config --set remote_connect_timeout_secs 30
-          conda config --set retry_max 10
+          conda config --set remote_max_retries 10
           conda config --set retry_wait_seconds 10
+
+      - name: Install dependencies
+        run: |
           conda install -y -c conda-forge paraview
           pip install --upgrade pip
           pip install .
