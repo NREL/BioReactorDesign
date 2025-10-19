@@ -95,19 +95,19 @@ def conditional_average(
 
 
 def bissection(
-    func_val: float,
+    fun_val: float,
     nonlin_fun: Callable,
     num_iter: int = 1000,
     x_min: float = 1e-6,
     x_max: float = 1e6,
-):
+) -> float:
     """
     Solve a 1D non linear equation with a bissection method
     This is useful for adjusting the mesh grading so that mesh size varies smoothly
 
     Parameters
     ----------
-    func_val:
+    fun_val:
         Target value for the non linear function
     nonlin_fun:
         Non linear function
@@ -129,8 +129,8 @@ def bissection(
     """
 
     # Make sure residual sign changes over the search interval
-    residual_min = nonlin_fun(x_min) - func_val
-    residual_max = nonlin_fun(x_max) - func_val
+    residual_min = nonlin_fun(x_min) - fun_val
+    residual_max = nonlin_fun(x_max) - fun_val
     if residual_min * residual_max > 0:
         error_msg = "No guaranteed bissection solution"
         error_msg += (
@@ -141,7 +141,7 @@ def bissection(
     # Do the bissection search
     for i in range(num_iter):
         x_mid = 0.5 * (x_max + x_min)
-        residual_mid = nonlin_fun(x_mid) - func_val
+        residual_mid = nonlin_fun(x_mid) - fun_val
         if residual_mid * residual_max < 0:
             x_min = x_mid
             residual_min = residual_mid
