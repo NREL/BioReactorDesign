@@ -371,7 +371,3 @@ def print_res_dict(res_dict: dict) -> None:
     logger.info(f"\tkla = {kla_nb*3600:.4g} +/- {kla_err_nb*3600:.4g} [h-1]")
     logger.info(f"\tcstar = {cs_nb:.4g} +/- {cs_err_nb:.4g} [mol/m3]")
 
-
-if __name__ == "__main__":
-    res_dict = compute_kla("data_kla/volume_avg.dat", time_ind=0, conc_ind=1)
-    print_res_dict(res_dict)

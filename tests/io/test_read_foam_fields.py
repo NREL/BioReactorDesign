@@ -213,6 +213,3 @@ def test_read_mu_liquid():
         os.path.join(case_folder, "80", "thermo:mu.liquid"),
     )
 
-
-if __name__ == "__main__":
-    test_read_mu_liquid()

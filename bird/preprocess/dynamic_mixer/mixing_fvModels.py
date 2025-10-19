@@ -55,9 +55,3 @@ def write_fvModel(input_dict, output_folder=".", force_sign=False):
 
     write_end(output_folder)
 
-
-if __name__ == "__main__":
-    input_dict = parse_json(
-        os.path.join("mixing_template", "loop_reactor_list", "mixers.json"),
-    )
-    write_fvModel(input_dict)

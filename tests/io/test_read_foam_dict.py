@@ -142,10 +142,3 @@ def test_read_controlDict():
     assert foam_dict["writeControl"] == "adjustableRunTime"
     assert foam_dict["maxCo"] == "0.5"
 
-
-if __name__ == "__main__":
-    test_read_thermophysicalProperties()
-    test_read_phaseProperties()
-    test_read_thermophysicalProperties()
-    test_read_momentumTransport()
-    test_read_controlDict()

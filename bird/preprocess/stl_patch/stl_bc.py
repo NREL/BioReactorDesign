@@ -47,14 +47,3 @@ def write_boundaries(input_dict, output_folder="."):
             boundary_mesh.save(
                 os.path.join(output_folder, f"{boundary_name}.stl")
             )
-
-
-if __name__ == "__main__":
-    input_dict = parse_json(
-        "bc_patch_mesh_template/loop_reactor_expl/inlets_outlets.json"
-    )
-    write_boundaries(input_dict)
-    input_dict = parse_json(
-        "bc_patch_mesh_template/loop_reactor_branch/inlets_outlets.json"
-    )
-    write_boundaries(input_dict)

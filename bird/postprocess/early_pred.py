@@ -266,13 +266,3 @@ def bayes_fit(data_dict, num_warmup=1000, num_samples=500):
 
     return data_dict
 
-
-if __name__ == "__main__":
-    from bird import BIRD_EARLY_PRED_DATA_DIR
-
-    data_dict, color_files = multi_data_load(BIRD_EARLY_PRED_DATA_DIR)
-    data_dict = fit_and_ext(data_dict)
-    plotAllEarly(data_dict, color_files=color_files, chop=True, extrap=True)
-    bayes_fit(data_dict)
-    plotAllEarly_uq(data_dict, color_files=color_files)
-    plt.show()

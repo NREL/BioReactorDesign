@@ -76,9 +76,3 @@ def test_loop_reactor_branch():
         axes = plot_stl(os.path.join(tmpdirname, "inlets.stl"))
         pretty_labels("x", "y", zlabel="z", fontsize=14, ax=axes)
 
-
-if __name__ == "__main__":
-    from prettyPlot.plotting import plt
-
-    test_spider_sparger()
-    plt.show()
