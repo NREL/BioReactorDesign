@@ -41,6 +41,41 @@ def test_read_phaseProperties():
     )
 
 
+def test_read_ndf():
+    """
+    Test for reading content of `constant/phaseProperties` with population balance
+    """
+    const_folder = os.path.join(
+        Path(__file__).parent,
+        "..",
+        "..",
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+        "constant",
+    )
+    # Read non uniform field
+    foam_dict = read_openfoam_dict(
+        filename=os.path.join(const_folder, "phaseProperties")
+    )
+
+    assert foam_dict["phases"] == ["gas", "liquid"]
+    assert foam_dict["populationBalances"] == ["bubbles"]
+    assert foam_dict["gas"]["diameterModel"] == "velocityGroup"
+    assert len(foam_dict["gas"]["velocityGroupCoeffs"]["sizeGroups"]) == 21
+    assert (
+        abs(
+            float(
+                foam_dict["gas"]["velocityGroupCoeffs"]["sizeGroups"]["f4"][
+                    "dSph"
+                ]
+            )
+            - 2.5e-3
+        )
+        < 1e-12
+    )
+
+
 def test_read_thermophysicalProperties():
     """
     Test for reading content of `constant/thermophysicalProperties`
@@ -58,6 +93,7 @@ def test_read_thermophysicalProperties():
         filename=os.path.join(const_folder, "thermophysicalProperties.gas")
     )
 
+    print(foam_dict)
     assert foam_dict["species"] == ["H2", "CO2", "N2"]
     assert (
         foam_dict["CO2"]["thermodynamics"]["highCpCoeffs"][0] == "3.85746029"
@@ -108,6 +144,7 @@ def test_read_controlDict():
 
 
 if __name__ == "__main__":
+    test_read_thermophysicalProperties()
     test_read_phaseProperties()
     test_read_thermophysicalProperties()
     test_read_momentumTransport()
