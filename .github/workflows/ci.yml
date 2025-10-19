@@ -76,6 +76,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          conda config --set remote_read_timeout_secs 60
+          conda config --set remote_connect_timeout_secs 30
+          conda config --set retry_max 10
+          conda config --set retry_wait_seconds 10
           conda install -y -c conda-forge paraview
           pip install --upgrade pip
           pip install .
@@ -112,6 +116,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          conda config --set remote_read_timeout_secs 60
+          conda config --set remote_connect_timeout_secs 30
+          conda config --set retry_max 10
+          conda config --set retry_wait_seconds 10
           conda install -y -c conda-forge paraview
           pip install --upgrade pip
           pip install nrel-bird
@@ -151,6 +159,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          conda config --set remote_read_timeout_secs 60
+          conda config --set remote_connect_timeout_secs 30
+          conda config --set retry_max 10
+          conda config --set retry_wait_seconds 10
           conda install -y -c conda-forge paraview
           pip install --upgrade pip
           pip install .
