@@ -1,6 +1,7 @@
 import numpy as np
 
 from bird import logger
+from bird.utilities.mathtools import bissection
 
 
 def make_walls_from_topo(topo_dict: dict) -> dict:
@@ -70,37 +71,14 @@ def make_bound_from_topo(topo_dict):
     }
 
 
-def stretch_fun(G, N1):
-    result = (1.0 - G) / (G * (1 - np.power(G, 1.0 / N1)))
+def stretch_fun(G, N):
+    result = (1.0 - G) / (G * (1 - np.power(G, 1.0 / N)))
     return result
 
 
 # def stretch_fun(G,N1):
 #    result = (1.0-G**(N1/(N1-1)))/((G**(1.0+1.0/(N1-1)))*(1-np.power(G,1.0/(N1-1))))
 #    return result
-
-
-def bissection(val, stretch_fun, N1):
-    Gmin = 0.00001
-    Gmax = 1000000
-    resultmin = stretch_fun(Gmin, N1) - val
-    resultmax = stretch_fun(Gmax, N1) - val
-    if resultmin * resultmax > 0:
-        error_msg = "Initial bounds of grading do not encompass the solution"
-        logger.error(error_msg)
-        raise ValueError(error_msg)
-
-    for i in range(1000):
-        Gmid = 0.5 * (Gmax + Gmin)
-        resultmid = stretch_fun(Gmid, N1) - val
-        if resultmid * resultmax < 0:
-            Gmin = Gmid
-            resultmin = resultmid
-        else:
-            Gmax = Gmid
-            resultmax = resultmid
-
-    return Gmid
 
 
 def is_wall(l_wall: list[int], r_wall: list[int], ir: int, il: int) -> int:
@@ -223,9 +201,8 @@ def verticalCoarsening(
                 raise ValueError(error_msg)
 
             if ratio_dir[ind] == "+":
-                gradVert[ind] = 1.0 / bissection(
-                    length / deltaE, stretch_fun, NVert[ind]
-                )
+                nl_func = lambda x: stretch_fun(x, NVert[ind])
+                gradVert[ind] = 1.0 / bissection(length / deltaE, nl_func)
                 iterate = False
                 origNVert = NVert[ind]
                 while gradVert[ind] < 1 and NVert[ind] > 1:
@@ -233,9 +210,8 @@ def verticalCoarsening(
                     NVert[ind] = max(
                         int(round(min(0.99 * NVert[ind], NVert[ind] - 1))), 1
                     )
-                    gradVert[ind] = 1.0 / bissection(
-                        length / deltaE, stretch_fun, NVert[ind]
-                    )
+                    nl_func = lambda x: stretch_fun(x, NVert[ind])
+                    gradVert[ind] = 1.0 / bissection(length / deltaE, nl_func)
                 if iterate:
                     logger.warning(
                         f"reduced NVert[{ind}] from {origNVert} to {NVert[ind]}"
@@ -245,9 +221,8 @@ def verticalCoarsening(
 
             elif ratio_dir[ind] == "-":
                 deltaE = block_cell_minus_length[ind - 1]
-                gradVert[ind] = bissection(
-                    length / deltaE, stretch_fun, NVert[ind]
-                )
+                nl_func = lambda x: stretch_fun(x, NVert[ind])
+                gradVert[ind] = bissection(length / deltaE, nl_func)
 
                 iterate = False
                 origNVert = NVert[ind]
@@ -256,9 +231,8 @@ def verticalCoarsening(
                     NVert[ind] = max(
                         int(round(min(0.99 * NVert[ind], NVert[ind] - 1))), 1
                     )
-                    gradVert[ind] = bissection(
-                        length / deltaE, stretch_fun, NVert[ind]
-                    )
+                    nl_func = lambda x: stretch_fun(x, NVert[ind])
+                    gradVert[ind] = bissection(length / deltaE, nl_func)
                 if iterate:
                     logger.warning(
                         f"reduced NVert[{ind}] from {origNVert} to {NVert[ind]}"
@@ -337,9 +311,8 @@ def radialCoarsening(
                 raise ValueError(error_msg)
 
             if ratio_dir[ind] == "+":
-                gradR[ind] = 1.0 / bissection(
-                    length / deltaE, stretch_fun, NR[ind]
-                )
+                nl_func = lambda x: stretch_fun(x, NR[ind])
+                gradR[ind] = 1.0 / bissection(length / deltaE, nl_func)
                 iterate = False
                 origNR = NR[ind]
                 while gradR[ind] < 1 and NR[ind] > 1:
@@ -347,9 +320,8 @@ def radialCoarsening(
                     NR[ind] = max(
                         int(round(min(0.99 * NR[ind], NR[ind] - 1))), 1
                     )
-                    gradR[ind] = 1.0 / bissection(
-                        length / deltaE, stretch_fun, NR[ind]
-                    )
+                    nl_func = lambda x: stretch_fun(x, NR[ind])
+                    gradR[ind] = 1.0 / bissection(length / deltaE, nl_func)
                 if iterate:
                     logger.warning(
                         f"reduced NR[{ind}] from {origNR} to {NR[ind]}"
@@ -359,15 +331,15 @@ def radialCoarsening(
 
             elif ratio_dir[ind] == "-":
                 deltaE = block_cell_minus_length[ind - 1]
-                gradR[ind] = bissection(length / deltaE, stretch_fun, NR[ind])
+                nl_func = lambda x: stretch_fun(x, NR[ind])
+                gradR[ind] = bissection(length / deltaE, nl_func)
                 iterate = False
                 origNR = NR[ind]
                 while gradR[ind] > 1 and NR[ind] > 1:
                     iterate = True
                     NR[ind] = max(int(round(min(0.99 * NR[ind], -1))), 1)
-                    gradR[ind] = bissection(
-                        length / deltaE, stretch_fun, NR[ind]
-                    )
+                    nl_func = lambda x: stretch_fun(x, NR[ind])
+                    gradR[ind] = bissection(length / deltaE, nl_func)
                 if iterate:
                     logger.warning(
                         f"reduced NR[{ind}] from {origNR} to {NR[ind]}"
