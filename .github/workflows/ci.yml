@@ -79,7 +79,6 @@ jobs:
           conda config --set remote_read_timeout_secs 60
           conda config --set remote_connect_timeout_secs 30
           conda config --set remote_max_retries 10
-          conda config --set retry_wait_seconds 10
 
       - name: Install dependencies
         run: |
@@ -122,7 +121,6 @@ jobs:
           conda config --set remote_read_timeout_secs 60
           conda config --set remote_connect_timeout_secs 30
           conda config --set remote_max_retries 10
-          conda config --set retry_wait_seconds 10
 
       - name: Install dependencies
         run: |
@@ -168,7 +166,6 @@ jobs:
           conda config --set remote_read_timeout_secs 60
           conda config --set remote_connect_timeout_secs 30
           conda config --set remote_max_retries 10
-          conda config --set retry_wait_seconds 10
 
       - name: Install dependencies
         run: |
