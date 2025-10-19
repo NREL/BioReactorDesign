@@ -73,6 +73,8 @@ jobs:
           python-version: ${{matrix.python-version}}
           channels: conda-forge
           channel-priority: strict
+
+      - name: Configure conda retries
         run: |
           conda config --set remote_read_timeout_secs 60
           conda config --set remote_connect_timeout_secs 30
@@ -114,6 +116,8 @@ jobs:
           python-version: ${{matrix.python-version}}
           channels: conda-forge
           channel-priority: strict
+
+      - name: Configure conda retries
         run: |
           conda config --set remote_read_timeout_secs 60
           conda config --set remote_connect_timeout_secs 30
@@ -158,6 +162,8 @@ jobs:
           python-version: ${{matrix.python-version}}
           channels: conda-forge
           channel-priority: strict
+
+      - name: Configure conda retries
         run: |
           conda config --set remote_read_timeout_secs 60
           conda config --set remote_connect_timeout_secs 30
