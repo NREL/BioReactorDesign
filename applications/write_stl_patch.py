@@ -32,8 +32,8 @@ if __name__ == "__main__":
 
     if args.verbose:
         # plot
-        from bird.utilities.stl_plotting import plotSTL, plt, pretty_labels
+        from bird.utilities.stl_plotting import plot_stl, plt, pretty_labels
 
-        axes = plotSTL("inlets.stl")
+        axes = plot_stl("inlets.stl")
         pretty_labels("x", "y", zlabel="z", fontsize=14, ax=axes)
         plt.show()

@@ -7,7 +7,7 @@ from prettyPlot.plotting import pretty_labels
 
 from bird.preprocess.stl_patch.stl_bc import write_boundaries
 from bird.utilities.parser import parse_json
-from bird.utilities.stl_plotting import plotSTL
+from bird.utilities.stl_plotting import plot_stl
 
 
 def test_spider_sparger():
@@ -28,7 +28,7 @@ def test_spider_sparger():
     # Output to temporary directory and delete when done
     with tempfile.TemporaryDirectory() as tmpdirname:
         write_boundaries(input_dict, output_folder=tmpdirname)
-        axes = plotSTL(os.path.join(tmpdirname, "inlets.stl"))
+        axes = plot_stl(os.path.join(tmpdirname, "inlets.stl"))
         pretty_labels("x", "y", zlabel="z", fontsize=14, ax=axes)
 
 
@@ -51,7 +51,7 @@ def test_loop_reactor():
     # Output to temporary directory and delete when done
     with tempfile.TemporaryDirectory() as tmpdirname:
         write_boundaries(input_dict, output_folder=tmpdirname)
-        axes = plotSTL(os.path.join(tmpdirname, "inlets.stl"))
+        axes = plot_stl(os.path.join(tmpdirname, "inlets.stl"))
         pretty_labels("x", "y", zlabel="z", fontsize=14, ax=axes)
 
 
@@ -73,7 +73,7 @@ def test_loop_reactor_branch():
     # Output to temporary directory and delete when done
     with tempfile.TemporaryDirectory() as tmpdirname:
         write_boundaries(input_dict, output_folder=tmpdirname)
-        axes = plotSTL(os.path.join(tmpdirname, "inlets.stl"))
+        axes = plot_stl(os.path.join(tmpdirname, "inlets.stl"))
         pretty_labels("x", "y", zlabel="z", fontsize=14, ax=axes)
 
 

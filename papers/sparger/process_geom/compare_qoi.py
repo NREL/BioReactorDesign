@@ -7,8 +7,9 @@ from pathlib import Path
 import numpy as np
 from prettyPlot.plotting import plt, pretty_labels, pretty_legend
 
-from bird.utilities.label_plot import label_conv
 from bird.utilities.ofio import *
+
+from .label_plot import label_conv
 
 parser = argparse.ArgumentParser(description="Compare Qoi")
 parser.add_argument(

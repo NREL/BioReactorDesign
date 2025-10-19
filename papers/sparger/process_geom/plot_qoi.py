@@ -7,8 +7,9 @@ from pathlib import Path
 import numpy as np
 from prettyPlot.plotting import plt, pretty_labels
 
-from bird.utilities.label_plot import label_conv
 from bird.utilities.ofio import *
+
+from .label_plot import label_conv
 
 
 def getManyFolders(rootFolder, prefix="flat_donut"):
