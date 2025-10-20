@@ -550,12 +550,3 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
 
     fw.close()
 
-
-def main(input_file, topo_file, output_folder):
-    geom_dict = assemble_geom(input_file, topo_file)
-    mesh_dict = assemble_mesh(input_file, geom_dict)
-    writeBlockMeshDict(output_folder, geom_dict, mesh_dict)
-
-
-if __name__ == "__main__":
-    main()

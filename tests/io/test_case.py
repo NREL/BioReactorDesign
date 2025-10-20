@@ -80,8 +80,3 @@ def test_mesh_vol():
 
     assert np.linalg.norm(volumes - volumes2) < 1e-12
 
-
-if __name__ == "__main__":
-    test_case_time()
-    test_mesh()
-    test_mesh_vol()

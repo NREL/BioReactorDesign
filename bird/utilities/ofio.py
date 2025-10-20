@@ -479,47 +479,92 @@ def read_field(
     return field, field_dict
 
 
-def readSizeGroups(file):
-    sizeGroup = {}
-    f = open(file, "r")
-    lines = f.readlines()
-    f.close()
-    begin = None
-    for iline, line in enumerate(lines):
-        if "sizeGroups" in line:
-            begin = iline + 2
-        if not begin is None and ");" in line:
-            end = iline - 1
-            break
-    for line in lines[begin : end + 1]:
-        tmp = line.split("{")
-        name = tmp[0].strip()
-        size = tmp[1].split(";")[0].split()[1]
-        sizeGroup[name] = float(size)
-    # Sort by size
-    sizeGroup = dict(sorted(sizeGroup.items(), key=lambda item: item[1]))
-    binGroup = {}
-    groups = list(sizeGroup.keys())
-    for igroup, group in enumerate(groups):
+def read_size_groups(case_folder: str) -> dict:
+    """
+    Get the bubble size groups represented by the number density fields (fX.gas)
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+
+    Returns
+    ----------
+    ndf_groups: dict
+        Dictionary describing the number density fields
+        Key is the name of the number density field (fX)
+        Value is a dictionary with keys 'diam' and 'bin_size'
+        corresponding to the bubble diameter and the bin size in m
+    """
+
+    phaseProperties_file = os.path.join(
+        case_folder, "constant", "phaseProperties"
+    )
+    phaseProperties = read_openfoam_dict(phaseProperties_file)
+
+    # Make sure that population balance is used
+    try:
+        assert phaseProperties["populationBalances"] == ["bubbles"]
+        assert phaseProperties["gas"]["diameterModel"] == "velocityGroup"
+        assert (
+            phaseProperties["gas"]["velocityGroupCoeffs"]["populationBalance"]
+            == "bubbles"
+        )
+    except AssertionError:
+        logger.warning(
+            "Reading size groups for a case where population balance is not used"
+        )
+
+    size_grouptmp = phaseProperties["gas"]["velocityGroupCoeffs"]["sizeGroups"]
+    logger.debug(f"Found {len(size_grouptmp)} number density fields")
+
+    # Associate number density field to size
+    size_group = {}
+    for name in size_grouptmp:
+        size_group[name] = float(size_grouptmp[name]["dSph"])
+
+    # Sort by size in ascending order
+    size_group = dict(sorted(size_group.items(), key=lambda item: item[1]))
+
+    # Get the bin size
+    bin_size_group = {}
+    group_names = list(size_group.keys())
+    logger.warning(
+        "The bin sizes definition make assumption of uniformity and need to be revisited if used"
+    )
+    for igroup, name in enumerate(group_names):
         if igroup == 0:
             bin_size = (
-                sizeGroup[groups[igroup + 1]] - sizeGroup[groups[igroup]]
+                size_group[group_names[igroup + 1]]
+                - size_group[group_names[igroup]]
             )
-        elif igroup == len(groups) - 1:
+        elif igroup == len(group_names) - 1:
             bin_size = (
-                sizeGroup[groups[igroup]] - sizeGroup[groups[igroup - 1]]
+                size_group[group_names[igroup]]
+                - size_group[group_names[igroup - 1]]
             )
         else:
             bin_size_p = (
-                sizeGroup[groups[igroup + 1]] - sizeGroup[groups[igroup]]
+                size_group[group_names[igroup + 1]]
+                - size_group[group_names[igroup]]
             )
             bin_size_m = (
-                sizeGroup[groups[igroup]] - sizeGroup[groups[igroup - 1]]
+                size_group[group_names[igroup]]
+                - size_group[group_names[igroup - 1]]
             )
             assert abs(bin_size_p - bin_size_m) < 1e-12
             bin_size = bin_size_m
-        binGroup[group] = bin_size
-    return sizeGroup, binGroup
+        bin_size_group[name] = bin_size
+
+    # Put size and bin size together
+    ndf_groups = {}
+    for name in group_names:
+        ndf_groups[name] = {
+            "diam": size_group[name],
+            "bin_size": bin_size_group[name],
+        }
+
+    return ndf_groups
 
 
 def get_case_times(
@@ -748,15 +793,30 @@ def _parse_tokens(tokens: list[str]) -> dict:
                         index += 1
                     result[key] = dictlist
                 else:
-                    # Standard list
+                    # Standard list or dict-like list (e.g. sizeGroups)
                     lst = []
+                    dictlist = {}
+
                     while tokens[index] != ")":
-                        lst.append(tokens[index])
+                        label = tokens[index]
                         index += 1
-                    index += 1
+
+                        if index < len(tokens) and tokens[index] == "{":
+                            # Inline dict entry like: f1 { dSph 1e-3; value 0.0; }
+                            index += 1
+                            subdict, index = parse_block(index)
+                            dictlist[label] = subdict
+                        else:
+                            # Skip semicolons if present (e.g. in lists like species)
+                            if label != ";":
+                                lst.append(label)
+
+                    index += 1  # skip ')'
                     if index < len(tokens) and tokens[index] == ";":
                         index += 1
-                    result[key] = lst
+
+                    # Choose dictlist only if it has content; otherwise, use lst
+                    result[key] = dictlist if dictlist else lst
 
             # key followed by scalar
             elif index < len(tokens):

@@ -1,17 +1,15 @@
 import argparse
-import sys
-
-import numpy as np
-
-sys.path.append("../utilities")
 import os
 import pickle
+import sys
+from pathlib import Path
 
-from folderManagement import *
-from ofio import *
+import numpy as np
 from prettyPlot.plotting import plt, pretty_labels
 
-from bird.utilities.label_plot import label_conv
+from bird.utilities.ofio import *
+
+from .label_plot import label_conv
 
 parser = argparse.ArgumentParser(description="Plot Qoi")
 parser.add_argument(
@@ -82,8 +80,8 @@ figure_qoi_Folder = os.path.join(figureFolder, args.figureFolder, "qoi")
 figure_qoiConv_Folder = os.path.join(
     figureFolder, args.figureFolder, "qoi_conv"
 )
-makeRecursiveFolder(figure_qoi_Folder)
-makeRecursiveFolder(figure_qoiConv_Folder)
+Path(figure_qoi_Folder).mkdir(parents=True, exist_ok=True)
+Path(figure_qoiConv_Folder).mkdir(parents=True, exist_ok=True)
 var_names = args.var_list
 param_name = args.param_name
 param_vals = args.param_value

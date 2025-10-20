@@ -105,6 +105,3 @@ def test_read_global_vars():
         < 1e-3
     )
 
-
-if __name__ == "__main__":
-    test_read_global_vars()

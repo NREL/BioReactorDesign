@@ -420,12 +420,3 @@ def write_species_properties(case_folder: str, phase: str = "gas") -> None:
     )
     write_openfoam_dict(thermo_properties_update, filename=filename)
 
-
-if __name__ == "__main__":
-    from bird import BIRD_DIR
-
-    case_folder = os.path.join(BIRD_DIR, "../experimental_cases/deckwer17")
-    write_species_properties(case_folder, phase="gas")
-    write_species_properties(case_folder, phase="liquid")
-    # fill_global_prop(os.path.join(BIRD_DIR,"../experimental_cases_new/disengagement/bubble_column_pbe_20L/"))
-    # fill_global_prop(os.path.join(BIRD_DIR, "../experimental_cases_new/deckwer17"))

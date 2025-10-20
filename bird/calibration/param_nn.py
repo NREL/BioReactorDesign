@@ -1,6 +1,7 @@
 import argparse
 import os
 import time
+from pathlib import Path
 
 import joblib
 import numpy as np
@@ -306,8 +307,8 @@ class Param_NN(keras.Model):
         self.model.load_weights(weight_file)
 
     def prepareLog(self):
-        os.makedirs(self.model_folder, exist_ok=True)
-        os.makedirs(self.log_loss_folder, exist_ok=True)
+        Path(self.model_folder).mkdir(parents=True, exist_ok=True)
+        Path(self.log_loss_folder).mkdir(parents=True, exist_ok=True)
         try:
             os.remove(os.path.join(self.log_loss_folder, "log.csv"))
         except FileNotFoundError as err:

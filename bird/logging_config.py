@@ -6,9 +6,7 @@ class ConditionalFormatter(logging.Formatter):
     def format(self, record):
         """Change how to log if it is an INFO or a WARNING/ERROR"""
         if record.levelno >= logging.WARNING:
-            self._style._fmt = (
-                "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-            )
+            self._style._fmt = "%(asctime)s [%(levelname)s] bird: %(message)s"
         else:
             self._style._fmt = "%(asctime)s [%(levelname)s] bird: %(message)s"
         return super().format(record)

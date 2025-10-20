@@ -102,7 +102,9 @@ def multi_data_load(data_root, tmax=600, data_files=None, color_files=None):
         A = np.loadtxt(filename)
         data_dict[datf] = {}
         data_dict[datf]["t"] = A[:, 0]
-        data_dict[datf]["y"] = A[:, 5] / (A[:, 4] * 16 / 44 + A[:, 5])
+        data_dict[datf]["y"] = A[:, 5] / np.clip(
+            (A[:, 4] * 16 / 44 + A[:, 5]), a_min=1e-12, a_max=None
+        )
         # chop data before increase and right after t=10s
         increase_ind_arr = np.argwhere(np.diff(data_dict[datf]["y"]) > 0)
         increase_ind = increase_ind_arr[
@@ -264,13 +266,3 @@ def bayes_fit(data_dict, num_warmup=1000, num_samples=500):
 
     return data_dict
 
-
-if __name__ == "__main__":
-    from bird import BIRD_EARLY_PRED_DATA_DIR
-
-    data_dict, color_files = multi_data_load(BIRD_EARLY_PRED_DATA_DIR)
-    data_dict = fit_and_ext(data_dict)
-    plotAllEarly(data_dict, color_files=color_files, chop=True, extrap=True)
-    bayes_fit(data_dict)
-    plotAllEarly_uq(data_dict, color_files=color_files)
-    plt.show()

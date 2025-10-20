@@ -1,10 +1,25 @@
+import matplotlib
 import numpy as np
+from mpl_toolkits import mplot3d
 from prettyPlot.plotting import plt, pretty_labels, pretty_legend
+from stl import mesh
 
 
-def plotSTL(stl_file):
-    from mpl_toolkits import mplot3d
-    from stl import mesh
+def plot_stl(stl_file: str) -> matplotlib.axes.Axes:
+    """
+    Plot a 2D STL file with matplotlib
+    This is useful to check boundary condition definition with STL
+
+    Parameters
+    ----------
+    stl_file: str
+        Name of the STL file to display
+
+    Returns
+    ----------
+    axes: matplotlib.axes.Axes
+        Axes of the plot created
+    """
 
     # Create a new plot
     figure = plt.figure()
@@ -25,7 +40,8 @@ def plotSTL(stl_file):
     max_z = np.amax(your_mesh.points[:, 2])
 
     amp = np.array([max_x - min_x, max_y - min_y, max_z - min_z])
-    # 2D view
+
+    # Rotate so we have a 2D view
     if abs(amp[0]) < 1e-12:
         axes.view_init(0, 90)
     elif abs(amp[1]) < 1e-12:

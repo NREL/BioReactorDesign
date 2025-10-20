@@ -153,6 +153,10 @@ def calc_mean(
     """
     Compute mean and the uncertainty about the mean, from a time-series
 
+    Following Trenberth, "Some Effects of Finite Sample Size and Persistence on Meteorological Statistics. Part I: Autocorrelations", 1984
+    And Oliver et al., "Estimating uncertainties in statistics computed from direct numerical simulation", 2014
+
+
     Parameters
     ----------
     time_series: np.ndarray
@@ -167,7 +171,7 @@ def calc_mean(
     mean_val: float
         Mean value of the time_series
     unc_val: float
-        68% uncertainty (1 sigma) about the mean
+        95% uncertainty (1.96 sigma) about the mean
 
     """
 
@@ -181,4 +185,4 @@ def calc_mean(
     sigsq = np.var(time_series) * N / (N - T0)
     unc_val = np.sqrt(sigsq * T0 / N)
 
-    return mean_val, unc_val
+    return mean_val, unc_val * 1.96

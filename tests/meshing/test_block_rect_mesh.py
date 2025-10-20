@@ -13,7 +13,7 @@ from bird.meshing.block_rect_mesh import (
 
 
 def base_mesh(input_file, output_folder):
-    os.makedirs(output_folder, exist_ok=True)
+    Path(output_folder).mkdir(parents=True, exist_ok=True)
     geomDict = assemble_geom(input_file)
     meshDict = assemble_mesh(input_file)
     writeBlockMeshDict(output_folder, geomDict, meshDict)

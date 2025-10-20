@@ -7,9 +7,11 @@ Subpackages
 .. toctree::
    :maxdepth: 1
 
-   bird.calibration
-   bird.meshing
+   .. comment API for now
+      bird.calibration
+      bird.meshing
+      bird.preprocess
+   
    bird.postprocess
-   bird.preprocess
    bird.utilities
 

@@ -1,17 +1,15 @@
 import argparse
-import sys
-
-import numpy as np
-
-sys.path.append("../utilities")
 import os
 import pickle
+import sys
+from pathlib import Path
 
-from folderManagement import *
-from ofio import *
+import numpy as np
 from prettyPlot.plotting import plt, pretty_labels, pretty_legend
 
-from bird.utilities.label_plot import label_conv
+from bird.utilities.ofio import *
+
+from .label_plot import label_conv
 
 parser = argparse.ArgumentParser(description="Compare Qoi")
 parser.add_argument(
@@ -88,7 +86,7 @@ figureFolder = os.path.join("Figures", args.figureFolder)
 dataFiles = args.dataFiles
 mode = args.mode
 
-makeRecursiveFolder(figureFolder)
+Path(figureFolder).mkdir(parents=True, exist_ok=True)
 data_structs = [np.load(dataFile) for dataFile in dataFiles]
 
 symbol_list = ["o", "s", "^"]
