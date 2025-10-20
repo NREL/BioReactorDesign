@@ -1,0 +1,258 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+        <title>Parameter calibration for bubble size distribution (BSD) &mdash; Bio Reactor Design (BiRD) 0.0.50 documentation</title>
+    
+
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e072a57b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="BiRD API" href="bird.html" />
+    <link rel="prev" title="Parameter calibration for Normal and Beta distributions" href="calibration_normal_beta.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bio Reactor Design (BiRD)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meshing.html">Meshing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html">Preprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uq.html">Uncertainty quantification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_interface.html">Python interface to OpenFOAM</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bubbleColumn.html">Bubble column</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_interface_tut.html">Post processing with the python interface to OpenFOAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calibration_normal_beta.html">Parameter calibration for Normal and Beta distributions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Parameter calibration for bubble size distribution (BSD)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#running-the-tutorial">Running the tutorial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simple-modeling-of-bubble-size-distribution-bsd-dynamics">Simple modeling of bubble size distribution (BSD) dynamics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#calibration-objective">Calibration Objective</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-the-surrogate">Building the surrogate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#calibration-with-optimized-likelihood-uncertainty">Calibration with optimized likelihood uncertainty</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#calibration-with-calibrated-likelihood-uncertainty">Calibration with calibrated likelihood uncertainty</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bird.html">BiRD API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">External links</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign/blob/main/LICENSE"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bio Reactor Design (BiRD)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Parameter calibration for bubble size distribution (BSD)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="parameter-calibration-for-bubble-size-distribution-bsd">
+<h1>Parameter calibration for bubble size distribution (BSD)<a class="headerlink" href="#parameter-calibration-for-bubble-size-distribution-bsd" title="Link to this heading"></a></h1>
+<p>This tutorial demonstrates how to calibrate bubble dynamics models by scaling the breakup and coalescence rates to match an observed BSD.</p>
+<section id="running-the-tutorial">
+<h2>Running the tutorial<a class="headerlink" href="#running-the-tutorial" title="Link to this heading"></a></h2>
+<p>We assume that bird is installed within an environment called <code class="docutils literal notranslate"><span class="pre">bird</span></code> (see either the <a class="reference internal" href="quickstart.html#installation-dev"><span class="std std-ref">Installation section for developers</span></a> or the <a class="reference internal" href="quickstart.html#installation-users"><span class="std std-ref">Installation section for users</span></a>)</p>
+<p>You will need to install additional dependencies</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda activate bird</span>
+<span class="go">BIRD_DIR = `python -c &quot;import bird; print(bird.BIRD_DIR)&quot;`</span>
+<span class="go">cd ${BIRD_DIR}/../</span>
+<span class="go">pip install .[calibration]</span>
+</pre></div>
+</div>
+<p>The calibration tutorial is located at <code class="docutils literal notranslate"><span class="pre">${BIRD_DIR}/../tutorial_cases/calibration/bsd</span></code></p>
+</section>
+<section id="simple-modeling-of-bubble-size-distribution-bsd-dynamics">
+<h2>Simple modeling of bubble size distribution (BSD) dynamics<a class="headerlink" href="#simple-modeling-of-bubble-size-distribution-bsd-dynamics" title="Link to this heading"></a></h2>
+<p>In this example, the dynamics of the BSD are modeled for a frozen flow field, i.e. where the changes in BSD do not affect the fluid flow variables.
+Each bubble is modeled with a particle which can either be merged with another particle (coalescence) or be broken into multiple particles (breakup).</p>
+<p>At every timestep, a number of breakup and coalescence events are determined by the breakup and coalescence rates.</p>
+<p>In this example, breakup and coalescence rates are assumed independent of the bubble diameters. While simple, this implementation can result in a breakup or coalescence runaway in the case where breakup and coalescence rates are not balancing each other. In the case of breakup runaway, the number of particles grows monotonically, and in the base of coalescence runaway, the number of particles decreases monotonically.</p>
+<p>For these runaway cases, the simulations are considered <cite>failing</cite> (see specific definition of failing in <code class="docutils literal notranslate"><span class="pre">simulation.py</span></code>.</p>
+<p>At every event, we consider <cite>N-ary</cite> breakup and coalescence. If <code class="docutils literal notranslate"><span class="pre">N=2</span></code>, then the system models a binary breakup and binary coalescence: at every coalescence event, only two bubbles coalesce; at every breakup event, only two daughter bubbles are created starting from one initial bubble.</p>
+</section>
+<section id="calibration-objective">
+<h2>Calibration Objective<a class="headerlink" href="#calibration-objective" title="Link to this heading"></a></h2>
+<p>For all the cases, the simulation initially contains 2000 bubbles all with diameter 1mm.</p>
+<p>Two target BSDs are considered:</p>
+<ol class="arabic simple">
+<li><p>A BSD obtained with a ternary breakup and coalescence with breakup and coalescence rate 0.5 Hz.</p></li>
+<li><p>A BSD obtained with a binary breakup and coalescence with breakup rate 1.6 Hz and coalescence rate 2.0 Hz</p></li>
+</ol>
+<p>Generate the target data by running</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd make_dataset</span>
+<span class="go">bash gen_target.sh</span>
+<span class="go">cd ..</span>
+</pre></div>
+</div>
+<p>This creates a folder <code class="docutils literal notranslate"><span class="pre">data/</span></code> with the file <code class="docutils literal notranslate"><span class="pre">target_n_3_br_0.5_cr_0.5.npz</span></code> and <code class="docutils literal notranslate"><span class="pre">target_n_2_br_1.6_cr_2.0.npz</span></code></p>
+<p>The numerical model is always a binary breakup and coalescence model with adjustable breakup and coalescence rate. To avoid breakup or coalescence runaway, we ensure that breakup rate is close to the coalescence rate. Specifically, the coalescence rate <cite>Cr</cite> varies in the interval <cite>[0.02, 2]</cite>. A breakup rate factor <cite>Bf</cite> varies in the interval <cite>[0.8, 1.1]</cite> and the breakup rate <cite>Br = Bf Cr</cite>. This ensures that the breakup rate and coalescence rate are close to one another, thereby avoiding breakup and coalescence runaway.</p>
+<p>Each simulation (target and from the numerical model) uses a timeste <cite>dt = 0.01s</cite> and the simulations are run for 150s to reach statistical stationarity and allow for sufficient averaging of the BSD. Since each forward simulation is expensive (~30s on a M1 Mac), a surrogate needs to be constructed.</p>
+</section>
+<section id="building-the-surrogate">
+<h2>Building the surrogate<a class="headerlink" href="#building-the-surrogate" title="Link to this heading"></a></h2>
+<p>The class <code class="docutils literal notranslate"><span class="pre">Param_NN</span></code> available in BiRD allows to create a parametric surrogate. Here, the input of the surrogate are the parameters <code class="docutils literal notranslate"><span class="pre">beff_fact</span></code> (corresponding to <cite>Bf</cite> as defined above) and <code class="docutils literal notranslate"><span class="pre">ceff</span></code> (corresponding to <cite>Cr</cite> as defined above), and the variable <code class="docutils literal notranslate"><span class="pre">x</span></code> that parameterize the PDF (the bubble diameter).</p>
+<p>Generate dataset</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd make_dataset</span>
+<span class="go">bash gen_dataset.sh</span>
+<span class="go">cd ..</span>
+</pre></div>
+</div>
+<p>This generates a file <code class="docutils literal notranslate"><span class="pre">data/dataset.npz</span></code> that contains the BSD of 400 simulations. This step may take time (~3h on a M1 Mac). We provide a <code class="docutils literal notranslate"><span class="pre">dataset.npz</span></code> that contains precomputed BSD.</p>
+<p>Before moving further, we can plot the data to understand how close it is to the target data and whether it is subject to coalescence and breakup runaway.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd data</span>
+<span class="go">python check_real.py -ter</span>
+<span class="go">cd ..</span>
+</pre></div>
+</div>
+<p>The plot below shows the values of <cite>Bf</cite> and <cite>Cr</cite> simulated and whether they lead to runaway. Most of the simulations are successful, but very small and very large values of <cite>Bf</cite> lead to runaway. Those runs are labelled with a dummy PDF in order to instruct the surrogate model to avoid those regions</p>
+<div class="figures-succ-fail docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/succ_fail.png"><img alt="Scatter plot of success and runaway (failed) simulations" src="_images/succ_fail.png" style="width: 50%;" />
+</a>
+</figure>
+</div>
+<p>We can also look at how close the generated data is to the target data. For the ternary breakup and coalescence, there is clearly a discrepancy that is not resolvable by adjusting the coalescence and breakup rates.</p>
+<p><a class="reference internal" href="_images/cmap_bf_ternary.png"><img alt="Predicted data with the binary breakup and coalescence colored by Bf against the ternary target data" src="_images/cmap_bf_ternary.png" style="width: 49.5%;" /></a> <a class="reference internal" href="_images/cmap_cr_ternary.png"><img alt="Predicted data with the binary breakup and coalescence colored by Cr against the ternary target data" src="_images/cmap_cr_ternary.png" style="width: 49.5%;" /></a></p>
+<p>In the case of the binary breakup and coalescence target data, a low value of <cite>Bf</cite> and a high value of <cite>Cr</cite> should lead to a good agreement between the forward model and the target data.</p>
+<p><a class="reference internal" href="_images/cmap_bf_binary.png"><img alt="Predicted data with the binary breakup and coalescence colored by Bf against the binary target data" src="_images/cmap_bf_binary.png" style="width: 49.5%;" /></a> <a class="reference internal" href="_images/cmap_cr_binary.png"><img alt="Predicted data with the binary breakup and coalescence colored by Cr against the binary target data" src="_images/cmap_cr_binary.png" style="width: 49.5%;" /></a></p>
+<p>Train a neural net surrogate</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bash train_surrogate.sh</span>
+</pre></div>
+</div>
+<p>This will generate a plot of the train and test loss history <code class="docutils literal notranslate"><span class="pre">loss.png</span></code>. This will also generate <code class="docutils literal notranslate"><span class="pre">Modeltmp</span></code> which contains the weights of the trained model and <code class="docutils literal notranslate"><span class="pre">Logtmp</span></code> which contains the loss history (shown below).</p>
+<div class="figures-loss-bsdcal-surr docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/Loss_surr.png"><img alt="Loss history" src="_images/Loss_surr.png" style="width: 50%;" />
+</a>
+</figure>
+</div>
+</section>
+<section id="calibration-with-optimized-likelihood-uncertainty">
+<h2>Calibration with optimized likelihood uncertainty<a class="headerlink" href="#calibration-with-optimized-likelihood-uncertainty" title="Link to this heading"></a></h2>
+<p>For the calibration, the objective PDF is noisy and subject to statistical uncertainty. We calibrate a likelihood uncertainty that contains both the noise and the missing physics estimates.</p>
+<p>Calibrate against the target data obtained with ternary breakup and coalescence</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python tut_calibration.py -ter</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="_images/Surr_opt_ternary_prop.png"><img alt="Calibrated prediction with the surrogate forward model against ternary target data" src="_images/Surr_opt_ternary_prop.png" style="width: 49.5%;" /></a> <a class="reference internal" href="_images/Surr_opt_ternary_corner.png"><img alt="Parameter PDF obtained with the surrogate forward model with ternary target data" src="_images/Surr_opt_ternary_corner.png" style="width: 49.5%;" /></a></p>
+<p>Calibrate against the target data obtained with binary breakup and coalescence</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python tut_calibration.py</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="_images/Surr_opt_binary_prop.png"><img alt="Calibrated prediction with the surrogate forward model against binary target data" src="_images/Surr_opt_binary_prop.png" style="width: 49.5%;" /></a> <a class="reference internal" href="_images/Surr_opt_binary_corner.png"><img alt="Parameter PDF obtained with the surrogate forward model with binary target data" src="_images/Surr_opt_binary_corner.png" style="width: 49.5%;" /></a></p>
+<p>Clearly, the amount of missing physics vary depending on the observations and is significantly lower when calibrating against binary breakup and coalescence data.</p>
+</section>
+<section id="calibration-with-calibrated-likelihood-uncertainty">
+<h2>Calibration with calibrated likelihood uncertainty<a class="headerlink" href="#calibration-with-calibrated-likelihood-uncertainty" title="Link to this heading"></a></h2>
+<p>The same suite of tests can be done by calibrating the likelihood uncertainty in lieu of optimizing it. This has the advantage of rapid calibration since only one calibration is needed.</p>
+<p>Calibrate against the target data obtained with ternary breakup and coalescence</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python tut_calibration.py -ter -cal_err</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="_images/Surr_cal_ternary_prop.png"><img alt="Calibrated prediction with the surrogate forward model against ternary target data" src="_images/Surr_cal_ternary_prop.png" style="width: 49.5%;" /></a> <a class="reference internal" href="_images/Surr_cal_ternary_corner.png"><img alt="Parameter PDF obtained with the surrogate forward model with ternary target data" src="_images/Surr_cal_ternary_corner.png" style="width: 49.5%;" /></a></p>
+<p>Calibrate against the target data obtained with binary breakup and coalescence</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python tut_calibration.py -cal_err</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="_images/Surr_cal_binary_prop.png"><img alt="Calibrated prediction with the surrogate forward model against binary target data" src="_images/Surr_cal_binary_prop.png" style="width: 49.5%;" /></a> <a class="reference internal" href="_images/Surr_cal_binary_corner.png"><img alt="Parameter PDF obtained with the surrogate forward model with binary target data" src="_images/Surr_cal_binary_corner.png" style="width: 49.5%;" /></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="calibration_normal_beta.html" class="btn btn-neutral float-left" title="Parameter calibration for Normal and Beta distributions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="bird.html" class="btn btn-neutral float-right" title="BiRD API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,319 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+        <title>Meshing &mdash; Bio Reactor Design (BiRD) 0.0.50 documentation</title>
+    
+
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e072a57b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Preprocess" href="preprocess.html" />
+    <link rel="prev" title="Quick start" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bio Reactor Design (BiRD)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick start</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Meshing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#generate-stirred-tank-reactor-mesh">Generate stirred tank reactor mesh</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#related-tutorial">Related tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#block-cylindrical-meshing">Block cylindrical meshing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-change-the-dimensions-or-mesh-refinement">How to change the dimensions or mesh refinement?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-change-the-arrangement-of-concentric-cylinders">How to change the arrangement of concentric cylinders?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-change-boundaries">How to change boundaries?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#related-tutorials">Related tutorials</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#block-rectangular-meshing">Block rectangular meshing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-change-the-block-rectangular-geometry">How to change the block rectangular geometry?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Related tutorials</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html">Preprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uq.html">Uncertainty quantification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_interface.html">Python interface to OpenFOAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bird.html">BiRD API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">External links</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign/blob/main/LICENSE"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bio Reactor Design (BiRD)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Meshing</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="meshing">
+<h1>Meshing<a class="headerlink" href="#meshing" title="Link to this heading"></a></h1>
+<section id="generate-stirred-tank-reactor-mesh">
+<span id="stir-tank"></span><h2>Generate stirred tank reactor mesh<a class="headerlink" href="#generate-stirred-tank-reactor-mesh" title="Link to this heading"></a></h2>
+<p>Generate a <code class="docutils literal notranslate"><span class="pre">blockMeshDict</span></code> with</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">inp=bird/meshing/stirred_tank_mesh_templates/base_tank/tank_par.yaml</span>
+<span class="go">out=bird/meshing/stirred_tank_case_templates/base/system/blockMeshDict</span>
+
+<span class="go">python applications/write_stirred_tank_mesh.py -i $inp -o $out</span>
+</pre></div>
+</div>
+<p>Then activate openFOAM environment and mesh with</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">blockMesh -dict system/blockMeshDict</span>
+<span class="go">stitchMesh -perfect -overwrite inside_to_hub inside_to_hub_copy</span>
+<span class="go">stitchMesh -perfect -overwrite hub_to_rotor hub_to_rotor_copy</span>
+<span class="go">transformPoints &quot;rotate=((0 0 1)(0 1 0))&quot;</span>
+</pre></div>
+</div>
+<p>Visualize mesh in Paraview</p>
+<figure class="align-center" id="fig-str">
+<span id="fig-stirredtank"></span><a class="reference external image-reference" href="../assets/stirred_tank.png"><img alt="Stirred-tank reactor" src="_images/stirred_tank.png" style="width: 70%;" />
+</a>
+</figure>
+<section id="related-tutorial">
+<h3>Related tutorial<a class="headerlink" href="#related-tutorial" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tutorial_cases/stirred_tank</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="block-cylindrical-meshing">
+<span id="block-cyl"></span><h2>Block cylindrical meshing<a class="headerlink" href="#block-cylindrical-meshing" title="Link to this heading"></a></h2>
+<p>Generates <code class="docutils literal notranslate"><span class="pre">system/blockMeshDict</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">root=`pwd`</span>
+<span class="go">caseFolder=bird/meshing/block_cyl_cases_templates/case</span>
+<span class="go">mesh_temp=bird/meshing/block_cyl_mesh_templates/sideSparger</span>
+
+<span class="go">python applications/write_block_cyl_mesh.py -i $mesh_temp/input.json -t $mesh_temp/topology.json -o $caseFolder/system</span>
+</pre></div>
+</div>
+<p>Then, activate the openFOAM environment and construct the mesh with</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd $caseFolder</span>
+<span class="go">blockMesh</span>
+<span class="go">transformPoints &quot;scale=(0.001 0.001 0.001)&quot;</span>
+<span class="go">transformPoints &quot;rotate=((0 0 1) (0 1 0))&quot;</span>
+<span class="go">cd $root</span>
+</pre></div>
+</div>
+<p>Visualize the mesh in Paraview</p>
+<figure class="align-center" id="id1">
+<span id="fig-sidesparger"></span><a class="reference external image-reference" href="../assets/3dsparger.png"><img alt="Reactor with a side sparger" src="_images/3dsparger.png" style="width: 50%;" />
+</a>
+</figure>
+<section id="how-to-change-the-dimensions-or-mesh-refinement">
+<h3>How to change the dimensions or mesh refinement?<a class="headerlink" href="#how-to-change-the-dimensions-or-mesh-refinement" title="Link to this heading"></a></h3>
+<p>The geometry and the mesh size are controlled by the input file <code class="docutils literal notranslate"><span class="pre">input.json</span></code>.
+The input file can also be in <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> format. The parser will decide the file format based on its extension.
+See <code class="docutils literal notranslate"><span class="pre">bird/meshing/block_cyl_mesh_templates/baseColumn/</span></code> for an example of <code class="docutils literal notranslate"><span class="pre">.yaml</span></code></p>
+</section>
+<section id="how-to-change-the-arrangement-of-concentric-cylinders">
+<h3>How to change the arrangement of concentric cylinders?<a class="headerlink" href="#how-to-change-the-arrangement-of-concentric-cylinders" title="Link to this heading"></a></h3>
+<p>The block topology is controlled by <code class="docutils literal notranslate"><span class="pre">topology.json</span></code>
+We recommend always working with a schematic as shown below</p>
+<figure class="align-center" id="fig-schematic">
+<a class="reference external image-reference" href="../assets/schematic.png"><img alt="Side sparger schematic" src="_images/schematic.png" style="width: 50%;" />
+</a>
+</figure>
+<p>The purple blocks are walls (not meshed) and the white blocks are fluid blocks (meshed). The symmetry axis is indicated as a dashed line</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">topology.json</span></code>, the purple blocks are defined as</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;Walls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;Support&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                            </span><span class="p">{</span><span class="nt">&quot;R&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;L&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">},</span>
+<span class="w">                            </span><span class="p">{</span><span class="nt">&quot;R&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;L&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span>
+<span class="w">                           </span><span class="p">],</span>
+<span class="w">                </span><span class="nt">&quot;Sparger&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                            </span><span class="p">{</span><span class="nt">&quot;R&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;L&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">},</span>
+<span class="w">                            </span><span class="p">{</span><span class="nt">&quot;R&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;L&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">},</span>
+<span class="w">                            </span><span class="p">{</span><span class="nt">&quot;R&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;L&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">}</span>
+<span class="w">                           </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="how-to-change-boundaries">
+<h3>How to change boundaries?<a class="headerlink" href="#how-to-change-boundaries" title="Link to this heading"></a></h3>
+<p>Boundaries are defined with three types, <code class="docutils literal notranslate"><span class="pre">top</span></code>, <code class="docutils literal notranslate"><span class="pre">bottom</span></code> and <code class="docutils literal notranslate"><span class="pre">lateral</span></code></p>
+<p>For example, if one wants to create a boundary called <code class="docutils literal notranslate"><span class="pre">wall_sparger</span></code>, shown below as the red lines</p>
+<figure class="align-center" id="fig-schematicwalls">
+<a class="reference external image-reference" href="../assets/schematicSpargerWalls.png"><img alt="Wall side sparger schematic" src="_images/schematicSpargerWalls.png" style="width: 50%;" />
+</a>
+</figure>
+<p>one can define the boundary as follows in <code class="docutils literal notranslate"><span class="pre">topology.json</span></code></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;Boundary&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;wall_sparger&quot;</span><span class="p">:[</span>
+<span class="w">                           </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">},</span>
+<span class="w">                           </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;top&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">},</span>
+<span class="w">                           </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;top&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">},</span>
+<span class="w">                           </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;top&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">}</span>
+<span class="w">                         </span><span class="p">],</span>
+</pre></div>
+</div>
+<p>For lateral boundaries (called <code class="docutils literal notranslate"><span class="pre">inlet</span></code> in this example), and shown below as the red line</p>
+<figure class="align-center" id="fig-schematicinlet">
+<a class="reference external image-reference" href="../assets/schematicSpargerInlet.png"><img alt="Inlet side sparger schematic" src="_images/schematicSpargerInlet.png" style="width: 50%;" />
+</a>
+</figure>
+<p>one can define the boundary as follows in <code class="docutils literal notranslate"><span class="pre">topology.json</span></code></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;Boundary&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;inlet&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                           </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lateral&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">}</span>
+<span class="w">                         </span><span class="p">],</span>
+</pre></div>
+</div>
+</section>
+<section id="related-tutorials">
+<h3>Related tutorials<a class="headerlink" href="#related-tutorials" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tutorial_cases/side_sparger</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tutorial_cases/bubble_column_20L</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="block-rectangular-meshing">
+<h2>Block rectangular meshing<a class="headerlink" href="#block-rectangular-meshing" title="Link to this heading"></a></h2>
+<p>Generates <code class="docutils literal notranslate"><span class="pre">system/blockMeshDict</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">root=`pwd`</span>
+<span class="go">caseFolder=bird/meshing/block_rect_cases_templates/case</span>
+<span class="go">mesh_temp=bird/meshing/block_rect_mesh_templates/loopReactor</span>
+
+<span class="go">python applications/write_block_rect_mesh.py -i $mesh_temp/input.json -o $caseFolder/system</span>
+</pre></div>
+</div>
+<p>Then, activate openFOAM environment and construct the mesh with</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd $caseFolder</span>
+<span class="go">blockMesh</span>
+<span class="go">cd $root</span>
+</pre></div>
+</div>
+<p>Visualize the mesh in Paraview</p>
+<figure class="align-center" id="fig-loopreactor">
+<span id="fig-loop-reactor"></span><a class="reference external image-reference" href="../assets/loop_react.png"><img alt="Loop reactor" src="_images/loop_react.png" style="width: 80%;" />
+</a>
+</figure>
+<section id="how-to-change-the-block-rectangular-geometry">
+<h3>How to change the block rectangular geometry?<a class="headerlink" href="#how-to-change-the-block-rectangular-geometry" title="Link to this heading"></a></h3>
+<p>The geometry of the block cylindrical mesh is defined within a 3D domain (X,Y,Z). The blocks that represent the fluid domain are a subset of a block rectangular background domain. The fluid blocks are defined using the geometry corners. For the mesh shown above, the geometry corners are the red blocks shown below</p>
+<figure class="align-center" id="fig-loopreactor-schematic">
+<span id="fig-loop-reactor-schematic"></span><a class="reference external image-reference" href="https://raw.githubusercontent.com/NREL/BioReactorDesign/main/bird/meshing/block_rect_mesh_templates/loopReactor/loop_schematic.png"><img alt="Loop reactor schematic" src="https://raw.githubusercontent.com/NREL/BioReactorDesign/main/bird/meshing/block_rect_mesh_templates/loopReactor/loop_schematic.png" style="width: 80%;" />
+</a>
+</figure>
+<p>The corners are defined in <code class="docutils literal notranslate"><span class="pre">input.json</span></code></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;Geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;Fluids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="p">[</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="p">],</span>
+<span class="w">                </span><span class="p">[</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="p">]</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h3>Related tutorials<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tutorial_cases/loop_reactor_mixing</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tutorial_cases/loop_reactor_reacting</span></code></p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quick start" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="preprocess.html" class="btn btn-neutral float-right" title="Preprocess" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

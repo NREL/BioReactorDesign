@@ -1,0 +1,428 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+        <title>Bubble column &mdash; Bio Reactor Design (BiRD) 0.0.50 documentation</title>
+    
+
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e072a57b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Post processing with the python interface to OpenFOAM" href="python_interface_tut.html" />
+    <link rel="prev" title="Tutorials" href="tutorials.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bio Reactor Design (BiRD)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meshing.html">Meshing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html">Preprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uq.html">Uncertainty quantification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_interface.html">Python interface to OpenFOAM</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Bubble column</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geometry">Geometry</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#block-geometry">Block geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#boundaries">Boundaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mesh">Mesh</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mesh-post-treatment">Mesh post-treatment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inlet-patch">Inlet patch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initial-conditions">Initial conditions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mesh-post-treatment-2">Mesh post-treatment 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#global-variables">Global variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setup-the-bubble-model">Setup the bubble model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#turbulence-model">Turbulence model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-the-solver">Run the solver</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="python_interface_tut.html">Post processing with the python interface to OpenFOAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calibration_normal_beta.html">Parameter calibration for Normal and Beta distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calibration_bsd.html">Parameter calibration for bubble size distribution (BSD)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bird.html">BiRD API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">External links</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign/blob/main/LICENSE"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bio Reactor Design (BiRD)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Bubble column</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bubble-column">
+<h1>Bubble column<a class="headerlink" href="#bubble-column" title="Link to this heading"></a></h1>
+<p>This tutorial demonstrates how to run a basic bubble column reactor case. The tutorial assumed you have created and activated the <code class="docutils literal notranslate"><span class="pre">bird</span></code> environment and setup path variables as</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda activate bird</span>
+<span class="go">BIRD_HOME=`python -c &quot;import bird; print(bird.BIRD_DIR)&quot;`</span>
+<span class="go">BCE_CASE=${BIRD_HOME}/../tutorial_cases/bubble_column_20L</span>
+</pre></div>
+</div>
+<p>The tutorial is located under <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}</span></code></p>
+<p>This is a code-along tutorial, and the steps are shown in order of how one would go about setting up a case. The reader can execute the commands in the order shown below</p>
+<p>To simply run the entire tutorial, do:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ${BCE_CASE}</span>
+<span class="go">bash run.sh</span>
+</pre></div>
+</div>
+<p>This test is run as part of the continuous integration</p>
+<section id="geometry">
+<h2>Geometry<a class="headerlink" href="#geometry" title="Link to this heading"></a></h2>
+<p>The geometry details are described in <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/system/mesh.json</span></code> and <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/system/topology.json</span></code></p>
+<p>All the steps in this section are done by executing</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python ${BIRD_HOME}/../applications/write_block_cyl_mesh.py -i system/mesh.json -t system/topology.json -o system</span>
+</pre></div>
+</div>
+<p>This command generates the appropriate <code class="docutils literal notranslate"><span class="pre">blockMeshDict</span></code></p>
+<section id="block-geometry">
+<h3>Block geometry<a class="headerlink" href="#block-geometry" title="Link to this heading"></a></h3>
+<p>BiRD uses a block cylindral geometry description (<a class="reference internal" href="meshing.html#block-cyl"><span class="std std-ref">Block cylindrical meshing</span></a>). The block description of the geometry is in <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/system/mesh.json</span></code> under the <code class="docutils literal notranslate"><span class="pre">Geometry</span></code> key</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;Geometry&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">         </span><span class="nt">&quot;Radial&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                 </span><span class="nt">&quot;column_trans&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">275</span><span class="p">,</span>
+<span class="w">                 </span><span class="nt">&quot;column&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">360</span>
+<span class="w">         </span><span class="p">},</span>
+<span class="w">         </span><span class="nt">&quot;Longitudinal&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                 </span><span class="nt">&quot;column_top&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">12000</span><span class="p">,</span>
+<span class="w">                 </span><span class="nt">&quot;head_space&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">9000</span><span class="p">,</span>
+<span class="w">                 </span><span class="nt">&quot;sparger_trans&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="p">,</span>
+<span class="w">                 </span><span class="nt">&quot;bottom&quot;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">         </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Those numbers describes the coordinates of the cylindrical blocks. Using the block diagram discussed in (<a class="reference internal" href="meshing.html#block-cyl"><span class="std std-ref">Block cylindrical meshing</span></a>), the geometry is</p>
+<div class="figures-block-geom-bce docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/block_geom.png"><img alt="Schematic of the block cylindrical geometry" src="_images/block_geom.png" style="width: 50%;" />
+</a>
+</figure>
+</div>
+<p>Note that the first radial number <code class="docutils literal notranslate"><span class="pre">column_trans</span></code> is special and results in 2 radial blocks. The first radial block is the square of the pillow-mesh where the edge is half of the first coordinate <span class="math notranslate nohighlight">\((275/2=137.5)\)</span>. The second radial block is the outer-shell of the pillow.</p>
+<p>By default, the coordinates of the block cylindrical geometry are in meters. In this case, the intention was to indicate millimeters instead. This will be handled during the <a class="reference internal" href="#posttreat-bce"><span class="std std-ref">Mesh post-treatment</span></a> below.</p>
+<p>Each one of the cylindrical blocks will be meshed because we are constructing a bubble column. So there is no need for defining one of the blocks as a wall (conversely to the example shown in <a class="reference internal" href="meshing.html#block-cyl"><span class="std std-ref">Block cylindrical meshing</span></a>).</p>
+<p>The coordinate are shown in the figure above in radial coordinates but OpenFOAM only uses cartesian coordinates. The radial coordinates are transformed in <span class="math notranslate nohighlight">\((x,y)\)</span> cartesian coordinate for you. The longitudinal coordinate always matches the <span class="math notranslate nohighlight">\(z\)</span> cartesian coordinate. In our present case, we want the bubble column axis of revolution to be along the <span class="math notranslate nohighlight">\(y\)</span>-direction (not <span class="math notranslate nohighlight">\(z\)</span>). We will show in <a class="reference internal" href="#posttreat-bce"><span class="std std-ref">Mesh post-treatment</span></a>.</p>
+</section>
+<section id="boundaries">
+<h3>Boundaries<a class="headerlink" href="#boundaries" title="Link to this heading"></a></h3>
+<p>The boundary conditions are described in <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/system/topology.json</span></code> and are used to define the outlet boundary named  <code class="docutils literal notranslate"><span class="pre">outlet</span></code> as</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;Boundary&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">             </span><span class="nt">&quot;outlet&quot;</span><span class="p">:[</span>
+<span class="w">                        </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;top&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span>
+<span class="w">                        </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;top&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">},</span>
+<span class="w">                        </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;top&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Rmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmin&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;Lmax&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">}</span>
+<span class="w">                      </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The snippet above defines <code class="docutils literal notranslate"><span class="pre">outlet</span></code> as the concatenation of 3 faces of cylindrical blocks. The blocks faces are defined by a pair of block: a <code class="docutils literal notranslate"><span class="pre">min</span></code> block and a <code class="docutils literal notranslate"><span class="pre">max</span></code> block. Each one of the blocks is defined by its radial index (<code class="docutils literal notranslate"><span class="pre">Rmin</span></code> or <code class="docutils literal notranslate"><span class="pre">Rmax</span></code>) and its longitudinal index (<code class="docutils literal notranslate"><span class="pre">Lmin</span></code> or <code class="docutils literal notranslate"><span class="pre">Lmax</span></code>). In the bubble column case, the three block faces that define the outlet are</p>
+<ol class="arabic simple">
+<li><ol class="arabic simple">
+<li><p>The boundary between the block <code class="docutils literal notranslate"><span class="pre">(Lmin=0,</span> <span class="pre">Rmin=0)</span></code> and the block <code class="docutils literal notranslate"><span class="pre">(Lmax=1,</span> <span class="pre">Rmax=0)</span></code></p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="2">
+<li><p>The boundary between the block <code class="docutils literal notranslate"><span class="pre">(Lmin=0,</span> <span class="pre">Rmin=1)</span></code> and the block <code class="docutils literal notranslate"><span class="pre">(Lmax=1,</span> <span class="pre">Rmax=1)</span></code></p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="3">
+<li><p>The boundary between the block <code class="docutils literal notranslate"><span class="pre">(Lmin=0,</span> <span class="pre">Rmin=2)</span></code> and the block <code class="docutils literal notranslate"><span class="pre">(Lmax=1,</span> <span class="pre">Rmax=2)</span></code></p></li>
+</ol>
+</li>
+</ol>
+<p>In the graph below, the vertical block 0 and vertical block 4 are not represented. They are <cite>ghost blocks</cite> that are only used to define bounding boundaries. Likewise, the radial block 3 is not represented is another <cite>ghost block</cite> but can be used to define lateral boundaries.</p>
+<div class="figures-bound-geom-bce docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/bound_geom.png"><img alt="Schematic of the boundary" src="_images/bound_geom.png" style="width: 50%;" />
+</a>
+</figure>
+</div>
+<p>To finish defining the boundaries of the bubble column, we would need to define the outer walls and the inlet. We do not define any other boundaries for now and BiRD automatically sets non-defined patches as walls. We will show how to set the inlet boundary in <a class="reference internal" href="#inletpatch-bce"><span class="std std-ref">Inlet patch</span></a>.</p>
+</section>
+<section id="mesh">
+<h3>Mesh<a class="headerlink" href="#mesh" title="Link to this heading"></a></h3>
+<p>The meshing is defined based on <code class="docutils literal notranslate"><span class="pre">Meshing</span></code> in <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/system/mesh.json</span></code></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;Meshing&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;NRSmallest&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;NVertSmallest&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span>
+</pre></div>
+</div>
+<p>The size of the radial mesh is defined using <code class="docutils literal notranslate"><span class="pre">NRSmallest</span></code>. It denotes the number of mesh point through the smallest radial block. Blocks at <span class="math notranslate nohighlight">\(R=0\)</span> (where <span class="math notranslate nohighlight">\(R\)</span> is the radial index of the block shown in the block diagrams above) have radial size <span class="math notranslate nohighlight">\(137.5\)</span>, at <span class="math notranslate nohighlight">\(R=1\)</span> have size <span class="math notranslate nohighlight">\(275-137.5=137.5\)</span>, and at <span class="math notranslate nohighlight">\(R=2\)</span> have size <span class="math notranslate nohighlight">\(360-275=85\)</span>. The smallest radial block is at <span class="math notranslate nohighlight">\(R=2\)</span>, so 4 mesh points will be used to mesh the radial blocks at <span class="math notranslate nohighlight">\(R=2\)</span>.</p>
+<p>Starting from this number, the number of points in the other radial blocks will be adjusted based on the size of the blocks, to make sure that the mesh size is constant radially. We refer to these numbers as the <em>base mesh numbers</em>.</p>
+<p>The same goes for <code class="docutils literal notranslate"><span class="pre">NVertSmallest</span></code> in the longitudinal direction.</p>
+<p>The mesh size can be further adjusted with the coarsening keys</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;Meshing&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w"> </span><span class="err">...</span>
+<span class="w">        </span><span class="nt">&quot;verticalCoarsening&quot;</span><span class="p">:[</span>
+<span class="w">                               </span><span class="p">{</span><span class="nt">&quot;ratio&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;direction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;+&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;directionRef&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;-&quot;</span><span class="p">},</span>
+<span class="w">                               </span><span class="p">{</span><span class="nt">&quot;ratio&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;direction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;+&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;directionRef&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;-&quot;</span><span class="p">},</span>
+<span class="w">                               </span><span class="p">{</span><span class="nt">&quot;ratio&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;direction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;+&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;directionRef&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;-&quot;</span><span class="p">}</span>
+<span class="w">                             </span><span class="p">],</span>
+<span class="w">        </span><span class="nt">&quot;radialCoarsening&quot;</span><span class="p">:</span><span class="w">  </span><span class="p">[</span>
+<span class="w">                               </span><span class="p">{</span><span class="nt">&quot;ratio&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;direction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;+&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;directionRef&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;-&quot;</span><span class="p">},</span>
+<span class="w">                               </span><span class="p">{</span><span class="nt">&quot;ratio&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;direction&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;+&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;directionRef&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;-&quot;</span><span class="p">}</span>
+<span class="w">                             </span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The ratios denote the how the base mesh numbers should be altered. By default, no alteration is done.</p>
+<p>In the radial direction, no coarsening or refinement is done in the first two blocks. For the third one, the default setting is used (no coarsening). We recommend to avoid coarsening or refining in the radial direction at the moment: this feature is rarely used and would be prone to bugs.</p>
+<p>In the vertical direction, no coarsening is used, except for the first block. In the first block, we reduce the number of mesh points compared to the base mesh by a factor <code class="docutils literal notranslate"><span class="pre">0.5</span></code>. The mesh size is adjusted using a grading so that a smooth mesh size transition is achieved. The <code class="docutils literal notranslate"><span class="pre">direction</span></code> and <code class="docutils literal notranslate"><span class="pre">directionRef</span></code> should always be opposite signs. The <code class="docutils literal notranslate"><span class="pre">directionRef</span></code> denotes where to look to define a smooth transition. Here, <code class="docutils literal notranslate"><span class="pre">directionRef</span> <span class="pre">:</span> <span class="pre">&quot;-&quot;</span></code> so mesh size to achieve at the bottom of the block should match the size of the mesh in block below. This what we want, because the first vertical block is meshing the headspace, and less and less resolution is needed as <span class="math notranslate nohighlight">\(z\)</span> increases.</p>
+<p>The resulting mesh looks as the picture below. The white line denotes the boundary between the first and the second vertical (also called longitudinal) block.</p>
+<div class="figures-grading-bce docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/grading.png"><img alt="Illustration of the grading" src="_images/grading.png" style="width: 50%;" />
+</a>
+</figure>
+</div>
+</section>
+</section>
+<section id="mesh-post-treatment">
+<span id="posttreat-bce"></span><h2>Mesh post-treatment<a class="headerlink" href="#mesh-post-treatment" title="Link to this heading"></a></h2>
+<p>Once <code class="docutils literal notranslate"><span class="pre">blockMeshDict</span></code> is generated, the mesh can be constructed using the <code class="docutils literal notranslate"><span class="pre">blockMesh</span></code> utility of OpenFOAM</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">blockMesh -dict system/blockMeshDict</span>
+</pre></div>
+</div>
+<p>As mentioned earlier, one might want to define the axis of revolution of the column along the <span class="math notranslate nohighlight">\(y\)</span> direction, in which case, one can use</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">transformPoints &quot;rotate=((0 0 1) (0 1 0))&quot;</span>
+</pre></div>
+</div>
+<p>Finally, one might want to convert the units from <span class="math notranslate nohighlight">\(mm\)</span> into <span class="math notranslate nohighlight">\(m\)</span> , which can be done as</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">transformPoints &quot;scale=(0.001 0.001 0.001)&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="inlet-patch">
+<span id="inletpatch-bce"></span><h2>Inlet patch<a class="headerlink" href="#inlet-patch" title="Link to this heading"></a></h2>
+<p>BiRD allows for the generation of complex patches through the generation of <code class="docutils literal notranslate"><span class="pre">.stl</span></code> files that describe the patch geometry.
+Note that we could have generated the outlet patch with another stl file (we do it in the case of the loop reactor tutorial). Here, since the outlet can be simply defined as an entire block cylindrical face, we prefer to define it that way. In the case of the inlet, only part of a block cylindrical face is the inlet, and it is more convenient to use the <code class="docutils literal notranslate"><span class="pre">.stl</span></code> approach.</p>
+<p>Here, we would like to create a circular sparger centered on <span class="math notranslate nohighlight">\((x,y,z)=(0,0,0)\)</span>, and of radius <span class="math notranslate nohighlight">\(0.2\)</span> m, with a normal face along the <span class="math notranslate nohighlight">\(y\)</span>-direction
+Recall that we scaled our mesh so the outer radius of the column is now <span class="math notranslate nohighlight">\(0.360\)</span> m, and not <span class="math notranslate nohighlight">\(360\)</span> m.</p>
+<p>The inlet patch geometry is defined in <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/system/inlets_outlets.json</span></code> as</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;inlets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">     </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;circle&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;radius&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;centx&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;centy&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;centz&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;normal_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;nelements&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>This describes exactly the properties shown above. The <code class="docutils literal notranslate"><span class="pre">nelements</span></code> key denote the number of triangles in the <code class="docutils literal notranslate"><span class="pre">.stl</span></code>.</p>
+<p>The following command generates <code class="docutils literal notranslate"><span class="pre">inlets.stl</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python ${BIRD_HOME}/../applications/write_stl_patch.py -i system/inlets_outlets.json</span>
+</pre></div>
+</div>
+<p>One can visualize the inlet STL patch with Paraview and see that it indeed contains 50 triangles, and that its normal is the <span class="math notranslate nohighlight">\(y\)</span>-direction.</p>
+<div class="figures-stlin-bce docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/stl_inlet.png"><img alt="Illustration of the inlet .stl" src="_images/stl_inlet.png" style="width: 50%;" />
+</a>
+</figure>
+</div>
+<p>Now, the inlet must be added to the boundary in place of some of the default wall patches. This can be done using OpenFOAM utilities. By default, OpenFOAM names the patch after the <code class="docutils literal notranslate"><span class="pre">.stl</span></code> filename. We can change that using <code class="docutils literal notranslate"><span class="pre">sed</span></code>. In the end, the new patch is created as</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ${BCE_CASE}/</span>
+<span class="go">surfaceToPatch -tol 1e-3 inlets.stl</span>
+<span class="go">export newmeshdir=$(foamListTimes -latestTime)</span>
+<span class="go">rm -rf constant/polyMesh/</span>
+<span class="go">cp -r $newmeshdir/polyMesh ./constant</span>
+<span class="go">rm -rf $newmeshdir</span>
+<span class="go">cp ${BCE_CASE}/constant/polyMesh/boundary /tmp</span>
+<span class="go">sed -i -e &#39;s/inlets\.stl/inlet/g&#39; /tmp/boundary</span>
+<span class="go">cat /tmp/boundary &gt; constant/polyMesh/boundary</span>
+</pre></div>
+</div>
+<p>At this point, you can visualize the inlet patch in paraview. The figure below shows the inlet patch in red. One can see that the inlet patch only approximately matches the stl file. In most applications, this amount of approximation is acceptable. If it is not one could</p>
+<ol class="arabic simple">
+<li><ol class="arabic simple">
+<li><p>modify the block-cylindrical mesh and make sure that the inlet exactly matches an ensemble of block cylindrical faces. Then one defines the inlet patch similarly to the way the outlet patch was constructed. This allows for a very close match to the .stl</p></li>
+</ol>
+</li>
+<li><ol class="arabic simple" start="2">
+<li><p>If 1. is not possible because the sparger geometry is complex, one could use a finer mesh to allow for a close match between the stl and inlet patch.</p></li>
+</ol>
+</li>
+</ol>
+<div class="figures-stlin-bce docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/inlet_patch.png"><img alt="Illustration of the inlet .stl" src="_images/inlet_patch.png" style="width: 50%;" />
+</a>
+</figure>
+</div>
+</section>
+<section id="initial-conditions">
+<h2>Initial conditions<a class="headerlink" href="#initial-conditions" title="Link to this heading"></a></h2>
+<p>The initial conditions are defined through the <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/0/</span></code> time folder. We provide a pre-made folder <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/0.orig/</span></code>. Two fields, the volume fraction of gas (<code class="docutils literal notranslate"><span class="pre">alpha.gas</span></code>) and liquid (<code class="docutils literal notranslate"><span class="pre">alpha.liquid</span></code>) are essential in a bubble column and are left for the user to define. We typically define them with the <code class="docutils literal notranslate"><span class="pre">setFields</span></code> utility in OpenFOAM which looks up the values defined in <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/system/setFieldsDict</span></code>. The important part of the file is shown below</p>
+<div class="highlight-txt notranslate"><div class="highlight"><pre><span></span>defaultFieldValues
+(
+    volScalarFieldValue alpha.gas 0.99
+    volScalarFieldValue alpha.liquid 0.01
+);
+
+regions
+(
+    boxToCell
+    {
+        box (-1.0 -1.0 -1.0) (10 7 10);
+        fieldValues
+        (
+            volScalarFieldValue alpha.gas 0.01
+            volScalarFieldValue alpha.liquid 0.99
+        );
+    }
+);
+</pre></div>
+</div>
+<p>Here, everything below <span class="math notranslate nohighlight">\(y=7m\)</span> is (almost) pure liquid and the rest (<code class="docutils literal notranslate"><span class="pre">defaultFieldValues</span></code>) is (almost) pure gas.</p>
+<p>In the end, the initial conditions are defined by running</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ${BCE_CASE}</span>
+<span class="go">cp -r 0.orig 0</span>
+<span class="go">setFields -dict system/setFieldsDict</span>
+</pre></div>
+</div>
+</section>
+<section id="mesh-post-treatment-2">
+<h2>Mesh post-treatment 2<a class="headerlink" href="#mesh-post-treatment-2" title="Link to this heading"></a></h2>
+<p>At this point, the reactor can still be post-treated. We can, for example, ensure that the liquid volume is 20L by doing</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">transformPoints &quot;scale=(0.19145161188225573 0.19145161188225573 0.19145161188225573)&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="global-variables">
+<h2>Global variables<a class="headerlink" href="#global-variables" title="Link to this heading"></a></h2>
+<p>Several cases in BiRD adjust the boundary conditions according to the <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/constant/globalVars</span></code> file. This is useful to get a holistic view of the whole case setup. In this case, <code class="docutils literal notranslate"><span class="pre">globalVars</span></code> defines <code class="docutils literal notranslate"><span class="pre">uGasPhase</span></code> which is used as an inlet boundary condition in <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/0.orig/U.gas</span></code>.</p>
+<p>In practice, the gas velocity is set using a vessel-volume-per-minute (or <code class="docutils literal notranslate"><span class="pre">VVM</span></code> in <code class="docutils literal notranslate"><span class="pre">globalsVars</span></code>) which can result in different gas velocity depending on the size of the inlet or the size of the reactor. This is shown in <code class="docutils literal notranslate"><span class="pre">globalVars_temp</span></code> and <code class="docutils literal notranslate"><span class="pre">globalVars</span></code> as  <code class="docutils literal notranslate"><span class="pre">uGasPhase</span> <span class="pre">#calc</span> <span class="pre">&quot;$liqVol</span> <span class="pre">*</span> <span class="pre">$VVM</span> <span class="pre">/</span> <span class="pre">(60</span> <span class="pre">*</span> <span class="pre">$inletA</span> <span class="pre">*</span> <span class="pre">$alphaGas)&quot;;</span></code>.
+Crucially, one needs to set <code class="docutils literal notranslate"><span class="pre">liqVol</span></code> (total volume of liquid in <span class="math notranslate nohighlight">\(m^3\)</span>) and <code class="docutils literal notranslate"><span class="pre">inletA</span></code> (inlet area in <span class="math notranslate nohighlight">\(m^2\)</span>) correctly. This can be done using a mix of OpenFOAM utilities (to get the <code class="docutils literal notranslate"><span class="pre">inletA</span></code> value) and BiRD utilities (to get the <code class="docutils literal notranslate"><span class="pre">liqVol</span></code> value). The script <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/writeGlobalVars.py</span></code> reads the erroneous <code class="docutils literal notranslate"><span class="pre">globalVars_temp</span></code> and writes the correct <code class="docutils literal notranslate"><span class="pre">globalVars</span></code> with the appropriate <code class="docutils literal notranslate"><span class="pre">liqVol</span></code> and <code class="docutils literal notranslate"><span class="pre">inletA</span></code>.</p>
+<p>This step can be done as</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ${BCE_CASE}</span>
+<span class="go">postProcess -func &#39;patchIntegrate(patch=&quot;inlet&quot;, field=&quot;alpha.gas&quot;)&#39;</span>
+<span class="go">postProcess -func writeCellVolumes</span>
+<span class="go">writeMeshObj</span>
+<span class="go">python writeGlobalVars.py</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">globalVars</span></code> file is also used to set up gas composition through the mass fractions. In this case, <code class="docutils literal notranslate"><span class="pre">f_O2</span></code> and <code class="docutils literal notranslate"><span class="pre">f_N2</span></code> are set through <code class="docutils literal notranslate"><span class="pre">globalVars</span></code> and are used to set the inlet boundary conditions in <code class="docutils literal notranslate"><span class="pre">0.orig/O2.gas</span></code> and <code class="docutils literal notranslate"><span class="pre">0.orig/N2.gas</span></code>.</p>
+</section>
+<section id="setup-the-bubble-model">
+<h2>Setup the bubble model<a class="headerlink" href="#setup-the-bubble-model" title="Link to this heading"></a></h2>
+<p>The bubble model is defined with <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/constant/phaseProperties</span></code>. We provide templates of this file for population balance modeling (<code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/constant/phaseProperties_pbe</span></code>) and constant diameter modeling (<code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/constant/phaseProperties_constantd</span></code>).</p>
+<p>For example, one choose to use the constant diameter model and do</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ${BCE_CASE}</span>
+<span class="go">cp constant/phaseProperties_constantd constant/phaseProperties</span>
+</pre></div>
+</div>
+</section>
+<section id="turbulence-model">
+<h2>Turbulence model<a class="headerlink" href="#turbulence-model" title="Link to this heading"></a></h2>
+<p>The turbulence model is set as <span class="math notranslate nohighlight">\(k-\varepsilon\)</span> in the gas phase and the liquid phase. The turbulence model can be activated through <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/constant/momentumTransport.gas</span></code> for the gas phase and <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/constant/momentumTransport.liquid</span></code> for the liquid phase.</p>
+<p>The boundary conditions for the turbulence model are set in <code class="docutils literal notranslate"><span class="pre">0.orig/k.*</span></code>, <code class="docutils literal notranslate"><span class="pre">0.orig/epsilon.*</span></code>, <code class="docutils literal notranslate"><span class="pre">0.orig/nut.*</span></code>. The inlet boundary values are calculated from freestream turbulence correlations shown in <code class="docutils literal notranslate"><span class="pre">constant/globalVars</span></code>. For example, <code class="docutils literal notranslate"><span class="pre">k_inlet_liq</span> <span class="pre">#calc</span> <span class="pre">&quot;1.5</span> <span class="pre">*</span> <span class="pre">Foam::pow(($uGasPhase),</span> <span class="pre">2)</span> <span class="pre">*</span> <span class="pre">Foam::pow($intensity,</span> <span class="pre">2)&quot;;</span></code>.</p>
+</section>
+<section id="run-the-solver">
+<h2>Run the solver<a class="headerlink" href="#run-the-solver" title="Link to this heading"></a></h2>
+<p>The solver can be run by executing</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ${BCE_CASE}</span>
+<span class="go">birdmultiphaseEulerFoam</span>
+</pre></div>
+</div>
+<p>By default, the solver will stop after one timestep because it is a case run as part of the continuous integration. To change this, one can modify <code class="docutils literal notranslate"><span class="pre">stopAt</span></code> in <code class="docutils literal notranslate"><span class="pre">${BCE_CASE}/system/controlDict</span></code></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorials.html" class="btn btn-neutral float-left" title="Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="python_interface_tut.html" class="btn btn-neutral float-right" title="Post processing with the python interface to OpenFOAM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

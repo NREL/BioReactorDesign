@@ -1,0 +1,187 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+        <title>Preprocess &mdash; Bio Reactor Design (BiRD) 0.0.50 documentation</title>
+    
+
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e072a57b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Uncertainty quantification" href="uq.html" />
+    <link rel="prev" title="Meshing" href="meshing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bio Reactor Design (BiRD)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meshing.html">Meshing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Preprocess</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#generate-stl-patch-mesh">Generate STL patch mesh</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-change-the-set-of-shapes-in-the-boundary-patch">How to change the set of shapes in the boundary patch?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-if-the-stl-patches-overlap">What if the STL patches overlap?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#related-tutorials">Related tutorials</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="uq.html">Uncertainty quantification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_interface.html">Python interface to OpenFOAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bird.html">BiRD API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">External links</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign/blob/main/LICENSE"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bio Reactor Design (BiRD)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Preprocess</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="preprocess">
+<h1>Preprocess<a class="headerlink" href="#preprocess" title="Link to this heading"></a></h1>
+<section id="generate-stl-patch-mesh">
+<span id="stl-patch"></span><h2>Generate STL patch mesh<a class="headerlink" href="#generate-stl-patch-mesh" title="Link to this heading"></a></h2>
+<p>Boundaries may be specified with the <code class="docutils literal notranslate"><span class="pre">surfaceToPatch</span></code> utility in OpenFOAM, based on STL files that can be generated with</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python applications/write_stl_patch.py -v</span>
+</pre></div>
+</div>
+<p>The verbose flag (<code class="docutils literal notranslate"><span class="pre">-v</span></code>) generates a plot of the stl mesh (as shown below)</p>
+<figure class="align-center" id="id1">
+<span id="fig-stl-patch"></span><a class="reference external image-reference" href="../assets/simpleOutput.png"><img alt="STL patch" src="_images/simpleOutput.png" style="width: 70%;" />
+</a>
+</figure>
+<section id="how-to-change-the-set-of-shapes-in-the-boundary-patch">
+<h3>How to change the set of shapes in the boundary patch?<a class="headerlink" href="#how-to-change-the-set-of-shapes-in-the-boundary-patch" title="Link to this heading"></a></h3>
+<p>Edit the json files that are read when generating the mesh. In the case <code class="docutils literal notranslate"><span class="pre">tutorial_cases/loop_reactor_mixing</span></code>, the boundary condition <code class="docutils literal notranslate"><span class="pre">inlets</span></code> consists of 3 discs</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;inlets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;circle&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;centx&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;centy&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;centz&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;radius&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.4</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;normal_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="nt">&quot;nelements&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;circle&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;centx&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2.5</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;centy&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;centz&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;radius&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.4</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;normal_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="nt">&quot;nelements&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;circle&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;centx&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">7.5</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;centy&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;centz&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;radius&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.4</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;normal_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="nt">&quot;nelements&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="p">}</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="what-if-the-stl-patches-overlap">
+<h3>What if the STL patches overlap?<a class="headerlink" href="#what-if-the-stl-patches-overlap" title="Link to this heading"></a></h3>
+<p>If STL patches are defined such that there is an overlap between patches, the final patch will be the union of the overlapping patches.
+In case of an overlap, the final patch will be therefore smaller than without an overlap.
+An example of this behavior is shown below for a U-loop reactor.</p>
+<p>In this case, the inlet (highlighted in red) contain 2 circular spargers. On the left, the two spargers contain an overlap and on the right they are disjoint. The inlet patch surface area is 13% smaller on the left than the right, but both simulations successfully run.</p>
+<figure class="align-center" id="id2">
+<a class="reference external image-reference" href="../assets/overlap_patches.png"><img alt="Overlapping STL patch" src="_images/overlap_patches.png" style="width: 95%;" />
+</a>
+</figure>
+</section>
+<section id="related-tutorials">
+<h3>Related tutorials<a class="headerlink" href="#related-tutorials" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tutorial_cases/loop_reactor_mixing</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tutorial_cases/loop_reactor_reacting</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tutorial_cases/bubble_column_20L</span></code></p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="meshing.html" class="btn btn-neutral float-left" title="Meshing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="uq.html" class="btn btn-neutral float-right" title="Uncertainty quantification" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

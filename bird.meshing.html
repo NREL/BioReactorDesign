@@ -1,0 +1,254 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+        <title>bird.meshing package &mdash; Bio Reactor Design (BiRD) 0.0.50 documentation</title>
+    
+
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e072a57b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bio Reactor Design (BiRD)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meshing.html">Meshing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html">Preprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uq.html">Uncertainty quantification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_interface.html">Python interface to OpenFOAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bird.html">BiRD API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">External links</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign/blob/main/LICENSE"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bio Reactor Design (BiRD)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">bird.meshing package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bird-meshing-package">
+<h1>bird.meshing package<a class="headerlink" href="#bird-meshing-package" title="Link to this heading"></a></h1>
+<section id="module-bird.meshing.block_cyl_mesh">
+<span id="bird-meshing-block-cyl-mesh-module"></span><h2>bird.meshing.block_cyl_mesh module<a class="headerlink" href="#module-bird.meshing.block_cyl_mesh" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_cyl_mesh.assemble_geom">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_cyl_mesh.</span></span><span class="sig-name descname"><span class="pre">assemble_geom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topo_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_cyl_mesh.assemble_geom" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_cyl_mesh.assemble_mesh">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_cyl_mesh.</span></span><span class="sig-name descname"><span class="pre">assemble_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_cyl_mesh.assemble_mesh" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_cyl_mesh.writeBlockMeshDict">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_cyl_mesh.</span></span><span class="sig-name descname"><span class="pre">writeBlockMeshDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geom_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_cyl_mesh.writeBlockMeshDict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-bird.meshing.block_rect_mesh">
+<span id="bird-meshing-block-rect-mesh-module"></span><h2>bird.meshing.block_rect_mesh module<a class="headerlink" href="#module-bird.meshing.block_rect_mesh" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_rect_mesh.assemble_geom">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_rect_mesh.</span></span><span class="sig-name descname"><span class="pre">assemble_geom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_rect_mesh.assemble_geom" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_rect_mesh.assemble_mesh">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_rect_mesh.</span></span><span class="sig-name descname"><span class="pre">assemble_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_rect_mesh.assemble_mesh" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_rect_mesh.from_block_rect_to_seg">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_rect_mesh.</span></span><span class="sig-name descname"><span class="pre">from_block_rect_to_seg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_geom_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rescale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_rect_mesh.from_block_rect_to_seg" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_rect_mesh.main">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_rect_mesh.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_folder</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_rect_mesh.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_rect_mesh.make_fluid_blocks_from_corner">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_rect_mesh.</span></span><span class="sig-name descname"><span class="pre">make_fluid_blocks_from_corner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corners</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_rect_mesh.make_fluid_blocks_from_corner" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_rect_mesh.writeBlockMeshDict">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_rect_mesh.</span></span><span class="sig-name descname"><span class="pre">writeBlockMeshDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geomDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meshDict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_rect_mesh.writeBlockMeshDict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_rect_mesh.write_blocks">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_rect_mesh.</span></span><span class="sig-name descname"><span class="pre">write_blocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blockids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nboxes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points_per_len</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_rect_mesh.write_blocks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_rect_mesh.write_ofoam_preamble">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_rect_mesh.</span></span><span class="sig-name descname"><span class="pre">write_ofoam_preamble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_rect_mesh.write_ofoam_preamble" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_rect_mesh.write_patches">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_rect_mesh.</span></span><span class="sig-name descname"><span class="pre">write_patches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_rect_mesh.write_patches" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_rect_mesh.write_this_block">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_rect_mesh.</span></span><span class="sig-name descname"><span class="pre">write_this_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zonename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_rect_mesh.write_this_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.block_rect_mesh.write_vertices">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.block_rect_mesh.</span></span><span class="sig-name descname"><span class="pre">write_vertices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nboxes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.block_rect_mesh.write_vertices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-bird.meshing.stirred_tank_mesh">
+<span id="bird-meshing-stirred-tank-mesh-module"></span><h2>bird.meshing.stirred_tank_mesh module<a class="headerlink" href="#module-bird.meshing.stirred_tank_mesh" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.stirred_tank_mesh.get_baffle_point_of">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.stirred_tank_mesh.</span></span><span class="sig-name descname"><span class="pre">get_baffle_point_of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">splti</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ci</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">react</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.stirred_tank_mesh.get_baffle_point_of" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.stirred_tank_mesh.get_globalindex_of">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.stirred_tank_mesh.</span></span><span class="sig-name descname"><span class="pre">get_globalindex_of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">splti</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ci</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">react</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.stirred_tank_mesh.get_globalindex_of" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.stirred_tank_mesh.get_reactor_geom">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.stirred_tank_mesh.</span></span><span class="sig-name descname"><span class="pre">get_reactor_geom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yamlfile</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.stirred_tank_mesh.get_reactor_geom" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.stirred_tank_mesh.write_blocks">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.stirred_tank_mesh.</span></span><span class="sig-name descname"><span class="pre">write_blocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">react</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.stirred_tank_mesh.write_blocks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.stirred_tank_mesh.write_edges">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.stirred_tank_mesh.</span></span><span class="sig-name descname"><span class="pre">write_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">react</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.stirred_tank_mesh.write_edges" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.stirred_tank_mesh.write_ofoam_preamble">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.stirred_tank_mesh.</span></span><span class="sig-name descname"><span class="pre">write_ofoam_preamble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">react</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.stirred_tank_mesh.write_ofoam_preamble" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.stirred_tank_mesh.write_patches">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.stirred_tank_mesh.</span></span><span class="sig-name descname"><span class="pre">write_patches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">react</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.stirred_tank_mesh.write_patches" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.stirred_tank_mesh.write_this_block">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.stirred_tank_mesh.</span></span><span class="sig-name descname"><span class="pre">write_this_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zonename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.stirred_tank_mesh.write_this_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bird.meshing.stirred_tank_mesh.write_vertices">
+<span class="sig-prename descclassname"><span class="pre">bird.meshing.stirred_tank_mesh.</span></span><span class="sig-name descname"><span class="pre">write_vertices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outfile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">react</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bird.meshing.stirred_tank_mesh.write_vertices" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

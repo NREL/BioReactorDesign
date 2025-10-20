@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+        <title>Post processing with the python interface to OpenFOAM &mdash; Bio Reactor Design (BiRD) 0.0.50 documentation</title>
+    
+
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e072a57b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Parameter calibration for Normal and Beta distributions" href="calibration_normal_beta.html" />
+    <link rel="prev" title="Bubble column" href="bubbleColumn.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bio Reactor Design (BiRD)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meshing.html">Meshing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html">Preprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uq.html">Uncertainty quantification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_interface.html">Python interface to OpenFOAM</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bubbleColumn.html">Bubble column</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Post processing with the python interface to OpenFOAM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reading-fields">Reading fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plot-conditional-means">Plot conditional means</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compute-reactor-properties">Compute reactor properties</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="calibration_normal_beta.html">Parameter calibration for Normal and Beta distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calibration_bsd.html">Parameter calibration for bubble size distribution (BSD)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bird.html">BiRD API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">External links</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign/blob/main/LICENSE"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bio Reactor Design (BiRD)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="tutorials.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Post processing with the python interface to OpenFOAM</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="post-processing-with-the-python-interface-to-openfoam">
+<h1>Post processing with the python interface to OpenFOAM<a class="headerlink" href="#post-processing-with-the-python-interface-to-openfoam" title="Link to this heading"></a></h1>
+<p>This tutorial demonstrates how to post process a case with the python interface to OpenFOAM provided in BiRD.</p>
+<p>The tutorial assumes you have created and activated the <code class="docutils literal notranslate"><span class="pre">bird</span></code> environment and setup path variables as</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda activate bird</span>
+<span class="go">BIRD_HOME=`python -c &quot;import bird; print(bird.BIRD_DIR)&quot;`</span>
+<span class="go">DCM_CASE=${BIRD_HOME}/postprocess/data_conditional_mean/</span>
+<span class="go">cd $DCM_CASE</span>
+</pre></div>
+</div>
+<p>The case and the data correspond to a coflowing bubble column.</p>
+<p>This tutorial is code-along, meaning to that you can execute the commands listed in the code-blocks. You can also execute the entirety of the tutorial by doing <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">${BIRD_HOME}/../tutorial_cases/postprocess/python_interface_tut.py</span></code></p>
+<section id="reading-fields">
+<h2>Reading fields<a class="headerlink" href="#reading-fields" title="Link to this heading"></a></h2>
+<p>The mesh manipulation tools are located in <code class="docutils literal notranslate"><span class="pre">bird.utilities.ofio</span></code></p>
+<p>Before starting to manipulate the fields with the python interface, we need mesh descriptor object files, in particular <code class="docutils literal notranslate"><span class="pre">meshCellCentres_1.obj</span></code>. This file contains the coordinates of the cell centers which is the location where the internal fields values are. The folder <code class="docutils literal notranslate"><span class="pre">$DCM_CASE</span></code> contains pre-generated mesh descriptor object files. The user can generate these files with <code class="docutils literal notranslate"><span class="pre">writeMeshObj</span> <span class="pre">-case</span> <span class="pre">{case_folder}</span></code>. This command will not work for this tutorial as it would require activating your OpenFOAM environment and would require a <code class="docutils literal notranslate"><span class="pre">constant</span></code> and <code class="docutils literal notranslate"><span class="pre">system</span></code> folders that we did not add because of space constraints.</p>
+<p>To read the cells centers</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set case folder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">case_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bird.utilities.ofio</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="n">cell_centers</span> <span class="o">=</span> <span class="n">read_cell_centers</span><span class="p">(</span><span class="n">case_folder</span><span class="o">=</span><span class="n">case_folder</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">cell_centers</span></code> is a <span class="math notranslate nohighlight">\((N,3)\)</span> numpy array that contains the cell center coordinates (<span class="math notranslate nohighlight">\(N\)</span> is the number of cells in the domain)</p>
+<p>If we want to read the gas volume fraction <code class="docutils literal notranslate"><span class="pre">alpha.gas</span></code>, the mass fraction of CO2 in the gas phase <code class="docutils literal notranslate"><span class="pre">CO2.gas</span></code>, and the liquid velocity at time <code class="docutils literal notranslate"><span class="pre">80/</span></code> we can run</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">co2_gas</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">read_field</span><span class="p">(</span><span class="n">case_folder</span><span class="p">,</span> <span class="s2">&quot;80&quot;</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;CO2.gas&quot;</span><span class="p">)</span>
+<span class="n">alpha_gas</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">read_field</span><span class="p">(</span><span class="n">case_folder</span><span class="p">,</span> <span class="s2">&quot;80&quot;</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;alpha.gas&quot;</span><span class="p">)</span>
+<span class="n">u_liq</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">read_field</span><span class="p">(</span><span class="n">case_folder</span><span class="p">,</span> <span class="s2">&quot;80&quot;</span><span class="p">,</span> <span class="n">field_name</span><span class="o">=</span><span class="s2">&quot;U.liquid&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cell CO2 gas shape = &quot;</span><span class="p">,</span> <span class="n">co2_gas</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cell alpha gas shape = &quot;</span><span class="p">,</span> <span class="n">alpha_gas</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cell u liq shape = &quot;</span><span class="p">,</span> <span class="n">u_liq</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The function <code class="docutils literal notranslate"><span class="pre">read_field</span></code> automatically detects whether the field is a vector or a scalar field. The first returned results in (N,) for a scalar field and (N,3) for a vector field.</p>
+</section>
+<section id="plot-conditional-means">
+<h2>Plot conditional means<a class="headerlink" href="#plot-conditional-means" title="Link to this heading"></a></h2>
+<p>With cells center locations and the internal fields, one can use python functions to post process the case. For example, we might want to compute conditional averages over a spatial direction, say y</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bird.utilities.mathtools</span><span class="w"> </span><span class="kn">import</span> <span class="n">conditional_average</span>
+
+<span class="n">y_co2_gas_cond</span><span class="p">,</span> <span class="n">co2_gas_cond</span> <span class="o">=</span> <span class="n">conditional_average</span><span class="p">(</span>
+    <span class="n">cell_centers</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">co2_gas</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="mi">32</span>
+<span class="p">)</span>
+<span class="n">y_alpha_gas_cond</span><span class="p">,</span> <span class="n">alpha_gas_cond</span> <span class="o">=</span> <span class="n">conditional_average</span><span class="p">(</span>
+    <span class="n">cell_centers</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">alpha_gas</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="mi">32</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">prettyPlot.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y_co2_gas_cond</span><span class="p">,</span> <span class="n">co2_gas_cond</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$Y_</span><span class="si">{CO_2}</span><span class="s2">$ [-]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">y_alpha_gas_cond</span><span class="p">,</span> <span class="n">alpha_gas_cond</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\alpha_</span><span class="si">{g}</span><span class="s2">$ [-]&quot;</span>
+<span class="p">)</span>
+<span class="n">pretty_labels</span><span class="p">(</span><span class="s2">&quot;Y [m]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fontname</span><span class="o">=</span><span class="s2">&quot;Times&quot;</span><span class="p">)</span>
+<span class="n">pretty_legend</span><span class="p">(</span><span class="n">fontname</span><span class="o">=</span><span class="s2">&quot;Times&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This will show the following plot</p>
+<div class="figures-cond-mean-tut docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/cond_mean_tut.png"><img alt="Height-conditional mean" src="_images/cond_mean_tut.png" style="width: 70%;" />
+</a>
+</figure>
+</div>
+</section>
+<section id="compute-reactor-properties">
+<h2>Compute reactor properties<a class="headerlink" href="#compute-reactor-properties" title="Link to this heading"></a></h2>
+<p>The python interface is also useful to compute reactor averaged properties. We usually like to compute volume averaged properties, which requires access to the cell volume. A cell volume field <code class="docutils literal notranslate"><span class="pre">V</span></code> can be written using OpenFOAM utilities (<code class="docutils literal notranslate"><span class="pre">postProcess</span> <span class="pre">-func</span> <span class="pre">writeCellVolumes</span> <span class="pre">-time</span> <span class="pre">{time_folder}</span> <span class="pre">-case</span> <span class="pre">{case_folder}</span></code>). Running this command would again require activating the OpenFOAM environment and we already provide a volume field in the <code class="docutils literal notranslate"><span class="pre">1/</span></code> folder here.</p>
+<p>A typical example is that one would want to compute at time 80</p>
+<ol class="arabic simple">
+<li><p>gas hold up (<code class="docutils literal notranslate"><span class="pre">gh</span></code>)</p></li>
+<li><p>superficial velocity (<code class="docutils literal notranslate"><span class="pre">sup_vel</span></code>)</p></li>
+<li><p>reactor volume averaged mass fraction of CO2 in the liquid phase (<code class="docutils literal notranslate"><span class="pre">y_ave_co2</span></code>)</p></li>
+</ol>
+<p>4. reactor volume averaged concentration of CO2 in the liquid phase (<code class="docutils literal notranslate"><span class="pre">c_ave_co2</span></code>)
+4. reactor volume averaged kLa for CO2 and saturation concentration for CO2 (<code class="docutils literal notranslate"><span class="pre">kla</span></code> and <code class="docutils literal notranslate"><span class="pre">cstar</span></code>)
+5. Reactor averaged bubble diameter (<code class="docutils literal notranslate"><span class="pre">diam</span></code>)</p>
+<p>Several of these quantities, will require reading and processing the same fields. For example, both <code class="docutils literal notranslate"><span class="pre">y_ave_co2</span></code> and <code class="docutils literal notranslate"><span class="pre">c_ave_co2</span></code> require to read <code class="docutils literal notranslate"><span class="pre">CO2.liquid</span></code>. To avoid re-reading the same fields, we store the fields in <code class="docutils literal notranslate"><span class="pre">field_dict</span></code> that allows to reuse fields when possible.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bird.postprocess.post_quantities</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># Compute Gas hold up</span>
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;case_folder&quot;</span><span class="p">:</span> <span class="n">case_folder</span><span class="p">,</span> <span class="s2">&quot;time_folder&quot;</span><span class="p">:</span> <span class="s2">&quot;80&quot;</span><span class="p">}</span>
+<span class="n">gh</span><span class="p">,</span> <span class="n">field_dict</span> <span class="o">=</span> <span class="n">compute_gas_holdup</span><span class="p">(</span>
+    <span class="n">field_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cell_centers&quot;</span><span class="p">:</span> <span class="n">cell_centers</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fields stored = &quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">field_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gas Holdup = </span><span class="si">{</span><span class="n">gh</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Compute superficial velocity</span>
+<span class="n">sup_vel</span><span class="p">,</span> <span class="n">field_dict</span> <span class="o">=</span> <span class="n">compute_superficial_gas_velocity</span><span class="p">(</span>
+    <span class="n">field_dict</span><span class="o">=</span><span class="n">field_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fields stored = &quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">field_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Superficial velocity = </span><span class="si">{</span><span class="n">sup_vel</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2"> m/s&quot;</span><span class="p">)</span>
+
+<span class="c1"># Compute reactor-averaged CO2 mass fraction</span>
+<span class="n">y_ave_co2</span><span class="p">,</span> <span class="n">field_dict</span> <span class="o">=</span> <span class="n">compute_ave_y_liq</span><span class="p">(</span>
+    <span class="n">species_name</span><span class="o">=</span><span class="s2">&quot;CO2&quot;</span><span class="p">,</span> <span class="n">field_dict</span><span class="o">=</span><span class="n">field_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fields stored = &quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">field_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reactor averaged YCO2 = </span><span class="si">{</span><span class="n">y_ave_co2</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Compute reactor-averaged CO2 concentration</span>
+<span class="n">c_ave_co2</span><span class="p">,</span> <span class="n">field_dict</span> <span class="o">=</span> <span class="n">compute_ave_conc_liq</span><span class="p">(</span>
+    <span class="n">species_name</span><span class="o">=</span><span class="s2">&quot;CO2&quot;</span><span class="p">,</span>
+    <span class="n">field_dict</span><span class="o">=</span><span class="n">field_dict</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fields stored = &quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">field_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reactor averaged [CO2] = </span><span class="si">{</span><span class="n">c_ave_co2</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2"> mol/m3&quot;</span><span class="p">)</span>
+
+<span class="n">kla</span><span class="p">,</span> <span class="n">cstar</span><span class="p">,</span> <span class="n">field_dict</span> <span class="o">=</span> <span class="n">compute_instantaneous_kla</span><span class="p">(</span>
+    <span class="n">species_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CO2&quot;</span><span class="p">],</span>
+    <span class="n">field_dict</span><span class="o">=</span><span class="n">field_dict</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fields stored = &quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">field_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reactor averaged kLa = </span><span class="si">{</span><span class="n">kla</span><span class="p">[</span><span class="s1">&#39;CO2&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2"> h-1&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reactor averaged cstar_co2 = </span><span class="si">{</span><span class="n">cstar</span><span class="p">[</span><span class="s1">&#39;CO2&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2"> mol/m3&quot;</span><span class="p">)</span>
+
+<span class="c1"># Compute reactor-averaged bubble diameter</span>
+<span class="n">diam</span><span class="p">,</span> <span class="n">field_dict</span> <span class="o">=</span> <span class="n">compute_ave_bubble_diam</span><span class="p">(</span>
+    <span class="n">field_dict</span><span class="o">=</span><span class="n">field_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;fields stored = &quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">field_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reactor averaged bubble diameter = </span><span class="si">{</span><span class="n">diam</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This should generate the following</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">fields stored =  [&#39;cell_centers&#39;, &#39;alpha.liquid&#39;, &#39;ind_liq&#39;, &#39;V&#39;]</span>
+<span class="go">Gas Holdup = 0.2401</span>
+<span class="go">fields stored =  [&#39;cell_centers&#39;, &#39;alpha.liquid&#39;, &#39;ind_liq&#39;, &#39;V&#39;, &#39;alpha.gas&#39;, &#39;U.gas&#39;, &#39;ind_height_4.6&#39;]</span>
+<span class="go">Superficial velocity = 0.07774 m/s</span>
+<span class="go">fields stored =  [&#39;cell_centers&#39;, &#39;alpha.liquid&#39;, &#39;ind_liq&#39;, &#39;V&#39;, &#39;alpha.gas&#39;, &#39;U.gas&#39;, &#39;ind_height_4.6&#39;, &#39;CO2.liquid&#39;]</span>
+<span class="go">Reactor averaged YCO2 = 0.0002948</span>
+<span class="go">fields stored =  [&#39;cell_centers&#39;, &#39;alpha.liquid&#39;, &#39;ind_liq&#39;, &#39;V&#39;, &#39;alpha.gas&#39;, &#39;U.gas&#39;, &#39;ind_height_4.6&#39;, &#39;CO2.liquid&#39;, &#39;rho_liq&#39;]</span>
+<span class="go">Reactor averaged [CO2] = 6.698 mol/m3</span>
+<span class="go">fields stored =  [&#39;cell_centers&#39;, &#39;alpha.liquid&#39;, &#39;ind_liq&#39;, &#39;V&#39;, &#39;alpha.gas&#39;, &#39;U.gas&#39;, &#39;ind_location_4.6&#39;, &#39;CO2.liquid&#39;, &#39;rho_liq&#39;, &#39;thermo:rho.liquid&#39;, &#39;thermo:rho.gas&#39;, &#39;U.liquid&#39;, &#39;d.gas&#39;, &#39;thermo:mu.liquid&#39;, &#39;CO2.gas&#39;]</span>
+<span class="go">Reactor averaged kLa = 258.4 h-1</span>
+<span class="go">Reactor averaged cstar_co2 = 6.878 mol/m3</span>
+<span class="go">fields stored =  [&#39;cell_centers&#39;, &#39;alpha.liquid&#39;, &#39;ind_liq&#39;, &#39;V&#39;, &#39;alpha.gas&#39;, &#39;U.gas&#39;, &#39;ind_location_4.6&#39;, &#39;CO2.liquid&#39;, &#39;rho_liq&#39;, &#39;thermo:rho.liquid&#39;, &#39;thermo:rho.gas&#39;, &#39;U.liquid&#39;, &#39;d.gas&#39;, &#39;thermo:mu.liquid&#39;, &#39;CO2.gas&#39;]</span>
+<span class="go">Reactor averaged bubble diameter = 0.008497 m</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">fields</span> <span class="pre">stored</span></code> print shows what fields are read to compute each quantity. Between the calculation of <code class="docutils literal notranslate"><span class="pre">y_ave_co2</span></code> and <code class="docutils literal notranslate"><span class="pre">c_ave_co2</span></code>, only <code class="docutils literal notranslate"><span class="pre">rho_liq</span></code> was added to the list of fields read. In other terms, the parser recycled <code class="docutils literal notranslate"><span class="pre">CO2.liquid</span></code> instead of re-reading it. Obviously, this approach trades input/output operations for memory use and it is up to the user to decide what is the right approach. In this case, reusing the fields reduces the computational cost by about 50% (0.26s when not reusing the fields, 0.17s when reusing the fields on an M1 Mac).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="bubbleColumn.html" class="btn btn-neutral float-left" title="Bubble column" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="calibration_normal_beta.html" class="btn btn-neutral float-right" title="Parameter calibration for Normal and Beta distributions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

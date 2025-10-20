@@ -1,0 +1,219 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+        <title>Uncertainty quantification &mdash; Bio Reactor Design (BiRD) 0.0.50 documentation</title>
+    
+
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e072a57b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Python interface to OpenFOAM" href="python_interface.html" />
+    <link rel="prev" title="Preprocess" href="preprocess.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bio Reactor Design (BiRD)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meshing.html">Meshing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html">Preprocess</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Uncertainty quantification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#perform-early-prediction">Perform early prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compute-kla-with-uncertainty-estimates">Compute kLa with uncertainty estimates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compute-mean-statistics-with-uncertainty">Compute mean statistics with uncertainty</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python_interface.html">Python interface to OpenFOAM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bird.html">BiRD API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">External links</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign/blob/main/LICENSE"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bio Reactor Design (BiRD)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Uncertainty quantification</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="uncertainty-quantification">
+<h1>Uncertainty quantification<a class="headerlink" href="#uncertainty-quantification" title="Link to this heading"></a></h1>
+<section id="perform-early-prediction">
+<span id="early-pred"></span><h2>Perform early prediction<a class="headerlink" href="#perform-early-prediction" title="Link to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python applications/early_prediction.py -df bird/postprocess/data_early</span>
+</pre></div>
+</div>
+<p>Generates</p>
+<div class="figures-early-pred docutils container">
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/early_det.png"><img alt="Determinisitc early prediction" src="_images/early_det.png" style="width: 70%;" />
+</a>
+</figure>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/early_uq.png"><img alt="Uncertainty-aware early prediction" src="_images/early_uq.png" style="width: 70%;" />
+</a>
+</figure>
+</div>
+</section>
+<section id="compute-kla-with-uncertainty-estimates">
+<h2>Compute kLa with uncertainty estimates<a class="headerlink" href="#compute-kla-with-uncertainty-estimates" title="Link to this heading"></a></h2>
+<p>Based on the time-history of the concentration of a species, one can calculate kLa by fitting the function</p>
+<div class="math notranslate nohighlight">
+\[(C^* - C_0) (1-\exp(-kLa (t-t_0)) + C_0\]</div>
+<p>where <span class="math notranslate nohighlight">\(C^*\)</span> is the equilibrium concentration (to be fitted), <span class="math notranslate nohighlight">\(C_0\)</span> is the initial concentration, <span class="math notranslate nohighlight">\(t\)</span> is time, <span class="math notranslate nohighlight">\(t_0\)</span> is the initial time after which concentration is recorded</p>
+<p>Accurate estimates can be obtained if sufficient data is acquired. Otherwise, it may be useful to derive uncertainty estimates about <span class="math notranslate nohighlight">\(C^*\)</span> and <span class="math notranslate nohighlight">\(kLa\)</span> (the parameters fitted)</p>
+<p>This can be achieved with a Bayesian calibration procedure. The calibration is conducted by removing transient data, and by doing a data bootstrapping. The number of data to remove in the transient phase is automatically determined by examining how accurate is the fit.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python applications/compute_kla_uq.py -i bird/postprocess/data_kla/volume_avg.dat -ti 0 -ci 1 -mc 10</span>
+</pre></div>
+</div>
+<p>Generates</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Chopping index = 0</span>
+<span class="go">Chopping index = 1</span>
+<span class="go">Chopping index = 2</span>
+<span class="go">Chopping index = 3</span>
+<span class="go">Chopping index = 4</span>
+<span class="go">Doing data bootstrapping</span>
+<span class="go">      scenario 0</span>
+<span class="go">      scenario 1</span>
+<span class="go">      scenario 2</span>
+<span class="go">      scenario 3</span>
+<span class="go">For bird/postprocess/data_kla/volume_avg.dat with time index: 0, concentration index: 1</span>
+<span class="go">     kla = 324 +/- 2.446 [h-1]</span>
+<span class="go">     cstar = 0.3107 +/- 0.0006522 [mol/m3]</span>
+<span class="go">Without data bootstrap</span>
+<span class="go">     kla = 324.5 +/- 2.075 [h-1]</span>
+<span class="go">     cstar = 0.3105 +/- 0.0005444 [mol/m3]</span>
+</pre></div>
+</div>
+</section>
+<section id="compute-mean-statistics-with-uncertainty">
+<h2>Compute mean statistics with uncertainty<a class="headerlink" href="#compute-mean-statistics-with-uncertainty" title="Link to this heading"></a></h2>
+<p>Averaging a discretized time-series signal is used in many contexts to characterize bio reactors (to compute averaged holdup or species concentrations). Averaging is subject to statistical error and we provide tools to manage it.</p>
+<p>The run the illustrative example we consider here:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python applications/compute_time_series_mean.py</span>
+</pre></div>
+</div>
+<p>There, we consider a time series acquired over the interval <span class="math notranslate nohighlight">\([0, 2]\)</span> where the signal is <span class="math notranslate nohighlight">\(cos (2 \pi t)\)</span> shown below</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/time_series.png"><img alt="Time series example" src="_images/time_series.png" style="width: 70%;" />
+</a>
+</figure>
+<p>We can sample the signal with 100 points through the interval <span class="math notranslate nohighlight">\([0, 2]\)</span>, and we obtain the following output</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">2025-09-02 12:36:15,016 [DEBUG] bird: Making the time series equally spaced over time</span>
+<span class="go">2025-09-02 12:36:15,016 [DEBUG] bird: Time series already equally spaced</span>
+<span class="go">2025-09-02 12:36:15,016 [DEBUG] bird: T0 = 1.270553916086648</span>
+<span class="go">2025-09-02 12:36:15,016 [INFO] bird: Mean = 0.01 +/- 0.081</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">T0</span></code> value suggests that every <span class="math notranslate nohighlight">\(1.27\)</span> points is considered independent. The uncertainty about the mean is estimated via the central limit theorem, where the number of datapoints is downsampled to make the sample independents</p>
+<p>We can also oversample the signal with 100 times more points. No more information has been provided about the signal, but without identifying the number of steps over which samples can be considered independent, the uncertainty (<span class="math notranslate nohighlight">\(0.081\)</span>) would be artificially reduced to <span class="math notranslate nohighlight">\(0.0081\)</span>.</p>
+<p>Here we obtain</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">2025-09-02 12:36:15,016 [DEBUG] bird: Making the time series equally spaced over time</span>
+<span class="go">2025-09-02 12:36:15,016 [DEBUG] bird: Time series already equally spaced</span>
+<span class="go">2025-09-02 12:36:15,030 [DEBUG] bird: T0 = 126.6515206796017</span>
+<span class="go">2025-09-02 12:36:15,030 [INFO] bird: Mean = 0.0001 +/- 0.08</span>
+</pre></div>
+</div>
+<p>The mean calculation function identifies that every 127 points is independent, and the uncertainty about the mean is not artificially reduced.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="preprocess.html" class="btn btn-neutral float-left" title="Preprocess" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="python_interface.html" class="btn btn-neutral float-right" title="Python interface to OpenFOAM" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

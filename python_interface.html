@@ -1,0 +1,196 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+        <title>Python interface to OpenFOAM &mdash; Bio Reactor Design (BiRD) 0.0.50 documentation</title>
+    
+
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e072a57b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorials" href="tutorials.html" />
+    <link rel="prev" title="Uncertainty quantification" href="uq.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Bio Reactor Design (BiRD)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="meshing.html">Meshing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocess.html">Preprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uq.html">Uncertainty quantification</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python interface to OpenFOAM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#read-fields">Read fields</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#internal-scalar-and-vector-fields">Internal scalar and vector fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reuse-instead-of-re-read">Reuse instead of re-read</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#read-mesh-related-fields">Read mesh-related fields</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#reading-cell-volumes">Reading cell volumes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reading-cell-centers">Reading cell centers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#read-dictionaries">Read dictionaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generate-cases">Generate cases</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bird.html">BiRD API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshoot.html">Troubleshoot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+</ul>
+
+
+    
+        <p class="caption">
+            <span class="caption-text">External links</span>
+        </p>
+        <ul>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign"><i class="fa fa-github fa-fw"></i> Source Code</a></li>
+            
+                <li class="toctree-l1"><a href="https://github.com/NREL/BioReactorDesign/blob/main/LICENSE"><i class="fa fa-book fa-fw"></i> License</a></li>
+            
+        </ul>
+    
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Bio Reactor Design (BiRD)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Python interface to OpenFOAM</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="python-interface-to-openfoam">
+<h1>Python interface to OpenFOAM<a class="headerlink" href="#python-interface-to-openfoam" title="Link to this heading"></a></h1>
+<p>We provide a simple python interface for reading OpenFOAM case results and dictionaries.
+A more comprehensive interface is available through <code class="docutils literal notranslate"><span class="pre">pyFoam</span></code> although we found it difficult to use and without recent support, which motivated the implementation of a new python interface.</p>
+<section id="read-fields">
+<h2>Read fields<a class="headerlink" href="#read-fields" title="Link to this heading"></a></h2>
+<section id="internal-scalar-and-vector-fields">
+<h3>Internal scalar and vector fields<a class="headerlink" href="#internal-scalar-and-vector-fields" title="Link to this heading"></a></h3>
+<p>Currently internal scalar and vector fields can be read using the python interface. In particular, note that</p>
+<ol class="arabic simple">
+<li><p>We do not support reading tensor fields for now.</p></li>
+<li><p>We do not support reading boundary fields for now.</p></li>
+<li><p>We only read reconstructed files</p></li>
+</ol>
+<p>We are open to implementing 1. and 2. if need be. Implementing 3. is possible but will be more involved.</p>
+<p>The main function interface to read openFOAM fields is <code class="docutils literal notranslate"><span class="pre">read_field</span></code> in <code class="docutils literal notranslate"><span class="pre">bird.utilities.ofio</span></code></p>
+<p>The function only reads fields written in ASCII format and decided based on the header whether the field is a scalar or a vector. In the case of scalar, <code class="docutils literal notranslate"><span class="pre">read_field</span></code> returns a (N,) numpy array, where N is the number of computational cells. In the case of a vector, <code class="docutils literal notranslate"><span class="pre">read_field</span></code> returns a (N,3) numpy array.</p>
+<p>If a uniform field is read, the number of cells may not be available from the field file and the function returns a float (equal to the uniform internal field value). If a numpy array is needed, the user can specify the number of cells in the field as an input.</p>
+</section>
+<section id="reuse-instead-of-re-read">
+<h3>Reuse instead of re-read<a class="headerlink" href="#reuse-instead-of-re-read" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">read_field</span></code> function uses <code class="docutils literal notranslate"><span class="pre">_readOF</span></code> and takes a dictionary <code class="docutils literal notranslate"><span class="pre">field_dict</span></code> as input which is used to avoid reading multiple times the same field. For example, if one wants to compute the reactor-averaged concentration of a species, and then the reactor-averaged mass fraction of a species, the same mass fraction field will be used in both cases. As fields are read, <code class="docutils literal notranslate"><span class="pre">field_dict</span></code> will store the mass fraction field and recognize that the same field is needed.</p>
+<p>It is up to the user to reinitialize <code class="docutils literal notranslate"><span class="pre">field_dict</span></code>. For example, if the reactor-averaged mass fraction needs to be computed at time <code class="docutils literal notranslate"><span class="pre">1</span></code> and then at time <code class="docutils literal notranslate"><span class="pre">2</span></code>, the user needs to pass an empty dictionary (or nothing) to <code class="docutils literal notranslate"><span class="pre">read_field</span></code> before reading the fields at time <code class="docutils literal notranslate"><span class="pre">2</span></code>. Otherwise, <code class="docutils literal notranslate"><span class="pre">read_field</span></code> will assume that the mass fraction field is the same between time <code class="docutils literal notranslate"><span class="pre">1</span></code> and time <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p>
+</section>
+<section id="read-mesh-related-fields">
+<h3>Read mesh-related fields<a class="headerlink" href="#read-mesh-related-fields" title="Link to this heading"></a></h3>
+<p>We rely on OpenFOAM utilities to provide mesh-based fields. The results of the OpenFOAM utilities can still be processed using <code class="docutils literal notranslate"><span class="pre">bird</span></code> functions.</p>
+<section id="reading-cell-volumes">
+<h4>Reading cell volumes<a class="headerlink" href="#reading-cell-volumes" title="Link to this heading"></a></h4>
+<p>A cell volume field can be generated using the following OpenFOAM command <code class="docutils literal notranslate"><span class="pre">postProcess</span> <span class="pre">-func</span> <span class="pre">writeCellVolumes</span> <span class="pre">-time</span> <span class="pre">{time_folder}</span> <span class="pre">-case</span> <span class="pre">{case_folder}</span></code>
+It will generate a file <code class="docutils literal notranslate"><span class="pre">{time_folder}/V</span></code> which can be read with the <code class="docutils literal notranslate"><span class="pre">read_cell_volumes</span></code> function of <code class="docutils literal notranslate"><span class="pre">bird.utilities.ofio</span></code>.
+This workflow is used in <code class="docutils literal notranslate"><span class="pre">bird.postprocess.post_quantitities</span></code>, for example in the <code class="docutils literal notranslate"><span class="pre">compute_gas_holdup</span></code> function.</p>
+</section>
+<section id="reading-cell-centers">
+<h4>Reading cell centers<a class="headerlink" href="#reading-cell-centers" title="Link to this heading"></a></h4>
+<p>A mesh object file can be generated with the OpenFOAM command  <code class="docutils literal notranslate"><span class="pre">writeMeshObj</span> <span class="pre">-case</span> <span class="pre">{case_folder}</span></code>
+The file can then be read with the function <code class="docutils literal notranslate"><span class="pre">read_cell_centers</span></code> from <code class="docutils literal notranslate"><span class="pre">bird.utilities.ofio</span></code>.
+Again, this is used in <code class="docutils literal notranslate"><span class="pre">bird.postprocess.post_quantities</span></code> in the <code class="docutils literal notranslate"><span class="pre">compute_superficial_gas_velocity</span></code> function.</p>
+</section>
+</section>
+</section>
+<section id="read-dictionaries">
+<h2>Read dictionaries<a class="headerlink" href="#read-dictionaries" title="Link to this heading"></a></h2>
+<p>We provide a function <code class="docutils literal notranslate"><span class="pre">read_openfoam_dict</span></code> in <code class="docutils literal notranslate"><span class="pre">bird.utilities.ofio</span></code> that can parse OpenFOAM dictionaries. The function requires a lot of special characters handling but works for processing basic dictionaries needed to manage OpenFOAM cases (<code class="docutils literal notranslate"><span class="pre">controlDict</span></code>, <code class="docutils literal notranslate"><span class="pre">setFieldsDict</span></code>, <code class="docutils literal notranslate"><span class="pre">phaseProperties</span></code>, <code class="docutils literal notranslate"><span class="pre">thermophysicalProperties</span></code>, <code class="docutils literal notranslate"><span class="pre">momentumTransport</span></code>, …)</p>
+</section>
+<section id="generate-cases">
+<h2>Generate cases<a class="headerlink" href="#generate-cases" title="Link to this heading"></a></h2>
+<p>(to be added based on the reactor optimization work)</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="uq.html" class="btn btn-neutral float-left" title="Uncertainty quantification" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorials.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
