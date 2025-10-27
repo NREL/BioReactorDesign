@@ -1,0 +1,110 @@
+//--------------------------------*- C++ -*----------------------------------
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+FoamFile
+{
+  version  2.0;
+  format   ascii;
+  class dictionary;
+  object blockMeshDict;
+}
+// ************************************
+
+
+
+
+
+
+convertToMeters 1;
+   
+ //wall-sparge distance
+ // sparger diameter
+ // total lenght
+ // total depth
+//define(H, 0.9144) //total height
+ //total height
+
+
+
+
+
+
+vertices
+(
+    ( 0   0   0 ) // Vertex block0_0 = 0 
+    ( 1.1176   0   0 ) // Vertex block0_1 = 1 
+    ( 1.1176   1.1   0 ) // Vertex block0_2 = 2 
+    ( 0   1.1   0 ) // Vertex block0_3 = 3 
+    ( 0.02925   0   0.02925 ) // Vertex block0_4 = 4 
+    ( 1.08835 0   0.02925 ) // Vertex block0_5 = 5 
+    ( 1.08835 1.1   0.02925 ) // Vertex block0_6 = 6 
+    ( 0.02925   1.1   0.02925 ) // Vertex block0_7 = 7 
+    ( 0.02925   0   0.03425) // Vertex block0_8 = 8 
+    ( 1.08835 0   0.03425) // Vertex block0_9 = 9 
+    ( 1.08835 1.1   0.03425) // Vertex block0_10 = 10 
+    ( 0.02925   1.1   0.03425) // Vertex block0_11 = 11 
+    ( 0   0   0.0635 ) // Vertex block0_12 = 12 
+    ( 1.1176   0   0.0635 ) // Vertex block0_13 = 13 
+    ( 1.1176   1.1   0.0635 ) // Vertex block0_14 = 14 
+    ( 0   1.1   0.0635 ) // Vertex block0_15 = 15 
+
+);
+
+blocks
+(
+    //block 0
+    hex ( 0 1 2 3 4 5 6 7 ) (100 100 10) simpleGrading (1 1 1)
+    //block 1
+    hex ( 5 1 2 6 9 13 14 10) ( 10 100 10 ) simpleGrading (1 1 1)
+    //block 2
+    hex ( 8 9 10 11 12 13 14 15) ( 100 100 10) simpleGrading (1 1 1)
+    //block 3
+    hex ( 0 4 7 3 12 8 11 15 ) ( 10 100 10 ) simpleGrading (1 1 1)
+    //block 4
+    hex (4 5 6 7 8 9 10 11) ( 100 100 10 ) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+patches
+(
+    patch inlet
+    (
+        ( 4 5 9 8 ) 
+    )
+      
+    patch outlet
+    (
+        ( 3 2 6 7 )
+	( 11 10 14 15 )
+	( 3 7 11 15 )
+	( 2 14 10 6 )
+	( 7 6 10 11)
+    )
+
+    wall wall_sides
+    (
+        ( 0 3 15 12 )
+    	( 1 13 14 2 )
+    )
+
+    wall wall_frontback
+    (
+        ( 12 15 14 13 )
+    	( 0 1 2 3 )
+    )
+
+    wall wall_botttom
+    (
+        ( 0 1 5 4 )
+	( 8 9 13 12 )
+	( 0 4 8 12 )
+	( 1 13 9 5)
+    )
+);
+
+mergePatchPairs
+(
+);
+

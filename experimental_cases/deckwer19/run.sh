@@ -1,3 +1,8 @@
+#!/bin/bash
+set -e  # Exit on any error
+# Define what to do on error
+trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
+
 if ! type "blockMesh" &> /dev/null; then
     echo "<blockMesh> could not be found"
     echo "OpenFoam is likely not installed, skipping run"
@@ -12,6 +17,10 @@ if ! type "python" &> /dev/null; then
 else
     # Generate blockmeshDict
     python ../../applications/write_block_cyl_mesh.py -i ../../bird/meshing/block_cyl_mesh_templates/coflowing/input.json  -t ../../bird/meshing/block_cyl_mesh_templates/coflowing/topology.json -o system
+
+    # Generate species thermo properties
+    python ../../applications/write_species_thermo_prop.py -cf .
+
 fi
 
 

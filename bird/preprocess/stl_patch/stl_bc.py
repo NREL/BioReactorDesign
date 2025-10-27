@@ -1,18 +1,18 @@
-import json
-import sys
+import os
 
 import numpy as np
 import stl
 
-from bird.meshing._mesh_tools import parseJsonFile
+from bird import logger
 from bird.preprocess.stl_patch.stl_shapes import *
+from bird.utilities.parser import parse_json
 
 
 def check_input(input_dict):
     assert isinstance(input_dict, dict)
     need_geom = False
     for bound in input_dict:
-        if not bound == "Geometry":
+        if not bound == "Geometry" and not bound == "Meshing":
             assert isinstance(input_dict[bound], list)
             for patch in input_dict[bound]:
                 assert isinstance(patch, dict)
@@ -37,22 +37,13 @@ def get_all_vert_faces(input_dict, boundary_name):
     return boundary_mesh
 
 
-def write_boundaries(input_dict):
+def write_boundaries(input_dict, output_folder="."):
     check_input(input_dict)
     for boundary_name in input_dict.keys():
         if not boundary_name == "Geometry":
-            print(f"Making {boundary_name}")
+            logger.info(f"Making {boundary_name}")
             boundary_mesh = get_all_vert_faces(input_dict, boundary_name)
-            print(f"\tArea {boundary_mesh.area} m2")
-            boundary_mesh.save(f"{boundary_name}.stl")
-
-
-if __name__ == "__main__":
-    input_dict = parseJsonFile(
-        "bc_patch_mesh_template/loop_reactor_expl/inlets_outlets.json"
-    )
-    write_boundaries(input_dict)
-    input_dict = parseJsonFile(
-        "bc_patch_mesh_template/loop_reactor_branch/inlets_outlets.json"
-    )
-    write_boundaries(input_dict)
+            logger.info(f"\tArea {boundary_mesh.area} m2")
+            boundary_mesh.save(
+                os.path.join(output_folder, f"{boundary_name}.stl")
+            )

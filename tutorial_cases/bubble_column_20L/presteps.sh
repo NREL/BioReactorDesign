@@ -1,8 +1,16 @@
+#!/bin/bash
+
 # Clean case
-module load anaconda3/2023
+module load conda
 conda activate /projects/gas2fuels/conda_env/bird
 source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
 ./Allclean
+
+
+set -e  # Exit on any error
+# Define what to do on error
+trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
+
 
 BIRD_HOME=`python -c "import bird; print(bird.BIRD_DIR)"`
 
@@ -13,6 +21,9 @@ python $BIRD_HOME/../applications/write_block_cyl_mesh.py -i system/mesh.json -t
 
 # Generate boundary stl
 python $BIRD_HOME/../applications/write_stl_patch.py -i system/inlets_outlets.json
+
+# Generate species thermo properties
+python $BIRD_HOME/../applications/write_species_thermo_prop.py -cf .
 
 echo PRESTEP 2
 # Mesh gen

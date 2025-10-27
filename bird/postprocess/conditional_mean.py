@@ -3,13 +3,14 @@ import pickle
 
 from prettyPlot.plotting import plt
 
-from bird.utilities.bubble_col_util import *
+from bird import logger
+from bird.postprocess.post_quantities import *
 from bird.utilities.mathtools import *
 from bird.utilities.ofio import *
 
 
 def compute_cond_mean(
-    case_path,
+    case_folder,
     vert_ind,
     field_name_list,
     window_ave,
@@ -17,80 +18,34 @@ def compute_cond_mean(
     diff_val_list=[],
     diff_name_list=[],
 ):
-    time_float_sorted, time_str_sorted = getCaseTimes(case_path)
-    mesh_time_str = getMeshTime(case_path)
-    cellCentres = readMesh(
-        os.path.join(case_path, f"meshCellCentres_{mesh_time_str}.obj")
-    )
-    nCells = len(cellCentres)
+    time_float_sorted, time_str_sorted = get_case_times(case_folder)
+    cell_centers, _ = read_cell_centers(case_folder)
+    nCells = len(cell_centers)
     assert len(diff_val_list) == len(diff_name_list)
     window_ave = min(window_ave, len(time_str_sorted))
 
     fields_cond = {}
-    fields_cond_tmp = {}
     for name in field_name_list:
         fields_cond[name] = {}
-        fields_cond_tmp[name] = {}
 
-    print(f"Case : {case_path}")
+    logger.info(f"Case : {case_folder}")
 
     for i_ave in range(window_ave):
         time_folder = time_str_sorted[-i_ave - 1]
-        print(f"\tReading Time : {time_folder}")
+        logger.debug(f"\tReading Time : {time_folder}")
         field_file = []
         for field_name in field_name_list:
-            field_file.append(os.path.join(case_path, time_folder, field_name))
-
-        # if os.path.isfile(d_gas_file):
-        #    has_d = True
-        # else:
-        #    has_d = False
+            field_file.append(
+                os.path.join(case_folder, time_folder, field_name)
+            )
 
         for filename, name in zip(field_file, field_name_list):
             val_dict = {}
-            if name.lower() == "kla_co":
-                if "D_CO" in diff_name_list:
-                    diff = diff_val_list[diff_name_list.index("D_CO")]
-                else:
-                    diff = None
-                field_tmp, val_dict = computeSpec_kla_field(
-                    os.path.join(case_path, time_folder),
-                    nCells,
-                    key_suffix="co",
-                    cellCentres=cellCentres,
-                    val_dict=val_dict,
-                    diff=diff,
-                )
-            elif name.lower() == "kla_co2":
-                if "D_CO2" in diff_name_list:
-                    diff = diff_val_list[diff_name_list.index("D_CO2")]
-                else:
-                    diff = None
-                field_tmp, val_dict = computeSpec_kla_field(
-                    os.path.join(case_path, time_folder),
-                    nCells,
-                    key_suffix="co2",
-                    cellCentres=cellCentres,
-                    val_dict=val_dict,
-                    diff=diff,
-                )
-            elif name.lower() == "kla_h2":
-                if "D_H2" in diff_name_list:
-                    diff = diff_val_list[diff_name_list.index("D_H2")]
-                else:
-                    diff = None
-                field_tmp, val_dict = computeSpec_kla_field(
-                    os.path.join(case_path, time_folder),
-                    nCells,
-                    key_suffix="h2",
-                    cellCentres=cellCentres,
-                    val_dict=val_dict,
-                    diff=diff,
-                )
-            else:
-                field_tmp = readOFScal(filename, nCells)
-            vert_axis, field_cond_tmp = conditionalAverage(
-                cellCentres[:, vert_ind], field_tmp, nbin=n_bins
+            field_tmp, _ = read_field(
+                case_folder, time_folder, field_name=field_name
+            )
+            vert_axis, field_cond_tmp = conditional_average(
+                cell_centers[:, vert_ind], field_tmp, nbins=n_bins
             )
             if i_ave == 0:
                 fields_cond[name]["val"] = field_cond_tmp / window_ave
@@ -116,10 +71,10 @@ def sequencePlot(
     if not len(case_names) == len(folder_names):
         case_names = [f"test{i}" for i in range(len(folder_names))]
     if len(case_names) > len(symbList):
-        print(
-            f"ERROR: too many cases ({len(case_names)}), reduce number of case to {len(symbList)} or add symbols"
-        )
-        sys.exit()
+        error_msg = f"too many cases ({len(case_names)}), reduce number of case to {len(symbList)} or add symbols"
+        logger.error(error_msg)
+        raise IndexError(error_msg)
+
     for ic, (case_name, folder_name) in enumerate(
         zip(case_names, folder_names)
     ):

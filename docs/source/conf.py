@@ -35,6 +35,8 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.mathjax",
     #    'sphinxcontrib.bibtex',
     #    'autoapi.extension',
     #    'sphinxcontrib.apidoc',
@@ -48,6 +50,10 @@ extensions = [
 # apidoc_output_dir = '.'
 # apidoc_excluded_paths = ['tests']
 # apidoc_separate_modules = True
+
+napoleon_google_docstring = True
+napoleon_use_param = True
+napoleon_use_rtype = True
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),

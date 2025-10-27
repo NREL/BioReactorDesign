@@ -2,6 +2,8 @@ import numpy as np
 import stl
 from scipy.spatial import Delaunay
 
+from bird import logger
+
 
 class STLMesh:
     def __init__(
@@ -59,20 +61,20 @@ class STLMesh:
             and not self.status["normal_dir"]
             and self.status["planar"]
         ):
-            print("\t\tUpdating normal_dir to")
+            logger.debug("\t\tUpdating normal_dir to")
             for i in range(3):
                 A = np.where(self.vertices[:, i] == self.vertices[0, i])[0]
                 if len(A) == self.vertices.shape[0]:
                     self.normal_dir = i
                     self.status["normal_dir"] = True
-                    print(f"\t\t\t{i}")
+                    logger.debug(f"\t\t\t{i}")
                     break
         if (
             self.status["vertices"]
             and not self.status["faces"]
             and self.status["planar"]
         ):
-            print("\t\tUpdating faces")
+            logger.debug("\t\tUpdating faces")
             points = np.zeros((self.vertices.shape[0], 2))
             count = 0
             for i in range(3):
@@ -84,7 +86,7 @@ class STLMesh:
             self.status["faces"] = True
 
         if self.status["vertices"] and self.status["faces"]:
-            print("\t\tUpdating area")
+            logger.debug("\t\tUpdating area")
             self.calc_area()
             self.status["area"] = True
 

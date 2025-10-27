@@ -1,5 +1,7 @@
 import numpy as np
 
+from bird import logger
+
 
 class Mixer:
     def __init__(self):
@@ -80,7 +82,7 @@ class Mixer:
         ):
             self.ready = False
         else:
-            print(
+            logger.info(
                 f"\n\tpos({self.x:.2g}, {self.y:.2g}, {self.z:.2g})"
                 + f"\n\tnormal_dir {self.normal_dir}"
                 + f"\n\trad {self.rad:.2g}"
@@ -90,6 +92,6 @@ class Mixer:
                 + f"\n\tstart_time {self.start_time:.2g}"
             )
             if blocks is not None:
-                print(f"\tbranch = {blocks}")
+                logger.info(f"\tbranch = {blocks}")
 
             self.ready = True

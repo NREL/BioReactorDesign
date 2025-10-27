@@ -1,38 +1,40 @@
-import json
-import sys
-from pathlib import Path
-
 import numpy as np
-from ruamel.yaml import YAML
+
+from bird import logger
+from bird.utilities.mathtools import bissection
 
 
-def parseJsonFile(input_filename):
-    with open(input_filename) as f:
-        inpt = json.load(f)
-    return inpt
+def make_walls_from_topo(topo_dict: dict) -> dict:
+    """
+    Find block cylindrical coordinates of all the wall blocks
 
+    Parameters
+    ----------
+    topo_dict: dict
+        Dictionary input that describes the topology
 
-def parseYAMLFile(input_filename):
-    yaml = YAML(typ="safe")
-    inpt = yaml.load(Path(input_filename))
-    return inpt
+    Returns
+    ----------
+    wall_dict: dict
+        Dictionary of wall coordinates
+    """
 
-
-def make_walls_from_topo(topo):
-    WallR = []
-    WallL = []
+    r_wall = []
+    l_wall = []
     try:
-        elements = topo["Walls"]
+        elements = topo_dict["Walls"]
         for element in elements:
             for block in elements[element]:
-                WallR.append(block["R"])
-                WallL.append(block["L"])
+                r_wall.append(block["R"])
+                l_wall.append(block["L"])
     except KeyError:
         pass
-    return {"WallR": WallR, "WallL": WallL}
+
+    wall_dict = {"r_wall": r_wall, "l_wall": l_wall}
+    return wall_dict
 
 
-def make_bound_from_topo(topo):
+def make_bound_from_topo(topo_dict):
     BoundaryNames = []
     BoundaryType = []
     BoundaryRmin = []
@@ -40,14 +42,14 @@ def make_bound_from_topo(topo):
     BoundaryLmin = []
     BoundaryLmax = []
 
-    for boundary in topo["Boundary"]:
+    for boundary in topo_dict["Boundary"]:
         BoundaryNames.append(boundary)
         tmp_bound_type = []
         tmp_rmin = []
         tmp_rmax = []
         tmp_lmin = []
         tmp_lmax = []
-        for bound_element in topo["Boundary"][boundary]:
+        for bound_element in topo_dict["Boundary"][boundary]:
             tmp_bound_type.append(bound_element["type"])
             tmp_rmin.append(bound_element["Rmin"])
             tmp_rmax.append(bound_element["Rmax"])
@@ -69,8 +71,8 @@ def make_bound_from_topo(topo):
     }
 
 
-def stretch_fun(G, N1):
-    result = (1.0 - G) / (G * (1 - np.power(G, 1.0 / N1)))
+def stretch_fun(G, N):
+    result = (1.0 - G) / (G * (1 - np.power(G, 1.0 / N)))
     return result
 
 
@@ -79,47 +81,56 @@ def stretch_fun(G, N1):
 #    return result
 
 
-def bissection(val, stretch_fun, N1):
-    Gmin = 0.00001
-    Gmax = 1000000
-    resultmin = stretch_fun(Gmin, N1) - val
-    resultmax = stretch_fun(Gmax, N1) - val
-    if resultmin * resultmax > 0:
-        print(
-            "Error,the initial bounds of grading do not encompass the solution"
-        )
-        # stop
+def is_wall(l_wall: list[int], r_wall: list[int], ir: int, il: int) -> int:
+    """
+    Is the present block a wall (not meshed)
 
-    for i in range(1000):
-        Gmid = 0.5 * (Gmax + Gmin)
-        resultmid = stretch_fun(Gmid, N1) - val
-        if resultmid * resultmax < 0:
-            Gmin = Gmid
-            resultmin = resultmid
-        else:
-            Gmax = Gmid
-            resultmax = resultmid
+    Parameters
+    ----------
+    l_wall: list[int]
+        List of vertical coordinate index of wall blocks
+    r_wall: list[int]
+        List of radial coordinate index of wall blocks
+    ir: int
+        Radial coordinate index of the present block
+    il: int
+        Vertical coordinate index of the present block
 
-    return Gmid
-
-
-def amIwall(WallL, WallR, ir, il):
-    # returns 1 if block is wall
-    # returns 0 otherwise
-    iwall = 0
-    for iw in range(len(WallL)):
-        if WallL[iw] == (il + 1) and WallR[iw] == ir + 1:
-            iwall = 1
-    return iwall
+    Returns
+    ----------
+    is_wall: int
+        1 if block (ir,il) is a wall
+        0 if block (ir, il) is fluid (and should be meshed)
+    """
+    is_wall = 0
+    for iw in range(len(l_wall)):
+        if l_wall[iw] == (il + 1) and r_wall[iw] == ir + 1:
+            is_wall = 1
+    return is_wall
 
 
-def mergeSort(list, reverse):
-    list.sort(reverse=reverse)
-    listtmp = []
-    for val in list:
-        if len(listtmp) == 0 or not val == listtmp[-1]:
-            listtmp.append(val)
-    return listtmp
+def merge_and_sort(
+    coord_list: list[float], reverse_coord: bool
+) -> list[float]:
+    """
+    Preprocess coordinates to obtain an ordered set of value ameable to block cylindrical meshing
+
+    Parameters
+    ----------
+    coord_list: list[float]
+        List of coordinates
+    reverse_coord: bool
+        Whether or not to reverse the coordinates
+
+    Returns
+    ----------
+    clean_list: list[float]
+        preprocessed list
+
+    """
+    clean_list = list(set(coord_list))
+    clean_list.sort(reverse=reverse_coord)
+    return clean_list
 
 
 def verticalCoarsening(
@@ -182,15 +193,16 @@ def verticalCoarsening(
                 deltaE = block_cell_minus_length[ind - 1]
 
             if ratio_dir[ind] == ratio_dir_ref[ind]:
-                message = "ERROR:"
-                message += f"Invalid coarsening ratio for vertical block {ind}"
-                message += "\nratio dir and ratio dir ref must be opposite"
-                sys.exit(message)
+                error_msg = (
+                    f"Invalid coarsening ratio for vertical block {ind}"
+                )
+                error_msg += "\nratio dir and ratio dir ref must be opposite"
+                logger.error(error_msg)
+                raise ValueError(error_msg)
 
             if ratio_dir[ind] == "+":
-                gradVert[ind] = 1.0 / bissection(
-                    length / deltaE, stretch_fun, NVert[ind]
-                )
+                nl_func = lambda x: stretch_fun(x, NVert[ind])
+                gradVert[ind] = 1.0 / bissection(length / deltaE, nl_func)
                 iterate = False
                 origNVert = NVert[ind]
                 while gradVert[ind] < 1 and NVert[ind] > 1:
@@ -198,21 +210,19 @@ def verticalCoarsening(
                     NVert[ind] = max(
                         int(round(min(0.99 * NVert[ind], NVert[ind] - 1))), 1
                     )
-                    gradVert[ind] = 1.0 / bissection(
-                        length / deltaE, stretch_fun, NVert[ind]
-                    )
+                    nl_func = lambda x: stretch_fun(x, NVert[ind])
+                    gradVert[ind] = 1.0 / bissection(length / deltaE, nl_func)
                 if iterate:
-                    print(
-                        f"WARNING: reduced NVert[{ind}] from {origNVert} to {NVert[ind]}"
+                    logger.warning(
+                        f"reduced NVert[{ind}] from {origNVert} to {NVert[ind]}"
                     )
                 block_cell_minus_length[ind] = deltaE
                 block_cell_plus_length[ind] = deltaE * gradVert[ind]
 
             elif ratio_dir[ind] == "-":
                 deltaE = block_cell_minus_length[ind - 1]
-                gradVert[ind] = bissection(
-                    length / deltaE, stretch_fun, NVert[ind]
-                )
+                nl_func = lambda x: stretch_fun(x, NVert[ind])
+                gradVert[ind] = bissection(length / deltaE, nl_func)
 
                 iterate = False
                 origNVert = NVert[ind]
@@ -221,12 +231,11 @@ def verticalCoarsening(
                     NVert[ind] = max(
                         int(round(min(0.99 * NVert[ind], NVert[ind] - 1))), 1
                     )
-                    gradVert[ind] = bissection(
-                        length / deltaE, stretch_fun, NVert[ind]
-                    )
+                    nl_func = lambda x: stretch_fun(x, NVert[ind])
+                    gradVert[ind] = bissection(length / deltaE, nl_func)
                 if iterate:
-                    print(
-                        f"WARNING: reduced NVert[{ind}] from {origNVert} to {NVert[ind]}"
+                    logger.warning(
+                        f"reduced NVert[{ind}] from {origNVert} to {NVert[ind]}"
                     )
                 block_cell_minus_length[ind] = deltaE / gradVert[ind]
                 block_cell_plus_length[ind] = deltaE
@@ -296,15 +305,14 @@ def radialCoarsening(
                 deltaE = block_cell_minus_length[ind + 1]
 
             if ratio_dir[ind] == ratio_dir_ref[ind]:
-                message = "ERROR:"
-                message += f"Invalid coarsening ratio for radial block {ind}"
-                message += "\nratio dir and ratio dir ref must be opposite"
-                sys.exit(message)
+                error_msg = f"Invalid coarsening ratio for radial block {ind}"
+                error_msg += "\nratio dir and ratio dir ref must be opposite"
+                logger.error(error_msg)
+                raise ValueError(error_msg)
 
             if ratio_dir[ind] == "+":
-                gradR[ind] = 1.0 / bissection(
-                    length / deltaE, stretch_fun, NR[ind]
-                )
+                nl_func = lambda x: stretch_fun(x, NR[ind])
+                gradR[ind] = 1.0 / bissection(length / deltaE, nl_func)
                 iterate = False
                 origNR = NR[ind]
                 while gradR[ind] < 1 and NR[ind] > 1:
@@ -312,30 +320,29 @@ def radialCoarsening(
                     NR[ind] = max(
                         int(round(min(0.99 * NR[ind], NR[ind] - 1))), 1
                     )
-                    gradR[ind] = 1.0 / bissection(
-                        length / deltaE, stretch_fun, NR[ind]
-                    )
+                    nl_func = lambda x: stretch_fun(x, NR[ind])
+                    gradR[ind] = 1.0 / bissection(length / deltaE, nl_func)
                 if iterate:
-                    print(
-                        f"WARNING: reduced NR[{ind}] from {origNR} to {NR[ind]}"
+                    logger.warning(
+                        f"reduced NR[{ind}] from {origNR} to {NR[ind]}"
                     )
                 block_cell_minus_length[ind] = deltaE
                 block_cell_plus_length[ind] = deltaE * gradR[ind]
 
             elif ratio_dir[ind] == "-":
                 deltaE = block_cell_minus_length[ind - 1]
-                gradR[ind] = bissection(length / deltaE, stretch_fun, NR[ind])
+                nl_func = lambda x: stretch_fun(x, NR[ind])
+                gradR[ind] = bissection(length / deltaE, nl_func)
                 iterate = False
                 origNR = NR[ind]
                 while gradR[ind] > 1 and NR[ind] > 1:
                     iterate = True
                     NR[ind] = max(int(round(min(0.99 * NR[ind], -1))), 1)
-                    gradR[ind] = bissection(
-                        length / deltaE, stretch_fun, NR[ind]
-                    )
+                    nl_func = lambda x: stretch_fun(x, NR[ind])
+                    gradR[ind] = bissection(length / deltaE, nl_func)
                 if iterate:
-                    print(
-                        f"WARNING: reduced NR[{ind}] from {origNR} to {NR[ind]}"
+                    logger.warning(
+                        f"reduced NR[{ind}] from {origNR} to {NR[ind]}"
                     )
                 block_cell_minus_length[ind] = deltaE / gradR[ind]
                 block_cell_plus_length[ind] = deltaE
@@ -359,9 +366,9 @@ def radialCoarsening(
     #    if (gradR[last_R] > 2 or gradR[last_R] < 0.5) and abs(
     #        ratio - 1
     #    ) <= 1e-12:
-    #        print(
-    #            "WARNING: radial smoothing had to be used because your mesh is very coarse"
+    #        logger.warning(
+    #            "radial smoothing had to be used because your mesh is very coarse"
     #        )
-    #        print("\tIncrease NS in input file to avoid this warning")
+    #        logger.warning("\tIncrease NS in input file to avoid this warning")
 
     return NR, gradR, minCell, maxCell

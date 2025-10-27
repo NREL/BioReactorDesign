@@ -1,9 +1,9 @@
 import os
-import sys
 
 import numpy as np
 
 from bird.meshing._mesh_tools import *
+from bird.utilities.parser import parse_json, parse_yaml
 
 
 def write_ofoam_preamble(outfile):
@@ -150,11 +150,11 @@ def make_fluid_blocks_from_corner(corners):
 
 
 def assemble_geom(input_file):
-    # inpt = parseJsonFile(input_file)
+    # inpt = parse_json(input_file)
     if input_file.endswith(".yaml"):
-        inpt = parseYAMLFile(input_file)
+        inpt = parse_yaml(input_file)
     elif input_file.endswith(".json"):
-        inpt = parseJsonFile(input_file)
+        inpt = parse_json(input_file)
     else:
         raise ValueError(f"unknown input file ({input_file}) extension")
 
@@ -253,9 +253,9 @@ def from_block_rect_to_seg(input_geom_dict, rescale=True):
 
 def assemble_mesh(input_file):
     if input_file.endswith(".yaml"):
-        inpt = parseYAMLFile(input_file)
+        inpt = parse_yaml(input_file)
     elif input_file.endswith(".json"):
-        inpt = parseJsonFile(input_file)
+        inpt = parse_json(input_file)
     else:
         raise ValueError(f"unknown input file ({input_file}) extension")
 

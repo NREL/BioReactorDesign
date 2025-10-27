@@ -1,0 +1,34 @@
+name: CO
+
+specie:
+    molWeight: 28.01055
+    elements:
+        C: 1
+        O: 1
+
+liquid:
+    LeLiq: '#calc "$kThermLiq / $rho0MixLiq / $D_CO / $CpMixLiq"'
+    thermodynamics:
+        Hf: -1.5879e+07
+
+gas:
+    in-H2O:
+        WC_V: "30.7e-3" # m3/kmol molar volume at normal boiling temperature (Treybal 1968)
+        D: '#calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_CO,0.6)' 
+    H_298: "0.023"
+    DH: "1300"
+    He: '#calc "$H_CO_298 * exp($DH_CO *(1. / $T0 - 1./298.15))"'
+    k: '#calc "$D_CO*$rho0MixLiq*$CpMixLiq*$LeLiqMix"'
+    Pr: '#calc "$muMixLiq*$CpMixLiq / $kCO"'
+   
+    thermodynamics:
+        Tlow: 200
+        Thigh: 3500
+        Tcommon: 1000
+        highCpCoeffs: 2.71518561 0.00206252743 -9.98825771e-07 2.30053008e-10 -2.03647716e-14 -14151.8724 7.81868772
+        lowCpCoeffs: 3.57953347 -0.00061035368 1.01681433e-06 9.07005884e-10 -9.04424499e-13 -14344.086 3.50840928
+    transport:
+        As:  1.512e-06
+        Ts: 120
+
+   

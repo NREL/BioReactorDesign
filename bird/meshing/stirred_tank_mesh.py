@@ -314,9 +314,6 @@ def write_blocks(outfile, react):
 
     outfile.write(");\n")
 
-    # print "meshz:",meshz
-    # print "meshr:",meshr
-
 
 def write_patches(outfile, react):
     inhub_ci = react.inhub_circ

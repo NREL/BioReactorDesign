@@ -1,3 +1,4 @@
+#!/bin/bash
 if ! type "blockMesh" &> /dev/null; then
     echo "<blockMesh> could not be found"
     echo "OpenFoam is likely not installed, skipping run"
@@ -6,12 +7,21 @@ else
     ./Allclean
 fi
 
+set -e  # Exit on any error
+# Define what to do on error
+trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
+
+
 if ! type "python" &> /dev/null; then
     echo "<python> could not be found"
     echo "Skipping Mesh generation"
 else
     # Generate blockmeshDict
     python ../../applications/write_stirred_tank_mesh.py -i ../../bird/meshing/stirred_tank_mesh_templates/base_tank/tank_par.yaml -o system/blockMeshDict
+  
+    # Generate species thermo properties
+    # python ../../applications/write_species_thermo_prop.py -cf .
+
 fi
 
 

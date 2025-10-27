@@ -1,9 +1,9 @@
 import numpy as np
 
-from bird.meshing._mesh_tools import parseJsonFile
 from bird.meshing.block_rect_mesh import from_block_rect_to_seg
 from bird.preprocess.dynamic_mixer.io_fvModels import *
 from bird.preprocess.dynamic_mixer.mixer import Mixer
+from bird.utilities.parser import parse_json
 
 
 def check_input(input_dict):
@@ -28,7 +28,7 @@ def check_input(input_dict):
     return mix_type
 
 
-def write_fvModel(input_dict, output_folder="."):
+def write_fvModel(input_dict, output_folder=".", force_sign=False):
     mix_type = check_input(input_dict)
     write_preamble(output_folder)
     if "loop" in mix_type:
@@ -39,19 +39,19 @@ def write_fvModel(input_dict, output_folder="."):
         if mtype == "expl":
             mixer.update_from_expl_dict(input_dict["mixers"][imix])
             if mixer.ready:
-                write_mixer(mixer, output_folder)
+                if force_sign:
+                    write_mixer_force_sign(mixer, output_folder)
+                else:
+                    write_mixer(mixer, output_folder)
         elif mtype == "loop":
             mixer.update_from_loop_dict(
                 input_dict["mixers"][imix], geom_dict, mesh_dict
             )
             if mixer.ready:
-                write_mixer(mixer, output_folder)
+                if force_sign:
+                    write_mixer_force_sign(mixer, output_folder)
+                else:
+                    write_mixer(mixer, output_folder)
 
     write_end(output_folder)
 
-
-if __name__ == "__main__":
-    input_dict = parseJsonFile(
-        os.path.join("mixing_template", "loop_reactor_list", "mixers.json"),
-    )
-    write_fvModel(input_dict)

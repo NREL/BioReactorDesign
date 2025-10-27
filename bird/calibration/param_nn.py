@@ -1,7 +1,7 @@
 import argparse
 import os
-import sys
 import time
+from pathlib import Path
 
 import joblib
 import numpy as np
@@ -12,6 +12,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from tensorflow.keras import initializers, layers, optimizers, regularizers
+
+from bird import logger
 
 
 def flexible_activation(x, activation):
@@ -36,7 +38,7 @@ def flexible_activation(x, activation):
     elif activation.lower() == "leakyrelu":
         out = layers.LeakyReLU()(x)
     else:
-        sys.exit(f"ERROR: unknown activation {activation}")
+        raise NotImplementedError(f"unknown activation {activation}")
     return out
 
 
@@ -185,7 +187,7 @@ class Param_NN(keras.Model):
         gradient_threshold=None,
     ):
         if gradient_threshold is not None:
-            print(f"INFO: clipping gradients at {gradient_threshold:.2g}")
+            logger.info("clipping gradients at {gradient_threshold:.2g}")
         # Make sure the control file for learning rate is consistent with main.py, at least at first
         self.prepareLog()
         bestLoss = None
@@ -305,8 +307,8 @@ class Param_NN(keras.Model):
         self.model.load_weights(weight_file)
 
     def prepareLog(self):
-        os.makedirs(self.model_folder, exist_ok=True)
-        os.makedirs(self.log_loss_folder, exist_ok=True)
+        Path(self.model_folder).mkdir(parents=True, exist_ok=True)
+        Path(self.log_loss_folder).mkdir(parents=True, exist_ok=True)
         try:
             os.remove(os.path.join(self.log_loss_folder, "log.csv"))
         except FileNotFoundError as err:

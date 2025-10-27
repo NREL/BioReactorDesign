@@ -8,7 +8,7 @@ on:
       - '*.rst'
       - 'README*'
       - 'LICENSE'
-      - 'assets/*'
+      - 'docs/**'
 
    pull_request:
      branches: [main]
@@ -17,7 +17,7 @@ on:
       - '*.rst'
       - 'README*'
       - 'LICENSE'
-      - 'assets/*'
+      - 'docs/**'
 
 jobs:
   Lint:
@@ -30,6 +30,7 @@ jobs:
         os: ['ubuntu-latest']
     defaults:
       run:
+        shell: bash -l {0}
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
@@ -52,30 +53,39 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.13']
         os: ['ubuntu-latest', 'macos-latest']
     defaults:
       run:
+        shell: bash -l {0}
         working-directory: ${{github.workspace}}
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: test-env
+          create-args: >-
+            python=${{ matrix.python-version }}
+          channels: conda-forge
+          channel-priority: strict
+          cache-downloads: true
+          cache-env: true
+
       - name: Install dependencies
         run: |
+          micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
-          pip install .
+          pip install . 
           pip install pytest
-      - name: Test preprocess
-        run: |
-          pytest tests/preprocess
-      - name: Test mesh
-        run: |
-          pytest tests/meshing
-      - name: Test postprocessing
-        run: |
-          pytest tests/postprocess
+
+      - name: Test
+        run: pytest .
 
   Test-pypi-Bird:
     name: Test-pypi-BiRD (${{ matrix.python-version }}, ${{ matrix.os }})
@@ -87,17 +97,32 @@ jobs:
         os: ['ubuntu-latest']
     defaults:
       run:
+        shell: bash -l {0}
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{matrix.python-version}}
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: test-env
+          create-args: >-
+            python=${{ matrix.python-version }}
+          channels: conda-forge
+          channel-priority: strict
+          cache-downloads: true
+          cache-env: true
+
       - name: Install dependencies
         run: |
+          micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
           pip install nrel-bird
           pip install pytest
+
       - name: Test
         run: pytest .
 
@@ -111,6 +136,7 @@ jobs:
         os: ['ubuntu-22.04']
     defaults:
       run:
+        shell: bash -l {0}
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
@@ -120,10 +146,24 @@ jobs:
       - uses: gerlero/setup-openfoam@v1
         with:
           openfoam-version: 9
+
+      - name: Set up micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-name: test-env
+          create-args: >-
+            python=${{ matrix.python-version }}
+          channels: conda-forge
+          channel-priority: strict
+          cache-downloads: true
+          cache-env: true
+
       - name: Install dependencies
         run: |
+          micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
           pip install .
+
       - name: Compile solver
         run: |
           cd OFsolvers/birdmultiphaseEulerFoam
@@ -174,6 +214,11 @@ jobs:
       - name: Run airlift reactor tutorial
         run: |
           cd tutorial_cases/airlift_40m
+          bash run.sh
+          cd ../../
+      - name: Run flat panel reactor tutorial
+        run: |
+          cd tutorial_cases/FlatPanel_250L_ASU
           bash run.sh
           cd ../../
 

@@ -1,17 +1,40 @@
 import argparse
-import sys
-
-import numpy as np
-
-sys.path.append("../utilities")
 import os
 import pickle
+import sys
+from pathlib import Path
 
-from folderManagement import *
-from ofio import *
+import numpy as np
 from prettyPlot.plotting import plt, pretty_labels
 
-from bird.utilities.label_plot import label_conv
+from bird.utilities.ofio import *
+
+from .label_plot import label_conv
+
+
+def getManyFolders(rootFolder, prefix="flat_donut"):
+    # Read Time
+    fold_tmp = os.listdir(rootFolder)
+    fold_num = []
+    # remove non floats
+    for i, entry in reversed(list(enumerate(fold_tmp))):
+        if not entry.startswith(prefix) or entry.endswith("N2"):
+            a = fold_tmp.pop(i)
+            # print('removed ', a)
+    for entry in fold_tmp:
+        num = re.findall(r"\d+", entry)
+        if len(num) > 1:
+            msg = f"Cannot find num of folder {entry}."
+            msg += "\nDo not trust the spearman stat"
+            logger.warning(msg)
+        else:
+            fold_num.append(int(num[0]))
+
+    sortedFold = [
+        x for _, x in sorted(zip(fold_num, fold_tmp), key=lambda pair: pair[0])
+    ]
+    return sortedFold
+
 
 parser = argparse.ArgumentParser(description="Plot cond qoi")
 parser.add_argument(
@@ -96,7 +119,7 @@ parser.add_argument(
 args = parser.parse_args()
 figureFolder = "Figures"
 figureFolder = os.path.join(figureFolder, args.figureFolder, "cond")
-makeRecursiveFolder(figureFolder)
+Path(figureFolder).mkdir(parents=True, exist_ok=True)
 field_names = args.field_list
 param_file = args.paramFile
 study_folder = args.studyFolder

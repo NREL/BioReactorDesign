@@ -14,7 +14,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     multiphaseEulerFoam;
+application     birdmultiphaseEulerFoam;
 
 startFrom       latestTime;//startTime;
 
@@ -50,17 +50,17 @@ maxCo           0.5;
 
 maxDeltaT       0.01;
 
+
 functions
 {
-   
-    //#includeFunc    writeObjects(d.gas)
+
+    #includeFunc    writeObjects(d.gas)
     #includeFunc    writeObjects(thermo:rho.gas)
     #includeFunc    writeObjects(thermo:rho.liquid)
+    #includeFunc    writeObjects(thermo:mu.liquid)
+    #includeFunc    writeObjects(thermo:mu.gas)
+    #includeFunc fieldAverage(U.air, U.water, alpha.air, p)
 }
-//functions
-//{
-//    #includeFunc fieldAverage(U.air, U.water, alpha.air, p)
-//}
 
 
 // ************************************************************************* //

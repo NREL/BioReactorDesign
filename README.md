@@ -1,4 +1,4 @@
-# <ins>Bi</ins>o <ins>R</ins>eactor <ins>D</ins>esign (BiRD) [![bird-CI](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml) [![bird-pyversion](https://img.shields.io/pypi/pyversions/NREL-bird.svg)](https://pypi.org/project/NREL-bird/)  [![bird-pypi](https://badge.fury.io/py/nrel-bird.svg)](https://badge.fury.io/py/nrel-bird)
+# <ins>Bi</ins>o <ins>R</ins>eactor <ins>D</ins>esign (BiRD) [![bird-CI](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NREL/BioReactorDesign/actions/workflows/ci.yml) [![bird-pyversion](https://img.shields.io/pypi/pyversions/NREL-bird.svg)](https://pypi.org/project/NREL-bird/) [![coverage](https://codecov.io/gh/NREL/BioReactorDesign/graph/badge.svg)](https://app.codecov.io/gh/nrel/bioreactordesign)  [![bird-pypi](https://badge.fury.io/py/nrel-bird.svg)](https://badge.fury.io/py/nrel-bird)
 
 ## Quick start
 1. Follow the steps to install the python package (see `Installation of python package for developers` or `Installation of python package for users` below)
@@ -13,7 +13,7 @@ bash run.sh
 ## Installation of python package for developers
 
 ```bash
-conda create --name bird python=3.10
+conda create -c conda-forge --name bird python=3.10 paraview
 conda activate bird
 git clone https://github.com/NREL/BioReactorDesign.git
 cd BioReactorDesign
@@ -23,10 +23,12 @@ pip install -e .
 ## Installation of python package for users
 
 ```bash
-conda create --name bird python=3.10
+conda create -c conda-forge --name bird python=3.10 paraview
 conda activate bird
-pip install nrel-bird
+pip install nrel-bird=={version}
 ```
+
+We highly recommend that you specify the version explicitly as the library is still rapidly changing.
 
 ## Installation of BiRD OpenFOAM solver (for developers and users)
 
@@ -43,16 +45,19 @@ See the [nrel.github.io/BioReactorDesign](https://nrel.github.io/BioReactorDesig
 
 Software record [SWR 24-35](https://www.osti.gov/biblio/2319227)
 
-To cite BioReactorDesign use these articles on [CO2 interphase mass transfer (open access)](https://arxiv.org/pdf/2404.19636) on [aerobic bioreactors](https://www.sciencedirect.com/science/article/pii/S0263876218304337) 
-and on [butanediol synthesis](https://www.sciencedirect.com/science/article/pii/S0263876223004689)
-```
-@article{hassanaly2024inverse,
-  title={Bayesian calibration of bubble size dynamics applied to \ce{CO2} gas fermenters},
-  author={Hassanaly, Malik and Parra-Alvarez, John M. and Rahimi, Mohammad J. and Sitaraman, Hariswaran},
-  journal={Under Review},
-  year={2024},
-}
+To cite BiRD, please use these articles on [CO2 interphase mass transfer](https://doi.org/10.1016/j.cherd.2025.01.034) (open access [link](https://arxiv.org/pdf/2404.19636) ) on [aerobic bioreactors](https://doi.org/10.1016/j.cherd.2018.08.033) and on [butanediol synthesis](https://doi.org/10.1016/j.cherd.2023.07.031)
 
+
+```
+@article{hassanaly2025bayesian,
+  title={Bayesian calibration of bubble size dynamics applied to CO2 gas fermenters},
+  author={Hassanaly, Malik and Parra-Alvarez, John M and Rahimi, Mohammad J and Municchi, Federico and Sitaraman, Hariswaran},
+  journal={Chemical Engineering Research and Design},
+  volume={215},
+  pages={312--328},
+  year={2025},
+  publisher={Elsevier}
+}
 
 @article{rahimi2018computational,
   title={Computational fluid dynamics study of full-scale aerobic bioreactors: Evaluation of gas--liquid mass transfer, oxygen uptake, and dynamic oxygen distribution},

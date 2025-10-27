@@ -42,18 +42,26 @@ def write_preamble(output_folder):
         f.write("\t\tconst volVectorField& UL =\n")
         f.write('\t\t\tmesh().lookupObject<volVectorField>("U.liquid");\n')
         f.write("\t\tdouble pi=3.141592654;\n")
+        f.write(f"\t\tdouble source_pt_x;\n")
+        f.write(f"\t\tdouble source_pt_y;\n")
+        f.write(f"\t\tdouble source_pt_z;\n")
+        f.write(f"\t\tdouble disk_rad;\n")
+        f.write("\t\tdouble disk_area;\n")
+        f.write(f"\t\tdouble power;\n")
+        f.write(f"\t\tdouble smear_factor;\n")
+        f.write(f"\t\tdouble startTime;\n")
 
 
 def write_mixer(mixer, output_folder):
     with open(os.path.join(output_folder, "fvModels"), "a+") as f:
-        f.write(f"\t\tdouble source_pt_x={mixer.x};\n")
-        f.write(f"\t\tdouble source_pt_y={mixer.y};\n")
-        f.write(f"\t\tdouble source_pt_z={mixer.z};\n")
-        f.write(f"\t\tdouble disk_rad={mixer.rad};\n")
-        f.write("\t\tdouble disk_area=pi*disk_rad*disk_rad;\n")
-        f.write(f"\t\tdouble power={mixer.power};\n")
-        f.write(f"\t\tdouble smear_factor={float(mixer.smear)};\n")
-        f.write(f"\t\tconst scalar startTime = {mixer.start_time};\n")
+        f.write(f"\t\tsource_pt_x={mixer.x};\n")
+        f.write(f"\t\tsource_pt_y={mixer.y};\n")
+        f.write(f"\t\tsource_pt_z={mixer.z};\n")
+        f.write(f"\t\tdisk_rad={mixer.rad};\n")
+        f.write("\t\tdisk_area=pi*disk_rad*disk_rad;\n")
+        f.write(f"\t\tpower={mixer.power};\n")
+        f.write(f"\t\tsmear_factor={float(mixer.smear)};\n")
+        f.write(f"\t\tstartTime = {mixer.start_time};\n")
         f.write("\t\tif (time.value() > startTime)\n")
         f.write("\t\t{\n")
         f.write("\t\t\t// Get V1\n")
@@ -61,7 +69,7 @@ def write_mixer(mixer, output_folder):
         f.write("\t\t\tdouble V1 = 0;\n")
         f.write("\t\t\tdouble V2 = 0;\n")
         f.write("\t\t\tdouble rhoV;\n")
-        f.write("\t\t\tdouble dist_tol = disk_rad*5;\n")
+        f.write("\t\t\tdouble dist_tol = disk_rad*3;\n")
         f.write("\n")
         f.write("\t\t\tdouble dist_n;\n")
         f.write("\t\t\tdouble upV = 0;\n")
@@ -141,9 +149,10 @@ def write_mixer(mixer, output_folder):
             f.write("\t\t\t\tsource_sign_factor = 1.0;\n")
             f.write("\t\t\t\trhoV = downrhoV;\n")
         else:
-            sys.exit(
-                f"ERROR: mixer.sign = {mixer.sign} but should be '+' or '-'"
+            error_message = (
+                f"mixer.sign = {mixer.sign} but should be '+' or '-'"
             )
+            logger.error
         f.write(
             '\t\t\t\tFoam::Info << "[BIRD:DYNMIX WARN] " << "upV = " << upV << " downV = " << downV << " for source at " << source_pt_x << ", " << source_pt_y << ", " << source_pt_z <<  endl;\n'
         )
