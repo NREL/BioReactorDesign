@@ -52,7 +52,7 @@ void add_to_list_like_static_queue(Foam::List<Type>& list, const Type& value)
 
     //- emplace last element
     list[list.size()-1] = value;
-
+    
 }
 
 
@@ -73,8 +73,9 @@ Foam::functionObjects::disengagement::disengagement
     inletPatch_(dict.lookup<word>("inlet")),
     tolerance_(dict.lookup<scalar>("tolerance")),
     nsamples_(dict.lookup<label>("nsamples")),
+    direction_(dict.lookup<vector>("direction")),
     disengage_(dict.lookup<bool>("disengage")),
-    phase_ht_(2*nsamples_,{0.,-1.}),
+    phase_com_(2*nsamples_,{0.,-1.}),
     disengaged_(false)
 {
     //- Check that U has fixedValue
@@ -82,12 +83,11 @@ Foam::functionObjects::disengagement::disengagement
     label patchI = mesh_.boundaryMesh().findIndex(inletPatch_);
     volVectorField::Boundary& UBf = const_cast<volVectorField::Boundary&>(U.boundaryFieldRef());
 
-    // TODO: This might be adapted to other BCs
-    if ( disengage_ && !isA<fixedValueFvPatchField<vector>>(UBf[patchI]))
+    if (!isA<fixedValueFvPatchField<vector>>(UBf[patchI]))
     {
         FatalIOErrorInFunction(dict)
             << "Incorrect boundary condition for U." << phaseName_ << " at patch " << inletPatch_ << "\n"
-            << "You must use fixedValue if you want to disengage."
+            << "You must use fixedValue with this functionObject."
             << exit(FatalIOError);
     }
 
@@ -108,9 +108,9 @@ void Foam::functionObjects::disengagement::writeFileHeader(const label i)
 {
     if (Pstream::master())
     {
-        //writeHeader(file(), "phase_ht");
+        writeHeader(file(), "phase_com");
         writeCommented(file(), "time");
-        writeTabbed(file(), "holdup");
+        writeTabbed(file(), "phase_com");
         writeTabbed(file(), "disengaged");
 
         file() << endl;
@@ -120,28 +120,15 @@ void Foam::functionObjects::disengagement::writeFileHeader(const label i)
 bool Foam::functionObjects::disengagement::execute()
 {
     const volScalarField& alpha = mesh_.lookupObject<volScalarField>("alpha." + phaseName_);
-    const volScalarField& alphag = mesh_.lookupObject<volScalarField>("alpha." + inletPhaseName_);
-    //- Compute holdup
-    scalar holdup = 0.;
-    scalar vol = 0.;
-    forAll(alphag,cellI)
-    {
-        if(alphag[cellI] < 0.5)
-        {
-            holdup += alphag[cellI]*mesh_.V()[cellI];
-            vol += alpha[cellI]*mesh_.V()[cellI];
-        }
-    }
-
-    reduce(holdup,sumOp<scalar>());
-    reduce(vol,sumOp<scalar>());
-
-    holdup /= vol + 1e-32;
-
-    Pair<scalar> holddata(mesh_.time().value(), holdup);
+                    
+    //- Compute phase_com
+    scalar volume = gSum(fvc::volumeIntegrate(alpha));
+    volScalarField hcoord = mesh_.C()&direction_;
+    scalar phase_com = gSum(fvc::volumeIntegrate(hcoord*alpha))/volume;
+    Pair<scalar> holddata(mesh_.time().value(), phase_com);
 
     //- See function at the beginning of file
-    add_to_list_like_static_queue(phase_ht_,holddata);
+    add_to_list_like_static_queue(phase_com_,holddata);
 
     //- Skip rest if no disengagement is required
     if (!disengage_) return true;
@@ -150,37 +137,37 @@ bool Foam::functionObjects::disengagement::execute()
     if (disengaged_ ) return true;
 
     //- Do the check only if the list is complete
-    if (phase_ht_[0].second() > 0.)
+    if (phase_com_[0].second() > 0.)
     {
-        scalar phase_ht_mean_long(0.);
-        scalar phase_ht_mean_short(0.);
-        scalar t0_long(phase_ht_[0].first());
+        scalar phase_com_mean_long(0.);
+        scalar phase_com_mean_short(0.);
+        scalar t0_long(phase_com_[0].first());
         scalar deltat_long(0.);
         scalar deltat_short(0.);
 
         //- The first (oldest) sample is skipped to have a well-defined dt
         for (int i = 1; i < 2*nsamples_; i++)
         {
-            scalar dt = phase_ht_[i].first() - t0_long;
-            t0_long = phase_ht_[i].first();
-            phase_ht_mean_long += dt*phase_ht_[i].second();
+            scalar dt = phase_com_[i].first() - t0_long;
+            t0_long = phase_com_[i].first();
+            phase_com_mean_long += dt*phase_com_[i].second();
             deltat_long += dt;
 
             //- Compute average on the most recent samples
             if (i >= nsamples_)
             {
-                phase_ht_mean_short +=  dt*phase_ht_[i].second();
+                phase_com_mean_short +=  dt*phase_com_[i].second();
                 deltat_short += dt;
             }
-
+            
         }
 
-        phase_ht_mean_long /= deltat_long;
-        phase_ht_mean_short /= deltat_short;
+        phase_com_mean_long /= deltat_long;
+        phase_com_mean_short /= deltat_short;
+        
+        if (phase_com_mean_long < 1e-16) return true;
 
-        if (phase_ht_mean_long < 1e-16) return true;
-
-        if (mag(phase_ht_mean_long - phase_ht_mean_short)/phase_ht_mean_long < tolerance_)
+        if (mag(phase_com_mean_long - phase_com_mean_short)/phase_com_mean_long < tolerance_)
         {
             if(!disengaged_)
             {
@@ -198,11 +185,11 @@ bool Foam::functionObjects::disengagement::execute()
 
             //- Stop the flow from entering
             UBf == vector(0,0,0);
-
+        
         }
-
+                   
     }
-
+                
     return true;
 }
 
@@ -217,13 +204,13 @@ bool Foam::functionObjects::disengagement::write()
 
     if (Pstream::master())
     {
-            file() << phase_ht_[2*nsamples_ -1].first();
+            file() << phase_com_[2*nsamples_ -1].first();
             file() << tab;
-            file() << phase_ht_[2*nsamples_ -1].second();
+            file() << phase_com_[2*nsamples_ -1].second();
             file() << tab;
             file() << dis;
             file() << endl;
-
+     
     }
 
     return true;
