@@ -133,7 +133,18 @@ def radial_mean(
         # Read all the fields you want
         for filename, field_name in zip(field_file, field_names):
             val_dict = {}
-            field_tmp, _ = read_field(case_folder, time_folder, field_name)
+            try:
+                field_tmp, _ = read_field(case_folder, time_folder, field_name)
+            except FileNotFoundError:
+                if field_name == "Ualpha.liquid":
+                    alpha_tmp, _ = read_field(
+                        case_folder, time_folder, "alpha.liquid"
+                    )
+                    U_tmp, _ = read_field(case_folder, time_folder, "U.liquid")
+                else:
+                    raise NotImplementedError(
+                        f"{field_name} is not a valid field name"
+                    )
             if len(field_tmp.shape) == 2 and field_tmp.shape[1] == 3:
                 # You read a velocity I'm assuming you need the axial one
                 field_tmp = field_tmp[:, vert_ind]
@@ -228,7 +239,7 @@ if __name__ == "__main__":
     fields_cond = radial_mean(
         case_folder=None,
         heights=[5.2, 6.2, 6.3],
-        field_names=["U.liquid", "alpha.gas"],
+        field_names=["U.liquid", "alpha.gas", "Ualpha.liquid"],
         vert_ind=1,
         window_ave=2,
         n_bins=32,
@@ -240,5 +251,5 @@ if __name__ == "__main__":
     make_plot(
         fields_cond=fields_cond,
         heights=[5.2, 6.2, 6.3],
-        field_names=["U.liquid", "alpha.gas"],
+        field_names=["U.liquid", "alpha.gas", "Ualpha.liquid"],
     )
