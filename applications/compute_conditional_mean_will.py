@@ -141,12 +141,16 @@ def radial_mean(
                         case_folder, time_folder, "alpha.liquid"
                     )
                     U_tmp, _ = read_field(case_folder, time_folder, "U.liquid")
+                    field_tmp = alpha_tmp[:, np.newaxis] * U_tmp
                 else:
                     raise NotImplementedError(
                         f"{field_name} is not a valid field name"
                     )
             if len(field_tmp.shape) == 2 and field_tmp.shape[1] == 3:
                 # You read a velocity I'm assuming you need the axial one
+                logger.warning(
+                    f"You read a velocity I'm assuming you need the axial one along the direction {vert_ind}"
+                )
                 field_tmp = field_tmp[:, vert_ind]
 
             if heights is None:
