@@ -52,6 +52,7 @@ Description
     size groups are assigned to different velocity groups.
 
     \vartable
+        eta          | efficiency              | no          | 1
         d_i          |  Diameter of bubble i [m]
         d_j          |  Diameter of bubble j [m]
         \epsilon_c   |  Turbulent dissipation rate of continuous phase [m^2/s^3]
@@ -110,6 +111,9 @@ class LehrMilliesMewesCoalescence
 
         //- Maximum packing density of the bubbles, defaults to 0.6
         dimensionedScalar alphaMax_;
+
+        //- Optional efficiecy, defaults to 1
+        dimensionedScalar eta_;
 
 
 public:

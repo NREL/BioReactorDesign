@@ -59,7 +59,8 @@ LehrMilliesMewesCoalescence
 :
     coalescenceModel(popBal, dict),
     uCrit_("uCrit", dimVelocity, dict, 0.08),
-    alphaMax_("alphaMax", dimless, dict, 0.6)
+    alphaMax_("alphaMax", dimless, dict, 0.6),
+    eta_("efficiency", dimless, dict, 1)
 {}
 
 
@@ -91,7 +92,7 @@ addToCoalescenceRate
     );
 
     coalescenceRate +=
-        pi/4
+        eta_ * pi/4
        *sqr(fi.dSph() + fj.dSph())
        *min(uChar, uCrit_)
        *exp
