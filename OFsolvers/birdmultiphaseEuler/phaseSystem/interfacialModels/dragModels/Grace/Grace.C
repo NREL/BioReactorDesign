@@ -69,21 +69,20 @@ Foam::dragModels::Grace::CdRe() const
     volScalarField Eo(interface_.Eo());
     volScalarField Mo(interface_.Mo());
 
-    volScalarField mud(interface_.dispersed().fluidThermo().nu());
-    volScalarField muc(interface_.continuous().fluidThermo().nu());
+    const volScalarField& rhod = interface_.dispersed().rho();
+    const volScalarField& rhoc = interface_.continuous().rho();
 
-    volScalarField rhod(interface_.dispersed().rho());
-    volScalarField rhoc(interface_.continuous().rho());
+    const volScalarField& nuc = interface_.continuous().fluidThermo().nu();
 
     const uniformDimensionedVectorField& g =
         interface_.continuous().mesh().lookupObject<uniformDimensionedVectorField>("g");
 
-    volScalarField H( 4.0/3.0*Eo*pow(Mo,-0.149)*pow((muc/muRef_),-0.14) );
+    volScalarField H( 4.0/3.0*Eo*pow(Mo,-0.149)*pow((nuc*rhoc/muRef_),-0.14) );
     H.max(2.0);
 
     volScalarField J( pos(H-59.3)*(3.42*pow(H,0.441)) + neg(H-59.3)*(0.94*pow(H,0.757)) );
 
-    volScalarField UT( (muc/rhoc/interface_.dispersed().d())* pow(Mo,-0.149)* (J-0.857) );
+    volScalarField UT( (nuc/interface_.dispersed().d())* pow(Mo,-0.149)* (J-0.857) );
 
     volScalarField CdEllipse
     (
