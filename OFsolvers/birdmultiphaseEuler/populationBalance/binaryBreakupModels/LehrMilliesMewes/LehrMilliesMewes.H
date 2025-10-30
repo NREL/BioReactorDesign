@@ -28,7 +28,7 @@ Description
     Model of Lehr et al. (2002). The breakup rate is calculated by
 
     \f[
-        0.5 d_j^{*^{5/3}} \mathrm{exp}\left(-\frac{\sqrt{2}}{d_j^{*^{3}}}\right)
+        eta * 0.5 d_j^{*^{5/3}} \mathrm{exp}\left(-\frac{\sqrt{2}}{d_j^{*^{3}}}\right)
         \frac{6}{\pi^{3/2}d_i^{*^{3}}}
         \mathrm{exp}
         \left(
@@ -63,6 +63,7 @@ Description
     \f]
 
     \vartable
+        eta             | efficiency              | no          | 1
         \rho_c          |  Density of continuous phase [kg/m^3]
         \sigma          |  Surface tension [N/m]
         \epsilon_c      |  Continuous phase turbulent dissipation rate [m^2/s^3]
@@ -105,6 +106,10 @@ class LehrMilliesMewes
 :
     public binaryBreakupModel
 {
+
+    //- Optional efficiecy, defaults to 1
+    dimensionedScalar eta_;
+    
 public:
 
     //- Runtime type information
