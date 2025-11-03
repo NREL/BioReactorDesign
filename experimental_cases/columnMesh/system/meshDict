@@ -1,0 +1,73 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                |
+| \\      /  F ield         | cfMesh: A library for mesh generation          |
+|  \\    /   O peration     |                                                |
+|   \\  /    A nd           | Author: Franjo Juretic                         |
+|    \\/     M anipulation  | E-mail: franjo.juretic@c-fields.com            |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version   2.0;
+    format    ascii;
+    class     dictionary;
+    location  "system";
+    object    meshDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+surfaceFile "constant/triSurface/cylinder.stl";
+
+//minCellSize 0.01;
+
+maxCellSize 0.005;
+
+//boundaryCellSize 0.01;
+
+localRefinement
+{
+    inner_circle
+    {
+        cellSize 0.002;
+        
+    }
+}
+
+boundaryLayers
+{
+//    nLayers 5;
+
+//    thicknessRatio 1.1;
+
+//    maxFirstLayerThickness 0.5;
+
+//    patchBoundaryLayers
+//    {
+//    }
+}
+
+renameBoundary
+{
+    defaultName     walls;
+    defaultType     wall;
+
+    newPatchNames
+    {
+
+        "cylinder_top"
+        {
+            type    patch;
+            newName outlet;
+        }
+
+        "inner_circle"
+        {
+            type    patch;
+            newName inlet;
+        }
+
+    }
+}
+
+
+// ************************************************************************* //
