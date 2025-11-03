@@ -56,7 +56,8 @@ Foam::diameterModels::binaryBreakupModels::LehrMilliesMewes::LehrMilliesMewes
     const dictionary& dict
 )
 :
-    binaryBreakupModel(popBal, dict)
+    binaryBreakupModel(popBal, dict),
+    eta_("efficiency", dimless, dict, 1)
 {}
 
 
@@ -96,7 +97,7 @@ addToBinaryBreakupRate
     );
 
     binaryBreakupRate +=
-        0.5*pow(fj.dSph()/L, 5.0/3.0)
+        eta_ * 0.5*pow(fj.dSph()/L, 5.0/3.0)
        *exp(-sqrt(2.0)/pow3(fj.dSph()/L))
        *6/pow(pi, 1.5)/pow3(fi.dSph()/L)
        *exp(-9.0/4.0*sqr(log(pow(2.0, 0.4)*fi.dSph()/L)))

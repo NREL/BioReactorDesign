@@ -59,7 +59,8 @@ Laakkonen
     breakupModel(popBal, dict),
     C1_("C1", dimensionSet(0, -2.0/3.0, 0, 0, 0), dict, 2.25),
     C2_("C2", dimless, dict, 0.04),
-    C3_("C3", dimless, dict, 0.01)
+    C3_("C3", dimless, dict, 0.01),
+    eta_("efficiency", dimless, dict, 1)
 {}
 
 
@@ -84,7 +85,7 @@ void Foam::diameterModels::breakupModels::Laakkonen::setBreakupRate
     const volScalarField::Internal muc = tmu();
 
     breakupRate =
-        C1_
+        eta_ * C1_
        *cbrt(epsilonc)
        *erfc
         (

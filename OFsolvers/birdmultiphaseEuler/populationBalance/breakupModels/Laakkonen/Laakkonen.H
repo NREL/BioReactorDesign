@@ -28,7 +28,7 @@ Description
     Model of Laakkonen et al. (2007). The total breakup rate is calculated by
 
     \f[
-        C_1 \epsilon_c^{1/3}
+        eta C_1 \epsilon_c^{1/3}
         \mathrm{erfc}
         \left(
             \sqrt
@@ -61,6 +61,7 @@ Description
 Usage
     \table
         Property     | Description             | Required    | Default value
+        eta          | efficiency              | no          | 1
         C1           | coefficient C1          | no          | 2.25
         C2           | coefficient C2          | no          | 0.04
         C3           | coefficient C3          | no          | 0.01
@@ -104,6 +105,9 @@ class Laakkonen
 
         //- Optional coefficient C3, defaults to 0.01
         dimensionedScalar C3_;
+
+        //- Optional efficiecy, defaults to 1
+        dimensionedScalar eta_;
 
 
 public:
