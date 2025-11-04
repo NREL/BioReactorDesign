@@ -72,7 +72,7 @@ Foam::dragModels::Grace::CdRe() const
     const volScalarField& rhod = interface_.dispersed().rho();
     const volScalarField& rhoc = interface_.continuous().rho();
 
-    const volScalarField& nuc = interface_.continuous().fluidThermo().nu();
+    const volScalarField nuc = interface_.continuous().fluidThermo().nu();
 
     const uniformDimensionedVectorField& g =
         interface_.continuous().mesh().lookupObject<uniformDimensionedVectorField>("g");
