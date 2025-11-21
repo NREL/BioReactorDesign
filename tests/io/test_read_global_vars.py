@@ -12,8 +12,8 @@ def test_read_global_vars():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "tutorial_cases",
         "loop_reactor_mixing",
     )
@@ -105,3 +105,20 @@ def test_read_global_vars():
         < 1e-3
     )
 
+
+def test_read_global_vars_putida():
+    """
+    Test for reading content of `constant/globalVars` for the Putida case
+    """
+    case_folder = os.path.join(Path(__file__).parent, "putida_test")
+    # Read globalVars from case_folder path
+    globalVars_dict = read_global_vars(
+        case_folder=case_folder, cross_ref=False
+    )
+    globalVars_dict = read_global_vars(case_folder=case_folder, cross_ref=True)
+
+    assert abs(globalVars_dict["ang1"] - 22.5 * np.pi / 180) < 1e-12
+    assert (
+        abs(globalVars_dict["z3"] - 0.0219 * np.sin(67.5 * np.pi / 180))
+        < 1e-12
+    )
