@@ -419,4 +419,3 @@ def write_species_properties(case_folder: str, phase: str = "gas") -> None:
         case_folder, "constant", f"thermophysicalProperties.{phase}"
     )
     write_openfoam_dict(thermo_properties_update, filename=filename)
-

@@ -79,4 +79,3 @@ def test_mesh_vol():
     volumes2, _ = read_cell_volumes(case_folder, time_folder=vol_time)
 
     assert np.linalg.norm(volumes - volumes2) < 1e-12
-
