@@ -265,4 +265,3 @@ def bayes_fit(data_dict, num_warmup=1000, num_samples=500):
         data_dict[datf]["std16_real"] = std16_real
 
     return data_dict
-

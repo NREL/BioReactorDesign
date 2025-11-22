@@ -75,4 +75,3 @@ def test_loop_reactor_branch():
         write_boundaries(input_dict, output_folder=tmpdirname)
         axes = plot_stl(os.path.join(tmpdirname, "inlets.stl"))
         pretty_labels("x", "y", zlabel="z", fontsize=14, ax=axes)
-

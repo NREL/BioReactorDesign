@@ -104,4 +104,3 @@ def test_read_global_vars():
         )
         < 1e-3
     )
-
