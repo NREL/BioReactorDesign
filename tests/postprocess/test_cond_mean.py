@@ -43,4 +43,3 @@ def test_compute_cond():
         plot_name = sequencePlot(cond, [case_folder], field_name)
         pretty_labels(plot_name, "y [m]", 14)
         plt.close()
-

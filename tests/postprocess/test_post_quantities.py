@@ -366,4 +366,3 @@ def test_fitted_kla():
     )
     for time_folder in [str(entry) for entry in range(81, 91)]:
         shutil.rmtree(os.path.join(case_folder, time_folder))
-

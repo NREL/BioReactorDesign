@@ -141,4 +141,3 @@ def test_read_controlDict():
 
     assert foam_dict["writeControl"] == "adjustableRunTime"
     assert foam_dict["maxCo"] == "0.5"
-

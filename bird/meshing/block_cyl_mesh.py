@@ -549,4 +549,3 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
     fw.write("defaultPatch\n{type wall;}\n\n")
 
     fw.close()
-
