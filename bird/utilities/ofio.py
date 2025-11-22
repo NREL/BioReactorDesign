@@ -1325,19 +1325,25 @@ def _cross_reference_global_vars(
                 expr = new_expr
             # Replace 'exp' with 'math.exp'
             expr = expr.replace("exp", "math.exp")
+            # Replace 'sin' with 'math.sin'
+            expr = expr.replace("sin", "math.sin")
+            # Replace 'cos' with 'math.cos'
+            expr = expr.replace("cos", "math.cos")
+            # Replace 'tan' with 'math.tan'
+            expr = expr.replace("tan", "math.tan")
 
+            degToRad = lambda x: x * np.pi / 180.0
             try:
-                result = eval(expr, {"math": math})
+                result = eval(expr, {"math": math, "degToRad": degToRad})
+                # Convert to int if whole number
+                if isinstance(result, float) and result.is_integer():
+                    result = int(result)
+                cross_referenced_globalVars_dict[key] = result
+
             except Exception as e:
-                raise RuntimeError(
-                    f"Error evaluating globalVars expression for {key}: {expr}"
-                ) from e
-
-            # Convert to int if whole number
-            if isinstance(result, float) and result.is_integer():
-                result = int(result)
-
-            cross_referenced_globalVars_dict[key] = result
+                logger.warning(
+                    f"Could not evaluate globalVars expression for {key}: {expr}"
+                )
 
     return cross_referenced_globalVars_dict
 
