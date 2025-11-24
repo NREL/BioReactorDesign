@@ -54,4 +54,3 @@ def write_fvModel(input_dict, output_folder=".", force_sign=False):
                     write_mixer(mixer, output_folder)
 
     write_end(output_folder)
-

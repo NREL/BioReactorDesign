@@ -212,4 +212,3 @@ def test_read_mu_liquid():
         os.path.join(case_folder, "thermo:mu.liquid_tmp"),
         os.path.join(case_folder, "80", "thermo:mu.liquid"),
     )
-
