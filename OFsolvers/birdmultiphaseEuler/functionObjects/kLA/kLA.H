@@ -99,7 +99,7 @@ protected:
     // Protected data
 
         //- Constant access to phases
-        const phaseSystem::phaseModelList& phases_;
+ //       const phaseSystem::phaseModelList& phases_;
 
         //- Name of phase
         word continuumPhase_;

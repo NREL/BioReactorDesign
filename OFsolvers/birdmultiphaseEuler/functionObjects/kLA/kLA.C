@@ -49,7 +49,7 @@ Foam::functionObjects::kLA::kLA
 :
     fvMeshFunctionObject(name, runTime, dict),
     logFiles(obr_,name),
-    phases_(mesh_.lookupObject<phaseSystem>("phaseProperties").phases()),
+ //   phases_(mesh_.lookupObject<phaseSystem>("phaseProperties").phases()),
     continuumPhase_(dict.lookup<word>("continuumPhase")),
     dispersedPhase_(dict.lookup<word>("dispersedPhase")),
     species_(dict.lookup<word>("species")),
