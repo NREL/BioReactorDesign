@@ -1,8 +1,6 @@
-### Bubble column reactor 
+### Chen Brooks 
 
-Bubble column reactor with 20L of liquid volume
-The sparger is a circle
-We use the `surfaceToPatch` method for modeling the sparger
+This is makes the geometry of the chen brooks case 
 
 Single core exec
 
