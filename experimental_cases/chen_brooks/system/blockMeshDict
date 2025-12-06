@@ -1,0 +1,219 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+R1 15.0;
+R2 31.75;
+
+mR1 -15.0;
+mR2 -31.75;
+
+L1 300.0;
+L2 200.0;
+L3 40.0;
+L4 0.0;
+
+CW1 7.5;
+mCW1 -7.5;
+C11 10.606601717798213;
+mC11 -10.606601717798213;
+C21 10.606601717798211;
+mC21 -10.606601717798211;
+
+CW2 15.875;
+mCW2 -15.875;
+C12 22.450640302672884;
+mC12 -22.450640302672884;
+C22 22.45064030267288;
+mC22 -22.45064030267288;
+
+NR1 3;
+NR2 7;
+
+NS1 6;
+
+NVert1 10;
+NVert2 32;
+NVert3 8;
+
+vertices
+(
+     ($mCW1  $mCW1  $L1)// 0
+     ( $CW1  $mCW1  $L1)
+     ( $CW1   $CW1  $L1)
+     ($mCW1   $CW1  $L1)
+
+     ($mCW1  $mCW1  $L2)// 4
+     ( $CW1  $mCW1  $L2)
+     ( $CW1   $CW1  $L2)
+     ($mCW1   $CW1  $L2)
+
+     ($mCW1  $mCW1  $L3)// 8
+     ( $CW1  $mCW1  $L3)
+     ( $CW1   $CW1  $L3)
+     ($mCW1   $CW1  $L3)
+
+     ($mCW1  $mCW1  $L4)// 12
+     ( $CW1  $mCW1  $L4)
+     ( $CW1   $CW1  $L4)
+     ($mCW1   $CW1  $L4)
+
+    ($mC11   $mC21   $L1)// 16
+    ( $C11   $mC21   $L1)
+    ( $C11   $C21    $L1)
+    ($mC11   $C21    $L1)
+
+    ($mC11   $mC21   $L2)// 20
+    ( $C11   $mC21   $L2)
+    ( $C11   $C21    $L2)
+    ($mC11   $C21    $L2)
+
+    ($mC11   $mC21   $L3)// 24
+    ( $C11   $mC21   $L3)
+    ( $C11   $C21    $L3)
+    ($mC11   $C21    $L3)
+
+    ($mC11   $mC21   $L4)// 28
+    ( $C11   $mC21   $L4)
+    ( $C11   $C21    $L4)
+    ($mC11   $C21    $L4)
+
+    ($mC12   $mC22   $L1)// 32
+    ( $C12   $mC22   $L1)
+    ( $C12   $C22    $L1)
+    ($mC12   $C22    $L1)
+
+    ($mC12   $mC22   $L2)// 36
+    ( $C12   $mC22   $L2)
+    ( $C12   $C22    $L2)
+    ($mC12   $C22    $L2)
+
+    ($mC12   $mC22   $L3)// 40
+    ( $C12   $mC22   $L3)
+    ( $C12   $C22    $L3)
+    ($mC12   $C22    $L3)
+
+    ($mC12   $mC22   $L4)// 44
+    ( $C12   $mC22   $L4)
+    ( $C12   $C22    $L4)
+    ($mC12   $C22    $L4)
+
+);
+
+blocks
+(
+     hex (4 5 6 7 0 1 2 3) ($NS1 $NS1 $NVert1) simpleGrading (1 1 3.1912058736948667)
+     hex (8 9 10 11 4 5 6 7) ($NS1 $NS1 $NVert2) simpleGrading (1 1 1.0)
+     hex (12 13 14 15 8 9 10 11) ($NS1 $NS1 $NVert3) simpleGrading (1 1 1.0)
+
+     hex (4 20 21 5 0 16 17 1) ($NR1 $NS1  $NVert1) simpleGrading (1.0 1 3.1912058736948667)
+     hex (5 21 22 6 1 17 18 2) ($NR1 $NS1  $NVert1) simpleGrading (1.0 1 3.1912058736948667)
+     hex (6 22 23 7 2 18 19 3) ($NR1 $NS1  $NVert1) simpleGrading (1.0 1 3.1912058736948667)
+     hex (7 23 20 4 3 19 16 0) ($NR1 $NS1  $NVert1) simpleGrading (1.0 1 3.1912058736948667)
+
+     hex (8 24 25 9 4 20 21 5) ($NR1 $NS1  $NVert2) simpleGrading (1.0 1 1.0)
+     hex (9 25 26 10 5 21 22 6) ($NR1 $NS1  $NVert2) simpleGrading (1.0 1 1.0)
+     hex (10 26 27 11 6 22 23 7) ($NR1 $NS1  $NVert2) simpleGrading (1.0 1 1.0)
+     hex (11 27 24 8 7 23 20 4) ($NR1 $NS1  $NVert2) simpleGrading (1.0 1 1.0)
+
+     hex (12 28 29 13 8 24 25 9) ($NR1 $NS1  $NVert3) simpleGrading (1.0 1 1.0)
+     hex (13 29 30 14 9 25 26 10) ($NR1 $NS1  $NVert3) simpleGrading (1.0 1 1.0)
+     hex (14 30 31 15 10 26 27 11) ($NR1 $NS1  $NVert3) simpleGrading (1.0 1 1.0)
+     hex (15 31 28 12 11 27 24 8) ($NR1 $NS1  $NVert3) simpleGrading (1.0 1 1.0)
+
+     hex (20 36 37 21 16 32 33 17) ($NR2 $NS1  $NVert1) simpleGrading (1.0 1 3.1912058736948667)
+     hex (21 37 38 22 17 33 34 18) ($NR2 $NS1  $NVert1) simpleGrading (1.0 1 3.1912058736948667)
+     hex (22 38 39 23 18 34 35 19) ($NR2 $NS1  $NVert1) simpleGrading (1.0 1 3.1912058736948667)
+     hex (23 39 36 20 19 35 32 16) ($NR2 $NS1  $NVert1) simpleGrading (1.0 1 3.1912058736948667)
+
+     hex (24 40 41 25 20 36 37 21) ($NR2 $NS1  $NVert2) simpleGrading (1.0 1 1.0)
+     hex (25 41 42 26 21 37 38 22) ($NR2 $NS1  $NVert2) simpleGrading (1.0 1 1.0)
+     hex (26 42 43 27 22 38 39 23) ($NR2 $NS1  $NVert2) simpleGrading (1.0 1 1.0)
+     hex (27 43 40 24 23 39 36 20) ($NR2 $NS1  $NVert2) simpleGrading (1.0 1 1.0)
+
+     hex (28 44 45 29 24 40 41 25) ($NR2 $NS1  $NVert3) simpleGrading (1.0 1 1.0)
+     hex (29 45 46 30 25 41 42 26) ($NR2 $NS1  $NVert3) simpleGrading (1.0 1 1.0)
+     hex (30 46 47 31 26 42 43 27) ($NR2 $NS1  $NVert3) simpleGrading (1.0 1 1.0)
+     hex (31 47 44 28 27 43 40 24) ($NR2 $NS1  $NVert3) simpleGrading (1.0 1 1.0)
+
+);
+
+edges
+(
+    arc 16 17 (0    $mR1 $L1)
+    arc 17 18 ($R1 0 $L1)
+    arc 18 19 (0 $R1 $L1)
+    arc 19 16 ($mR1 0 $L1)
+
+    arc 20 21 (0    $mR1 $L2)
+    arc 21 22 ($R1 0 $L2)
+    arc 22 23 (0 $R1 $L2)
+    arc 23 20 ($mR1 0 $L2)
+
+    arc 24 25 (0    $mR1 $L3)
+    arc 25 26 ($R1 0 $L3)
+    arc 26 27 (0 $R1 $L3)
+    arc 27 24 ($mR1 0 $L3)
+
+    arc 28 29 (0    $mR1 $L4)
+    arc 29 30 ($R1 0 $L4)
+    arc 30 31 (0 $R1 $L4)
+    arc 31 28 ($mR1 0 $L4)
+
+    arc 32 33 (0    $mR2 $L1)
+    arc 33 34 ($R2 0 $L1)
+    arc 34 35 (0 $R2 $L1)
+    arc 35 32 ($mR2 0 $L1)
+
+    arc 36 37 (0    $mR2 $L2)
+    arc 37 38 ($R2 0 $L2)
+    arc 38 39 (0 $R2 $L2)
+    arc 39 36 ($mR2 0 $L2)
+
+    arc 40 41 (0    $mR2 $L3)
+    arc 41 42 ($R2 0 $L3)
+    arc 42 43 (0 $R2 $L3)
+    arc 43 40 ($mR2 0 $L3)
+
+    arc 44 45 (0    $mR2 $L4)
+    arc 45 46 ($R2 0 $L4)
+    arc 46 47 (0 $R2 $L4)
+    arc 47 44 ($mR2 0 $L4)
+
+);
+
+boundary
+(
+    outlet
+    {
+        type patch;
+        faces
+        (
+            ( 0 1 2 3)
+
+            ( 0 16 17 1)
+            ( 1 17 2 18)
+            ( 2 18 19 3)
+            ( 3 19 16 0)
+
+            ( 16 32 33 17)
+            ( 17 33 18 34)
+            ( 18 34 35 19)
+            ( 19 35 32 16)
+
+        );
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+defaultPatch
+{type wall;}
+

@@ -1,0 +1,29 @@
+{
+	"Meshing": {
+    		"NRSmallest": 3,
+    		"NVertSmallest": 8,
+                "verticalCoarsening":[
+                                       {"ratio": 0.5, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"}
+                                     ],
+                "radialCoarsening":  [
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"},
+                                       {"ratio": 1.0, "direction": "+", "directionRef": "-"}
+                                     ]
+	},
+	"Geometry": {
+		"Radial": {
+			"column_trans" : 15,
+			"column" : 31.75
+		},
+		"Longitudinal": {
+			"column_top" : 300,
+			"head_space" : 200,
+                        "sparger_trans": 40,
+			"bottom" : 0
+		}
+	}
+}
+
+
