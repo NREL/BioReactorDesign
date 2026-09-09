@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# Run from this directory
+cd "${0%/*}" || exit 1
+
+# Source tutorial run functions
+. "$WM_PROJECT_DIR/bin/tools/RunFunctions"
+
+
+runApplication blockMesh
+runApplication snappyHexMesh
+runApplication createPatch -dict system/createPatchDict
+mv log.createPatch log.createPatch1
+runApplication createPatch -dict system/createPatchDict
+mv log.createPatch log.createPatch2
+runApplication createPatch -dict system/createPatchDict2
+mv log.createPatch log.createPatch3
+
+runApplication createBaffles
+runApplication splitBaffles 
+
+runApplication renumberMesh -noFields
+
+runApplication createNonConformalCouples nonCouple2 nonCouple1 
+
+runApplication checkMesh -allGeometry -allTopology
+runApplication setFields
+runApplication transformPoints "scale=(0.4642 0.4642 0.4642)"
+#------------------------------------------------------------------------------

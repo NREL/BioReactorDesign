@@ -1,0 +1,160 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#includeEtc "caseDicts/mesh/generation/snappyHexMeshDict.cfg"
+
+castellatedMesh on;
+
+snap            on;
+
+addLayers       off;
+
+geometry
+{
+    refinementBox
+    {
+        type box;
+        min  (  -1000   -5   0);
+        max  (40 5  10);
+    }
+    
+    vessel
+    {
+        type cylinder;  
+        point1 (0 0 -100);         
+        point2 (0 0 100);         
+        radius 2;
+    }
+    
+
+    #include "impeller"
+    
+
+    #include "sparger"
+
+}
+
+castellatedMeshControls
+{
+    features
+    (
+    );
+
+    refinementSurfaces
+    {
+        impeller_shaft
+        {
+            level (2 2);
+            patchInfo
+            {
+                type wall;
+                inGroups (impeller);
+            }
+        }
+                
+        impeller
+        {
+            level (2 2);
+            patchInfo
+            {
+                type wall;
+                inGroups (impeller);
+            }
+        }
+        
+        vessel
+        {
+            level (1 1);
+            patchInfo
+            {
+                type wall;
+                inGroups (vessel);
+            }
+        }
+
+
+        impeller_rotatingZone
+        {
+            level (2 2);
+            faceZone rotatingZone;
+            cellZone rotatingZone;
+            mode inside;
+        }
+        
+
+
+    }
+
+    // delete "-disabled" below to enable refinementRegions
+    refinementRegions
+    {
+        impeller_rotatingZone
+        {
+            mode    inside;
+            level   1;
+        }
+        
+        "sparger.*"
+        {
+            level 2;
+            mode inside;
+        }
+
+    }
+
+    insidePoint (0 0 0.0001);
+    nCellsBetweenLevels 3;
+}
+
+snapControls
+{
+    explicitFeatureSnap    off;
+    implicitFeatureSnap    on;
+    
+    nSmoothPatch 3;
+    tolerance 1.0;
+    nSolveIter 300;
+    nRelaxIter 10;
+    nFeatureSnapIter 10;
+
+}
+
+addLayersControls
+{
+    layers
+    {
+        "shaft.*" { nSurfaceLayers 0; }
+    }
+
+    relativeSizes       on; // off, usually with firstLayerThickness
+    expansionRatio      1.2;
+    finalLayerThickness 0.5;
+    minThickness        0.001;
+    firstLayerThickness-disabled 0;
+    maxThicknessToMedialRatio-disabled 0.3;
+}
+
+// delete "-disabled" to output mesh data, e.g. for layers
+writeFlags-disabled
+(
+    scalarLevels
+    layerSets
+    layerFields
+);
+
+mergeTolerance 1e-6;
+
+// ************************************************************************* //

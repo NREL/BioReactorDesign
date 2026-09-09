@@ -1,0 +1,67 @@
+
+sparger_0
+{
+   patchInfo { type patch; };
+   constructFrom zone;
+   zone {
+   type cylinder;
+   point1 ( 0.75 0.0 -10 );
+   point2 ( 0.75 0.0 0.001 );
+   radius 0.025;
+   }
+}
+sparger_1
+{
+   patchInfo { type patch; };
+   constructFrom zone;
+   zone {
+   type cylinder;
+   point1 ( 0.3750000000000001 0.649519052838329 -10 );
+   point2 ( 0.3750000000000001 0.649519052838329 0.001 );
+   radius 0.025;
+   }
+}
+sparger_2
+{
+   patchInfo { type patch; };
+   constructFrom zone;
+   zone {
+   type cylinder;
+   point1 ( -0.37499999999999983 0.649519052838329 -10 );
+   point2 ( -0.37499999999999983 0.649519052838329 0.001 );
+   radius 0.025;
+   }
+}
+sparger_3
+{
+   patchInfo { type patch; };
+   constructFrom zone;
+   zone {
+   type cylinder;
+   point1 ( -0.75 9.184850993605148e-17 -10 );
+   point2 ( -0.75 9.184850993605148e-17 0.001 );
+   radius 0.025;
+   }
+}
+sparger_4
+{
+   patchInfo { type patch; };
+   constructFrom zone;
+   zone {
+   type cylinder;
+   point1 ( -0.37500000000000033 -0.6495190528383288 -10 );
+   point2 ( -0.37500000000000033 -0.6495190528383288 0.001 );
+   radius 0.025;
+   }
+}
+sparger_5
+{
+   patchInfo { type patch; };
+   constructFrom zone;
+   zone {
+   type cylinder;
+   point1 ( 0.3750000000000001 -0.649519052838329 -10 );
+   point2 ( 0.3750000000000001 -0.649519052838329 0.001 );
+   radius 0.025;
+   }
+}

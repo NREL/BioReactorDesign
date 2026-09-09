@@ -1,0 +1,95 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvModels;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+phaseTurbulenceStabilisationGas
+{
+    type    phaseTurbulenceStabilisation;
+
+    libs    ("libbirdmultiphaseEulerFvModels.so");
+
+    phase   gas;
+
+    alphaInversion  0.1;
+}
+
+phaseTurbulenceStabilisationLiquid
+{
+    type    phaseTurbulenceStabilisation;
+
+    libs    ("libbirdmultiphaseEulerFvModels.so");
+
+    phase   liquid;
+
+    alphaInversion  0.1;
+}
+
+phaseChange
+{
+
+    #include "$FOAM_CASE/constant/globalVars";
+    
+    type            massDiffusionLimitedPhaseChange;
+
+    libs            ("libbirdmultiphaseEulerFvModels.so");
+
+    phases          (gas liquid);
+
+    energySemiImplicit yes;
+
+    interfaceComposition
+    {
+        gas_liquid_inThe_liquid
+        {   
+            type Henry;
+            species ( O2  );
+            k ( $He_O2  );
+            Le $LeLiqMix;
+        }
+    }
+
+    diffusiveMassTransfer
+    {
+        blending        heatAndDiffusiveMassTransfer;
+
+        gas_dispersedIn_liquid_inThe_liquid
+        {
+            type Higbie;
+            Le $LeLiqMix;
+        }
+
+        liquid_dispersedIn_gas_inThe_liquid
+        {
+            type spherical;
+            Le 1.0; 
+        }
+
+        gas_dispersedIn_liquid_inThe_gas
+        {
+            type Frossling;
+            Le $LeLiqMix;
+        }
+
+        liquid_dispersedIn_gas_inThe_gas
+        {
+            type spherical;
+            Le 1.0; 
+        }
+    }
+}
+
+
+// ************************************************************************* //

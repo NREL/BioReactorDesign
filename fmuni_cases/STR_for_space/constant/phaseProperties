@@ -1,0 +1,148 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      phaseProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+phases  (gas liquid);
+
+referencePhase  liquid;
+
+populationBalances (bubbles);
+
+gas
+{
+    type            multiComponentPhaseModel;
+
+/*
+    diameterModel   constant;
+    constantCoeffs
+    {
+        d           1e-3;
+    }
+*/
+    diameterModel   velocityGroup;
+    velocityGroupCoeffs
+    {
+        populationBalance    bubbles;
+
+        shapeModel           spherical;
+
+        sizeGroups
+        (
+            {dSph  0.25e-3; }
+            {dSph  0.5e-3; }
+            {dSph  1e-3; }
+            {dSph  1.5e-3; }
+            {dSph  2e-3; }
+            {dSph  2.5e-3; }
+            {dSph  3e-3; }
+            {dSph  3.5e-3; }
+            {dSph  4e-3; }
+            {dSph  4.5e-3; }
+            {dSph  5e-3; }
+            {dSph  5.5e-3; }
+
+
+        );
+    }
+
+    residualAlpha   1e-4;
+}
+
+liquid
+{
+    type            multiComponentPhaseModel;
+
+    diameterModel   constant;
+    constantCoeffs
+    {
+        d           1e-4;
+    }
+
+    residualAlpha   1e-6;
+}
+
+blending
+{
+    default
+    {
+        type            linear;
+        minFullyContinuousAlpha.gas 0.7;
+        minPartlyContinuousAlpha.gas 0.3;
+        minFullyContinuousAlpha.liquid 0.7;
+        minPartlyContinuousAlpha.liquid 0.3;
+    }
+
+    segregated
+    {
+        type            linear;
+        minFullyContinuousAlpha.gas 0.7;
+        minPartlyContinuousAlpha.gas 0.5;
+        minFullyContinuousAlpha.liquid 0.7;
+        minPartlyContinuousAlpha.liquid 0.5;
+    }
+    
+    heatAndDiffusiveMassTransfer
+    {
+        type            linear;
+        minPartlyContinuousAlpha.gas 0;
+        minFullyContinuousAlpha.gas 1;
+        minPartlyContinuousAlpha.liquid 0;
+        minFullyContinuousAlpha.liquid 1;
+    }
+}
+
+surfaceTension
+{
+    gas_liquid
+    {
+        type            constant;
+        sigma           0.072;
+    }
+}
+
+populationBalanceCoeffs
+{
+    bubbles
+    {
+        continuousPhase liquid;
+
+        coalescenceModels
+        (
+            LehrMilliesMewes
+            {}
+        );
+
+        binaryBreakupModels
+        (
+            LehrMilliesMewes
+            {}
+        );
+
+        breakupModels
+        ();
+
+        driftModels
+        (
+            densityChange
+            {}
+        );
+
+        nucleationModels
+        ();
+    }
+}
+
+
+// ************************************************************************* //

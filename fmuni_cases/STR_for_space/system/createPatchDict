@@ -1,0 +1,49 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+patches
+{
+    stirrer
+    {
+        patchInfo
+        {
+            type wall;
+        }
+
+        constructFrom patches;
+
+        patches ("impeller_impeller.*");
+    }
+    
+    shaft
+    {
+        patchInfo
+        {
+            type wall;
+        }
+
+        constructFrom patches;
+
+        patches ("impeller_shaft");
+    }
+
+    #include "spargerPatch"
+
+    inlet
+    {
+        patchInfo
+        {
+            type patch;
+        }
+
+        constructFrom patches;
+
+        patches ("sparger_.*");
+    }       
+ 
+}
