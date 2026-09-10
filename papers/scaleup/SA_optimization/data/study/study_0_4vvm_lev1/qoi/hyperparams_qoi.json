@@ -1,0 +1,50 @@
+{
+  "qoi": "qoi",
+  "best": "nn",
+  "best_params": {
+    "n_units": 115,
+    "n_layers": 3,
+    "lr": 0.007352422228350128
+  },
+  "amp_physical": 31.847128737940537,
+  "mean_physical": 1.1587697843637461,
+  "rbf": {
+    "params": {
+      "kernel": "inverse_multiquadric",
+      "epsilon": 4.061810507250742
+    },
+    "test_mse": 0.793554500254287,
+    "val_mse": 0.7742804347958798,
+    "test_nrmse_amp_pct": 2.7971650679432742,
+    "test_nrmse_mean_pct": 76.87607773529611,
+    "val_nrmse_amp_pct": 2.762987112097808,
+    "val_nrmse_mean_pct": 75.93674554481456
+  },
+  "rf": {
+    "params": {
+      "n_estimators": 101,
+      "max_depth": 3,
+      "min_samples_leaf": 4,
+      "max_features": 0.1685863056814062
+    },
+    "test_mse": 0.6929890052189214,
+    "val_mse": 0.8281670290668213,
+    "test_nrmse_amp_pct": 2.613923592969481,
+    "test_nrmse_mean_pct": 71.83994810681708,
+    "val_nrmse_amp_pct": 2.857516091641253,
+    "val_nrmse_mean_pct": 78.53473922881386
+  },
+  "nn": {
+    "params": {
+      "n_units": 115,
+      "n_layers": 3,
+      "lr": 0.007352422228350128
+    },
+    "test_mse": 0.0707926548581952,
+    "val_mse": 0.04559337741600136,
+    "test_nrmse_amp_pct": 0.835456450023289,
+    "test_nrmse_mean_pct": 22.96132456840312,
+    "val_nrmse_amp_pct": 0.6704719275922347,
+    "val_nrmse_mean_pct": 18.426961145633662
+  }
+}
