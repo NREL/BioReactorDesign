@@ -42,7 +42,7 @@ timeFormat      general;
 
 timePrecision   6;
 
-runTimeModifiable no;
+runTimeModifiable yes;
 
 adjustTimeStep  yes;
 

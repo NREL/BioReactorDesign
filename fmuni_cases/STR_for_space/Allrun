@@ -7,8 +7,10 @@ cd "${0%/*}" || exit 1
 . "$WM_PROJECT_DIR/bin/tools/RunFunctions"
 
 
-runApplication blockMesh -dict system/blockMeshDict.cylindrical
-runApplication snappyHexMesh
+runApplication blockMesh #-dict system/blockMeshDict.cylindrical
+runApplication decomposePar
+runParallel snappyHexMesh
+runApplication reconstructPar
 runApplication createPatch -dict system/createPatchDict
 mv log.createPatch log.createPatch1
 runApplication createPatch -dict system/createPatchDict
@@ -23,8 +25,10 @@ runApplication renumberMesh -noFields
 
 runApplication createNonConformalCouples nonCouple2 nonCouple1 
 
-runApplication checkMesh -allGeometry -allTopology
+
 runApplication setFields
 runApplication transformPoints "scale=(0.4642 0.4642 0.4642)"
+runApplication checkMesh -allGeometry -allTopology -writeSurfaces -writeSets
+rm -r processor* log.decomposePar
 runApplication decomposePar -fileHandler collated
 #------------------------------------------------------------------------------

@@ -14,13 +14,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#includeEtc "caseDicts/mesh/generation/snappyHexMeshDict.cfg"
-
-castellatedMesh on;
-
-snap            on;
-
-addLayers       off;
+#include "snappyHexMeshDict.cfg"
 
 geometry
 {
@@ -67,7 +61,7 @@ castellatedMeshControls
                 
         impeller
         {
-            level (2 2);
+            level (3 3);
             patchInfo
             {
                 type wall;
@@ -77,7 +71,7 @@ castellatedMeshControls
         
         impeller2
         {
-            level (2 2);
+            level (3 3);
             patchInfo
             {
                 type wall;
@@ -127,19 +121,6 @@ castellatedMeshControls
 
     insidePoint (0 0 0.0001);
     nCellsBetweenLevels 3;
-}
-
-snapControls
-{
-    explicitFeatureSnap    off;
-    implicitFeatureSnap    on;
-    
-    nSmoothPatch 3;
-    tolerance 1.0;
-    nSolveIter 300;
-    nRelaxIter 10;
-    nFeatureSnapIter 10;
-
 }
 
 addLayersControls

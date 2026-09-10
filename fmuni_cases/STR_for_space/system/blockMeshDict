@@ -20,8 +20,8 @@ yMin   -4;
 yMax   4;
 zMin     0;
 zMax   6;
-xCells  80;
-yCells  80;
+xCells  79;
+yCells  79;
 zCells  60;
 
 scale   1;

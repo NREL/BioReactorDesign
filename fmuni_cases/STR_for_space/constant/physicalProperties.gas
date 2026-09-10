@@ -14,6 +14,44 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+
+thermoType
+{
+    type            heRhoThermo;
+    mixture         pureMixture;
+    transport       const;
+    thermo          eConst;
+    equationOfState rhoConst;
+    specie          specie;
+    energy          sensibleInternalEnergy;
+}
+
+mixture
+{
+    specie
+    {
+        molWeight   28.96;
+    }
+    equationOfState
+    {
+        R           287.1;
+        rho0        1.184;
+        rho         1.184;
+    }
+    thermodynamics
+    {
+        Cp          1006.5;
+        Cv          718.1;
+        hf          0;
+    }
+    transport
+    {
+        mu          1.8479e-5;
+        Pr          0.602;
+    }
+}
+
+/*
 thermoType
 {
     type            heRhoThermo;
@@ -76,5 +114,5 @@ O2
         O               2;
     }
 }
-
+*/
 // ************************************************************************* //

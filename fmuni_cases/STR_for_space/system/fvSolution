@@ -18,7 +18,7 @@ solvers
 {
     MeshPhi
     {
-        solver    GAMG;
+        solver    smoothSolver;
         smoother  symGaussSeidel;
         tolerance 1e-3;
         relTol    0;
@@ -100,13 +100,13 @@ solvers
 PIMPLE
 {
     nOuterCorrectors    1;
-    nCorrectors         7;
+    nCorrectors         4;
     nNonOrthogonalCorrectors 0;
 
     correctPhi          yes;
     correctMeshPhi      yes;
     solveComposition    yes;
-    solveEnergy         no;
+    solveEnergy         yes;
 
     faceMomentum        no;
     VmDdtCorrection     yes;

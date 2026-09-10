@@ -18,19 +18,24 @@ phases  (gas liquid);
 
 referencePhase  liquid;
 
-populationBalances (bubbles);
+//populationBalances (bubbles);
 
 gas
 {
-    type            multiComponentPhaseModel;
 
-/*
+    type            pureIsothermalPhaseModel;
+
     diameterModel   constant;
     constantCoeffs
     {
         d           1e-3;
     }
-*/
+
+    residualAlpha   1e-6;
+/*
+    type            multiComponentPhaseModel;
+
+
     diameterModel   velocityGroup;
     velocityGroupCoeffs
     {
@@ -57,12 +62,13 @@ gas
         );
     }
 
-    residualAlpha   1e-4;
+    residualAlpha   1e-4; */
 }
 
 liquid
 {
-    type            multiComponentPhaseModel;
+
+    type            pureIsothermalPhaseModel;
 
     diameterModel   constant;
     constantCoeffs
@@ -71,6 +77,16 @@ liquid
     }
 
     residualAlpha   1e-6;
+
+/*    type            multiComponentPhaseModel;
+
+    diameterModel   constant;
+    constantCoeffs
+    {
+        d           1e-4;
+    }
+
+    residualAlpha   1e-6; */
 }
 
 blending

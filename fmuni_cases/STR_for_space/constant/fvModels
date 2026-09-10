@@ -36,7 +36,7 @@ phaseTurbulenceStabilisationLiquid
 
     alphaInversion  0.1;
 }
-
+/*
 phaseChange
 {
 
@@ -90,6 +90,6 @@ phaseChange
         }
     }
 }
-
+*/
 
 // ************************************************************************* //
