@@ -184,3 +184,43 @@ def calc_mean(
     unc_val = np.sqrt(sigsq * T0 / N)
 
     return mean_val, unc_val * 1.96
+
+
+def steady_stat(
+    time_series: np.ndarray | list,
+    time_values: np.ndarray | list,
+    window: float | None = None,
+) -> tuple[float, float]:
+    """(mean, 1-sigma uncertainty) over the tail window of a time series.
+
+    The statistic is computed over the last ``window`` (in time units) of the
+    series via the T0 estimator (:func:`calc_mean`), with its 95% (1.96 sigma)
+    uncertainty converted to 1 sigma. ``window`` defaults to 10% of the total
+    simulation time. Returns (nan, nan) for an empty or all-nan series and
+    (value, 0.0) when a single sample falls in the window.
+
+    :param time_series: time series of the signal
+    :param time_values: sampling times of the series
+    :param window: length of the end window in time units; 10% of the total
+        time span if None
+    :return: (mean, 1-sigma uncertainty about the mean)
+    """
+    time_series = np.asarray(time_series, dtype=float)
+    time_values = np.asarray(time_values, dtype=float)
+    if time_series.size == 0 or np.all(np.isnan(time_series)):
+        return np.nan, np.nan
+
+    if window is None:
+        window = 0.1 * (time_values.max() - time_values.min())
+        logger.warning(f"Steady state assumed over last {window}s") 
+       
+    in_window = time_values >= time_values.max() - window
+    windowed_series = time_series[in_window]
+    windowed_values = time_values[in_window]
+    if np.all(np.isnan(windowed_series)):
+        return np.nan, np.nan
+    if windowed_series.size < 2:
+        return float(windowed_series[0]), 0.0
+
+    mean_value, uncertainty_95 = calc_mean(windowed_series, windowed_values)
+    return float(mean_value), float(uncertainty_95 / 1.96)
