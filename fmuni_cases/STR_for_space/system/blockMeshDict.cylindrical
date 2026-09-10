@@ -1,0 +1,235 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+backgroundMesh
+{
+    radOut     2;
+    radIn      1.0499999999999998;
+    radBox     0.2;
+
+    zMin       0;
+    zMax       6;
+
+    boxCells   10;
+    inCells    10;
+    outCells   10;
+    zCells     60;
+
+    outGrading 2.0;
+
+    radOutN    #neg $radOut;
+    radInN     #neg $radIn;
+    radBoxN    #neg $radBox;
+}
+
+convertToMeters 1;
+
+defaultPatch
+{
+    name vessel;
+    type wall;
+}
+
+// delete "-disabled" to enable boundary settings
+boundary
+(
+    bottom
+    {
+        type wall;
+        faces
+        (
+            (0 1 2 3)
+            (0 4 5 1)
+            (1 5 6 2)
+            (2 6 7 3)
+            (3 7 4 0)
+            (4 8 9 5)
+            (5 9 10 6)
+            (6 10 11 7)
+            (7 11 8 4)
+        );
+    }
+
+    outlet
+    {
+        type patch;
+        faces
+        (
+            (12 13 14 15)
+            (12 16 17 13)
+            (13 17 18 14)
+            (14 18 19 15)
+            (15 19 16 12)
+            (16 20 21 17)
+            (17 21 22 18)
+            (18 22 23 19)
+            (19 23 20 16)
+        );
+    }
+);
+
+geometry
+{
+    rotatingZone
+    {
+       type cylinder;
+       point1 ( 0 0 -30 );
+       point2 ( 0 0 30 );
+       radius 1.0499999999999998;
+    }
+
+    outer
+    {
+        type cylinder;
+        point1 (0 0 -30);
+        point2 (0 0 30);
+        radius 2;
+    }
+
+}
+
+vertices
+(
+    ($!backgroundMesh/radBoxN $!backgroundMesh/radBoxN $!backgroundMesh/zMin)
+    ($!backgroundMesh/radBox $!backgroundMesh/radBoxN $!backgroundMesh/zMin)
+    ($!backgroundMesh/radBox $!backgroundMesh/radBox $!backgroundMesh/zMin)
+    ($!backgroundMesh/radBoxN $!backgroundMesh/radBox $!backgroundMesh/zMin)
+
+    project
+    ($!backgroundMesh/radInN $!backgroundMesh/radInN $!backgroundMesh/zMin)
+    (rotatingZone)
+
+    project
+    ($!backgroundMesh/radIn $!backgroundMesh/radInN $!backgroundMesh/zMin)
+    (rotatingZone)
+
+    project
+    ($!backgroundMesh/radIn $!backgroundMesh/radIn $!backgroundMesh/zMin)
+    (rotatingZone)
+
+    project
+    ($!backgroundMesh/radInN $!backgroundMesh/radIn $!backgroundMesh/zMin)
+    (rotatingZone)
+
+    project
+    ($!backgroundMesh/radOutN $!backgroundMesh/radOutN $!backgroundMesh/zMin)
+    (outer)
+
+    project
+    ($!backgroundMesh/radOut $!backgroundMesh/radOutN $!backgroundMesh/zMin)
+    (outer)
+
+    project
+    ($!backgroundMesh/radOut $!backgroundMesh/radOut $!backgroundMesh/zMin)
+    (outer)
+
+    project
+    ($!backgroundMesh/radOutN $!backgroundMesh/radOut $!backgroundMesh/zMin)
+    (outer)
+
+    ($!backgroundMesh/radBoxN $!backgroundMesh/radBoxN $!backgroundMesh/zMax)
+    ($!backgroundMesh/radBox $!backgroundMesh/radBoxN $!backgroundMesh/zMax)
+    ($!backgroundMesh/radBox $!backgroundMesh/radBox $!backgroundMesh/zMax)
+    ($!backgroundMesh/radBoxN $!backgroundMesh/radBox $!backgroundMesh/zMax)
+
+    project
+    ($!backgroundMesh/radInN $!backgroundMesh/radInN $!backgroundMesh/zMax)
+    (rotatingZone)
+
+    project
+    ($!backgroundMesh/radIn $!backgroundMesh/radInN $!backgroundMesh/zMax)
+    (rotatingZone)
+
+    project
+    ($!backgroundMesh/radIn $!backgroundMesh/radIn $!backgroundMesh/zMax)
+    (rotatingZone)
+
+    project
+    ($!backgroundMesh/radInN $!backgroundMesh/radIn $!backgroundMesh/zMax)
+    (rotatingZone)
+
+    project
+    ($!backgroundMesh/radOutN $!backgroundMesh/radOutN $!backgroundMesh/zMax)
+    (outer)
+
+    project
+    ($!backgroundMesh/radOut $!backgroundMesh/radOutN $!backgroundMesh/zMax)
+    (outer)
+
+    project
+    ($!backgroundMesh/radOut $!backgroundMesh/radOut $!backgroundMesh/zMax)
+    (outer)
+
+    project
+    ($!backgroundMesh/radOutN $!backgroundMesh/radOut $!backgroundMesh/zMax)
+    (outer)
+
+);
+
+boxMesh
+($!backgroundMesh/boxCells $!backgroundMesh/boxCells $!backgroundMesh/zCells)
+simpleGrading (1 1 1);
+
+inMesh
+($!backgroundMesh/boxCells $!backgroundMesh/inCells $!backgroundMesh/zCells)
+simpleGrading (1 1 1);
+
+outMesh
+($!backgroundMesh/boxCells $!backgroundMesh/outCells $!backgroundMesh/zCells)
+simpleGrading (1 $!backgroundMesh/outGrading 1);
+
+blocks
+(
+    hex (0 1 2 3 12 13 14 15) $boxMesh
+
+    hex (1 0 4 5 13 12 16 17) $inMesh
+    hex (0 3 7 4 12 15 19 16) $inMesh
+    hex (2 1 5 6 14 13 17 18) $inMesh
+    hex (3 2 6 7 15 14 18 19) $inMesh
+
+    hex (5 4  8  9 17 16 20 21) $outMesh
+    hex (4 7 11  8 16 19 23 20) $outMesh
+    hex (6 5  9 10 18 17 21 22) $outMesh
+    hex (7 6 10 11 19 18 22 23) $outMesh
+);
+
+edges
+(
+    project  4  5  (rotatingZone)
+    project  5  6  (rotatingZone)
+    project  6  7  (rotatingZone)
+    project  7  4  (rotatingZone)
+    project 16 17  (rotatingZone)
+    project 17 18  (rotatingZone)
+    project 18 19  (rotatingZone)
+    project 19 16  (rotatingZone)
+
+    project  8  9  (outer)
+    project  9 10  (outer)
+    project 10 11  (outer)
+    project 11  8  (outer)
+    project 20 21  (outer)
+    project 21 22  (outer)
+    project 22 23  (outer)
+    project 23 20  (outer)
+);
+
+mergePatchPairs
+(
+);
+
+
+// ************************************************************************* //

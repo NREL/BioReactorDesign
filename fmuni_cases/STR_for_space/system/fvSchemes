@@ -30,8 +30,8 @@ divSchemes
     default                     none;
 
     div(phi,alpha)              Gauss vanLeer;
-    div(alphaRhoPhi,U)          Gauss limitedLinearV 1;
-    div(phi,U)                  Gauss limitedLinearV 1;
+    div(alphaRhoPhi,U)          Gauss Minmod;
+    div(phi,U)                  Gauss Minmod;
 
     div(alphaRhoPhi,K)          Gauss limitedLinear 1;
 

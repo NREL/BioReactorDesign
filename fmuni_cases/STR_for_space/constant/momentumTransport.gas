@@ -21,4 +21,18 @@ RAS
     model               kOmegaSST;
 }
 
+LES
+{
+    model    continuousGasKEqn; // Smagorinsky;
+
+    turbulence      on;
+    printCoeffs     on;
+
+    delta           cubeRootVol;
+
+    cubeRootVolCoeffs
+    {
+    }
+}
+
 // ************************************************************************* //

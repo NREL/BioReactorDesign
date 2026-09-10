@@ -75,6 +75,16 @@ castellatedMeshControls
             }
         }
         
+        impeller2
+        {
+            level (2 2);
+            patchInfo
+            {
+                type wall;
+                inGroups (impeller);
+            }
+        }
+        
         vessel
         {
             level (1 1);

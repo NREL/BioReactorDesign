@@ -18,7 +18,7 @@ solvers
 {
     MeshPhi
     {
-        solver    smoothSolver;
+        solver    GAMG;
         smoother  symGaussSeidel;
         tolerance 1e-3;
         relTol    0;
@@ -36,8 +36,8 @@ solvers
     "alpha.*"
     {
         nCorrectors     1;
-        nSubCycles      5;
-
+        nSubCycles      10;
+/*
         MULES
         {
             nIter           1;
@@ -46,7 +46,7 @@ solvers
 
         MULESCorr       yes;
         MULESCorrRelax  0.5;
-
+*/
         solver          GAMG;
         smoother        symGaussSeidel;
         tolerance       1e-10;
@@ -56,7 +56,7 @@ solvers
 
     p_rgh
     {
-        solver          GAMG;
+        solver          PCG;
         preconditioner  DIC;
         smoother        DIC;
         tolerance       1e-9;
@@ -77,13 +77,23 @@ solvers
 
     }
 
-    "(U|k|omega|Yi|e|T|f).*"
+    "(U|k|omega|Yi|f).*"
     {
         solver          PBiCGStab;
         preconditioner  DILU;
         tolerance       1e-7;
         relTol          0;
         minIter         1;
+    }
+    
+    "(e|T).*"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-7;
+        relTol          0;
+        minIter         0;
+        maxIter         0;
     }
 }
 
