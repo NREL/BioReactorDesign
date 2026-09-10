@@ -16,7 +16,199 @@ from bird.utilities.ofio import (
 
 from ..kla_utils import compute_kla
 from ._cell_filter import _field_filter, _get_ind_liq, _weighted_average
+from .phase import (
+    compute_ave_bubble_diam,
+    compute_gas_holdup,
+    interfacial_area,
+)
 from .species import compute_ave_conc_liq
+
+
+def _instantaneous_kl_field(
+    case_folder: str,
+    time_folder: str,
+    species_names: str | list[str],
+    n_cells: int | None = None,
+    field_dict: dict | None = None,
+) -> tuple[dict, dict]:
+    """Per-cell mass-transfer coefficient kL over the liquid, per species."""
+    if field_dict is None:
+        field_dict = {}
+    if isinstance(species_names, str):
+        species_names = [species_names]
+
+    kwargs = {
+        "case_folder": case_folder,
+        "time_folder": time_folder,
+        "n_cells": n_cells,
+    }
+    globalVars = read_global_vars(case_folder=case_folder, cross_ref=True)
+    ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
+
+    try:
+        rho_liq, field_dict = read_field(
+            field_name="thermo:rho.liquid", field_dict=field_dict, **kwargs
+        )
+    except FileNotFoundError:
+        logger.warning(
+            f"thermo:rho.liquid not found in "
+            f"{os.path.join(case_folder, time_folder)}, assuming 1000kg/m3"
+        )
+        rho_liq = 1000.0
+        field_dict["rho_liq"] = rho_liq
+    U_gas, field_dict = read_field(
+        field_name="U.gas", field_dict=field_dict, **kwargs
+    )
+    U_liq, field_dict = read_field(
+        field_name="U.liquid", field_dict=field_dict, **kwargs
+    )
+    d_gas, field_dict = read_bubble_diameter(field_dict=field_dict, **kwargs)
+    mu_liq, field_dict = read_mu_liquid(field_dict=field_dict, **kwargs)
+
+    rho_liq = _field_filter(rho_liq, ind=ind_liq, field_type="scalar")
+    U_gas = _field_filter(U_gas, ind=ind_liq, field_type="vector")
+    U_liq = _field_filter(U_liq, ind=ind_liq, field_type="vector")
+    d_gas = _field_filter(d_gas, ind=ind_liq, field_type="scalar")
+    mu_liq = _field_filter(mu_liq, ind=ind_liq, field_type="scalar")
+
+    # Magnitude of the slip velocity. Using the last axis keeps this valid
+    # whether the velocities are uniform, shape (3,), or per cell, shape (N,3)
+    mag_U_diff = np.linalg.norm(U_gas - U_liq, axis=-1)
+    Re = rho_liq * mag_U_diff * d_gas / mu_liq
+
+    kl_spec_field = {}
+    for species_name in species_names:
+        if not f"D_{species_name}" in globalVars:
+            err_msg = f"D_{species_name} was not found in globalVars."
+            err_msg += f'\nIf you add it, it should be looking like #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_{species_name},0.6)";'
+            raise KeyError(err_msg)
+        kl_spec_field[species_name] = (
+            (2 / np.pi**0.5)
+            * 3600
+            * (Re**0.5)
+            * (((mu_liq / rho_liq) / globalVars[f"D_{species_name}"]) ** 0.5)
+            * (globalVars[f"D_{species_name}"] / d_gas)
+        )
+    return kl_spec_field, field_dict
+
+
+def _instantaneous_a_field(
+    case_folder: str,
+    time_folder: str,
+    n_cells: int | None = None,
+    field_dict: dict | None = None,
+) -> tuple[np.ndarray | float, dict]:
+    """Per-cell interfacial area a = 6 alpha_gas / d over the liquid."""
+    if field_dict is None:
+        field_dict = {}
+    kwargs = {
+        "case_folder": case_folder,
+        "time_folder": time_folder,
+        "n_cells": n_cells,
+    }
+    ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
+    alpha_gas, field_dict = read_field(
+        field_name="alpha.gas", field_dict=field_dict, **kwargs
+    )
+    d_gas, field_dict = read_bubble_diameter(field_dict=field_dict, **kwargs)
+    alpha_gas = _field_filter(alpha_gas, ind=ind_liq, field_type="scalar")
+    d_gas = _field_filter(d_gas, ind=ind_liq, field_type="scalar")
+    return (6.0 / d_gas) * alpha_gas, field_dict
+
+
+def _instantaneous_kla_field(
+    case_folder: str,
+    time_folder: str,
+    species_names: str | list[str],
+    n_cells: int | None = None,
+    field_dict: dict | None = None,
+) -> tuple[dict, dict]:
+    """Per-cell kLa = kL * a over the liquid, per species."""
+    if field_dict is None:
+        field_dict = {}
+    if isinstance(species_names, str):
+        species_names = [species_names]
+    kl_spec_field, field_dict = _instantaneous_kl_field(
+        case_folder, time_folder, species_names, n_cells, field_dict
+    )
+    a_field, field_dict = _instantaneous_a_field(
+        case_folder, time_folder, n_cells, field_dict
+    )
+    kla_spec_field = {
+        species_name: kl_spec_field[species_name] * a_field
+        for species_name in species_names
+    }
+    return kla_spec_field, field_dict
+
+
+def _instantaneous_cstar(
+    case_folder: str,
+    time_folder: str,
+    species_names: str | list[str],
+    n_cells: int | None = None,
+    volume_time: str | None = None,
+    field_dict: dict | None = None,
+) -> tuple[dict, dict]:
+    """Volume-averaged saturation concentration C* over the liquid, per species."""
+    if field_dict is None:
+        field_dict = {}
+    if isinstance(species_names, str):
+        species_names = [species_names]
+    kwargs = {
+        "case_folder": case_folder,
+        "time_folder": time_folder,
+        "n_cells": n_cells,
+    }
+    kwargs_vol = {
+        "case_folder": case_folder,
+        "time_folder": volume_time,
+        "n_cells": n_cells,
+    }
+    globalVars = read_global_vars(case_folder=case_folder, cross_ref=True)
+    mw_species = {}
+    for species_name in species_names:
+        if not f"He_{species_name}" in globalVars:
+            err_msg = f"He_{species_name} was not found in globalVars."
+            err_msg += f'\nIf you add it, it should be looking like #calc "$H_{species_name}_298 * exp($DH_{species_name} *(1. / $T0 - 1./298.15))";'
+            raise KeyError(err_msg)
+        mw_species[species_name] = species_name_to_mw(
+            case_folder=case_folder, species_name=species_name
+        )
+    ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
+    alpha_gas, field_dict = read_field(
+        field_name="alpha.gas", field_dict=field_dict, **kwargs
+    )
+    rho_gas, field_dict = read_field(
+        field_name="thermo:rho.gas", field_dict=field_dict, **kwargs
+    )
+    species_gas = {}
+    for species_name in species_names:
+        species_gas[species_name], field_dict = read_field(
+            field_name=f"{species_name}.gas", field_dict=field_dict, **kwargs
+        )
+    alpha_gas = _field_filter(alpha_gas, ind=ind_liq, field_type="scalar")
+    alpha_liq = 1 - alpha_gas
+    rho_gas = _field_filter(rho_gas, ind=ind_liq, field_type="scalar")
+    for species_name in species_names:
+        species_gas[species_name] = _field_filter(
+            species_gas[species_name], ind=ind_liq, field_type="scalar"
+        )
+    cell_volume, field_dict = read_cell_volumes(
+        field_dict=field_dict, **kwargs_vol
+    )
+    cell_volume = _field_filter(cell_volume, ind=ind_liq, field_type="scalar")
+
+    cstar_spec = {}
+    for species_name in species_names:
+        cstar_field = (
+            rho_gas
+            * species_gas[species_name]
+            * globalVars[f"He_{species_name}"]
+        ) / mw_species[species_name]
+        cstar_spec[species_name] = _weighted_average(
+            cstar_field, cell_volume * alpha_liq
+        )
+    return cstar_spec, field_dict
 
 
 def compute_instantaneous_kla(
@@ -110,11 +302,9 @@ def compute_instantaneous_kla(
     """
     if field_dict is None:
         field_dict = {}
-
     if isinstance(species_names, str):
         species_names = [species_names]
 
-    # Read relevant fields
     kwargs = {
         "case_folder": case_folder,
         "time_folder": time_folder,
@@ -126,118 +316,137 @@ def compute_instantaneous_kla(
         "n_cells": n_cells,
     }
 
-    # Read globarVars into a python dict
-    # Replace all the #calc entries with their numeral values
-    globalVars = read_global_vars(case_folder=case_folder, cross_ref=True)
+    kla_spec_field, field_dict = _instantaneous_kla_field(
+        case_folder, time_folder, species_names, n_cells, field_dict
+    )
 
-    # Check that global vars has the values we want and provide a useful error message otherwise
-    mw_species = {}
-    for species_name in species_names:
-        if not f"He_{species_name}" in globalVars:
-            err_msg = f"He_{species_name} was not found in globalVars."
-            err_msg += f'\nIf you add it, it should be looking like #calc "$H_{species_name}_298 * exp($DH_{species_name} *(1. / $T0 - 1./298.15))";'
-            raise KeyError(err_msg)
-        if not f"D_{species_name}" in globalVars:
-            err_msg = f"D_{species_name} was not found in globalVars."
-            err_msg += f'\nIf you add it, it should be looking like #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_{species_name},0.6)";'
-            raise KeyError(err_msg)
-        mw_species[species_name] = species_name_to_mw(
-            case_folder=case_folder, species_name=species_name
-        )
-
-    # Get liquid domain
+    # Volume average over the liquid
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
-
-    # Read all the fields
-    alpha_gas, field_dict = read_field(
-        field_name="alpha.gas", field_dict=field_dict, **kwargs
-    )
-    try:
-        rho_liq, field_dict = read_field(
-            field_name="thermo:rho.liquid", field_dict=field_dict, **kwargs
-        )
-    except FileNotFoundError:
-        abs_time_path = os.path.join(case_folder, time_folder)
-        logger.warning(
-            f"thermo:rho.liquid not found in {abs_time_path}, assuming it is 1000kg/m3"
-        )
-        rho_liq = 1000.0
-        field_dict["rho_liq"] = rho_liq
-
-    rho_gas, field_dict = read_field(
-        field_name="thermo:rho.gas", field_dict=field_dict, **kwargs
-    )
-    U_gas, field_dict = read_field(
-        field_name="U.gas", field_dict=field_dict, **kwargs
-    )
-    U_liq, field_dict = read_field(
-        field_name="U.liquid", field_dict=field_dict, **kwargs
-    )
-    d_gas, field_dict = read_bubble_diameter(field_dict=field_dict, **kwargs)
-
-    mu_liq, field_dict = read_mu_liquid(field_dict=field_dict, **kwargs)
-    species_gas = {}
-    for species_name in species_names:
-        species_gas[species_name], field_dict = read_field(
-            field_name=f"{species_name}.gas", field_dict=field_dict, **kwargs
-        )
-
-    # Only compute over the liquid
-    alpha_gas = _field_filter(alpha_gas, ind=ind_liq, field_type="scalar")
-    alpha_liq = 1 - alpha_gas
-    rho_liq = _field_filter(rho_liq, ind=ind_liq, field_type="scalar")
-    rho_gas = _field_filter(rho_gas, ind=ind_liq, field_type="scalar")
-    U_gas = _field_filter(U_gas, ind=ind_liq, field_type="vector")
-    U_liq = _field_filter(U_liq, ind=ind_liq, field_type="vector")
-    d_gas = _field_filter(d_gas, ind=ind_liq, field_type="scalar")
-    mu_liq = _field_filter(mu_liq, ind=ind_liq, field_type="scalar")
-    for species_name in species_names:
-        species_gas[species_name] = _field_filter(
-            species_gas[species_name], ind=ind_liq, field_type="scalar"
-        )
-
-    # Magnitude of the slip velocity. Using the last axis keeps this valid
-    # whether the velocities are uniform, shape (3,), or per cell, shape (N,3)
-    mag_U_diff = np.linalg.norm(U_gas - U_liq, axis=-1)
-
-    # Compute kLa
-    Re = rho_liq * mag_U_diff * d_gas / mu_liq
-    kla_spec_field = {}
-    for species_name in species_names:
-        kla_spec_field[species_name] = (
-            (2 / np.pi**0.5)
-            * 3600
-            * (Re**0.5)
-            * (((mu_liq / rho_liq) / globalVars[f"D_{species_name}"]) ** 0.5)
-            * (globalVars[f"D_{species_name}"] / d_gas)
-            * (6.0 / d_gas)
-            * alpha_gas
-        )
-    cstar_spec_field = {}
-    for species_name in species_names:
-        cstar_spec_field[species_name] = (
-            rho_gas
-            * species_gas[species_name]
-            * globalVars[f"He_{species_name}"]
-        ) / mw_species[species_name]
-
-    # Do volume average
     cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
     )
     cell_volume = _field_filter(cell_volume, ind=ind_liq, field_type="scalar")
-
-    kla_spec = {}
-    cstar_spec = {}
-    for species_name in species_names:
-        kla_spec[species_name] = _weighted_average(
+    kla_spec = {
+        species_name: _weighted_average(
             kla_spec_field[species_name], cell_volume
         )
-        cstar_spec[species_name] = _weighted_average(
-            cstar_spec_field[species_name], cell_volume * alpha_liq
-        )
-
+        for species_name in species_names
+    }
+    cstar_spec, field_dict = _instantaneous_cstar(
+        case_folder,
+        time_folder,
+        species_names,
+        n_cells,
+        volume_time,
+        field_dict,
+    )
     return kla_spec, cstar_spec, field_dict
+
+
+def compute_instantaneous_kl(
+    case_folder: str,
+    time_folder: str,
+    species_names: str | list[str],
+    n_cells: int | None = None,
+    volume_time: str | None = None,
+    field_dict: dict | None = None,
+) -> tuple[dict, dict]:
+    r"""
+    Calculate the mass-transfer coefficient (:math:`kL_{\rm spec}`) and saturation concentration (:math:`C^*_{\rm spec}`) for a list of species from instantaneous data (rather than doing a fit over time).
+
+    :math:`kL_{\rm spec}` is the penetration-theory coefficient that
+    :func:`compute_instantaneous_kla` multiplies by the interfacial area
+    :math:`a = 6 \alpha_{\rm gas} / d_{\rm gas}` to form :math:`kLa_{\rm spec}`
+    (i.e. :math:`kLa_{\rm spec} = kL_{\rm spec}\, a`), volume averaged over the liquid.
+
+    .. math::
+
+       \frac{1}{V_{\rm liq, tot}} \int_{V_{\rm liq}} kL_{\rm spec} dV
+
+    .. math::
+
+       kL_{\rm spec} = 3600 \sqrt{\frac{4 D_{\rm spec} |u_{\rm slip}|}{\pi d_{\rm gas}}}
+
+    where:
+      - :math:`kL_{\rm spec}` is the mass transfer coefficient in :math:`m.h^{-1}`
+      - :math:`d_{\rm gas}` is the bubble diameter in :math:`m`. Either read from the time folder, or looked up from phaseProperties
+      - :math:`D_{\rm spec}` is the species molecular diffusivity in :math:`m^2.s^{-1}`. Read from globalVars
+      - :math:`|u_{\rm slip}|` is the magnitude of the slip velocity in :math:`m.s^{-1}`. Read from the time folder.
+      - :math:`V_{\rm liq}` is the volume of liquid in :math:`m^3`. Read from the time folder.
+
+    :math:`C^*_{\rm spec}` is computed as in :func:`compute_instantaneous_kla`.
+
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str
+        Name of time folder to analyze
+    species_names: str | list[str]
+        List of species name for which to compute kL
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    volume_time : str | None
+        Time folder to read to get the cell volumes.
+        If None, finds volume time automatically
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    kl_spec: dict
+        Instantaneous volume averaged kL for each species
+        Keys are species names
+        Values are the kL values
+    cstar_spec: dict
+        Instantaneous volume averaged cstar for each species
+        Keys are species names
+        Values are the cstar values
+    field_dict : dict
+        Dictionary of fields read
+    """
+    if field_dict is None:
+        field_dict = {}
+    if isinstance(species_names, str):
+        species_names = [species_names]
+
+    kwargs = {
+        "case_folder": case_folder,
+        "time_folder": time_folder,
+        "n_cells": n_cells,
+    }
+    kwargs_vol = {
+        "case_folder": case_folder,
+        "time_folder": volume_time,
+        "n_cells": n_cells,
+    }
+
+    kl_spec_field, field_dict = _instantaneous_kl_field(
+        case_folder, time_folder, species_names, n_cells, field_dict
+    )
+
+    # Volume average over the liquid
+    ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
+    cell_volume, field_dict = read_cell_volumes(
+        field_dict=field_dict, **kwargs_vol
+    )
+    cell_volume = _field_filter(cell_volume, ind=ind_liq, field_type="scalar")
+    kl_spec = {
+        species_name: _weighted_average(
+            kl_spec_field[species_name], cell_volume
+        )
+        for species_name in species_names
+    }
+    cstar_spec, field_dict = _instantaneous_cstar(
+        case_folder,
+        time_folder,
+        species_names,
+        n_cells,
+        volume_time,
+        field_dict,
+    )
+    return kl_spec, cstar_spec, field_dict
 
 
 def compute_fitted_kla(
@@ -386,3 +595,58 @@ def compute_fitted_kla(
         }
 
     return kla_spec, cstar_spec, field_dict
+
+
+def compute_fitted_kl(
+    case_folder: str,
+    species_names: str | list[str],
+    n_cells: int | None = None,
+    volume_time: str | None = None,
+    num_warmup: int = 4000,
+    num_samples: int = 1000,
+    field_dict: dict | None = None,
+) -> tuple[dict, dict, dict]:
+    r"""Fitted mass-transfer coefficient :math:`kL = kLa / a`.
+
+    Same as :func:`compute_fitted_kla` but the fitted mean and std of each
+    species are divided by the interfacial area :math:`a = 6\,\epsilon / d`,
+    evaluated at the last time folder.
+
+    :param case_folder: path to the case folder
+    :param species_names: species name(s) for which to compute kL
+    :param n_cells: number of cells (deduced from the field read if None)
+    :param volume_time: time folder for the cell volumes (auto if None)
+    :param num_warmup: number of MCMC warmup samples
+    :param num_samples: number of posterior MCMC samples
+    :param field_dict: cache of already-read fields
+    :return: ``(kl_spec, cstar_spec, field_dict)`` with kL mean/std in :math:`m/h`
+    """
+    if field_dict is None:
+        field_dict = {}
+
+    kla_spec, cstar_spec, field_dict = compute_fitted_kla(
+        case_folder,
+        species_names,
+        n_cells=n_cells,
+        volume_time=volume_time,
+        num_warmup=num_warmup,
+        num_samples=num_samples,
+        field_dict=field_dict,
+    )
+    # interfacial area at the last time folder
+    _, time_str_sorted = get_case_times(case_folder)
+    last_time = time_str_sorted[-1]
+    area_cache: dict = {}
+    gas_holdup, area_cache = compute_gas_holdup(
+        case_folder, last_time, n_cells, volume_time, area_cache
+    )
+    bubble_diam, area_cache = compute_ave_bubble_diam(
+        case_folder, last_time, n_cells, volume_time, area_cache
+    )
+    area = interfacial_area(gas_holdup, bubble_diam)
+
+    kl_spec = {
+        species: {"mean": kla["mean"] / area, "std": kla["std"] / area}
+        for species, kla in kla_spec.items()
+    }
+    return kl_spec, cstar_spec, field_dict

@@ -157,3 +157,13 @@ def compute_ave_bubble_diam(
     diam = _weighted_average(d_gas, alpha_liq * cell_volume)
 
     return diam, field_dict
+
+
+def interfacial_area(gas_holdup: float, bubble_diam: float) -> float:
+    r"""Gas-liquid interfacial area per unit volume :math:`a = 6\,\epsilon / d`.
+
+    :param gas_holdup: gas holdup :math:`\epsilon` [-]
+    :param bubble_diam: bubble diameter :math:`d` [m]
+    :return: interfacial area :math:`a` [1/m]
+    """
+    return 6.0 * gas_holdup / bubble_diam

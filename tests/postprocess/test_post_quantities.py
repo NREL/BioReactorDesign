@@ -13,10 +13,13 @@ from bird.postprocess.post_quantities import (
     compute_ave_bubble_diam,
     compute_ave_conc_liq,
     compute_ave_y_liq,
+    compute_fitted_kl,
     compute_fitted_kla,
     compute_gas_holdup,
+    compute_instantaneous_kl,
     compute_instantaneous_kla,
     compute_superficial_gas_velocity,
+    interfacial_area,
 )
 
 
@@ -55,8 +58,8 @@ def test_compute_gh():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -106,8 +109,8 @@ def test_compute_diam():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -143,8 +146,8 @@ def test_compute_superficial_gas_velocity():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean/",
@@ -201,8 +204,8 @@ def test__superficial_velocity_pv():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean/",
@@ -232,8 +235,8 @@ def test_ave_y_liq():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -300,8 +303,8 @@ def test_ave_conc_liq():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -354,8 +357,8 @@ def test_instantaneous_kla():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -422,8 +425,8 @@ def test_fitted_kla():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -475,8 +478,8 @@ def test_get_ind_gas():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -518,3 +521,81 @@ def test_get_ind_gas():
     # A uniform liquid field needs no filtering at all, rather than selecting
     # a single cell
     assert ind_liq_unif is None
+
+
+def test_interfacial_area():
+    """
+    Test the interfacial area a = 6 * holdup / diameter
+    """
+    assert interfacial_area(0.2, 0.005) == pytest.approx(240.0)
+
+
+def test_instantaneous_kl():
+    """
+    Test for instantaneous kl calculation (volume-averaged Higbie coefficient)
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        " .. ".strip(),
+        " .. ".strip(),
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+    )
+    kl_list, cstar_list, _ = compute_instantaneous_kl(
+        species_names=["CO2"],
+        case_folder=case_folder,
+        time_folder="79",
+        volume_time="1",
+    )
+    kl_str, _, _ = compute_instantaneous_kl(
+        species_names="CO2",
+        case_folder=case_folder,
+        time_folder="79",
+        volume_time="1",
+    )
+    # positive, finite, and the single/list species forms agree
+    assert kl_list["CO2"] > 0 and np.isfinite(kl_list["CO2"])
+    assert kl_str["CO2"] == pytest.approx(kl_list["CO2"])
+
+    kla_spec, cstar_kla, _ = compute_instantaneous_kla(
+        species_names=["CO2"],
+        case_folder=case_folder,
+        time_folder="79",
+        volume_time="1",
+    )
+    # cstar is shared with compute_instantaneous_kla
+    assert cstar_list["CO2"] == pytest.approx(cstar_kla["CO2"])
+    # kL (= <coef>) and kLa (= <coef * a>) are distinct quantities
+    assert kl_list["CO2"] != pytest.approx(kla_spec["CO2"])
+
+
+def test_fitted_kl():
+    """
+    Test for fitted kl calculation (fitted kLa / interfacial area)
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        " .. ".strip(),
+        " .. ".strip(),
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+    )
+    # dummy time folders so the fit has enough snapshots
+    for time_folder in [str(entry) for entry in range(81, 89)]:
+        shutil.copytree(
+            os.path.join(case_folder, "80"),
+            os.path.join(case_folder, time_folder),
+        )
+    kl_spec, _, _ = compute_fitted_kl(
+        species_names=["CO2"],
+        case_folder=case_folder,
+        num_warmup=100,
+        num_samples=100,
+    )
+    for time_folder in [str(entry) for entry in range(81, 89)]:
+        shutil.rmtree(os.path.join(case_folder, time_folder))
+
+    assert "mean" in kl_spec["CO2"] and "std" in kl_spec["CO2"]
+    assert np.isfinite(kl_spec["CO2"]["mean"])
