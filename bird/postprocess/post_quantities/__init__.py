@@ -5,6 +5,7 @@ from ._cell_filter import (
     _get_ind_slice,
     _weighted_average,
 )
+from .dimensionless import froude, sherwood, weber
 from .kla import (
     compute_fitted_kl,
     compute_fitted_kla,
@@ -40,6 +41,9 @@ __all__ = [
     "compute_loop_velocity",
     "compute_superficial_gas_velocity",
     "compute_turbulent_diffusivity",
+    "froude",
     "interfacial_area",
     "propose_loop_boxes_block_rect",
+    "sherwood",
+    "weber",
 ]

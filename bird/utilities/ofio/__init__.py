@@ -4,6 +4,7 @@ from .case_times import (
     get_case_times,
 )
 from .foam_dict_io import (
+    read_gravity,
     read_openfoam_dict,
     write_openfoam_dict,
 )
@@ -39,6 +40,7 @@ __all__ = [
     "read_cell_volumes",
     "read_field",
     "read_global_vars",
+    "read_gravity",
     "read_mu_liquid",
     "read_openfoam_dict",
     "read_size_groups",

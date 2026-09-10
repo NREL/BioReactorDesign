@@ -212,8 +212,8 @@ def steady_stat(
 
     if window is None:
         window = 0.1 * (time_values.max() - time_values.min())
-        logger.warning(f"Steady state assumed over last {window}s") 
-       
+        logger.warning(f"Steady state assumed over last {window}s")
+
     in_window = time_values >= time_values.max() - window
     windowed_series = time_series[in_window]
     windowed_values = time_values[in_window]
