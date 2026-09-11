@@ -12,6 +12,8 @@ from bird.postprocess.post_quantities import (
     _get_ind_liq,
     compute_ave_bubble_diam,
     compute_ave_conc_liq,
+    compute_ave_liquid_density,
+    compute_ave_liquid_velocity,
     compute_ave_y_liq,
     compute_fitted_kl,
     compute_fitted_kla,
@@ -521,6 +523,56 @@ def test_get_ind_gas():
     # A uniform liquid field needs no filtering at all, rather than selecting
     # a single cell
     assert ind_liq_unif is None
+
+
+def _write_liquid_fields(root, u_vector, rho, cell_volumes):
+    """Minimal case: all-liquid, uniform U.liquid and rho, nonuniform V."""
+    os.makedirs(os.path.join(root, "0"), exist_ok=True)
+
+    def write_field(name, foam_class, body):
+        with open(os.path.join(root, "0", name), "w") as f:
+            f.write("FoamFile\n{\n    format      ascii;\n")
+            f.write(f"    class       {foam_class};\n")
+            f.write(f"    object      {name};\n}}\n\n")
+            f.write("dimensions      [0 0 0 0 0 0 0];\n\n")
+            f.write(body)
+
+    entries = "\n".join(f"{v:.10g}" for v in cell_volumes)
+    write_field(
+        "V",
+        "volScalarField",
+        "internalField   nonuniform List<scalar> \n"
+        f"{len(cell_volumes)}\n(\n{entries}\n)\n;\n",
+    )
+    write_field(
+        "alpha.liquid", "volScalarField", "internalField   uniform 1;\n"
+    )
+    write_field(
+        "U.liquid",
+        "volVectorField",
+        f"internalField   uniform ({u_vector[0]} {u_vector[1]} "
+        f"{u_vector[2]});\n",
+    )
+    write_field(
+        "thermo:rho.liquid",
+        "volScalarField",
+        f"internalField   uniform {rho};\n",
+    )
+
+
+def test_compute_ave_liquid_density():
+    with tempfile.TemporaryDirectory() as tmp:
+        _write_liquid_fields(tmp, (1.0, 0.0, 0.0), 1050.0, [1.0, 2.0, 3.0])
+        rho, _ = compute_ave_liquid_density(tmp, "0", volume_time="0")
+    assert rho == pytest.approx(1050.0)
+
+
+def test_compute_ave_liquid_velocity():
+    # |U.liquid| = |(3,4,0)| = 5
+    with tempfile.TemporaryDirectory() as tmp:
+        _write_liquid_fields(tmp, (3.0, 4.0, 0.0), 1000.0, [1.0, 2.0, 3.0])
+        velocity, _ = compute_ave_liquid_velocity(tmp, "0", volume_time="0")
+    assert velocity == pytest.approx(5.0)
 
 
 def test_interfacial_area():

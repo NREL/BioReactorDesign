@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 
 from bird import logger
@@ -17,6 +15,7 @@ from bird.utilities.ofio import (
 from ..kla_utils import compute_kla
 from ._cell_filter import _field_filter, _get_ind_liq, _weighted_average
 from .phase import (
+    _read_liquid_density_field,
     compute_ave_bubble_diam,
     compute_gas_holdup,
     interfacial_area,
@@ -45,17 +44,9 @@ def _instantaneous_kl_field(
     globalVars = read_global_vars(case_folder=case_folder, cross_ref=True)
     ind_liq, field_dict = _get_ind_liq(field_dict=field_dict, **kwargs)
 
-    try:
-        rho_liq, field_dict = read_field(
-            field_name="thermo:rho.liquid", field_dict=field_dict, **kwargs
-        )
-    except FileNotFoundError:
-        logger.warning(
-            f"thermo:rho.liquid not found in "
-            f"{os.path.join(case_folder, time_folder)}, assuming 1000kg/m3"
-        )
-        rho_liq = 1000.0
-        field_dict["rho_liq"] = rho_liq
+    rho_liq, field_dict = _read_liquid_density_field(
+        case_folder, time_folder, n_cells, field_dict
+    )
     U_gas, field_dict = read_field(
         field_name="U.gas", field_dict=field_dict, **kwargs
     )
@@ -525,10 +516,6 @@ def compute_fitted_kla(
 
     # Get all the time folders
     time_float_sorted, time_str_sorted = get_case_times(case_folder)
-
-    # Read globarVars into a python dict
-    # Replace all the #calc entries with their numeral values
-    globalVars = read_global_vars(case_folder=case_folder, cross_ref=True)
 
     # Get Mw of the species
     mw_species = {}

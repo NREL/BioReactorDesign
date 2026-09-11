@@ -1,12 +1,9 @@
 import numpy as np
 
-from bird.utilities.ofio import (
-    read_cell_volumes,
-    read_field,
-    read_global_vars,
-)
+from bird.utilities.ofio import read_cell_volumes, read_field
 
 from ._cell_filter import _field_filter, _get_ind_liq, _weighted_average
+from .phase import _read_liquid_density_field
 
 # Turbulent Prandtl (= turbulent Schmidt) for the nut/Prt fallback
 TURBULENT_PRANDTL = 0.85
@@ -45,20 +42,9 @@ def compute_turbulent_diffusivity(
         case_folder, time_folder, n_cells, field_dict
     )
 
-    # Liquid density: field, else globalVars, else 1000
-    rho_liquid = None
-    for rho_name in ("thermo:rho.liquid", "rho.liquid"):
-        try:
-            rho_liquid, field_dict = read_field(
-                case_folder, time_folder, rho_name, n_cells, field_dict
-            )
-            break
-        except FileNotFoundError:
-            continue
-    if rho_liquid is None:
-        rho_liquid = float(
-            read_global_vars(case_folder).get("rho0MixLiq", 1000.0)
-        )
+    rho_liquid, field_dict = _read_liquid_density_field(
+        case_folder, time_folder, n_cells, field_dict
+    )
 
     # Turbulent diffusivity field: alphat.liquid / rho, else nut.liquid / Prt
     try:

@@ -1,9 +1,36 @@
 import os
+import tempfile
 from pathlib import Path
 
 import numpy as np
 
-from bird.utilities.ofio import read_openfoam_dict
+from bird.utilities.ofio import read_gravity, read_openfoam_dict
+
+
+def test_read_gravity():
+    """
+    Test reading gravity magnitude from `constant/g`, with a 9.81 fallback
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        " .. ".strip(),
+        " .. ".strip(),
+        "tutorial_cases",
+        "OF9",
+        "loop_reactor_mixing_swirl",
+    )
+    assert read_gravity(case_folder) == 9.81
+
+    # custom vertical gravity
+    with tempfile.TemporaryDirectory() as tmp:
+        os.makedirs(os.path.join(tmp, "constant"))
+        with open(os.path.join(tmp, "constant", "g"), "w") as f:
+            f.write("dimensions [0 1 -2 0 0 0 0];\nvalue (0 -3.0 0);\n")
+        assert read_gravity(tmp) == 3.0
+
+    # missing constant/g -> 9.81 fallback
+    with tempfile.TemporaryDirectory() as tmp:
+        assert read_gravity(tmp) == 9.81
 
 
 def test_read_phaseProperties():

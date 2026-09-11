@@ -25,6 +25,7 @@ from .foam_fields import (
 )
 from .global_vars import (
     read_global_vars,
+    read_surface_tension,
 )
 from .thermo import (
     get_species_name,
@@ -45,6 +46,7 @@ __all__ = [
     "read_openfoam_dict",
     "read_size_groups",
     "read_surface_field_value",
+    "read_surface_tension",
     "species_name_to_mw",
     "write_openfoam_dict",
 ]
