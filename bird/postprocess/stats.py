@@ -219,7 +219,7 @@ def steady_stat(
     windowed_values = time_values[in_window]
     if np.all(np.isnan(windowed_series)):
         return np.nan, np.nan
-    if windowed_series.size < 2:
+    if windowed_series.size < 2 or np.all(windowed_series == windowed_series[0]):
         return float(windowed_series[0]), 0.0
 
     mean_value, uncertainty_95 = calc_mean(windowed_series, windowed_values)
