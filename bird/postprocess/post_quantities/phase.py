@@ -195,9 +195,17 @@ def compute_ave_bubble_diam(
 def interfacial_area(gas_holdup: float, bubble_diam: float) -> float:
     r"""Gas-liquid interfacial area per unit volume :math:`a = 6\,\epsilon / d`.
 
-    :param gas_holdup: gas holdup :math:`\epsilon` [-]
-    :param bubble_diam: bubble diameter :math:`d` [m]
-    :return: interfacial area :math:`a` [1/m]
+    Parameters
+    ----------
+    gas_holdup: float
+        Gas holdup :math:`\epsilon` (dimensionless)
+    bubble_diam: float
+        Bubble diameter :math:`d`, in :math:`m`
+
+    Returns
+    ----------
+    interfacial_area: float
+        Interfacial area :math:`a`, in :math:`m^{-1}`
     """
     return 6.0 * gas_holdup / bubble_diam
 
@@ -214,12 +222,27 @@ def compute_ave_liquid_density(
     Reads ``thermo:rho.liquid`` (then ``rho.liquid``); returns 1000 kg/m3 if
     neither field is written.
 
-    :param case_folder: path to the case folder
-    :param time_folder: name of the time folder to analyze
-    :param n_cells: number of cells (deduced from the field read if None)
-    :param volume_time: time folder for the cell volumes (auto if None)
-    :param field_dict: cache of already-read fields
-    :return: ``(density, field_dict)``
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str
+        Name of the time folder to analyze
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    volume_time : str | None
+        Time folder to read to get the cell volumes.
+        If None, finds volume time automatically
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    density: float
+        Volume averaged liquid density, in :math:`kg.m^{-3}`
+    field_dict : dict
+        Dictionary of fields read
     """
     if field_dict is None:
         field_dict = {}
@@ -247,12 +270,27 @@ def compute_ave_liquid_velocity(
 ) -> tuple[float, dict]:
     r"""Volume-averaged liquid velocity magnitude :math:`|U_{\rm liq}|` over the liquid.
 
-    :param case_folder: path to the case folder
-    :param time_folder: name of the time folder to analyze
-    :param n_cells: number of cells (deduced from the field read if None)
-    :param volume_time: time folder for the cell volumes (auto if None)
-    :param field_dict: cache of already-read fields
-    :return: ``(velocity_magnitude, field_dict)``
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str
+        Name of the time folder to analyze
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    volume_time : str | None
+        Time folder to read to get the cell volumes.
+        If None, finds volume time automatically
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    velocity_magnitude: float
+        Volume averaged liquid velocity magnitude, in :math:`m.s^{-1}`
+    field_dict : dict
+        Dictionary of fields read
     """
     if field_dict is None:
         field_dict = {}

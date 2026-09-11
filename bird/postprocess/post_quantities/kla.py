@@ -281,11 +281,11 @@ def compute_instantaneous_kla(
     Returns
     ----------
     kla_spec: dict
-        Instantaneous volume averaged kLa for each species, in h^-1
+        Instantaneous volume averaged kLa for each species, in :math:`h^{-1}`
         Keys are species names
         Values are the kLa values
     cstar_spec: dict
-        Instantaneous volume averaged cstar for each species, in mol.m^-3
+        Instantaneous volume averaged cstar for each species, in :math:`mol.m^{-3}`
         Keys are species names
         Values are the cstar values
     field_dict : dict
@@ -387,11 +387,11 @@ def compute_instantaneous_kl(
     Returns
     ----------
     kl_spec: dict
-        Instantaneous volume averaged kL for each species, in m.h^-1
+        Instantaneous volume averaged kL for each species, in :math:`m.h^{-1}`
         Keys are species names
         Values are the kL values
     cstar_spec: dict
-        Instantaneous volume averaged cstar for each species, in mol.m^-3
+        Instantaneous volume averaged cstar for each species, in :math:`mol.m^{-3}`
         Keys are species names
         Values are the cstar values
     field_dict : dict
@@ -491,11 +491,11 @@ def compute_fitted_kla(
     Returns
     ----------
     kla_spec: dict
-        Instantaneous volume averaged kLa for each species, in h^-1
+        Instantaneous volume averaged kLa for each species, in :math:`h^{-1}`
         Keys are species names
         Values are dictionaries with key 'mean' (mean kLa value) and 'std' (1 standard deviation for the kLa value)
     cstar_spec: dict
-        Instantaneous volume averaged cstar for each species, in mol.m^-3
+        Instantaneous volume averaged cstar for each species, in :math:`mol.m^{-3}`
         Keys are species names
         Values are dictionaries with key 'mean' (mean cstar value) and 'std' (1 standard deviation for the cstar value)
     field_dict : dict
@@ -599,14 +599,39 @@ def compute_fitted_kl(
     species are divided by the interfacial area :math:`a = 6\,\epsilon / d`,
     evaluated at the last time folder.
 
-    :param case_folder: path to the case folder
-    :param species_names: species name(s) for which to compute kL
-    :param n_cells: number of cells (deduced from the field read if None)
-    :param volume_time: time folder for the cell volumes (auto if None)
-    :param num_warmup: number of MCMC warmup samples
-    :param num_samples: number of posterior MCMC samples
-    :param field_dict: cache of already-read fields
-    :return: ``(kl_spec, cstar_spec, field_dict)`` with kL mean/std in :math:`m.h^{-1}` and cstar mean/std in :math:`mol.m^{-3}`
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    species_names: str | list[str]
+        List of species name for which to compute kL
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    volume_time : str | None
+        Time folder to read to get the cell volumes.
+        If None, finds volume time automatically
+    num_warmup: int
+        Number of MCMC samples in the warmup phase
+        Defaults to 4000
+    num_samples: int
+        Number of posterior MCMC samples generated
+        Defaults to 1000
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    kl_spec: dict
+        Fitted volume averaged kL for each species, in :math:`m.h^{-1}`
+        Keys are species names
+        Values are dictionaries with key 'mean' (mean kL value) and 'std' (1 standard deviation for the kL value)
+    cstar_spec: dict
+        Fitted volume averaged cstar for each species, in :math:`mol.m^{-3}`
+        Keys are species names
+        Values are dictionaries with key 'mean' (mean cstar value) and 'std' (1 standard deviation for the cstar value)
+    field_dict : dict
+        Dictionary of fields read
     """
     if field_dict is None:
         field_dict = {}

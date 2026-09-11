@@ -87,11 +87,18 @@ def sample_placement_designs(
     :func:`check_config` keeps only designs with at least one inlet and
     :func:`compare_config` rejects duplicates. Keys are contiguous ``0..n-1``.
 
-    :param branches_com: branch ids on which choices are placed.
-    :param branchcom_spots: ``branch_id -> array`` of candidate spot fractions.
-    :param n_designs: number of distinct valid designs to return.
-    :param choices: per-spot categorical choices (e.g. mixer/sparger/none).
-    :param max_attempts: give up after this many draws.
+    Parameters
+    ----------
+    branches_com:
+        Branch ids on which choices are placed.
+    branchcom_spots:
+        ``branch_id -> array`` of candidate spot fractions.
+    n_designs:
+        Number of distinct valid designs to return.
+    choices:
+        Per-spot categorical choices (e.g. mixer/sparger/none).
+    max_attempts:
+        Give up after this many draws.
     """
     config_dict = {}
     attempts = 0
@@ -706,9 +713,14 @@ def overwrite_qoi_params(case_folder, rhog, cstar_co2, cstar_h2):
     own values (the mixer power is NOT touched here -- get_qoi.py reads it from
     mixers.json).
 
-    :param rhog: gas density [kg/m3] used in the injection-power estimate.
-    :param cstar_co2: (low, high) uniform-prior bounds for the CO2 c*.
-    :param cstar_h2: (low, high) uniform-prior bounds for the H2 c*.
+    Parameters
+    ----------
+    rhog:
+        Gas density in :math:`kg.m^{-3}` used in the injection-power estimate.
+    cstar_co2:
+        (low, high) uniform-prior bounds for the CO2 c*.
+    cstar_h2:
+        (low, high) uniform-prior bounds for the H2 c*.
     """
     co2_lo, co2_hi = cstar_co2
     h2_lo, h2_hi = cstar_h2
@@ -751,8 +763,11 @@ def overwrite_ncores(case_folder, n):
 def overwrite_controldict(case_folder, params):
     """Rewrite time-stepping entries in system/controlDict.
 
-    :param params: dict with any of ``deltaT``, ``endTime``, ``maxCo``,
-        ``maxDeltaT``; each present key overwrites its scalar entry.
+    Parameters
+    ----------
+    params:
+        Dict with any of ``deltaT``, ``endTime``, ``maxCo``, ``maxDeltaT``;
+        each present key overwrites its scalar entry.
     """
     filename = os.path.join(case_folder, "system", "controlDict")
     with open(filename, "r+") as f:

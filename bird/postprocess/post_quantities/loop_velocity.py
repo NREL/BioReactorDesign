@@ -39,10 +39,18 @@ def build_loop_direction_field(
     Cells in no box keep ``NaN`` (excluded from the average); a cell in more than
     one box is ambiguous and raises.
 
-    :param cell_centers: cell centres, shape ``(N, 3)``
-    :param boxes: list of ``{"min": [x, y, z], "max": [x, y, z],
-        "direction": [dx, dy, dz]}``; ``direction`` is normalized internally
-    :return: direction field, shape ``(N, 3)``, ``NaN`` where uncovered
+    Parameters
+    ----------
+    cell_centers: np.ndarray
+        Cell centres, shape ``(N, 3)``
+    boxes: list[dict]
+        List of ``{"min": [x, y, z], "max": [x, y, z], "direction": [dx, dy, dz]}``;
+        ``direction`` is normalized internally
+
+    Returns
+    ----------
+    direction_field: np.ndarray
+        Direction field, shape ``(N, 3)``, ``NaN`` where uncovered
     """
     cell_centers = np.asarray(cell_centers, dtype=float)
     n_cells = len(cell_centers)
@@ -88,10 +96,19 @@ def build_loop_direction_field_from_path(
     nearest segment; cells farther away keep ``NaN`` (excluded). The polyline
     ordering sets the circulation sense.
 
-    :param cell_centers: cell centres, shape ``(N, 3)``
-    :param path_points: ordered centerline vertices, shape ``(M, 3)``
-    :param max_dist: cells beyond this distance from the path are left uncovered
-    :return: direction field, shape ``(N, 3)``, ``NaN`` where uncovered
+    Parameters
+    ----------
+    cell_centers: np.ndarray
+        Cell centres, shape ``(N, 3)``
+    path_points: np.ndarray
+        Ordered centerline vertices, shape ``(M, 3)``
+    max_dist: float
+        Cells beyond this distance from the path are left uncovered
+
+    Returns
+    ----------
+    direction_field: np.ndarray
+        Direction field, shape ``(N, 3)``, ``NaN`` where uncovered
     """
     cell_centers = np.asarray(cell_centers, dtype=float)
     path_points = np.asarray(path_points, dtype=float)
@@ -145,10 +162,18 @@ def propose_loop_boxes_block_rect(
     ``transformPoints`` scale). A mismatch surfaces downstream as a zero-coverage
     error in :func:`build_loop_direction_field`.
 
-    :param mesh_geometry: the ``"Geometry"`` dict from the case ``mesh.json``
-    :param rescale: uniform scale factor applied to the box coordinates; ``None``
-        assumes 1.0 (base units)
-    :return: box list consumable by :func:`build_loop_direction_field`
+    Parameters
+    ----------
+    mesh_geometry: dict
+        The ``"Geometry"`` dict from the case ``mesh.json``
+    rescale: float | None
+        Uniform scale factor applied to the box coordinates; ``None`` assumes
+        1.0 (base units)
+
+    Returns
+    ----------
+    boxes: list[dict]
+        Box list consumable by :func:`build_loop_direction_field`
     """
     factor = 1.0 if rescale is None else float(rescale)
     segment_data = from_block_rect_to_seg(mesh_geometry, rescale=False)
@@ -222,13 +247,26 @@ def compute_loop_velocity(
     Averaged over the liquid on the covered cells. Positive follows the prescribed
     circulation, negative is reversed.
 
-    :param case_folder: path to the case folder
-    :param time_folder: name of the time folder to analyze
-    :param loop_direction_field: ``(N, 3)`` field from a builder, ``NaN`` on
-        uncovered cells
-    :param volume_time: time folder for the cell volumes (auto if None)
-    :param field_dict: cache of already-read fields
-    :return: ``(loop_velocity, field_dict)``
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str
+        Name of the time folder to analyze
+    loop_direction_field: np.ndarray
+        ``(N, 3)`` field from a builder, ``NaN`` on uncovered cells
+    volume_time : str | None
+        Time folder to read to get the cell volumes.
+        If None, finds volume time automatically
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    loop_velocity: float
+        Volume averaged loop velocity, in :math:`m.s^{-1}`
+    field_dict : dict
+        Dictionary of fields read
     """
     if field_dict is None:
         field_dict = {}

@@ -374,11 +374,16 @@ def write_mixer_ball(
 ):
     """Append one ``ball`` mixer block to ``fvModels``.
 
-    :param mixer: a ready :class:`~bird.preprocess.dynamic_mixer.mixer.ActuatorMixer`.
-    :param power_mode: ``"from_P"`` (drive by ``mixer.power``) or
-        ``"from_Np_Vtip"`` (drive by ``mixer.Np`` and ``mixer.Vtip``).
-    :param momentum_mode: ``"axial"`` (thrust only) or ``"axial_and_swirl"``
-        (thrust + tangential source using ``mixer.sigma``).
+    Parameters
+    ----------
+    mixer: ActuatorMixer
+        A ready :class:`~bird.preprocess.dynamic_mixer.mixer.ActuatorMixer`.
+    power_mode: str
+        ``"from_P"`` (drive by ``mixer.power``) or ``"from_Np_Vtip"`` (drive by
+        ``mixer.Np`` and ``mixer.Vtip``).
+    momentum_mode: str
+        ``"axial"`` (thrust only) or ``"axial_and_swirl"`` (thrust + tangential
+        source using ``mixer.sigma``).
     """
     if power_mode not in ("from_P", "from_Np_Vtip"):
         raise ValueError(f"unknown power_mode {power_mode!r}")
@@ -542,8 +547,10 @@ def write_static_mixer_ball(mixer, output_folder):
     energy-neutral axial reaction; a lumped axial drag adds the viscous loss.
     The source is inactive when the inflow opposes the mixer orientation.
 
-    :param mixer: a ready
-        :class:`~bird.preprocess.dynamic_mixer.mixer.StaticMixer`.
+    Parameters
+    ----------
+    mixer: StaticMixer
+        A ready :class:`~bird.preprocess.dynamic_mixer.mixer.StaticMixer`.
     """
     nd = int(mixer.normal_dir)
     dn = ["dx", "dy", "dz"][nd]

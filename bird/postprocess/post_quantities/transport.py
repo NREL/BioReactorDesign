@@ -26,11 +26,24 @@ def compute_turbulent_diffusivity(
     is read from ``thermo:rho.liquid`` (then ``rho.liquid``), falling back to
     ``rho0MixLiq`` from ``globalVars`` and then 1000.
 
-    :param case_folder: path to the case folder
-    :param time_folder: name of the time folder to analyze
-    :param n_cells: number of cells (deduced from the field read if None)
-    :param field_dict: cache of already-read fields
-    :return: ``(turbulent_diffusivity, field_dict)``
+    Parameters
+    ----------
+    case_folder: str
+        Path to case folder
+    time_folder: str
+        Name of the time folder to analyze
+    n_cells : int | None
+        Number of cells in the domain.
+        If None, it will deduced from the field reading
+    field_dict : dict
+        Dictionary of fields used to avoid rereading the same fields to calculate different quantities
+
+    Returns
+    ----------
+    turbulent_diffusivity: float
+        Volume averaged turbulent mass diffusivity, in :math:`m^2.s^{-1}`
+    field_dict : dict
+        Dictionary of fields read
     """
     if field_dict is None:
         field_dict = {}

@@ -199,11 +199,22 @@ def steady_stat(
     simulation time. Returns (nan, nan) for an empty or all-nan series and
     (value, 0.0) when a single sample falls in the window.
 
-    :param time_series: time series of the signal
-    :param time_values: sampling times of the series
-    :param window: length of the end window in time units; 10% of the total
-        time span if None
-    :return: (mean, 1-sigma uncertainty about the mean)
+    Parameters
+    ----------
+    time_series: np.ndarray | list
+        Time series of the signal
+    time_values: np.ndarray | list
+        Sampling times of the series
+    window: float | None
+        Length of the end window in time units.
+        If None, 10% of the total time span is used
+
+    Returns
+    ----------
+    mean_val: float
+        Mean value over the tail window
+    unc_val: float
+        1-sigma uncertainty about the mean
     """
     time_series = np.asarray(time_series, dtype=float)
     time_values = np.asarray(time_values, dtype=float)

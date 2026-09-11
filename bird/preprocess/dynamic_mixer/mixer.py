@@ -171,10 +171,13 @@ class ActuatorMixer:
     def update_from_loop_dict(self, mixer_dict: dict, geom_dict: dict) -> None:
         """Populate from a loop mixer dict.
 
-        :param mixer_dict: mixer entry with ``branch_id``, ``frac_space`` and,
-            optionally, ``radius`` as a fraction of the branch cross-section.
-        :param geom_dict: output of ``from_block_rect_to_seg`` (``segments`` and
-            ``blocksize``).
+        Parameters
+        ----------
+        mixer_dict: dict
+            Mixer entry with ``branch_id``, ``frac_space`` and, optionally,
+            ``radius`` as a fraction of the branch cross-section.
+        geom_dict: dict
+            Output of ``from_block_rect_to_seg`` (``segments`` and ``blocksize``).
         """
         segment = geom_dict["segments"][mixer_dict["branch_id"]]
         pos = segment["start"] + mixer_dict["frac_space"] * segment["conn"]
@@ -274,11 +277,14 @@ class StaticMixer:
     def update_from_loop_dict(self, mixer_dict: dict, geom_dict: dict) -> None:
         """Populate from a loop mixer dict.
 
-        :param mixer_dict: mixer entry with ``branch_id``, ``frac_space`` and,
-            optionally, ``radius`` as a fraction of the branch cross-section
-            (``0.5`` spans the whole tube).
-        :param geom_dict: output of ``from_block_rect_to_seg`` (``segments`` and
-            ``blocksize``).
+        Parameters
+        ----------
+        mixer_dict: dict
+            Mixer entry with ``branch_id``, ``frac_space`` and, optionally,
+            ``radius`` as a fraction of the branch cross-section (``0.5`` spans
+            the whole tube).
+        geom_dict: dict
+            Output of ``from_block_rect_to_seg`` (``segments`` and ``blocksize``).
         """
         segment = geom_dict["segments"][mixer_dict["branch_id"]]
         pos = segment["start"] + mixer_dict["frac_space"] * segment["conn"]
