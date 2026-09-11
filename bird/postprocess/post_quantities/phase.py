@@ -29,7 +29,10 @@ def _read_liquid_density_field(
             return rho_liquid, field_dict
         except FileNotFoundError:
             continue
-    rho0 = float(read_global_vars(case_folder).get("rho0MixLiq", 1000.0))
+    try:
+         rho0 = float(read_global_vars(case_folder).get("rho0MixLiq", 1000.0))
+    except FileNotFoundError:
+         rho0 = 1000.0
     logger.warning(
         f"No liquid density field in "
         f"{os.path.join(case_folder, time_folder)}, assuming {rho0} kg/m3"
