@@ -1,5 +1,3 @@
-import os
-
 from bird import logger
 from bird.utilities.ofio import (
     read_cell_volumes,
@@ -8,6 +6,7 @@ from bird.utilities.ofio import (
 )
 
 from ._cell_filter import _field_filter, _get_ind_liq, _weighted_average
+from .phase import _read_liquid_density_field
 
 
 def compute_ave_y_liq(
@@ -168,17 +167,9 @@ def compute_ave_conc_liq(
     cell_volume, field_dict = read_cell_volumes(
         field_dict=field_dict, **kwargs_vol
     )
-    try:
-        rho_liq, field_dict = read_field(
-            field_name="thermo:rho.liquid", field_dict=field_dict, **kwargs
-        )
-    except FileNotFoundError:
-        abs_time_path = os.path.join(case_folder, time_folder)
-        logger.warning(
-            f"thermo:rho.liquid not found in {abs_time_path}, assuming it is 1000kg/m3"
-        )
-        rho_liq = 1000.0
-        field_dict["rho_liq"] = rho_liq
+    rho_liq, field_dict = _read_liquid_density_field(
+        case_folder, time_folder, n_cells, field_dict
+    )
 
     # Only compute over the liquid
     alpha_liq = _field_filter(alpha_liq, ind=ind_liq, field_type="scalar")

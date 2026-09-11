@@ -13,8 +13,11 @@ def generate_stl_patch(filename, bc_dict, geom_dict):
 def generate_dynamic_mixer(filename, mixers_list, geom_dict, model=None):
     """Write a mixers.json.
 
-    :param model: optional dict of top-level model selectors written verbatim
-        (e.g. ``{"volumetric_source": "ball", "power": "from_Np_Vtip",
+    Parameters
+    ----------
+    model:
+        Optional dict of top-level model selectors written verbatim (e.g.
+        ``{"volumetric_source": "ball", "power": "from_Np_Vtip",
         "momentum_source": "axial_and_swirl"}``). ``None`` keeps the legacy
         pancake output.
     """

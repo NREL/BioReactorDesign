@@ -1,0 +1,128 @@
+FoamFile
+{
+	version  9.0;
+	format   ascii;
+	class    dictionary;
+	location "constant";
+	object   fvModels;
+}
+
+codedSource
+{
+	type	coded;
+	selectionMode	all;
+	field	U.liquid;
+	name	sourceTime;
+
+	codeInclude
+	#{
+		#include "dynamicMix_util.H"
+	#};
+
+	codeOptions
+	#{
+		-I${FOAM_CASE}/constant
+	#};
+	codeAddAlphaRhoSup
+	#{
+		const Time& time = mesh().time();
+		const scalarField& V = mesh().V();
+		vectorField& Usource = eqn.source();
+		const vectorField& C = mesh().C();
+		const volScalarField& rhoL =
+			mesh().lookupObject<volScalarField>("thermo:rho.liquid");
+		const volScalarField& alphaL =
+			mesh().lookupObject<volScalarField>("alpha.liquid");
+		const volVectorField& UL =
+			mesh().lookupObject<volVectorField>("U.liquid");
+		double pi=3.141592654;
+		double source_pt_x=13.807637692813548;
+		double source_pt_y=1.3807637692813548;
+		double source_pt_z=12.426873923532193;
+		double disk_rad=0.9665346384969483;
+		double disk_area=pi*disk_rad*disk_rad;
+		double power=7626.034346240216;
+		double smear_factor=3.0;
+		const scalar startTime = 1;
+		if (time.value() > startTime)
+		{
+			// Get V1
+			double source_sign_factor = 1.0;
+			double V1 = 0;
+			double V2 = 0;
+			double rhoV;
+			double dist_tol = disk_rad*5;
+
+			double dist_n;
+			double upV = 0;
+			double uprhoV = 0;
+			double upVvol = 0;
+			double downV = 0;
+			double downrhoV = 0;
+			double downVvol = 0;
+			double dist2;
+			forAll(C,i)
+			{
+				dist2 = (C[i].x()-source_pt_x)*(C[i].x()-source_pt_x);
+				dist2 += (C[i].y()-source_pt_y)*(C[i].y()-source_pt_y);
+				dist2 += (C[i].z()-source_pt_z)*(C[i].z()-source_pt_z);
+
+				dist_n = (C[i].x()-source_pt_x);
+
+				if (dist2 < dist_tol*dist_tol && dist_n < -dist_tol/2) {
+					upVvol += V[i] * alphaL[i];
+					upV += V[i] * alphaL[i] * UL[i][0];
+					uprhoV += V[i] * alphaL[i] * rhoL[i];
+				}
+				if (dist2 < dist_tol*dist_tol && dist_n > dist_tol/2) {
+					downVvol += V[i] * alphaL[i];
+					downV += V[i] * alphaL[i] * UL[i][0];
+					downrhoV += V[i] * alphaL[i] * rhoL[i];
+				}
+			}
+
+			reduce(uprhoV, sumOp<scalar>());
+			reduce(downrhoV, sumOp<scalar>());
+			reduce(upV, sumOp<scalar>());
+			reduce(downV, sumOp<scalar>());
+			reduce(downVvol, sumOp<scalar>());
+			reduce(upVvol, sumOp<scalar>());
+
+			downV /= downVvol;
+			upV /= upVvol;
+			downrhoV /= downVvol;
+			uprhoV /= upVvol;
+
+			if (upV <= 0 && downV <= 0) {
+				source_sign_factor = -1.0;
+				V1 = std::abs(upV);
+				rhoV = uprhoV;
+			} else if (upV >= 0 && downV >= 0) {
+				source_sign_factor = 1.0;
+				V1 = std::abs(downV);
+				rhoV = downrhoV;
+			} else {
+				V1 = 0.0;
+				source_sign_factor = -1.0;
+				rhoV = uprhoV;
+				Foam::Info << "[BIRD:DYNMIX WARN] " << "upV = " << upV << " downV = " << downV << " for source at " << source_pt_x << ", " << source_pt_y << ", " << source_pt_z <<  endl;
+			}
+			Foam::Info << "[BIRD:DYNMIX INFO] V1 = " << V1 << endl;
+			
+			// Get V2
+			V2 = findV2(power, rhoV, disk_area, V1);
+
+			forAll(C,i)
+			{
+				double Thrust=0.5*rhoL[i]*(V2*V2 - V1*V1)*disk_area;
+				double dist2=(C[i].x()-source_pt_x)*(C[i].x()-source_pt_x);
+				dist2 += (C[i].y()-source_pt_y)*(C[i].y()-source_pt_y);
+				dist2 += (C[i].z()-source_pt_z)*(C[i].z()-source_pt_z);
+				double epsilon=pow(V[i],0.33333)*smear_factor;
+				double sourceterm=alphaL[i]*(Thrust/pow(pi,1.5)/pow(epsilon,3.0))*
+					exp(-dist2/(epsilon*epsilon));
+				Usource[i][0] -=  source_sign_factor*sourceterm*V[i];
+			}
+		}
+	#};
+};

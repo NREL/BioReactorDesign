@@ -3,7 +3,23 @@ from pathlib import Path
 
 import numpy as np
 
-from bird.utilities.ofio import read_global_vars
+from bird.utilities.ofio import read_global_vars, read_surface_tension
+
+
+def test_read_surface_tension():
+    """
+    Test backing surface tension out of `constant/phaseProperties`
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        " .. ".strip(),
+        " .. ".strip(),
+        "tutorial_cases",
+        "OF9",
+        "loop_reactor_mixing_swirl",
+    )
+    # sigma is `$sigmaLiq` in phaseProperties, resolved via globalVars
+    assert read_surface_tension(case_folder) == 0.07
 
 
 def test_read_global_vars():

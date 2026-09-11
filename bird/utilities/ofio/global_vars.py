@@ -6,6 +6,8 @@ import numpy as np
 
 from bird import logger
 
+from .foam_dict_io import read_openfoam_dict
+
 
 def _cross_reference_math(expr):
     """
@@ -207,3 +209,24 @@ def read_global_vars(
         globalVars_dict = _cross_reference_global_vars(globalVars_dict)
 
     return globalVars_dict
+
+
+def read_surface_tension(case_folder: str) -> float:
+    """Surface tension [N/m] from constant/phaseProperties.
+
+    Resolves a ``$var`` reference (e.g. ``sigma $sigmaLiq;``) against globalVars.
+    """
+    phase_properties = read_openfoam_dict(
+        os.path.join(case_folder, "constant", "phaseProperties")
+    )
+    sigma = None
+    for entry in phase_properties["surfaceTension"].values():
+        if isinstance(entry, dict) and "sigma" in entry:
+            sigma = entry["sigma"]
+            break
+    if sigma is None:
+        raise KeyError("No sigma found in surfaceTension of phaseProperties")
+
+    if isinstance(sigma, str) and sigma.startswith("$"):
+        return float(read_global_vars(case_folder, cross_ref=True)[sigma[1:]])
+    return float(sigma)
