@@ -281,11 +281,11 @@ def compute_instantaneous_kla(
     Returns
     ----------
     kla_spec: dict
-        Instantaneous volume averaged kLa for each species
+        Instantaneous volume averaged kLa for each species, in h^-1
         Keys are species names
         Values are the kLa values
     cstar_spec: dict
-        Instantaneous volume averaged cstar for each species
+        Instantaneous volume averaged cstar for each species, in mol.m^-3
         Keys are species names
         Values are the cstar values
     field_dict : dict
@@ -387,11 +387,11 @@ def compute_instantaneous_kl(
     Returns
     ----------
     kl_spec: dict
-        Instantaneous volume averaged kL for each species
+        Instantaneous volume averaged kL for each species, in m.h^-1
         Keys are species names
         Values are the kL values
     cstar_spec: dict
-        Instantaneous volume averaged cstar for each species
+        Instantaneous volume averaged cstar for each species, in mol.m^-3
         Keys are species names
         Values are the cstar values
     field_dict : dict
@@ -491,11 +491,11 @@ def compute_fitted_kla(
     Returns
     ----------
     kla_spec: dict
-        Instantaneous volume averaged kLa for each species
+        Instantaneous volume averaged kLa for each species, in h^-1
         Keys are species names
         Values are dictionaries with key 'mean' (mean kLa value) and 'std' (1 standard deviation for the kLa value)
     cstar_spec: dict
-        Instantaneous volume averaged cstar for each species
+        Instantaneous volume averaged cstar for each species, in mol.m^-3
         Keys are species names
         Values are dictionaries with key 'mean' (mean cstar value) and 'std' (1 standard deviation for the cstar value)
     field_dict : dict
@@ -606,7 +606,7 @@ def compute_fitted_kl(
     :param num_warmup: number of MCMC warmup samples
     :param num_samples: number of posterior MCMC samples
     :param field_dict: cache of already-read fields
-    :return: ``(kl_spec, cstar_spec, field_dict)`` with kL mean/std in :math:`m/h`
+    :return: ``(kl_spec, cstar_spec, field_dict)`` with kL mean/std in :math:`m.h^{-1}` and cstar mean/std in :math:`mol.m^{-3}`
     """
     if field_dict is None:
         field_dict = {}

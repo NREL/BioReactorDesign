@@ -152,4 +152,7 @@ def compute_sherwood_number(
             f"D_{species_name}"
         ]
     )
-    return sherwood(kl_spec[species_name], length, diffusivity), field_dict
+    # kL from compute_instantaneous_kl is in m/h, but D is in m2/s, so kL must
+    # be converted back to m/s for Sh to come out dimensionless.
+    kl_m_per_s = kl_spec[species_name] / 3600
+    return sherwood(kl_m_per_s, length, diffusivity), field_dict

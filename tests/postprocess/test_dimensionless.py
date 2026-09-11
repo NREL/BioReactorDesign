@@ -115,7 +115,8 @@ def test_compute_sherwood_number():
         "data_conditional_mean",
     )
     # Sh = kL * L / D_molecular, with kL from compute_instantaneous_kl and
-    # D_CO2 read from globalVars
+    # D_CO2 read from globalVars. kL is in m/h and D in m2/s, so kL is
+    # converted to m/s (/3600) for Sh to be dimensionless.
     kl_spec, _, _ = compute_instantaneous_kl(
         species_names="CO2",
         case_folder=case_folder,
@@ -126,4 +127,4 @@ def test_compute_sherwood_number():
     sh, _ = compute_sherwood_number(
         case_folder, "80", length=0.1, species_name="CO2", volume_time="1"
     )
-    assert sh == pytest.approx(kl_spec["CO2"] * 0.1 / diffusivity)
+    assert sh == pytest.approx((kl_spec["CO2"] / 3600) * 0.1 / diffusivity)
