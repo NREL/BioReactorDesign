@@ -142,7 +142,6 @@ def _read_meta_data(filename: str, mode: str | None = None) -> dict:
                             sline = line.split()
                             for ientry, entry in enumerate(sline):
                                 if ";" in entry:
-                                    ind_end = ientry
                                     break
                             line_cropped = " ".join(sline[2 : ientry + 1])
                             unif_value = _ofvec2arr(line_cropped.strip(";"))

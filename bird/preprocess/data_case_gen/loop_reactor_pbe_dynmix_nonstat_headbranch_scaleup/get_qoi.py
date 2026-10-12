@@ -89,7 +89,7 @@ def get_lh(verb=False):
 
 
 def get_pinj(vvm, Vl, As, lh):
-    rhog = 1.25  # kg /m3
+    rhog = 0.593333  # kg /m3
     Vg = Vl * vvm / (60 * As * 1)  # m/s
     Ptank = 101325  # Pa
     # Ptank = 0 # Pa
@@ -116,21 +116,30 @@ def get_qoi(kla_co2, cs_co2, kla_h2, cs_h2, verb=False):
     P_inj = get_pinj(vvm, V_l, As, liqh)
     P_mix = get_pmix(verb)
 
-    qoi_co2 = kla_co2 * cs_co2 * V_l * 0.04401 / (P_mix / 3600 + P_inj / 3600)
-    qoi_h2 = kla_h2 * cs_h2 * V_l * 0.002016 / (P_mix / 3600 + P_inj / 3600)
-    return qoi_co2 * qoi_h2
+    qoi_kla_co2 = kla_co2 * cs_co2 * V_l * 0.04401
+    qoi_kla_h2 = kla_h2 * cs_h2 * V_l * 0.002016
+
+    qoi_co2 = qoi_kla_co2 / (P_mix / 3600 + P_inj / 3600)
+    qoi_h2 = qoi_kla_h2 / (P_mix / 3600 + P_inj / 3600)
+    return qoi_co2 * qoi_h2, qoi_kla_co2 * qoi_kla_h2
 
 
 def get_qoi_uq(kla_co2, cs_co2, kla_h2, cs_h2):
     qoi = []
+    qoi_kla = []
     for i in range(len(kla_co2)):
         if i == 0:
             verb = True
         else:
             verb = False
-        qoi.append(get_qoi(kla_co2[i], cs_co2[i], kla_h2[i], cs_h2[i], verb))
+        qoi_tmp, qoi_kla_tmp = get_qoi(
+            kla_co2[i], cs_co2[i], kla_h2[i], cs_h2[i], verb
+        )
+        qoi.append(qoi_tmp)
+        qoi_kla.append(qoi_kla_tmp)
     qoi = np.array(qoi)
-    return np.mean(qoi), np.std(qoi)
+    qoi_kla = np.array(qoi_kla)
+    return np.mean(qoi), np.std(qoi), np.mean(qoi_kla), np.std(qoi_kla)
 
 
 os.makedirs("Figures", exist_ok=True)
@@ -139,8 +148,8 @@ dataFolder = "data"
 fold = "local"
 
 nuq = 100
-mean_cstar_co2 = np.random.uniform(14, 16.9, nuq)
-mean_cstar_h2 = np.random.uniform(1.04, 1.19, nuq)
+mean_cstar_co2 = np.random.uniform(7.68, 8.22, nuq)
+mean_cstar_h2 = np.random.uniform(0.516, 0.548, nuq)
 
 
 tmp_cs_h2 = []
@@ -176,8 +185,12 @@ if (
         tmp_cs_h2.append(cs_h2[i])
         tmp_cs_co2.append(cs_co2[i])
 
-qoi_m, qoi_s = get_qoi_uq(tmp_kla_co2, tmp_cs_co2, tmp_kla_h2, tmp_cs_h2)
+qoi_m, qoi_s, qoi_kla_m, qoi_kla_s = get_qoi_uq(
+    tmp_kla_co2, tmp_cs_co2, tmp_kla_h2, tmp_cs_h2
+)
 
 
 with open("qoi.txt", "w+") as f:
     f.write(f"{qoi_m},{qoi_s}\n")
+with open("qoi_kla.txt", "w+") as f:
+    f.write(f"{qoi_kla_m},{qoi_kla_s}\n")

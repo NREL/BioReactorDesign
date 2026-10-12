@@ -15,7 +15,7 @@ fi
 # [ -d "constant/extendedFeatureEdgeMesh" ] && rm -rf "constant/extendedFeatureEdgeMesh"
 [ -d "constant/polyMesh" ] && rm -rf "constant/polyMesh"
 [ -d "dynamicCode" ] && rm -rf "dynamicCode"
-[ -d "processor*" ] && rm -rf "processor*"
+rm -rf "processor*"
 [ -d "fluentInterface" ] && rm -rf "rm -f fluentInterface"
 # rm -f constant/fvModels
 rm -f *.obj

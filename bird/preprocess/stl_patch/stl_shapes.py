@@ -65,7 +65,6 @@ def make_circle(radius, center, normal_dir, npts=3):
 
 
 def make_spider(centerRad, nArms, widthArms, lengthArms, center, normal_dir):
-    globalArea = 0
     if nArms < 2:
         error_msg = f"nArms ({nArms}) must be >= 2"
         logger.error(error_msg)

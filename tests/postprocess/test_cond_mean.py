@@ -14,8 +14,8 @@ from bird.postprocess.conditional_mean import (
 def test_compute_cond():
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",

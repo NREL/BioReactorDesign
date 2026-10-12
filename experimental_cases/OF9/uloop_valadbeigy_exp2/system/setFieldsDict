@@ -1,0 +1,43 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Applied AFTER the z->y rotation, so the vertical coordinate is y.
+// Liquid fills everything below y = 0.8 m (loop + lower half of the degassing
+// tank, whose axis is at y = 0.8); gas headspace above.
+
+// 0.99/0.01 (not 1/0) for numerical stability.
+defaultFieldValues
+(
+    volScalarFieldValue alpha.gas 0.99
+    volScalarFieldValue alpha.liquid 0.01
+    volScalarFieldValue Z.liquid 0
+);
+
+regions
+(
+    boxToCell
+    {
+        box (-1.0 -1.0 -1.0) (1.0 0.8 1.0);
+        fieldValues
+        (
+            volScalarFieldValue alpha.gas 0.01
+            volScalarFieldValue alpha.liquid 0.99
+        );
+    }
+);
+
+
+// ************************************************************************* //

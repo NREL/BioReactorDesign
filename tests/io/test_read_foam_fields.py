@@ -23,8 +23,8 @@ def test_read_nonunif_scal():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -53,8 +53,8 @@ def test_read_unif_scal():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -83,8 +83,8 @@ def test_read_nonunif_vec():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -131,8 +131,8 @@ def test_find_header_size():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -164,8 +164,8 @@ def test_read_unif_vec():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -184,8 +184,8 @@ def test_read_bubble_diameter():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -228,8 +228,8 @@ def test_read_mu_liquid():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",

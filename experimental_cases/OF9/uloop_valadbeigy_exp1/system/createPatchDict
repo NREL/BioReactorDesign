@@ -1,0 +1,35 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      createPatchDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Consolidate the per-block wall patches (wall_A/B/C) into a single "walls" patch.
+// createPatch also drops the now-empty stitch interface patches (int_*, 0 faces).
+// The open tank roof is already its own "outlet" mesh patch (block C physical
+// group), so it is NOT merged here and needs no surfaceToPatch. sparger and
+// dye_inlet are still carved from "walls" with surfaceToPatch in presteps.sh.
+
+pointSync false;
+
+patches
+(
+    {
+        name            walls;
+        patchInfo       { type wall; }
+        constructFrom   patches;
+        patches         (wall_A wall_B wall_C);
+    }
+);
+
+// ************************************************************************* //

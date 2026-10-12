@@ -87,8 +87,6 @@ def assemble_mesh(input_file, geom_dict):
         raise ValueError(f"unknown input file ({input_file}) extension")
     R = geom_dict["R"]
     L = geom_dict["L"]
-    N1 = len(R)
-    N2 = len(L) - 1
     CW = []
     mCW = []
     C1 = []
@@ -313,16 +311,12 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
     BoundaryNames = geom_dict["names"]
     BoundaryType = geom_dict["types"]
     BoundaryRmin = geom_dict["rmin"]
-    BoundaryRmax = geom_dict["rmax"]
     BoundaryLmin = geom_dict["lmin"]
-    BoundaryLmax = geom_dict["lmax"]
 
     NR = mesh_dict["NR"]
     NS = mesh_dict["NS"]
     NVert = mesh_dict["NVert"]
     gradR = mesh_dict["gradR"]
-    gradR_l = mesh_dict["gradR_l"]
-    gradR_r = mesh_dict["gradR_r"]
     gradVert = mesh_dict["gradVert"]
     CW = mesh_dict["CW"]
     mCW = mesh_dict["mCW"]
@@ -420,8 +414,6 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
             # gradingR = 1
             # if il==N2-1:
             #    gradingVert = outletGrading
-            gradingR_l = gradR_l[ir]
-            gradingR_r = gradR_r[ir]
             gradingVert = gradVert[il]
             gradingR = gradR[ir]
             # Am I a wall
@@ -528,7 +520,6 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
             boundType = BoundaryType[i][ibound]
             if boundType == "lateral":
                 rminInd = BoundaryRmin[i][ibound]
-                rmaxInd = BoundaryRmax[i][ibound]
                 lInd = BoundaryLmin[i][ibound]
                 i1 = rminInd * (4 * (N2 + 1)) + 4 * lInd  # bottom
                 i2 = i1 - 4  # top
@@ -540,7 +531,6 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
 
             elif boundType == "top":
                 lminInd = BoundaryLmin[i][ibound]
-                lmaxInd = BoundaryLmax[i][ibound]
                 rInd = BoundaryRmin[i][ibound]
                 if rInd > 0:
                     i1 = 4 * (N2 + 1) * (rInd - 1) + 4 * lminInd  # right
@@ -556,7 +546,6 @@ def writeBlockMeshDict(out_folder, geom_dict, mesh_dict):
 
             elif boundType == "bottom":
                 lminInd = BoundaryLmin[i][ibound]
-                lmaxInd = BoundaryLmax[i][ibound]
                 rInd = BoundaryRmin[i][ibound]
                 i1 = 4 * (N2 + 1) * (rInd - 1) + 4 * lminInd  # right
                 i2 = i1 + 4 * (N2 + 1)  # left

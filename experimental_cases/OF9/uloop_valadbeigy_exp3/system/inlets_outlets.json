@@ -1,0 +1,24 @@
+{
+  "sparger": [
+    {
+      "type": "circle",
+      "centx": 0.083,
+      "centy": 0.23,
+      "centz": 0.0,
+      "normal_dir": 0,
+      "radius": 0.01,
+      "nelements": 50
+    }
+  ],
+  "dye_inlet": [
+    {
+      "type": "circle",
+      "centx": 0.083,
+      "centy": 0.65,
+      "centz": 0.0,
+      "normal_dir": 0,
+      "radius": 0.01,
+      "nelements": 50
+    }
+  ]
+}

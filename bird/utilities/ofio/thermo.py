@@ -163,7 +163,7 @@ def read_mu_liquid(
                 mu_liq = globalVars["muMixLiq"]
             if mu_liq is None:
                 logger.error(
-                    f"Liquid viscosity is not constant, yet could not find thermo:mu.liquid"
+                    "Liquid viscosity is not constant, yet could not find thermo:mu.liquid"
                 )
                 raise FileNotFoundError(err)
             else:

@@ -1,3 +1,4 @@
+import os
 import re
 
 
@@ -191,6 +192,16 @@ def read_openfoam_dict(filename: str) -> dict:
     tokens = _tokenize(text)
     foam_dict = _parse_tokens(tokens)
     return foam_dict
+
+
+def read_gravity(case_folder: str) -> float:
+    """Gravity magnitude [m/s2] from constant/g; 9.81 if the file is absent."""
+    try:
+        g_dict = read_openfoam_dict(os.path.join(case_folder, "constant", "g"))
+    except FileNotFoundError:
+        return 9.81
+    gravity_vector = [float(component) for component in g_dict["value"]]
+    return sum(component**2 for component in gravity_vector) ** 0.5
 
 
 def write_openfoam_dict(data: dict, filename: str, indent: int = 0) -> None:

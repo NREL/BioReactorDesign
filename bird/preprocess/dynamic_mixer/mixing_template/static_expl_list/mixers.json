@@ -1,0 +1,5 @@
+{
+    "static_mixers": [
+        {"x": 0.025, "y": 0.07, "z": 0.025, "normal_dir": 1, "start_time": 1, "S": 0.35, "K": 0.5, "radius": 0.01, "sign": "+", "swirl_sign": "+"}
+    ]
+}

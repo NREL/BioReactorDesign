@@ -20,7 +20,6 @@ def compute_cond_mean(
 ):
     time_float_sorted, time_str_sorted = get_case_times(case_folder)
     cell_centers, _ = read_cell_centers(case_folder)
-    nCells = len(cell_centers)
     assert len(diff_val_list) == len(diff_name_list)
     window_ave = min(window_ave, len(time_str_sorted))
 
@@ -38,11 +37,9 @@ def compute_cond_mean(
             field_file.append(
                 os.path.join(case_folder, time_folder, field_name)
             )
-
         for filename, name in zip(field_file, field_name_list):
-            val_dict = {}
             field_tmp, _ = read_field(
-                case_folder, time_folder, field_name=field_name
+                case_folder, time_folder, field_name=name
             )
             vert_axis, field_cond_tmp = conditional_average(
                 cell_centers[:, vert_ind], field_tmp, nbins=n_bins

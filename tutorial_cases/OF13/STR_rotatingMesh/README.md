@@ -16,5 +16,5 @@ __Uses OpenFOAM-13. Mesh is finer than the MRF tutorial because of NCC refinemen
 __Example results__
 Volume colors are gas volume fraction and surface color are liquid velocity.
 
-![Gas volume fraction](/tutorial_cases/OF13/STR_rotatingMesh/STR_rotating.gif)
+![Gas volume fraction](/tutorials_13/STR_rotatingMesh/STR_rotating.gif)
   

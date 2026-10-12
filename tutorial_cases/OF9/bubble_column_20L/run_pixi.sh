@@ -10,13 +10,13 @@ trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
 
 echo PRESTEP 1
 # Generate blockmeshDict
-pixi run python ../../applications/write_block_cyl_mesh.py -i system/mesh.json -t system/topology.json -o system
+pixi run python ../../../applications/write_block_cyl_mesh.py -i system/mesh.json -t system/topology.json -o system
 
 # Generate boundary stl
-pixi run python ../../applications/write_stl_patch.py -i system/inlets_outlets.json
+pixi run python ../../../applications/write_stl_patch.py -i system/inlets_outlets.json
 
 # Generate species thermo properties
-pixi run python ../../applications/write_species_thermo_prop.py -cf .
+pixi run python ../../../applications/write_species_thermo_prop.py -cf .
 
 
 echo PRESTEP 2

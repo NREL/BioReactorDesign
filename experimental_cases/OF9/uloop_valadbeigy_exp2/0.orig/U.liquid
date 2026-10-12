@@ -1,0 +1,70 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volVectorField;
+    object      U.liquid;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+internalField   uniform (0.0 0.0 0.0);
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+
+    sparger
+    {
+        type            noSlip;
+    }
+    dye_inlet
+    {
+        type            codedFixedValue;
+        value           uniform (0.0 0.0 0.0);
+        name            dyeInjection;
+        codeInclude
+        #{
+            #include "volFields.H"
+        #};
+        code
+        #{
+            const scalar t      = this->db().time().value();
+            const scalar tStart = __DYE_START__;
+            const scalar tStop  = __DYE_STOP__;
+            vectorField Up(this->size(), Foam::vector::zero);
+            if (t >= tStart && t < tStop)
+            {
+                const scalar dyeVol = 50.0e-6;                 // m3 (50 mL)
+                const scalar Q      = dyeVol/(tStop - tStart); // m3/s
+                const scalar area = gSum(this->patch().magSf());
+                if (area > SMALL)
+                {
+                    Up = -(Q/area)*this->patch().nf();
+		}
+            }
+            this->operator==(Up);
+	    #};
+
+    } 
+    
+    outlet
+    {
+        type            noSlip;
+    }
+    walls
+    {
+        type            noSlip;
+    }
+}
+
+// ************************************************************************* //

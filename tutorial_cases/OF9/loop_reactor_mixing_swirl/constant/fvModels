@@ -1,0 +1,353 @@
+FoamFile
+{
+	version  2.0;
+	format   ascii;
+	class    dictionary;
+	location "constant";
+	object   fvModels;
+}
+
+codedSource
+{
+	type	coded;
+	selectionMode	all;
+	field	U.liquid;
+	name	sourceTime;
+
+	codeInclude
+	#{
+		#include <cmath>
+		#include <algorithm>
+	#};
+
+	codeAddAlphaRhoSup
+	#{
+		const Time& time = mesh().time();
+		const scalarField& V = mesh().V();
+		vectorField& Usource = eqn.source();
+		const vectorField& C = mesh().C();
+		const volScalarField& rhoL =
+			mesh().lookupObject<volScalarField>("thermo:rho.liquid");
+		const volScalarField& alphaL =
+			mesh().lookupObject<volScalarField>("alpha.liquid");
+		const volVectorField& UL =
+			mesh().lookupObject<volVectorField>("U.liquid");
+		const double pi = 3.14159265358979;
+		// ===== ball mixer =====
+		{
+			const double Rmix = 1.1046110154250839;
+			const double area = pi*Rmix*Rmix;
+			const double Vtip = 1.5;
+			const double sigma = 0.35;
+			const double startT = 3;
+			const double px = 11.32226290810711, py = 1.3807637692813548, pz = 1.3807637692813548;
+			if (time.value() > startT)
+			{
+				scalar sV = 0.0, sVU = 0.0, sVrho = 0.0;
+				forAll(C, i)
+				{
+					const double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;
+					const double d2 = dx*dx + dy*dy + dz*dz;
+					if (d2 <= Rmix*Rmix && 1.0*dx < 0.0)
+					{
+						const double w = V[i]*alphaL[i];
+						sV += w; sVU += w*UL[i][0]; sVrho += w*rhoL[i];
+					}
+				}
+				reduce(sV, sumOp<scalar>());
+				reduce(sVU, sumOp<scalar>());
+				reduce(sVrho, sumOp<scalar>());
+				double V1 = (sV>1e-30) ? 1.0*(sVU/sV) : 0.0;
+				if (V1 < 0.0) V1 = 0.0;
+				const double rhoM = (sV>1e-30) ? sVrho/sV : 1000.0;
+				const double rhs = 16.0*6*Vtip*Vtip*Vtip/pow(pi,4.0);
+				double V2 = (V1>1e-6) ? 2.0*V1 : std::cbrt(std::abs(rhs));
+				for (int it = 0; it < 100; ++it)
+				{
+					const double F = (V2-V1)*(V2+V1)*(V2+V1) + 0.35*(V1+V2)*Vtip*Vtip - rhs;
+					const double dF = 3.0*V2*V2 + 2.0*V1*V2 - V1*V1 + 0.35*Vtip*Vtip;
+					const double dV = F/dF;
+					V2 -= dV;
+					if (std::abs(dV) < 1e-10) break;
+				}
+				const double Tax = 0.5*rhoM*area*(V2*V2 - V1*V1);
+				const double Qsw = 0.25*rhoM*(V1+V2)*sigma*Rmix*area*Vtip;
+				scalar Sax = 0.0, Sth = 0.0;
+				forAll(C, i)
+				{
+					const double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;
+					const double d2 = dx*dx + dy*dy + dz*dz;
+					if (d2 <= Rmix*Rmix)
+					{
+						const double epsi = std::max(0.6123724356957945*Rmix, 2.0*std::cbrt(V[i]));
+						const double g = std::exp(-d2/(epsi*epsi));
+						Sax += alphaL[i]*g*V[i];
+						const double rr = std::sqrt(d2-(dx)*(dx));
+						Sth += alphaL[i]*g*rr*V[i];
+					}
+				}
+				reduce(Sax, sumOp<scalar>());
+				reduce(Sth, sumOp<scalar>());
+				forAll(C, i)
+				{
+					const double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;
+					const double d2 = dx*dx + dy*dy + dz*dz;
+					if (d2 <= Rmix*Rmix)
+					{
+						const double epsi = std::max(0.6123724356957945*Rmix, 2.0*std::cbrt(V[i]));
+						const double g = std::exp(-d2/(epsi*epsi));
+						if (Sax > 1e-30)
+						{
+							const double fax = Tax/Sax*alphaL[i]*g;
+							Usource[i][0] -= 1.0*fax*V[i];
+						}
+						const double rr = std::sqrt(d2-(dx)*(dx));
+						if (rr > 1e-3*Rmix && Sth > 1e-30)
+						{
+							const double fth = Qsw/Sth*alphaL[i]*g;
+							Usource[i][1] -= 1.0*fth*V[i]*((-dz)/rr);
+							Usource[i][2] -= 1.0*fth*V[i]*((dy)/rr);
+						}
+					}
+				}
+			}
+		}
+		// ===== ball mixer =====
+		{
+			const double Rmix = 1.1046110154250839;
+			const double area = pi*Rmix*Rmix;
+			const double Vtip = 1.5;
+			const double sigma = 0.35;
+			const double startT = 3;
+			const double px = 16.293012477519987, py = 1.3807637692813548, pz = 1.3807637692813548;
+			if (time.value() > startT)
+			{
+				scalar sV = 0.0, sVU = 0.0, sVrho = 0.0;
+				forAll(C, i)
+				{
+					const double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;
+					const double d2 = dx*dx + dy*dy + dz*dz;
+					if (d2 <= Rmix*Rmix && 1.0*dx < 0.0)
+					{
+						const double w = V[i]*alphaL[i];
+						sV += w; sVU += w*UL[i][0]; sVrho += w*rhoL[i];
+					}
+				}
+				reduce(sV, sumOp<scalar>());
+				reduce(sVU, sumOp<scalar>());
+				reduce(sVrho, sumOp<scalar>());
+				double V1 = (sV>1e-30) ? 1.0*(sVU/sV) : 0.0;
+				if (V1 < 0.0) V1 = 0.0;
+				const double rhoM = (sV>1e-30) ? sVrho/sV : 1000.0;
+				const double rhs = 16.0*6*Vtip*Vtip*Vtip/pow(pi,4.0);
+				double V2 = (V1>1e-6) ? 2.0*V1 : std::cbrt(std::abs(rhs));
+				for (int it = 0; it < 100; ++it)
+				{
+					const double F = (V2-V1)*(V2+V1)*(V2+V1) + 0.35*(V1+V2)*Vtip*Vtip - rhs;
+					const double dF = 3.0*V2*V2 + 2.0*V1*V2 - V1*V1 + 0.35*Vtip*Vtip;
+					const double dV = F/dF;
+					V2 -= dV;
+					if (std::abs(dV) < 1e-10) break;
+				}
+				const double Tax = 0.5*rhoM*area*(V2*V2 - V1*V1);
+				const double Qsw = 0.25*rhoM*(V1+V2)*sigma*Rmix*area*Vtip;
+				scalar Sax = 0.0, Sth = 0.0;
+				forAll(C, i)
+				{
+					const double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;
+					const double d2 = dx*dx + dy*dy + dz*dz;
+					if (d2 <= Rmix*Rmix)
+					{
+						const double epsi = std::max(0.6123724356957945*Rmix, 2.0*std::cbrt(V[i]));
+						const double g = std::exp(-d2/(epsi*epsi));
+						Sax += alphaL[i]*g*V[i];
+						const double rr = std::sqrt(d2-(dx)*(dx));
+						Sth += alphaL[i]*g*rr*V[i];
+					}
+				}
+				reduce(Sax, sumOp<scalar>());
+				reduce(Sth, sumOp<scalar>());
+				forAll(C, i)
+				{
+					const double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;
+					const double d2 = dx*dx + dy*dy + dz*dz;
+					if (d2 <= Rmix*Rmix)
+					{
+						const double epsi = std::max(0.6123724356957945*Rmix, 2.0*std::cbrt(V[i]));
+						const double g = std::exp(-d2/(epsi*epsi));
+						if (Sax > 1e-30)
+						{
+							const double fax = Tax/Sax*alphaL[i]*g;
+							Usource[i][0] -= 1.0*fax*V[i];
+						}
+						const double rr = std::sqrt(d2-(dx)*(dx));
+						if (rr > 1e-3*Rmix && Sth > 1e-30)
+						{
+							const double fth = Qsw/Sth*alphaL[i]*g;
+							Usource[i][1] -= 1.0*fth*V[i]*((-dz)/rr);
+							Usource[i][2] -= 1.0*fth*V[i]*((dy)/rr);
+						}
+					}
+				}
+			}
+		}
+		// ===== ball mixer =====
+		{
+			const double Rmix = 1.1046110154250839;
+			const double area = pi*Rmix*Rmix;
+			const double Vtip = 1.5;
+			const double sigma = 0.35;
+			const double startT = 3;
+			const double px = 21.263762046932865, py = 1.3807637692813548, pz = 1.3807637692813548;
+			if (time.value() > startT)
+			{
+				scalar sV = 0.0, sVU = 0.0, sVrho = 0.0;
+				forAll(C, i)
+				{
+					const double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;
+					const double d2 = dx*dx + dy*dy + dz*dz;
+					if (d2 <= Rmix*Rmix && 1.0*dx < 0.0)
+					{
+						const double w = V[i]*alphaL[i];
+						sV += w; sVU += w*UL[i][0]; sVrho += w*rhoL[i];
+					}
+				}
+				reduce(sV, sumOp<scalar>());
+				reduce(sVU, sumOp<scalar>());
+				reduce(sVrho, sumOp<scalar>());
+				double V1 = (sV>1e-30) ? 1.0*(sVU/sV) : 0.0;
+				if (V1 < 0.0) V1 = 0.0;
+				const double rhoM = (sV>1e-30) ? sVrho/sV : 1000.0;
+				const double rhs = 16.0*6*Vtip*Vtip*Vtip/pow(pi,4.0);
+				double V2 = (V1>1e-6) ? 2.0*V1 : std::cbrt(std::abs(rhs));
+				for (int it = 0; it < 100; ++it)
+				{
+					const double F = (V2-V1)*(V2+V1)*(V2+V1) + 0.35*(V1+V2)*Vtip*Vtip - rhs;
+					const double dF = 3.0*V2*V2 + 2.0*V1*V2 - V1*V1 + 0.35*Vtip*Vtip;
+					const double dV = F/dF;
+					V2 -= dV;
+					if (std::abs(dV) < 1e-10) break;
+				}
+				const double Tax = 0.5*rhoM*area*(V2*V2 - V1*V1);
+				const double Qsw = 0.25*rhoM*(V1+V2)*sigma*Rmix*area*Vtip;
+				scalar Sax = 0.0, Sth = 0.0;
+				forAll(C, i)
+				{
+					const double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;
+					const double d2 = dx*dx + dy*dy + dz*dz;
+					if (d2 <= Rmix*Rmix)
+					{
+						const double epsi = std::max(0.6123724356957945*Rmix, 2.0*std::cbrt(V[i]));
+						const double g = std::exp(-d2/(epsi*epsi));
+						Sax += alphaL[i]*g*V[i];
+						const double rr = std::sqrt(d2-(dx)*(dx));
+						Sth += alphaL[i]*g*rr*V[i];
+					}
+				}
+				reduce(Sax, sumOp<scalar>());
+				reduce(Sth, sumOp<scalar>());
+				forAll(C, i)
+				{
+					const double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;
+					const double d2 = dx*dx + dy*dy + dz*dz;
+					if (d2 <= Rmix*Rmix)
+					{
+						const double epsi = std::max(0.6123724356957945*Rmix, 2.0*std::cbrt(V[i]));
+						const double g = std::exp(-d2/(epsi*epsi));
+						if (Sax > 1e-30)
+						{
+							const double fax = Tax/Sax*alphaL[i]*g;
+							Usource[i][0] -= 1.0*fax*V[i];
+						}
+						const double rr = std::sqrt(d2-(dx)*(dx));
+						if (rr > 1e-3*Rmix && Sth > 1e-30)
+						{
+							const double fth = Qsw/Sth*alphaL[i]*g;
+							Usource[i][1] -= 1.0*fth*V[i]*((-dz)/rr);
+							Usource[i][2] -= 1.0*fth*V[i]*((dy)/rr);
+						}
+					}
+				}
+			}
+		}
+		// ===== ball mixer =====
+		{
+			const double Rmix = 1.1046110154250839;
+			const double area = pi*Rmix*Rmix;
+			const double Vtip = 1.5;
+			const double sigma = 0.35;
+			const double startT = 3;
+			const double px = 16.293012477519987, py = 1.3807637692813548, pz = 12.426873923532193;
+			if (time.value() > startT)
+			{
+				scalar sV = 0.0, sVU = 0.0, sVrho = 0.0;
+				forAll(C, i)
+				{
+					const double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;
+					const double d2 = dx*dx + dy*dy + dz*dz;
+					if (d2 <= Rmix*Rmix && -1.0*dx < 0.0)
+					{
+						const double w = V[i]*alphaL[i];
+						sV += w; sVU += w*UL[i][0]; sVrho += w*rhoL[i];
+					}
+				}
+				reduce(sV, sumOp<scalar>());
+				reduce(sVU, sumOp<scalar>());
+				reduce(sVrho, sumOp<scalar>());
+				double V1 = (sV>1e-30) ? -1.0*(sVU/sV) : 0.0;
+				if (V1 < 0.0) V1 = 0.0;
+				const double rhoM = (sV>1e-30) ? sVrho/sV : 1000.0;
+				const double rhs = 16.0*6*Vtip*Vtip*Vtip/pow(pi,4.0);
+				double V2 = (V1>1e-6) ? 2.0*V1 : std::cbrt(std::abs(rhs));
+				for (int it = 0; it < 100; ++it)
+				{
+					const double F = (V2-V1)*(V2+V1)*(V2+V1) + 0.35*(V1+V2)*Vtip*Vtip - rhs;
+					const double dF = 3.0*V2*V2 + 2.0*V1*V2 - V1*V1 + 0.35*Vtip*Vtip;
+					const double dV = F/dF;
+					V2 -= dV;
+					if (std::abs(dV) < 1e-10) break;
+				}
+				const double Tax = 0.5*rhoM*area*(V2*V2 - V1*V1);
+				const double Qsw = 0.25*rhoM*(V1+V2)*sigma*Rmix*area*Vtip;
+				scalar Sax = 0.0, Sth = 0.0;
+				forAll(C, i)
+				{
+					const double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;
+					const double d2 = dx*dx + dy*dy + dz*dz;
+					if (d2 <= Rmix*Rmix)
+					{
+						const double epsi = std::max(0.6123724356957945*Rmix, 2.0*std::cbrt(V[i]));
+						const double g = std::exp(-d2/(epsi*epsi));
+						Sax += alphaL[i]*g*V[i];
+						const double rr = std::sqrt(d2-(dx)*(dx));
+						Sth += alphaL[i]*g*rr*V[i];
+					}
+				}
+				reduce(Sax, sumOp<scalar>());
+				reduce(Sth, sumOp<scalar>());
+				forAll(C, i)
+				{
+					const double dx=C[i].x()-px, dy=C[i].y()-py, dz=C[i].z()-pz;
+					const double d2 = dx*dx + dy*dy + dz*dz;
+					if (d2 <= Rmix*Rmix)
+					{
+						const double epsi = std::max(0.6123724356957945*Rmix, 2.0*std::cbrt(V[i]));
+						const double g = std::exp(-d2/(epsi*epsi));
+						if (Sax > 1e-30)
+						{
+							const double fax = Tax/Sax*alphaL[i]*g;
+							Usource[i][0] -= -1.0*fax*V[i];
+						}
+						const double rr = std::sqrt(d2-(dx)*(dx));
+						if (rr > 1e-3*Rmix && Sth > 1e-30)
+						{
+							const double fth = Qsw/Sth*alphaL[i]*g;
+							Usource[i][1] -= 1.0*fth*V[i]*((-dz)/rr);
+							Usource[i][2] -= 1.0*fth*V[i]*((dy)/rr);
+						}
+					}
+				}
+			}
+		}
+	#};
+};

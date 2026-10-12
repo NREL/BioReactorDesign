@@ -12,11 +12,16 @@ from bird.postprocess.post_quantities import (
     _get_ind_liq,
     compute_ave_bubble_diam,
     compute_ave_conc_liq,
+    compute_ave_liquid_density,
+    compute_ave_liquid_velocity,
     compute_ave_y_liq,
+    compute_fitted_kl,
     compute_fitted_kla,
     compute_gas_holdup,
+    compute_instantaneous_kl,
     compute_instantaneous_kla,
     compute_superficial_gas_velocity,
+    interfacial_area,
 )
 
 
@@ -55,8 +60,8 @@ def test_compute_gh():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -106,8 +111,8 @@ def test_compute_diam():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -143,8 +148,8 @@ def test_compute_superficial_gas_velocity():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean/",
@@ -201,8 +206,8 @@ def test__superficial_velocity_pv():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean/",
@@ -232,8 +237,8 @@ def test_ave_y_liq():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -300,8 +305,8 @@ def test_ave_conc_liq():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -354,8 +359,8 @@ def test_instantaneous_kla():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -422,8 +427,8 @@ def test_fitted_kla():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -475,8 +480,8 @@ def test_get_ind_gas():
     """
     case_folder = os.path.join(
         Path(__file__).parent,
-        "..",
-        "..",
+        " .. ".strip(),
+        " .. ".strip(),
         "bird",
         "postprocess",
         "data_conditional_mean",
@@ -518,3 +523,131 @@ def test_get_ind_gas():
     # A uniform liquid field needs no filtering at all, rather than selecting
     # a single cell
     assert ind_liq_unif is None
+
+
+def _write_liquid_fields(root, u_vector, rho, cell_volumes):
+    """Minimal case: all-liquid, uniform U.liquid and rho, nonuniform V."""
+    os.makedirs(os.path.join(root, "0"), exist_ok=True)
+
+    def write_field(name, foam_class, body):
+        with open(os.path.join(root, "0", name), "w") as f:
+            f.write("FoamFile\n{\n    format      ascii;\n")
+            f.write(f"    class       {foam_class};\n")
+            f.write(f"    object      {name};\n}}\n\n")
+            f.write("dimensions      [0 0 0 0 0 0 0];\n\n")
+            f.write(body)
+
+    entries = "\n".join(f"{v:.10g}" for v in cell_volumes)
+    write_field(
+        "V",
+        "volScalarField",
+        "internalField   nonuniform List<scalar> \n"
+        f"{len(cell_volumes)}\n(\n{entries}\n)\n;\n",
+    )
+    write_field(
+        "alpha.liquid", "volScalarField", "internalField   uniform 1;\n"
+    )
+    write_field(
+        "U.liquid",
+        "volVectorField",
+        f"internalField   uniform ({u_vector[0]} {u_vector[1]} "
+        f"{u_vector[2]});\n",
+    )
+    write_field(
+        "thermo:rho.liquid",
+        "volScalarField",
+        f"internalField   uniform {rho};\n",
+    )
+
+
+def test_compute_ave_liquid_density():
+    with tempfile.TemporaryDirectory() as tmp:
+        _write_liquid_fields(tmp, (1.0, 0.0, 0.0), 1050.0, [1.0, 2.0, 3.0])
+        rho, _ = compute_ave_liquid_density(tmp, "0", volume_time="0")
+    assert rho == pytest.approx(1050.0)
+
+
+def test_compute_ave_liquid_velocity():
+    # |U.liquid| = |(3,4,0)| = 5
+    with tempfile.TemporaryDirectory() as tmp:
+        _write_liquid_fields(tmp, (3.0, 4.0, 0.0), 1000.0, [1.0, 2.0, 3.0])
+        velocity, _ = compute_ave_liquid_velocity(tmp, "0", volume_time="0")
+    assert velocity == pytest.approx(5.0)
+
+
+def test_interfacial_area():
+    """
+    Test the interfacial area a = 6 * holdup / diameter
+    """
+    assert interfacial_area(0.2, 0.005) == pytest.approx(240.0)
+
+
+def test_instantaneous_kl():
+    """
+    Test for instantaneous kl calculation (volume-averaged Higbie coefficient)
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        " .. ".strip(),
+        " .. ".strip(),
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+    )
+    kl_list, cstar_list, _ = compute_instantaneous_kl(
+        species_names=["CO2"],
+        case_folder=case_folder,
+        time_folder="79",
+        volume_time="1",
+    )
+    kl_str, _, _ = compute_instantaneous_kl(
+        species_names="CO2",
+        case_folder=case_folder,
+        time_folder="79",
+        volume_time="1",
+    )
+    # positive, finite, and the single/list species forms agree
+    assert kl_list["CO2"] > 0 and np.isfinite(kl_list["CO2"])
+    assert kl_str["CO2"] == pytest.approx(kl_list["CO2"])
+
+    kla_spec, cstar_kla, _ = compute_instantaneous_kla(
+        species_names=["CO2"],
+        case_folder=case_folder,
+        time_folder="79",
+        volume_time="1",
+    )
+    # cstar is shared with compute_instantaneous_kla
+    assert cstar_list["CO2"] == pytest.approx(cstar_kla["CO2"])
+    # kL (= <coef>) and kLa (= <coef * a>) are distinct quantities
+    assert kl_list["CO2"] != pytest.approx(kla_spec["CO2"])
+
+
+def test_fitted_kl():
+    """
+    Test for fitted kl calculation (fitted kLa / interfacial area)
+    """
+    case_folder = os.path.join(
+        Path(__file__).parent,
+        " .. ".strip(),
+        " .. ".strip(),
+        "bird",
+        "postprocess",
+        "data_conditional_mean",
+    )
+    # dummy time folders so the fit has enough snapshots
+    for time_folder in [str(entry) for entry in range(81, 89)]:
+        shutil.copytree(
+            os.path.join(case_folder, "80"),
+            os.path.join(case_folder, time_folder),
+        )
+    kl_spec, _, _ = compute_fitted_kl(
+        species_names=["CO2"],
+        case_folder=case_folder,
+        num_warmup=100,
+        num_samples=100,
+    )
+    for time_folder in [str(entry) for entry in range(81, 89)]:
+        shutil.rmtree(os.path.join(case_folder, time_folder))
+
+    assert "mean" in kl_spec["CO2"] and "std" in kl_spec["CO2"]
+    assert np.isfinite(kl_spec["CO2"]["mean"])

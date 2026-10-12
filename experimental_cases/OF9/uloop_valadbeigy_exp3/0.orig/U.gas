@@ -1,0 +1,65 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volVectorField;
+    object      U.gas;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0.0 0.0 0.0);
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+ 
+    sparger
+    {
+        type            codedFixedValue;
+        value           uniform (0.0 0.0 0.0);
+        name            spargerInjection;
+        codeInclude
+        #{
+            #include "volFields.H"
+        #};
+        code
+        #{
+            const scalar Q = 4.0*1e-3/60;  // 4 L/min
+
+            vectorField Up(this->size(), Foam::vector::zero);
+            const scalar area = gSum(this->patch().magSf());
+            if (area > SMALL)
+            {
+                Up = -(Q/area)*this->patch().nf();
+            }
+            this->operator==(Up);
+        #};
+    }
+
+    dye_inlet
+    {
+        type            slip;
+    }
+    outlet
+    {
+        type            pressureInletOutletVelocity;
+        phi             phi.gas;
+        value           $internalField;
+    }
+    walls
+    {
+        type            slip;
+    }
+}
+
+// ************************************************************************* //

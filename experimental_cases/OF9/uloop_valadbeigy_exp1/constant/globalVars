@@ -1,0 +1,70 @@
+T0	300; //initial T(K) which stays constant
+//****water Liquid properties**************
+CpMixLiq        4181;
+muMixLiq #calc "2.414e-5 * pow(10,247.8/($T0 - 140.0))"; //viscosity (Pa.s) of water as a function of T(K)
+kThermLiq       0.62; // W/m-K
+rho0MixLiq      1000; // kg/m^3
+sigmaLiq        0.07; //surface tension N/m
+//Wilke-Chang params for diffusion coefficient of a given solute in water (solvent)
+WC_psi          2.6;
+WC_M            18; // kg/kmol
+WC_V_O2         25.6e-3; // m3/kmol molar volume at normal boiling temperature (Treybal 1968)
+WC_V_N2		31.2e-3;
+//****** diffusion coeff ***********
+D_O2 #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_O2,0.6)";
+D_N2 #calc "1.173e-16 * pow($WC_psi * $WC_M,0.5) * $T0 / $muMixLiq / pow($WC_V_N2,0.6)";
+//****** Henry coeff ***************
+H_O2_298 0.032;
+DH_O2   1700;
+H_N2_298 0.015;
+DH_N2   1300;
+He_O2  #calc "$H_O2_298 * exp($DH_O2 *(1. / $T0 - 1./298.15))";
+He_N2  #calc "$H_N2_298 * exp($DH_N2 *(1. / $T0 - 1./298.15))";
+//*******inlet gas mass frac (air)*************
+f_O2 0.233;
+f_N2 0.767;
+//*******aeration / dye injection**************
+gasFlowRate 6.6667e-5; // 4 L/min air sparged = 4e-3/60 m3/s
+// Dye = 50 mL over [dyeStart, dyeStop]; injected by the codedFixedValue BC on
+// U.liquid at dye_inlet (which recomputes the patch area at runtime). presteps.sh
+// substitutes these values into the __DYE_START__/__DYE_STOP__ tokens of the
+// coded dye BCs in 0/ ($vars do not expand inside the #{ #} code blocks).
+// dyeStart is also read by get_mixing_time.py.
+dyeStart 1.0;           // s, dye injection start (after steady circulation)
+dyeStop  2.0;           // s, dye injection stop (1 s window, 50 mL total)
+dyeVol   50.0e-6;      // m3 (50 mL); MUST match the literal in 0.orig/U.liquid
+//*********************************
+inletA	0.000251007;
+inletA_dye	0.000251007;
+liqVol	0.00588087;
+alphaGas 1;
+alphaLiq 0;
+uGasPhase #calc "$gasFlowRate / ($inletA * $alphaGas)"; // nominal sparger gas velocity (turbulence BCs)
+//*********************************
+LeLiqO2 #calc "$kThermLiq / $rho0MixLiq / $D_O2 / $CpMixLiq";
+LeLiqN2 #calc "$kThermLiq / $rho0MixLiq / $D_N2 / $CpMixLiq";
+LeLiqMix #calc "$f_O2*$LeLiqO2+$f_N2*$LeLiqN2";
+PrMixLiq #calc "$CpMixLiq * $muMixLiq / $kThermLiq";
+//*********************************
+kO2 #calc "$D_O2*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrO2 #calc "$muMixLiq*$CpMixLiq / $kO2";
+
+kN2 #calc "$D_N2*$rho0MixLiq*$CpMixLiq*$LeLiqMix";
+PrN2 #calc "$muMixLiq*$CpMixLiq / $kN2";
+//*********************************
+l_scale 0.04;   // mixing length = DN40 pipe diameter (was 0.5 m, too large -> eps too small)
+intensity 0.05;
+k_inlet_gas #calc "1.5 * Foam::pow(($uGasPhase), 2) * Foam::pow($intensity, 2)";
+k_inlet_liq #calc "1.5 * Foam::pow(($uGasPhase), 2) * Foam::pow($intensity, 2)";
+eps_inlet_gas #calc "pow(0.09,0.75) * Foam::pow($k_inlet_gas, 1.5) / ($l_scale * 0.07)";
+eps_inlet_liq #calc "pow(0.09,0.75) * Foam::pow($k_inlet_liq, 1.5) / ($l_scale * 0.07)";
+omega_inlet_gas #calc "pow(0.09,-0.25) * pow($k_inlet_gas,0.5) / ($l_scale * 0.07)";
+omega_inlet_liq #calc "pow(0.09,-0.25) * pow($k_inlet_liq,0.5) / ($l_scale * 0.07)";
+//*********************************
+// Dye-inlet (liquid) turbulence: the dye is injected at its OWN velocity through
+// its OWN (smaller) pipe, so k/eps there must not reuse the sparger-gas values.
+// uDye = injected volumetric flow / dye_inlet area; l_scale_dye = dye pipe diameter.
+l_scale_dye 0.02;      // dye pipe diameter [m]
+uDye #calc "$dyeVol / (($dyeStop - $dyeStart) * $inletA_dye)"; // nominal dye injection velocity
+k_inlet_dye #calc "1.5 * Foam::pow(($uDye), 2) * Foam::pow($intensity, 2)";
+eps_inlet_dye #calc "pow(0.09,0.75) * Foam::pow($k_inlet_dye, 1.5) / ($l_scale_dye * 0.07)";

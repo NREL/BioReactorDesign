@@ -1,0 +1,10 @@
+#!/bin/bash
+#SBATCH --qos=high
+#SBATCH --job-name=val2
+##SBATCH --partition=debug
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=16
+#SBATCH --time=00:59:00
+#SBATCH --account=co2snow
+
+bash computeQOI.sh

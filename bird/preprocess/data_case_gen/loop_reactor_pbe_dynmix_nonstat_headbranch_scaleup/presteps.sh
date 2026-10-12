@@ -1,6 +1,7 @@
 # Clean case
 module load conda
-conda activate /projects/gas2fuels/conda_env/bird_wf
+#conda activate /projects/gas2fuels/conda_env/bird_wf
+conda activate /projects/gas2fuels/conda_env/bird_mixer
 source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
 ./Allclean
 

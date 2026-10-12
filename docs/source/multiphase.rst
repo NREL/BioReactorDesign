@@ -132,9 +132,10 @@ This approach is still experimental and using the interface compression can lead
 
 The `birdmultiphaseEuler` module provides the `bioReactingPhaseModel` that incorporates the model of Michealis and Menten for enzymatic reactions. Currently, this model only consumes liquid species (for example, oxygen dissolved in the liquid).
 For a reacting specie with mass fraction :math:`Y_l`, the uptake rate is
- .. math::
+ 
+.. math::
 
-   UR = - \alpha_l \rho_l UR_{max} \frac{Y_l}/{k_p - \alpha_l \rho_l Y_l}
+   UR = - UR_{max} \frac{Y_i}/{k_p - \rho_l Y_i}
    
 where the user parameters are the maximum uptake rate :math:`UR_{max}` and the enzyme affinity :math:`k_p`.
 

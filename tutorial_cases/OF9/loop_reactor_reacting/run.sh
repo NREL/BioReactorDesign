@@ -3,26 +3,29 @@
 # Clean case
 ./Allclean
 
-set -e  # Exit on any error
-# Define what to do on error
-trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
+set -Eeuo pipefail   # -E: trap also fires inside functions/subshells
+trap 'exit_code=$?
+      echo "ERROR: Something failed! Running cleanup..."
+      ./Allclean || true
+      exit $exit_code' ERR
 
 
 # Generate blockmeshDict
-python ../../applications/write_block_rect_mesh.py -i system/mesh.json -o system
+python ../../../applications/write_block_rect_mesh.py -i system/mesh.json -o system
 
 # Generate boundary stl
-python ../../applications/write_stl_patch.py -i system/inlets_outlets.json
+python ../../../applications/write_stl_patch.py -i system/inlets_outlets.json
 
 # Generate species thermo properties
-python ../../applications/write_species_thermo_prop.py -cf .
+python ../../../applications/write_species_thermo_prop.py -cf .
     
 # Mesh gen
 blockMesh -dict system/blockMeshDict
 
 # Inlet BC
 surfaceToPatch -tol 1e-3 inlets.stl
-export newmeshdir=$(foamListTimes -latestTime)
+newmeshdir=$(foamListTimes -latestTime)
+export newmeshdir
 rm -rf constant/polyMesh/
 cp -r $newmeshdir/polyMesh ./constant
 rm -rf $newmeshdir
@@ -32,7 +35,8 @@ cat /tmp/boundary > constant/polyMesh/boundary
 
 # Outlet BC
 surfaceToPatch -tol 1e-3 outlets.stl
-export newmeshdir=$(foamListTimes -latestTime)
+newmeshdir=$(foamListTimes -latestTime)
+export newmeshdir
 rm -rf constant/polyMesh/
 cp -r $newmeshdir/polyMesh ./constant
 rm -rf $newmeshdir

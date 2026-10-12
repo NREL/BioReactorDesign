@@ -33,7 +33,7 @@ jobs:
         os: ['ubuntu-latest']
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -leo pipefail {0}
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
@@ -67,7 +67,7 @@ jobs:
         os: ['ubuntu-latest', 'macos-latest']
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -leo pipefail {0}
         working-directory: ${{github.workspace}}
 
     steps:
@@ -82,6 +82,8 @@ jobs:
           environment-name: test-env
           create-args: >-
             python=${{ matrix.python-version }}
+            paraview=6.1
+            hdf5=1.14
           channels: conda-forge
           channel-priority: strict
           cache-downloads: true
@@ -89,7 +91,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
           pip install --upgrade nox
           pip install .[tests] 
@@ -106,7 +107,7 @@ jobs:
         os: ['ubuntu-latest', 'macos-latest']
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -leo pipefail {0}
         working-directory: ${{github.workspace}}
 
     steps:
@@ -119,7 +120,7 @@ jobs:
           cache: true
           cache-write: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
-      - name: Formatting and sorting import
+      - name: Test
         run: |
           pixi run test
 
@@ -133,7 +134,7 @@ jobs:
         os: ['ubuntu-latest']
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -leo pipefail {0}
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
@@ -147,6 +148,8 @@ jobs:
           environment-name: test-env
           create-args: >-
             python=${{ matrix.python-version }}
+            paraview=6.1
+            hdf5=1.14
           channels: conda-forge
           channel-priority: strict
           cache-downloads: true
@@ -154,7 +157,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
           pip install --upgrade nox
           pip install nlr-bird[tests]
@@ -172,7 +174,7 @@ jobs:
         os: ['ubuntu-22.04']
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -leo pipefail {0}
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
@@ -189,6 +191,8 @@ jobs:
           environment-name: test-env
           create-args: >-
             python=${{ matrix.python-version }}
+            paraview=6.1
+            hdf5=1.14
           channels: conda-forge
           channel-priority: strict
           cache-downloads: true
@@ -196,7 +200,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
           pip install .
 
@@ -205,58 +208,67 @@ jobs:
           cd OFsolvers/OF9/birdmultiphaseEulerFoam
           export WM_COMPILE_OPTION=Debug
           ./Allwmake
-          cd ../../../
       - name: Run deckwer17 PBE
         run: |
           cd experimental_cases/OF9/deckwer17
           bash run.sh 
-          cd ../../../
       - name: Run deckwer17 constantD
         run: |
           cd experimental_cases/OF9/deckwer17
           cp constant/phaseProperties_constantd constant/phaseProperties
           bash run.sh 
-          cd ../../../
       - name: Run deckwer19 PBE
         run: |
           cd experimental_cases/OF9/deckwer19
           bash run.sh 
-          cd ../../../
+      - name: Run Uloop Exp1
+        run: |
+          cd experimental_cases/OF9/uloop_valadbeigy_exp1
+          bash run.sh 
+      - name: Run Uloop Exp2
+        run: |
+          cd experimental_cases/OF9/uloop_valadbeigy_exp2
+          bash run.sh 
+      - name: Run Uloop Exp3
+        run: |
+          cd experimental_cases/OF9/uloop_valadbeigy_exp3
+          bash run.sh 
       - name: Run side sparger tutorial
         run: |
           cd tutorial_cases/OF9/side_sparger
           bash run.sh 
-          cd ../../../
       - name: Run bubble column tutorial
         run: |
           cd tutorial_cases/OF9/bubble_column_20L
           bash run.sh 
-          cd ../../../
       - name: Run stirred-tank tutorial
         run: |
           cd tutorial_cases/OF9/stirred_tank
           bash run.sh 
-          cd ../../../
       - name: Run reactive loop reactor tutorial
         run: |
           cd tutorial_cases/OF9/loop_reactor_reacting
           bash run.sh 
-          cd ../../../
       - name: Run mixing loop reactor tutorial
         run: |
           cd tutorial_cases/OF9/loop_reactor_mixing
-          bash run.sh 
-          cd ../../../
+          bash run.sh
+      - name: Run mixing loop reactor with swirl tutorial
+        run: |
+          cd tutorial_cases/OF9/loop_reactor_mixing_swirl
+          bash run.sh
+      - name: Run mixing loop reactor with static mixer tutorial
+        run: |
+          cd tutorial_cases/OF9/loop_reactor_mixing_static
+          bash run.sh
       - name: Run airlift reactor tutorial
         run: |
           cd tutorial_cases/OF9/airlift_40m
           bash run.sh
-          cd ../../../
       - name: Run flat panel reactor tutorial
         run: |
           cd tutorial_cases/OF9/FlatPanel_250L_ASU
           bash run.sh
-          cd ../../../
           
   Regression-Test-OF13:
     name: Regression-Test-OF13 (${{ matrix.python-version }}, ${{ matrix.os }})
@@ -268,7 +280,7 @@ jobs:
         os: ['ubuntu-22.04']
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -leo pipefail {0}
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
@@ -285,6 +297,8 @@ jobs:
           environment-name: test-env
           create-args: >-
             python=${{ matrix.python-version }}
+            paraview=6.1
+            hdf5=1.14
           channels: conda-forge
           channel-priority: strict
           cache-downloads: true
@@ -292,7 +306,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          micromamba install --yes -n test-env -c conda-forge paraview
           pip install --upgrade pip
           pip install .
 
@@ -301,25 +314,21 @@ jobs:
           cd OFsolvers/OF13/birdmultiphaseEuler
           export WM_COMPILE_OPTION=Debug
           ./Allwmake
-          cd ../../../
       - name: Run bubble column
         run: |
           cd tutorial_cases/OF13/bubble_column
           ./Allrun --test 
-          cd ../../../
       - name: STR MRF
         run: |
           cd tutorial_cases/OF13/STR_MRF
           ./Allrun --test 
-          cd ../../../
       - name: STR rotating mesh
         run: |
           cd tutorial_cases/OF13/STR_rotatingMesh
           ./Allrun --test 
-          cd ../../../
 
-  Regression-Test-OF-pixi:
-    name: Regression-Test-OF-pixi (${{ matrix.os }})
+  Regression-Test-OF9-pixi:
+    name: Regression-Test-OF9-pixi (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -327,7 +336,7 @@ jobs:
         os: ['ubuntu-22.04']
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -leo pipefail {0}
         working-directory: ${{github.workspace}}
     steps:
       - uses: actions/checkout@v4
@@ -345,10 +354,8 @@ jobs:
           cd OFsolvers/OF9/birdmultiphaseEulerFoam
           export WM_COMPILE_OPTION=Debug
           ./Allwmake
-          cd ../../../
       - name: Run bubble column tutorial
         run: |
           cd tutorial_cases/OF9/bubble_column_20L
           bash run_pixi.sh 
-          cd ../../../
 

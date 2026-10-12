@@ -7,9 +7,11 @@ else
     ./Allclean
 fi
 
-set -e  # Exit on any error
-# Define what to do on error
-trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
+set -Eeuo pipefail   # -E: trap also fires inside functions/subshells
+trap 'exit_code=$?
+      echo "ERROR: Something failed! Running cleanup..."
+      ./Allclean || true
+      exit $exit_code' ERR
 
 
 if ! type "python" &> /dev/null; then
@@ -17,10 +19,10 @@ if ! type "python" &> /dev/null; then
     echo "Skipping Mesh generation"
 else
     # Generate blockmeshDict
-    python ../../applications/write_stirred_tank_mesh.py -i ../../bird/meshing/stirred_tank_mesh_templates/base_tank/tank_par.yaml -o system/blockMeshDict
+    python -W error::SyntaxWarning  ../../../applications/write_stirred_tank_mesh.py -i ../../../bird/meshing/stirred_tank_mesh_templates/base_tank/tank_par.yaml -o system/blockMeshDict
   
     # Generate species thermo properties
-    # python ../../applications/write_species_thermo_prop.py -cf .
+    # python ../../../applications/write_species_thermo_prop.py -cf .
 
 fi
 

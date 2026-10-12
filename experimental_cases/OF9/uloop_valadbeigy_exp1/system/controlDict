@@ -1,0 +1,95 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     birdmultiphaseEulerFoam;
+
+startFrom       latestTime;//startTime;
+
+startTime       0;
+
+stopAt          writeNow;//endTime;
+
+// ~20 s spin-up for steady circulation, dye pulse at t=20-21 s, then ~24 s to
+// capture a ~10 s mixing time.
+endTime         20;
+
+deltaT          1e-6;
+
+writeControl    adjustableRunTime;
+//writeControl    timeStep;
+
+writeInterval   0.1;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable yes;
+
+adjustTimeStep  yes;
+
+maxCo           1.0;
+
+maxDeltaT       0.001;
+
+
+functions
+{
+
+    limitNut
+    {
+        type            coded;
+        libs            ("libutilityFunctionObjects.so");
+        name            limitNut;
+        codeExecute
+        #{
+            const scalar nutMaxLiq = 1e-3;   // [m2/s] liquid nut ceiling (tune)
+            //const scalar nutMaxGas = 1e-3;   // [m2/s] gas    nut ceiling (tune)
+
+            volScalarField& nutLiq =
+                mesh().lookupObjectRef<volScalarField>("nut.liquid");
+            //volScalarField& nutGas =
+            //    mesh().lookupObjectRef<volScalarField>("nut.gas");
+
+            nutLiq = min(nutLiq, dimensionedScalar(nutLiq.dimensions(), nutMaxLiq));
+            //nutGas = min(nutGas, dimensionedScalar(nutGas.dimensions(), nutMaxGas));
+            nutLiq.correctBoundaryConditions();
+            //nutGas.correctBoundaryConditions();
+
+            //Info<< "limitNut: max nut.liq=" << max(nutLiq).value()
+            //    << " nut.gas=" << max(nutGas).value() << endl;
+            Info<< "limitNut: max nut.liq=" << max(nutLiq).value() << endl;
+        #};
+    }
+
+    #includeFunc    writeObjects(thermo:rho.gas)
+    #includeFunc    writeObjects(thermo:rho.liquid)
+    
+    // Mixing time is post-processed offline from the written time folders
+    // (Z.liquid + alpha.liquid), so no sensor/dyeMean function objects here.
+    // Set writeInterval to the temporal resolution the offline analysis needs.
+}
+
+
+// ************************************************************************* //

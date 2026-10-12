@@ -1,0 +1,16 @@
+#!/bin/bash
+#SBATCH --job-name=val2
+##SBATCH --partition=debug
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=16
+#SBATCH --time=14:59:00
+#SBATCH --account=gas2fuels
+
+bash presteps.sh
+source /projects/gas2fuels/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
+decomposePar -fileHandler collated
+srun -n 16 birdmultiphaseEulerFoam -parallel -fileHandler collated
+reconstructPar -newTimes -fields "(U.liquid alpha.gas Z.liquid)"
+module load conda
+conda activate /projects/gas2fuels/conda_env/bird_mixer
+python get_mixing_time.py

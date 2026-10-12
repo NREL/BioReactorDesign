@@ -1,0 +1,65 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      alpha.gas;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 0 0 0 0];
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+internalField   uniform 1.0;
+
+boundaryField
+{
+    sparger
+    {
+        type            fixedValue;
+        value           uniform 1.0;
+    }
+    dye_inlet
+    {
+        type            codedMixed;
+        refValue        uniform 0.0;
+        refGradient     uniform 0.0;
+        valueFraction   uniform 0.0;
+        value           uniform 0.0;
+        name            dyeAlphaGas;
+        code            #{
+            const scalar t      = this->db().time().value();
+            const scalar tStart =  __DYE_START__;
+            const scalar tStop  =  __DYE_STOP__;
+            if (t >= tStart && t < tStop)
+            {
+                this->valueFraction() = 1.0;
+            }
+            else
+            {
+                this->valueFraction() = 0.0;
+            }
+        #};
+    }
+    outlet
+    {
+        type            inletOutlet;
+        phi             phi.gas;
+        inletValue      uniform 1.0;
+        value           uniform 1.0;
+    }
+    walls
+    {
+        type            zeroGradient;
+    }
+}
+
+// ************************************************************************* //

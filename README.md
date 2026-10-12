@@ -1,4 +1,4 @@
-# <ins>Bi</ins>o <ins>R</ins>eactor <ins>D</ins>esign (BiRD) [![bird-CI](https://github.com/NatLabRockies/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NatLabRockies/BioReactorDesign/actions/workflows/ci.yml) [![bird-pyversion](https://img.shields.io/pypi/pyversions/NLR-bird.svg)](https://pypi.org/project/NLR-bird/) [![coverage](https://codecov.io/gh/NatlabRockies/BioReactorDesign/graph/badge.svg)](https://app.codecov.io/gh/nrel/bioreactordesign)  [![bird-pypi](https://badge.fury.io/py/nlr-bird.svg)](https://badge.fury.io/py/nlr-bird)
+# <ins>Bi</ins>o <ins>R</ins>eactor <ins>D</ins>esign (BiRD) [![bird-CI](https://github.com/NatLabRockies/BioReactorDesign/actions/workflows/ci.yml/badge.svg)](https://github.com/NatLabRockies/BioReactorDesign/actions/workflows/ci.yml) [![bird-pyversion](https://img.shields.io/pypi/pyversions/NLR-bird.svg)](https://pypi.org/project/NLR-bird/) [![coverage](https://codecov.io/gh/NatlabRockies/BioReactorDesign/graph/badge.svg)](https://app.codecov.io/gh/natlabrockies/bioreactordesign)  [![bird-pypi](https://badge.fury.io/py/nlr-bird.svg)](https://badge.fury.io/py/nlr-bird)
 
 ## Quick start
 1. Follow the steps to install the python package (see `Installation of python package for developers` or `Installation of python package for users` below)
@@ -25,7 +25,7 @@ This requires installing `pixi`. If it is not available on your machine, follow 
 Once installed, `pixi` does not require the `conda` environment creation and `pip install` gymnastics, and can be used as
 
 ```bash
-git clone https://github.com/NREL/BioReactorDesign.git
+git clone https://github.com/NatLabRockies/BioReactorDesign.git
 cd BioReactorDesign
 pixi shell
 ```
@@ -56,45 +56,14 @@ See the [natlabrockies.github.io/BioReactorDesign](https://natlabrockies.github.
 
 ## References
 
-Software record [SWR 24-35](https://www.osti.gov/biblio/2319227)
+Software record [SWR 24-35](https://www.osti.gov/biblio/code-123482)
 
-To cite BiRD, please use these articles on [CO2 interphase mass transfer](https://doi.org/10.1016/j.cherd.2025.01.034) (open access [link](https://arxiv.org/pdf/2404.19636) ) on [aerobic bioreactors](https://doi.org/10.1016/j.cherd.2018.08.033) and on [butanediol synthesis](https://doi.org/10.1016/j.cherd.2023.07.031).
+To cite BiRD, please refer to [references](https://natlabrockies.github.io/BioReactorDesign/references.html)
 
-```
-@article{hassanaly2025bayesian,
-  title={Bayesian calibration of bubble size dynamics applied to CO2 gas fermenters},
-  author={Hassanaly, Malik and Parra-Alvarez, John M and Rahimi, Mohammad J and Municchi, Federico and Sitaraman, Hariswaran},
-  journal={Chemical Engineering Research and Design},
-  volume={215},
-  pages={312--328},
-  year={2025},
-  publisher={Elsevier}
-}
-
-@article{rahimi2018computational,
-  title={Computational fluid dynamics study of full-scale aerobic bioreactors: Evaluation of gas--liquid mass transfer, oxygen uptake, and dynamic oxygen distribution},
-  author={Rahimi, Mohammad J and Sitaraman, Hariswaran and Humbird, David and Stickel, Jonathan J},
-  journal={Chemical Engineering Research and Design},
-  volume={139},
-  pages={283--295},
-  year={2018},
-  publisher={Elsevier}
-}
-
-@article{sitaraman2023reacting,
-  title={A reacting multiphase computational flow model for 2, 3-butanediol synthesis in industrial-scale bioreactors},
-  author={Sitaraman, Hariswaran and Lischeske, James and Lu, Yimin and Stickel, Jonathan},
-  journal={Chemical Engineering Research and Design},
-  volume={197},
-  pages={38--52},
-  year={2023},
-  publisher={Elsevier}
-}
-```
 
 ## Acknowledgments
 
-This work was authored in part by the National Laboratory of the Rockies (NLR) for the U.S. Department of Energy (DOE) under Contract No. DE-AC36-08GO28308. This work was supported by funding from DOE Bioenergy Technologies Office (BETO) [CO2RUe consortium](https://www.energy.gov/eere/co2rue). The research was performed using computational resources sponsored by the Department of Energy's Office of Critical Minerals and Energy Innovation (CMEI) and located at the National Laboratory of the Rockies. The views expressed in the article do not necessarily represent the views of the DOE or the U.S. Government. The U.S. Government retains and the publisher, by accepting the article for publication, acknowledges that the U.S. Government retains a nonexclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this work, or allow others to do so, for U.S. Government purposes.
+This work was authored in part by the National Laboratory of the Rockies (NLR) for the U.S. Department of Energy (DOE) under Contract No. DE-AC36-08GO28308. This work was supported by funding from DOE Alternative Fuels and Feedstocks Office (AFFO) and Fossil Energy (FE) office through the [CO2RUe consortium](https://www.energy.gov/eere/co2rue). The research was performed using computational resources sponsored by the Department of Energy's Office of Critical Minerals and Energy Innovation (CMEI) and located at the National Laboratory of the Rockies. The views expressed in the article do not necessarily represent the views of the DOE or the U.S. Government. The U.S. Government retains and the publisher, by accepting the article for publication, acknowledges that the U.S. Government retains a nonexclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this work, or allow others to do so, for U.S. Government purposes.
 
 
 

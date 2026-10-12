@@ -7,20 +7,21 @@ else
     ./Allclean
 fi
 
-set -e  # Exit on any error
-# Define what to do on error
-trap 'echo "ERROR: Something failed! Running cleanup..."; ./Allclean' ERR
-
+set -Eeuo pipefail   # -E: trap also fires inside functions/subshells
+trap 'exit_code=$?
+      echo "ERROR: Something failed! Running cleanup..."
+      ./Allclean || true
+      exit $exit_code' ERR
 
 if ! type "python" &> /dev/null; then
     echo "<python> could not be found"
     echo "Skipping Mesh generation"
 else
     # Generate blockmeshDict
-    python ../../applications/write_block_cyl_mesh.py -i ../../bird/meshing/block_cyl_mesh_templates/coflowing/input.json  -t ../../bird/meshing/block_cyl_mesh_templates/coflowing/topology.json -o system
+    python ../../../applications/write_block_cyl_mesh.py -i ../../../bird/meshing/block_cyl_mesh_templates/coflowing/input.json  -t ../../../bird/meshing/block_cyl_mesh_templates/coflowing/topology.json -o system
    
     # Generate species thermo properties
-    python ../../applications/write_species_thermo_prop.py -cf .
+    python ../../../applications/write_species_thermo_prop.py -cf .
 
 fi
 

@@ -1,0 +1,63 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  9
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       volScalarField;
+    object      omega.liquid;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 -1 0 0 0 0];
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+internalField   uniform $omega_inlet_liq;
+
+boundaryField
+{
+    sparger
+    {
+        type            zeroGradient;
+    }
+    dye_inlet
+    {
+        type            codedMixed;
+        refValue        uniform $omega_inlet_liq;
+        refGradient     uniform 0.0;
+        valueFraction   uniform 0.0;
+        value           uniform $omega_inlet_liq;
+        name            dyeepsinlet;
+        code            #{
+            const scalar t      = this->db().time().value();
+            const scalar tStart =  1.0;
+            const scalar tStop  =  2.0;
+            if (t >= tStart && t < tStop)
+            {
+                this->valueFraction() = 1.0;
+            }
+            else
+            {
+                this->valueFraction() = 0.0;
+            }
+        #};
+    }
+
+
+    outlet
+    {
+        type            zeroGradient;
+    }
+    walls
+    {
+        type            omegaWallFunction;
+        value           $internalField;
+    }
+}
+
+// ************************************************************************* //

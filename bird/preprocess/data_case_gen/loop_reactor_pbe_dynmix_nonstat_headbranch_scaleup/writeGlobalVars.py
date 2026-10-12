@@ -31,11 +31,8 @@ def readInletArea():
 
 
 def getLiqVol():
-    cell_centers, _ = read_cell_centers(".")
     volume_field, _ = read_cell_volumes(".")
-    alpha_field = _readOFScal(
-        os.path.join("0", "alpha.liquid"), len(cell_centers)
-    )["field"]
+    alpha_field, _ = read_field(".", "0", field_name="alpha.liquid")
     return np.sum(volume_field * alpha_field)
 
 

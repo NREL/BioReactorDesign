@@ -10,8 +10,20 @@ def generate_stl_patch(filename, bc_dict, geom_dict):
         json.dump(final_dict, f, indent=2)
 
 
-def generate_dynamic_mixer(filename, mixers_list, geom_dict):
+def generate_dynamic_mixer(filename, mixers_list, geom_dict, model=None):
+    """Write a mixers.json.
+
+    Parameters
+    ----------
+    model:
+        Optional dict of top-level model selectors written verbatim (e.g.
+        ``{"volumetric_source": "ball", "power": "from_Np_Vtip",
+        "momentum_source": "axial_and_swirl"}``). ``None`` keeps the legacy
+        pancake output.
+    """
     final_dict = {}
+    if model is not None:
+        final_dict.update(model)
     final_dict["Meshing"] = geom_dict["Meshing"]
     final_dict["Geometry"] = geom_dict["Geometry"]
     final_dict["mixers"] = mixers_list

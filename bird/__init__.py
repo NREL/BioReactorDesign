@@ -4,6 +4,10 @@ import os
 
 from bird.version import __version__
 
+# Marks __version__ as an intentional re-export (read by setuptools as
+# bird.__version__); does not restrict attribute access to the module.
+__all__ = ["__version__"]
+
 BIRD_DIR = os.path.dirname(os.path.realpath(__file__))
 BIRD_CASE_DIR = os.path.join(BIRD_DIR, "../tutorial_cases")
 BIRD_CONST_DIR = os.path.join(BIRD_DIR, "constants")

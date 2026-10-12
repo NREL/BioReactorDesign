@@ -1,0 +1,45 @@
+{
+  "mixers": [
+    {
+      "x": 0.063,
+      "y": 0.47,
+      "z": 0.0,
+      "normal_dir": 1,
+      "radius": 0.018,
+      "start_time": 0.1,
+      "power": 14.95,
+      "Vtip": 5,
+      "sign": "-",
+      "swirl_sign": "-"
+    }
+  ],
+  "static_mixers": [
+    {
+      "x": 0.063,
+      "y": 0.05,
+      "z": 0.0,
+      "normal_dir": 1,
+      "radius": 0.018,
+      "start_time": 0.1,
+      "K": 0.5,
+      "S": 0.6,
+      "sign": "-",
+      "swirl_sign": "-"
+    },
+    {
+      "x": -0.063,
+      "y": 0.275,
+      "z": 0.0,
+      "normal_dir": 1,
+      "radius": 0.018,
+      "start_time": 0.1,
+      "K": 0.5,
+      "S": 0.6,
+      "sign": "+",
+      "swirl_sign": "+"
+    }
+  ],
+  "volumetric_source": "ball",
+  "power": "from_P",
+  "momentum_source": "axial_and_swirl"
+}

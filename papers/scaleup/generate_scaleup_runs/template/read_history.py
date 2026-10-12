@@ -1,0 +1,100 @@
+import argparse
+import os
+import sys
+
+import numpy as np
+from prettyPlot.plotting import plt, pretty_labels
+
+from bird.postprocess.post_quantities import *
+from bird.utilities.ofio import *
+
+parser = argparse.ArgumentParser(description="Convergence of GH")
+parser.add_argument(
+    "-cn",
+    "--case_name",
+    type=str,
+    metavar="",
+    required=True,
+    help="Case name",
+)
+parser.add_argument(
+    "-df",
+    "--data_folder",
+    type=str,
+    metavar="",
+    required=False,
+    help="data folder name",
+    default="data",
+)
+
+args, unknown = parser.parse_known_args()
+
+
+case_root = "."  # "../"
+case_name = args.case_name  # "12_hole_sparger_snappyRefine_700rpm_opt_coeff"
+case_folder = "."
+dataFolder = args.data_folder
+
+if os.path.isfile(os.path.join(dataFolder, case_name, "conv.npz")):
+    sys.exit("WARNING: History already created, Skipping")
+
+time_float_sorted, time_str_sorted = get_case_times(
+    case_folder, remove_zero=True
+)
+cell_centers, _ = read_cell_centers(case_folder)
+nCells = len(cell_centers)
+
+
+co2_history = np.zeros(len(time_str_sorted))
+c_co2_history = np.zeros(len(time_str_sorted))
+h2_history = np.zeros(len(time_str_sorted))
+c_h2_history = np.zeros(len(time_str_sorted))
+gh_history = np.zeros(len(time_str_sorted))
+liqvol_history = np.zeros(len(time_str_sorted))
+print(f"case_folder = {case_folder}")
+field_dict = {}
+for itime, time in enumerate(time_float_sorted):
+    time_folder = time_str_sorted[itime]
+    print(f"\tTime : {time_folder}")
+    _, field_dict = read_cell_volumes(case_folder)
+    gh_history[itime], field_dict = compute_gas_holdup(
+        case_folder,
+        time_str_sorted[itime],
+        field_dict=field_dict,
+    )
+    co2_history[itime], field_dict = compute_ave_y_liq(
+        case_folder,
+        time_str_sorted[itime],
+        species_name="CO2",
+        field_dict=field_dict,
+    )
+    h2_history[itime], field_dict = compute_ave_y_liq(
+        case_folder,
+        time_str_sorted[itime],
+        species_name="H2",
+        field_dict=field_dict,
+    )
+    c_co2_history[itime], field_dict = compute_ave_conc_liq(
+        case_folder,
+        time_str_sorted[itime],
+        species_name="CO2",
+        field_dict=field_dict,
+    )
+    c_h2_history[itime], field_dict = compute_ave_conc_liq(
+        case_folder,
+        time_str_sorted[itime],
+        species_name="H2",
+        field_dict=field_dict,
+    )
+
+os.makedirs(dataFolder, exist_ok=True)
+os.makedirs(os.path.join(dataFolder, case_name), exist_ok=True)
+np.savez(
+    os.path.join(dataFolder, case_name, "conv.npz"),
+    time=np.array(time_float_sorted),
+    gh=gh_history,
+    co2=co2_history,
+    h2=h2_history,
+    c_h2=c_h2_history,
+    c_co2=c_co2_history,
+)

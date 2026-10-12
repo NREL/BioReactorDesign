@@ -1,0 +1,24 @@
+{
+    "Meshing": {
+                "Blockwise": {
+                        "x" : 10,
+                        "y" : 10,
+                        "z" : 10
+                }
+    },
+    "Geometry": {
+                "OverallDomain": {
+                        "x" : {"nblocks": 10, "size_per_block": 1.0, "rescale": 0.05},
+                        "y" : {"nblocks": 5, "size_per_block": 1.0,  "rescale": 0.05},
+                        "z" : {"nblocks": 5, "size_per_block": 1.0,  "rescale": 0.05}
+                },
+                "Fluids": [
+                        [ [0,0,0], [9,0,0], [9,0,4], [0,0,4] ],
+                        [ [0,1,4], [0,4,4], [0,4,0], [0,1,0] ]
+                ]
+
+    },
+    "static_mixers": [
+        {"branch_id": 0, "frac_space": 0.5, "start_time": 1, "S": 0.35, "K": 0.5, "radius": 0.5, "sign": "+", "swirl_sign": "+"}
+    ]
+}

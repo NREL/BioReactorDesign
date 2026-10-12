@@ -48,7 +48,7 @@ def run_cleanup(session: nox.Session) -> None:
 @nox.session(name="linter", python=False)
 def run_lint(session: nox.Session) -> None:
     """
-    Run black and isort with the github config file
+    Run black and isort, then pyflakes on the bird library
 
     """
 
@@ -59,9 +59,6 @@ def run_lint(session: nox.Session) -> None:
         "black",
         "--line-length",
         "79",
-        # Target the OLDEST python supported in pyproject.toml, not the newest.
-        # This flag tells black which syntax it may emit, so targeting py314
-        # let it rewrite `except (A, B):` into py3.14-only `except A, B:`
         "--target-version",
         "py311",
         "--exclude",
@@ -96,6 +93,48 @@ def run_lint(session: nox.Session) -> None:
 
     session.run(*black_command)
     session.run(*isort_command)
+
+    run_pyflakes(session)
+
+
+@nox.session(name="pyflakes", python=False)
+def run_pyflakes(session: nox.Session) -> None:
+    """
+    Run pyflakes on the bird library only
+    """
+
+    session.run("pip", "install", "--upgrade", "--quiet", "pyflakes")
+
+    output = session.run(
+        "pyflakes",
+        "bird",
+        external=True,
+        silent=True,
+        success_codes=[0, 1],
+    )
+
+    ignored_messages = (
+        "unable to detect undefined names",
+        "may be undefined, or defined from star imports",
+    )
+    # Script-only subtrees under bird/
+    excluded_paths = (
+        "bird/preprocess/data_case_gen/",
+        "bird/preprocess/inhomogeneousBC/",
+        "bird/postprocess/SA_optimization/",
+        "bird/postprocess/computeQoI/",
+    )
+
+    problems = [
+        line
+        for line in (output or "").splitlines()
+        if line.strip()
+        and not any(msg in line for msg in ignored_messages)
+        and not any(path in line for path in excluded_paths)
+    ]
+
+    if problems:
+        session.error("pyflakes found issues:\n" + "\n".join(problems))
 
 
 @nox.session(name="spell", python=False)
