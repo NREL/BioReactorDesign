@@ -43,7 +43,6 @@ Foam::BioReactingPhaseModel<BasePhaseModel>::BioReactingPhaseModel
     species_(dict_.lookup("species")),
     maxUptakeRate_(),
     K_(),
-    M_(),
     URSp_()
     // DCW_
     // (
@@ -63,9 +62,7 @@ Foam::BioReactingPhaseModel<BasePhaseModel>::BioReactingPhaseModel
         dictionary subsp(dict_.subDict(species_[specieI]));
 
         maxUptakeRate_.append(readScalar(subsp.lookup("maxUptakeRate")));
-        K_.append(readScalar(subsp.lookup("K")));
-        M_.append(readScalar(subsp.lookup("molWeight")));
-        
+        K_.append(readScalar(subsp.lookup("K"))),
         URSp_.append(
             new volScalarField::Internal
             (
@@ -100,7 +97,9 @@ void Foam::BioReactingPhaseModel<BasePhaseModel>::correctReactions()
 
     scalar kg_to_g = 1000.;
     scalar hr_to_sec = 3600.;
-    const volScalarField& rho = this->thermo().rho();
+    const volScalarField& rho = this->rho();
+    const volScalarField& alpha = *this;
+    const volScalarField alphaRho = alpha * rho;
 
     forAll(this->Y(), speciei)
     {
@@ -109,7 +108,8 @@ void Foam::BioReactingPhaseModel<BasePhaseModel>::correctReactions()
             if ( this->Y()[speciei].name() == IOobject::groupName(species_[speciej], this->name()) )
             {
                Info << "Updating enzymatic reaction of species " << this->Y()[speciei].name() << endl;
-               scalar kg_m3_to_mol_m3 = kg_to_g / M_[speciej];
+               
+               scalar kg_m3_to_mol_m3 = kg_to_g / this->thermo_->Wi(speciei).value();
                scalar mol_m3_to_kg_m3 = 1./kg_m3_to_mol_m3;
                scalar Kp = K_[speciej] * mol_m3_to_kg_m3;
                scalar maxUR = maxUptakeRate_[speciej] * mol_m3_to_kg_m3 / hr_to_sec;
@@ -117,9 +117,8 @@ void Foam::BioReactingPhaseModel<BasePhaseModel>::correctReactions()
                volScalarField::Internal& URSp = URSp_[speciej];  
                forAll(URSp, cellI)
                {
-                    URSp[cellI] =  - maxUR / (  Kp  + rho[cellI] * this->Y()[speciei][cellI] );
-               }
-               
+                    URSp[cellI] =  - ( maxUR * alphaRho[cellI] ) / (  Kp  + alphaRho[cellI] * this->Y()[speciei][cellI] );
+               }     
             }
         }
     }

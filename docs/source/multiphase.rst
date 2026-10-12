@@ -134,7 +134,7 @@ The `birdmultiphaseEuler` module provides the `bioReactingPhaseModel` that incor
 For a reacting specie with mass fraction :math:`Y_l`, the uptake rate is
  .. math::
 
-   UR = - UR_{max} \frac{Y_i}/{k_p - \rho_l Y_i}
+   UR = - \alpha_l \rho_l UR_{max} \frac{Y_l}/{k_p - \alpha_l \rho_l Y_l}
    
 where the user parameters are the maximum uptake rate :math:`UR_{max}` and the enzyme affinity :math:`k_p`.
 
