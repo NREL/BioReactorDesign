@@ -47,7 +47,8 @@ patches
         // Dictionary to construct new patch from
         patchInfo
         {
-            type patch;
+            type mapped;
+            neighbourPatch outlet;
         }
 
         // How to construct: either from 'patches' or 'set'
