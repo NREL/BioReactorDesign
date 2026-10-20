@@ -1,3 +1,0 @@
-recirculatedSpeciesFvPatchScalarField.C
-
-LIB = $(FOAM_USER_LIBBIN)/librecirculatedSpecies

@@ -79,15 +79,15 @@ recirculatedSpeciesFvPatchScalarField
 {
 
 
-    fixedValueFvPatchScalarField::evaluate();
+    //fixedValueFvPatchScalarField::evaluate();
 
-    /*
+    
     // Initialise with the value entry if evaluation is not possible
     fvPatchScalarField::operator=
     (
         scalarField("value", iF.dimensions(), dict, p.size())
     );
-    */
+
 }
 
 
@@ -148,7 +148,12 @@ void Foam::recirculatedSpeciesFvPatchScalarField::updateCoeffs()
     {
         return;
     }
-  
+
+    if ( !db().foundObject<surfaceScalarField>("alphaRhoPhi." + phase_.name()) )
+    {
+        return;
+    }
+
     // Since we're inside initEvaluate/evaluate there might be processor
     // comms underway. Change the tag we use.
     int oldTag = UPstream::msgType();
@@ -177,14 +182,14 @@ void Foam::recirculatedSpeciesFvPatchScalarField::updateCoeffs()
 
     scalar rf = min(max(r_->value(t()),0.),1.);
 
-    const scalar alphaRhoPhiTotp = max( mag( sum(alphaRhoPhip)),1e-16 );
+    const scalar alphaRhoPhiTotp = max( mag( gSum(alphaRhoPhip)),1e-16 );
 
-    const scalar Yr = mag( sum(alphaRhoPhip*Yp) ) / alphaRhoPhiTotp; // Mean mass fraction from the mapped patch
+    const scalar Yr = mag( gSum(alphaRhoPhip*Yp) ) / alphaRhoPhiTotp; // Mean mass fraction from the mapped patch
 
     // Restore tag
     UPstream::msgType() = oldTag;
 
-    fixedValueFvPatchScalarField::operator==( (1. - rf)*Y0_->value(t()) + rf*Yr );
+     fixedValueFvPatchScalarField::operator==( (1. - rf)*Y0_->value(t()) + rf*Yr );
 
     fixedValueFvPatchScalarField::updateCoeffs();
 }

@@ -13,5 +13,6 @@ wmake $targetType
 
 wmake -j 20 $targetType fvModels
 wmake -j 20 $targetType functionObjects
+wmake -j 20 $targetType boundaryConditions
 
 #------------------------------------------------------------------------------

@@ -29,7 +29,7 @@ Description
     calculated as:
 
         \f[
-            Y = Y_{0}*(1-r) *Y_{r}
+            Y = Y_{0}*(1-r) + r*Y_{r}
         \f]
     and
         \f[
