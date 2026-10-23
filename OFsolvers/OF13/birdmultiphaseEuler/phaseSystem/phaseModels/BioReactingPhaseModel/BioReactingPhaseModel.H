@@ -81,9 +81,6 @@ protected:
         // Half saturation constant
         List<scalar> K_;
 
-        // Molar weights
-        List<scalar> M_;
-
         // Uptake rates Sp
         PtrList<volScalarField::Internal> URSp_;
 

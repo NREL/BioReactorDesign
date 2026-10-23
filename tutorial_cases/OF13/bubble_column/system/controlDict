@@ -14,7 +14,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-libs ( "libbirdmultiphaseEuler.so" );
+libs ( "libbirdmultiphaseEuler.so" "libbirdBoundaryConditions.so" );
 
 solver          birdmultiphaseEuler;
 
