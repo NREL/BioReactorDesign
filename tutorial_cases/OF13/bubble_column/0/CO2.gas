@@ -25,7 +25,10 @@ boundaryField
 
     inlet
     {
-        type            fixedValue;
+        type            recirculatedSpecies;
+	Y0              $CO2_in;
+	otherPatch      outlet;
+	r               0.5;
         value           uniform $CO2_in;
     }
 

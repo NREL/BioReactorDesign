@@ -28,7 +28,8 @@ boundaryField
         type            recirculatedSpecies;
         value           uniform $O2_in;
         Y0              $O2_in;
-        r               0.5;
+        otherPatch      outlet;
+	r               0.5;
     }
 
     outlet
