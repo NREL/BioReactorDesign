@@ -28,7 +28,6 @@ License
 #include "fieldMapper.H"
 #include "volFields.H"
 #include "surfaceFields.H"
-#include "mappedFvPatchBaseBase.H"
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
@@ -69,17 +68,12 @@ recirculatedSpeciesFvPatchScalarField
             dict
         )
     ),
-    phase_
-    (
-        db().lookupObject<phaseModel>
-        (
-            IOobject::groupName("alpha", dict.lookupOrDefault<word>("phase","gas"))
-        )
-    )
+    phaseName_(dict.lookupOrDefault<word>("phase","gas")),
+    otherPatchName_(dict.lookup("otherPatch"))
 {
 
 
-    //fixedValueFvPatchScalarField::evaluate();
+//    fixedValueFvPatchScalarField::evaluate();
 
     
     // Initialise with the value entry if evaluation is not possible
@@ -87,7 +81,7 @@ recirculatedSpeciesFvPatchScalarField
     (
         scalarField("value", iF.dimensions(), dict, p.size())
     );
-
+    
 }
 
 
@@ -103,7 +97,8 @@ recirculatedSpeciesFvPatchScalarField
     fixedValueFvPatchScalarField(ptf, p, iF, mapper),
     Y0_(ptf.Y0_, false),
     r_(ptf.r_, false),
-    phase_(ptf.phase_)
+    phaseName_(ptf.phaseName_),
+    otherPatchName_(ptf.otherPatchName_)
 {}
 
 
@@ -117,8 +112,10 @@ recirculatedSpeciesFvPatchScalarField
     fixedValueFvPatchScalarField(ptf, iF),
     Y0_(ptf.Y0_, false),
     r_(ptf.r_, false),
-    phase_(ptf.phase_)
+    phaseName_(ptf.phaseName_),
+    otherPatchName_(ptf.otherPatchName_)
 {}
+
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
@@ -149,7 +146,16 @@ void Foam::recirculatedSpeciesFvPatchScalarField::updateCoeffs()
         return;
     }
 
-    if ( !db().foundObject<surfaceScalarField>("alphaRhoPhi." + phase_.name()) )
+    const phaseModel& phase
+    (
+        db().lookupObject<phaseModel>
+        (
+            IOobject::groupName("alpha", phaseName_)
+        )
+    );
+
+
+    if ( !db().foundObject<surfaceScalarField>("alphaRhoPhi." + phase.name()) )
     {
         return;
     }
@@ -159,37 +165,34 @@ void Foam::recirculatedSpeciesFvPatchScalarField::updateCoeffs()
     int oldTag = UPstream::msgType();
     UPstream::msgType() = oldTag+1;
 
-    // Get the mapper and the neighbouring patch
-    const mappedFvPatchBaseBase& mapper =
-        mappedFvPatchBaseBase::getMap(patch());
-    const fvPatch& nbrPatch = mapper.nbrFvPatch();
+    const fvMesh& mesh = this->internalField().mesh();
 
-    const scalarField alphaRhoPhip
-    (
-        mapper.fromNeighbour
-        (
-            nbrPatch.lookupPatchField<surfaceScalarField, scalar>("alphaRhoPhi." + phase_.name())
-        )
-    );
+    label patchID = mesh.boundaryMesh().findIndex(otherPatchName_);
 
-    const scalarField Yp
-    (
-        mapper.fromNeighbour
-        (
-            nbrPatch.lookupPatchField<volScalarField, scalar>(this->internalField().name())
-        )
-    );
+    scalar alphaRhoPhiYr = 0.;
+    scalar alphaRhoPhiTot = 1e-16;
+    
+    if ( patchID != 1 )
+    {
+        const fvPatch& nbrPatch = mesh.boundary()[patchID];
+        const scalarField& alphaRhoPhip = nbrPatch.lookupPatchField<surfaceScalarField, scalar>("alphaRhoPhi." + phase.name());
+        const scalarField& Yp = nbrPatch.lookupPatchField<volScalarField, scalar>(this->internalField().name());
+
+        alphaRhoPhiTot = max( mag( sum(alphaRhoPhip)),1e-16 );
+        alphaRhoPhiYr = mag( sum(alphaRhoPhip*Yp) );
+    }
+
+    reduce(alphaRhoPhiTot, sumOp<scalar>());
+    reduce(alphaRhoPhiYr, sumOp<scalar>());
+    
+    const scalar Yr = min(max( alphaRhoPhiYr/alphaRhoPhiTot, 0.), 1.);
 
     scalar rf = min(max(r_->value(t()),0.),1.);
-
-    const scalar alphaRhoPhiTotp = max( mag( gSum(alphaRhoPhip)),1e-16 );
-
-    const scalar Yr = mag( gSum(alphaRhoPhip*Yp) ) / alphaRhoPhiTotp; // Mean mass fraction from the mapped patch
 
     // Restore tag
     UPstream::msgType() = oldTag;
 
-     fixedValueFvPatchScalarField::operator==( (1. - rf)*Y0_->value(t()) + rf*Yr );
+    fixedValueFvPatchScalarField::operator==( (1. - rf)*Y0_->value(t()) + rf*Yr );
 
     fixedValueFvPatchScalarField::updateCoeffs();
 }
@@ -203,7 +206,8 @@ void Foam::recirculatedSpeciesFvPatchScalarField::write
     fvPatchScalarField::write(os);
     writeEntry(os, db().time().userUnits(), unitAny, Y0_());
     writeEntry(os, db().time().userUnits(), unitAny, r_());
-    writeEntry(os, "phase", phase_.name());
+    writeEntry(os, "phase", phaseName_);
+    writeEntry(os, "otherPatch", otherPatchName_);
     writeEntry(os, "value", *this);
 }
 

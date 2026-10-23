@@ -50,6 +50,7 @@ Usage
         Property   | Description                  | Req'd? | Default
         Y0         | base value                   | yes    |
         r          | recirculation factor         | yes    |
+        otherPatch | name of other patch          | yes    |
     \endtable
 
     Example of the boundary condition specification:
@@ -62,6 +63,7 @@ Usage
                              (0 0)
                              (1 1)
                           ); // Switch to full recirculation after one second
+        otherPatch outlet;
         value      uniform 1; // optional initial value
     }
     \endverbatim
@@ -71,8 +73,8 @@ SourceFiles
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef recirculatedSpeciesFvPatchScalarField_H
-#define recirculatedSpeciesFvPatchScalarField_H
+#ifndef BC_H
+#define BC_H
 
 #include "fixedValueFvPatchFields.H"
 #include "Function1.H"
@@ -93,14 +95,16 @@ class recirculatedSpeciesFvPatchScalarField
 {
     // Private Data
 
-    
         //- Base value
         autoPtr<Function1<scalar>> Y0_;
 
         //- Recirculation factor
         autoPtr<Function1<scalar>> r_;
 
-        const phaseModel& phase_;
+        word phaseName_;
+
+        word otherPatchName_;
+
 
     // Private Member Functions
 
